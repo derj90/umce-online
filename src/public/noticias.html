@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <!-- === SEO — noticias.html === -->
+  <title>Noticias UDFV | Tecnología Educativa y Formación Docente UMCE</title>
+  <meta name="description" content="Noticias, eventos y novedades sobre formación virtual, tecnología educativa e inteligencia artificial aplicada a la docencia. Actualizaciones de la UDFV UMCE.">
+  <meta name="keywords" content="noticias formación virtual UMCE, tecnología educativa Chile, eventos pedagogía digital, UDFV noticias, inteligencia artificial educación noticias">
+  <meta name="author" content="Unidad de Desarrollo y Formación Virtual — UMCE">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://umce.online/noticias">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://umce.online/noticias">
+  <meta property="og:title" content="Noticias UDFV | Tecnología Educativa y Formación Docente UMCE">
+  <meta property="og:description" content="Noticias y eventos sobre formación virtual, tecnología educativa e IA aplicada a la docencia. Actualizaciones de la UDFV UMCE.">
+  <meta property="og:image" content="https://umce.online/assets/og-noticias.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Noticias UDFV UMCE — Tecnologia Educativa">
+  <meta property="og:site_name" content="UMCE Virtual">
+  <meta property="og:locale" content="es_CL">
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Noticias UDFV — Tecnología Educativa UMCE">
+  <meta name="twitter:description" content="Noticias sobre formación virtual, tecnología educativa e IA en la docencia. UDFV UMCE.">
+  <meta name="twitter:image" content="https://umce.online/assets/og-noticias.png">
+  <meta name="twitter:image:alt" content="Noticias UDFV UMCE">
+  
+  
+  
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+  <link rel="stylesheet" href="/shared/shared.css">
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased">
+
+  <div id="nav-placeholder"></div>
+
+  <!-- Hero -->
+  <section class="hero-gradient pt-32 pb-16 text-white relative overflow-hidden">
+    <div id="p5-header" data-variant="1"></div>
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+      <nav class="breadcrumb text-sm mb-6">
+        <a href="/" class="text-white/60 hover:text-white">Inicio</a>
+        <span class="separator text-white/30">/</span>
+        <span class="text-white/90">Noticias</span>
+      </nav>
+      <h1 class="fade-up font-heading text-4xl md:text-5xl font-extrabold mb-4">Noticias</h1>
+      <p class="fade-up text-white/80 text-lg max-w-2xl">
+        Novedades, eventos y avances en formaci&oacute;n virtual y tecnolog&iacute;a educativa UMCE.
+      </p>
+    </div>
+  </section>
+
+  <!-- Filter -->
+  <section class="bg-white border-b sticky top-[72px] z-30">
+    <div class="max-w-7xl mx-auto px-6 py-4">
+      <div class="flex flex-wrap gap-2">
+        <button class="filter-tab active" data-category="">Todas</button>
+        <button class="filter-tab" data-category="formacion">Formaci&oacute;n</button>
+        <button class="filter-tab" data-category="tecnologia">Tecnolog&iacute;a</button>
+        <button class="filter-tab" data-category="institucional">Institucional</button>
+        <button class="filter-tab" data-category="eventos">Eventos</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- News grid -->
+  <section class="py-12">
+    <div class="max-w-7xl mx-auto px-6">
+      <div id="news-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Loaded dynamically -->
+      </div>
+
+      <div id="empty-state" class="hidden text-center py-20">
+        <svg class="w-16 h-16 mx-auto text-gray-200 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+        <p class="text-gray-400 text-lg">No hay noticias en esta categor&iacute;a</p>
+      </div>
+
+      <div id="load-more" class="hidden text-center mt-12">
+        <button id="load-more-btn" class="inline-flex items-center gap-2 border border-gray-200 text-gray-600 font-heading font-semibold text-sm px-6 py-3 rounded-lg hover:border-umce-azul hover:text-umce-azul transition-colors">
+          Cargar m&aacute;s noticias
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+  <div id="chatbot-placeholder"></div>
+
+  <script src="/shared/shared.js"></script>
+  <script src="/shared/chatbot.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js" defer></script>
+  <script src="/shared/generative-header.js" defer></script>
+  <script>
+    let currentCategory = '';
+    let offset = 0;
+    const limit = 9;
+    const grid = document.getElementById('news-grid');
+    const emptyState = document.getElementById('empty-state');
+    const loadMoreDiv = document.getElementById('load-more');
+    const loadMoreBtn = document.getElementById('load-more-btn');
+
+    // Category filters
+    document.querySelectorAll('.filter-tab[data-category]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-tab[data-category]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentCategory = btn.dataset.category;
+        offset = 0;
+        grid.innerHTML = '';
+        loadNews();
+      });
+    });
+
+    // Load more
+    loadMoreBtn.addEventListener('click', () => {
+      loadNews(true);
+    });
+
+    async function loadNews(append = false) {
+      if (!append) {
+        UMCE.renderSkeletons(grid, 6);
+        emptyState.classList.add('hidden');
+        loadMoreDiv.classList.add('hidden');
+      }
+
+      try {
+        let params = `limit=${limit}&offset=${offset}`;
+        if (currentCategory) params += `&category=${currentCategory}`;
+
+        const news = await fetch(`/api/news?${params}`).then(r => r.json());
+
+        if (!append) grid.innerHTML = '';
+
+        if (news.length === 0 && offset === 0) {
+          emptyState.classList.remove('hidden');
+          return;
+        }
+
+        grid.innerHTML += news.map(n => `
+          <a href="/noticia/${n.slug}" class="fade-up catalog-card bg-white border border-gray-100 block">
+            <div class="h-48 bg-gradient-to-br from-umce-azul/10 to-umce-azul/5 flex items-center justify-center relative overflow-hidden">
+              ${n.image_url
+                ? `<img src="${n.image_url}" alt="${n.title}" class="w-full h-full object-cover" loading="lazy">`
+                : `<svg class="w-12 h-12 text-umce-azul/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>`
+              }
+              ${n.featured ? '<span class="absolute top-3 left-3 badge badge-diplomado">Destacada</span>' : ''}
+              ${n.category ? `<span class="absolute top-3 right-3 bg-white/90 text-gray-600 text-xs font-medium px-2.5 py-1 rounded-full">${n.category}</span>` : ''}
+            </div>
+            <div class="p-5">
+              <p class="text-gray-400 text-xs mb-2">${UMCE.formatDate(n.published_at)}</p>
+              <h3 class="font-heading font-bold text-base text-gray-900 mb-2 line-clamp-2">${n.title}</h3>
+              <p class="text-gray-500 text-sm line-clamp-3">${n.excerpt || UMCE.truncate(UMCE.stripHtml(n.content), 150)}</p>
+            </div>
+          </a>
+        `).join('');
+
+        offset += news.length;
+        UMCE.observeNewElements(grid);
+
+        if (news.length >= limit) {
+          loadMoreDiv.classList.remove('hidden');
+        } else {
+          loadMoreDiv.classList.add('hidden');
+        }
+      } catch (err) {
+        console.error('Error loading news:', err);
+        if (offset === 0) grid.innerHTML = '<div class="col-span-full text-center text-gray-400 py-12">Error al cargar noticias</div>';
+      }
+    }
+
+    loadNews();
+  </script>
+  <script src="/accesibilidad-dua.js" defer></script>
+</body>
+</html>

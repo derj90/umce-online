@@ -1,6 +1,7 @@
 node_modules/
-.next/
-.env
-.env.local
+src/.env
+src/node_modules/
+src/uploads/
+.DS_Store
 .taskmaster/
 

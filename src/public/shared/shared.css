@@ -1,0 +1,391 @@
+/* ==============================================
+   UMCE Virtual — Shared Styles
+   ============================================== */
+
+/* Palette CSS custom properties — defaults match UMCE palette */
+:root {
+  --palette-primary: #0033A1;
+  --palette-accent: #FF9E18;
+  --palette-dark: #001D5C;
+  --palette-secondary: #E8F0FE;
+}
+
+body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+h1, h2, h3, h4, h5, h6 { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+
+/* Scroll animations — visible by default for crawlers/print, animated as enhancement */
+.fade-up {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.js-loaded .fade-up:not(.visible) {
+  opacity: 0;
+  transform: translateY(24px);
+}
+.js-loaded .fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children */
+.stagger > .fade-up:nth-child(1) { transition-delay: 0s; }
+.stagger > .fade-up:nth-child(2) { transition-delay: 0.1s; }
+.stagger > .fade-up:nth-child(3) { transition-delay: 0.2s; }
+.stagger > .fade-up:nth-child(4) { transition-delay: 0.3s; }
+.stagger > .fade-up:nth-child(5) { transition-delay: 0.4s; }
+.stagger > .fade-up:nth-child(6) { transition-delay: 0.5s; }
+
+/* Hero gradient (fallback for pages without generative art) */
+.hero-gradient {
+  background: linear-gradient(to bottom, rgba(0,51,161,0.92) 0%, rgba(0,34,128,0.96) 60%, #002280 100%);
+}
+
+/* Generative art hero canvas */
+#p5-hero { position: absolute; inset: 0; z-index: 0; }
+#p5-hero canvas { display: block; width: 100% !important; height: 100% !important; }
+
+/* Generative art header canvas (interior pages — static render) */
+#p5-header { position: absolute; inset: 0; z-index: 0; }
+#p5-header canvas { display: block; width: 100% !important; height: 100% !important; }
+
+/* Card hover */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -8px rgba(0,51,161,0.15);
+}
+
+/* Nav shrink on scroll */
+.nav-scrolled {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+/* Active nav link */
+.nav-link {
+  position: relative;
+  transition: color 0.2s;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--palette-accent);
+  transition: width 0.2s;
+}
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* Level line for pathways */
+.level-line {
+  position: relative;
+}
+.level-line::before {
+  content: '';
+  position: absolute;
+  left: 24px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--palette-primary), var(--palette-accent));
+}
+
+/* Platform icon */
+.platform-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+/* Domain cards */
+.domain-card {
+  border-left: 4px solid;
+  transition: background-color 0.2s ease;
+}
+.domain-card:hover {
+  background-color: #f8f9fa;
+}
+
+/* Stats counter */
+@keyframes countUp {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+.stat-number.visible {
+  animation: countUp 0.6s ease-out forwards;
+}
+
+/* Course card thumbnails */
+.course-thumb {
+  height: 140px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.course-thumb svg { width: 48px; height: 48px; opacity: 0.3; }
+.course-thumb .status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+/* Filter tabs */
+.filter-tab {
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #6b7280;
+}
+.filter-tab:hover { border-color: #0033A1; color: #0033A1; }
+.filter-tab.active { background: #0033A1; color: white; border-color: #0033A1; }
+
+/* Catalog cards */
+.catalog-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.catalog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px -8px rgba(0,51,161,0.18);
+}
+
+/* Badge styles */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.badge-diplomado { background: #EFF6FF; color: #1D4ED8; }
+.badge-curso { background: #ECFDF5; color: #059669; }
+.badge-ruta { background: #FFF7ED; color: #EA580C; }
+.badge-magister { background: #F5F3FF; color: #7C3AED; }
+.badge-prosecucion { background: #FFF1F2; color: #BE185D; }
+.badge-certificacion { background: #FFFBEB; color: #B45309; }
+.badge-active { background: #ECFDF5; color: #059669; }
+.badge-upcoming { background: #FFF7ED; color: #EA580C; }
+.badge-closed { background: #F3F4F6; color: #6B7280; }
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Breadcrumb */
+.breadcrumb a {
+  color: #6B7280;
+  transition: color 0.2s;
+}
+.breadcrumb a:hover {
+  color: #0033A1;
+}
+.breadcrumb .separator {
+  color: #D1D5DB;
+  margin: 0 8px;
+}
+
+/* Search input */
+.search-input {
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.search-input:focus {
+  box-shadow: 0 0 0 3px rgba(0,51,161,0.15);
+  border-color: #0033A1;
+}
+
+/* Responsive */
+@media (prefers-reduced-motion: reduce) {
+  .fade-up { opacity: 1; transform: none; transition: none; }
+  .card-hover:hover { transform: none; }
+  .catalog-card:hover { transform: none; }
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ==========================================
+   Capacitor App — Native Mobile Overrides
+   Applied only when body.is-native-app
+   ========================================== */
+
+/* --- Safe Areas --- */
+body.is-native-app {
+  /* Prevent iOS rubber-band overscroll */
+  overscroll-behavior-y: none;
+  /* Reserve space for bottom nav */
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  overflow-x: hidden;
+}
+
+/* --- Hide web artifacts in app context --- */
+body.is-native-app #footer-placeholder,
+body.is-native-app footer,
+body.is-native-app .breadcrumb {
+  display: none !important;
+}
+
+/* --- Hide navbar entirely in app (bottom nav handles navigation) --- */
+body.is-native-app #navbar {
+  display: none !important;
+}
+
+/* --- Hide accessibility FAB in app --- */
+body.is-native-app #a11y-fab,
+body.is-native-app .a11y-fab,
+body.is-native-app [id*="a11y"] {
+  display: none !important;
+}
+
+/* --- Bottom Navigation Bar --- */
+#app-bottom-nav {
+  display: none; /* Hidden on web */
+}
+
+body.is-native-app #app-bottom-nav {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(64px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  z-index: 9999;
+  align-items: flex-start;
+  justify-content: space-around;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+}
+
+#app-bottom-nav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 8px 4px;
+  min-height: 48px;
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#app-bottom-nav a.active {
+  color: #001D5C;
+}
+
+#app-bottom-nav a svg {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 2px;
+}
+
+/* --- Touch target improvements --- */
+body.is-native-app .filter-tab {
+  min-height: 40px;
+  padding: 8px 16px;
+}
+
+body.is-native-app .hist-chip {
+  min-height: 36px;
+  padding: 8px 14px;
+}
+
+/* Card tap feedback — replace hover with active */
+body.is-native-app .card-hover:active {
+  transform: scale(0.98);
+  transition: transform 0.1s;
+}
+body.is-native-app .card-hover:hover {
+  transform: none;
+  box-shadow: inherit;
+}
+
+/* Make "Abrir curso" always visible on app (not hover-only) */
+body.is-native-app .group .opacity-0.group-hover\:opacity-100 {
+  opacity: 1 !important;
+}
+
+/* --- Mobile menu touch targets --- */
+body.is-native-app #mobile-menu a {
+  padding-top: 0.875rem;
+  padding-bottom: 0.875rem;
+  min-height: 44px;
+}
+
+/* --- Top padding for app (no navbar, just safe area) --- */
+body.is-native-app main {
+  padding-top: calc(0.5rem + env(safe-area-inset-top));
+}
+
+/* --- FABs position for app (above bottom nav) --- */
+body.is-native-app #chat-fab,
+body.is-native-app #chat-toggle {
+  bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+}
+
+body.is-native-app #chat-panel {
+  bottom: calc(144px + env(safe-area-inset-bottom)) !important;
+  max-height: calc(100vh - 160px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+}
+
+/* --- Sticky CTA for programa.html --- */
+body.is-native-app #app-sticky-cta {
+  display: block;
+  position: fixed;
+  bottom: calc(64px + env(safe-area-inset-bottom));
+  left: 0;
+  right: 0;
+  padding: 12px 24px;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  z-index: 9998;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+}
+
+#app-sticky-cta {
+  display: none; /* Hidden on web */
+}
+
+/* --- Ayuda page in app: handled by JS (setupAyudaAppMode) --- */
