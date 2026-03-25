@@ -2056,7 +2056,7 @@ async function callClaudeProxy(prompt, systemPrompt) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt, system_prompt: systemPrompt }),
-      signal: AbortSignal.timeout(120000)
+      signal: AbortSignal.timeout(300000) // 5 min fallback too
     });
     response = await proxyRes.json();
   }
