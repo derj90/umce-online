@@ -439,19 +439,31 @@
     async function runAction(action) {
       if (!currentLinkId) return;
       const status = document.getElementById('analyze-status');
-      const labels = { analyze: 'Analizando (puede tomar ~30s)...', parse: 'Parseando PIAC...', snapshot: 'Tomando snapshot Moodle...' };
+      const labels = { analyze: 'Analizando — puede tomar hasta 3 minutos...', parse: 'Parseando PIAC (hasta 3 min)...', snapshot: 'Tomando snapshot Moodle...' };
       status.innerHTML = `<span class="spinner"></span> ${labels[action] || 'Procesando...'}`;
 
+      // Start a timer to show elapsed time
+      const startTime = Date.now();
+      const timer = setInterval(() => {
+        const elapsed = Math.round((Date.now() - startTime) / 1000);
+        status.innerHTML = `<span class="spinner"></span> ${labels[action]} (${elapsed}s)`;
+      }, 5000);
+
       try {
-        const res = await fetch(`/api/piac/${currentLinkId}/${action}`, { method: 'POST' });
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), 300000); // 5 min client timeout
+        const res = await fetch(`/api/piac/${currentLinkId}/${action}`, { method: 'POST', signal: controller.signal });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
+        clearInterval(timer);
         status.textContent = 'Listo';
         status.className = 'text-sm text-green-600';
         // Reload detail
         openDetail(currentLinkId);
       } catch (e) {
-        status.textContent = e.message;
+        clearInterval(timer);
+        const msg = e.name === 'AbortError' ? 'Timeout — recarga la pagina y revisa si el analisis se guardo' : e.message;
+        status.textContent = msg;
         status.className = 'text-sm text-red-500';
       }
     }
