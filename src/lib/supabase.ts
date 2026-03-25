@@ -1,7 +1,3 @@
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "./database.types";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+// Re-export browser client for backward compatibility.
+// Prefer importing from "@/lib/supabase/client" or "@/lib/supabase/server" directly.
+export { createClient } from "./supabase/client";

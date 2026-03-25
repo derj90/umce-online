@@ -16,25 +16,27 @@
       "id": "2",
       "title": "Diseñar schema Supabase para PIACs",
       "description": "Crear esquema de base de datos en Supabase self-hosted (supabase.udfv.cloud) para persistir formularios PIAC. Tablas: piacs, piac_nucleos, piac_evaluaciones, piac_versiones.",
-      "status": "pending",
+      "status": "done",
       "dependencies": [],
       "priority": "high",
       "details": "Tablas:\n- piacs: id, user_id, nombre_actividad, programa, unidad_academica, docente_responsable, email_docente, semestre, tipo_docencia, tipo_interaccion, num_semanas, horas_sincronicas, horas_asincronicas, horas_autonomas, bibliografia_obligatoria, bibliografia_complementaria, status (borrador/enviado/en_revision/aprobado/devuelto), created_at, updated_at\n- piac_nucleos: id, piac_id, orden, nombre, semana_inicio, semana_fin, resultado_formativo, criterios_evaluacion, temas, actividades_sincronicas, actividades_asincronicas, actividades_autonomas\n- piac_evaluaciones: id, piac_id, nucleo_id, nombre, tipo, ponderacion, semana_entrega\n- piac_versiones: id, piac_id, version, data_snapshot (jsonb), changed_by, created_at\nRLS policies: docentes solo sus PIACs, DIs ven todos.",
       "testStrategy": "Conectar a supabase.udfv.cloud, crear tablas via SQL, insertar PIAC de prueba, verificar CRUD completo.",
-      "subtasks": []
+      "subtasks": [],
+      "updatedAt": "2026-03-25T10:13:58.688Z"
     },
     {
       "id": "3",
       "title": "Integrar Supabase client en Next.js",
       "description": "Configurar @supabase/supabase-js en el proyecto. Client helper, variables de entorno, utilidades de conexión para browser y server.",
-      "status": "pending",
+      "status": "done",
       "dependencies": [
         "2"
       ],
       "priority": "high",
       "details": "1. npm install @supabase/supabase-js @supabase/ssr\n2. Crear src/lib/supabase/client.ts (browser client)\n3. Crear src/lib/supabase/server.ts (server client)\n4. .env.local: NEXT_PUBLIC_SUPABASE_URL=https://supabase.udfv.cloud, NEXT_PUBLIC_SUPABASE_ANON_KEY\n5. Actualizar Dockerfile para env vars",
       "testStrategy": "Importar client, hacer SELECT a piacs, verificar conexión exitosa.",
-      "subtasks": []
+      "subtasks": [],
+      "updatedAt": "2026-03-25T10:16:40.312Z"
     },
     {
       "id": "4",
@@ -192,9 +194,9 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastModified": "2026-03-25T10:08:09.266Z",
+    "lastModified": "2026-03-25T10:16:40.313Z",
     "taskCount": 15,
-    "completedCount": 1,
+    "completedCount": 3,
     "tags": [
       "master"
     ]

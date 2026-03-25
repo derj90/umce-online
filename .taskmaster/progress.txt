@@ -14,3 +14,15 @@
 - cursos.umce.online: DNS resolves but returns 404 (no dedicated app yet, separate concern)
 - Note: cursos subdomain domain not added to Dokploy — will be a separate app/route later
 
+## Task #2 — Diseñar schema Supabase para PIACs (DONE)
+- Created `supabase/migrations/001_piac_schema.sql` with 4 tables: piacs, piac_nucleos, piac_evaluaciones, piac_versiones
+- Check constraints on enums (status, tipo_docencia, tipo_interaccion, tipo_evaluacion), ranges (semanas, horas, ponderacion)
+- CASCADE deletes from piacs → children, updated_at trigger on piacs
+- RLS enabled: docentes CRUD own PIACs, service_role for DI access
+- TypeScript types in `src/lib/database.types.ts` with Row/Insert/Update variants + `Database` type for `createClient<Database>`
+- Supabase client in `src/lib/supabase.ts`, env vars in `.env.local`
+- Migration executed on supabase.udfv.cloud via SSH → psql — all tables, indexes, policies created
+- Full CRUD verified: INSERT → UPDATE (trigger fires) → JOIN read → DELETE (cascades all children)
+- REST API accessible via PostgREST (service_role key)
+- `tsc --noEmit` passes clean
+
