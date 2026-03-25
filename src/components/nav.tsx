@@ -53,9 +53,7 @@ export function Nav() {
       ? [...baseLinks, diLink]
       : baseLinks;
 
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
+  const closeMenu = () => setMenuOpen(false);
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -139,6 +137,7 @@ export function Nav() {
               <Link
                 key={link.href}
                 href={link.href}
+                onClick={closeMenu}
                 className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                   pathname === link.href
                     ? "bg-blue-50 text-[var(--color-umce-blue)]"
@@ -154,7 +153,7 @@ export function Nav() {
                   {user.email}
                 </span>
                 <button
-                  onClick={handleLogout}
+                  onClick={() => { closeMenu(); handleLogout(); }}
                   className="rounded-md px-3 py-2 text-left text-sm font-medium text-gray-600 hover:bg-gray-50"
                 >
                   Salir
@@ -163,6 +162,7 @@ export function Nav() {
             ) : (
               <Link
                 href="/login"
+                onClick={closeMenu}
                 className="rounded-md bg-[var(--color-umce-blue)] px-3 py-2 text-center text-sm font-medium text-white hover:bg-[var(--color-umce-blue)]/90"
               >
                 Ingresar

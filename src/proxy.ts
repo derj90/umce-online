@@ -13,7 +13,7 @@ export async function proxy(request: NextRequest) {
   );
 
   // Create a response we can modify
-  let response = NextResponse.next({
+  const response = NextResponse.next({
     request: { headers: request.headers },
   });
 

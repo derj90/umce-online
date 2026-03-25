@@ -24,10 +24,6 @@ export function PiacList() {
   const [filterSemestre, setFilterSemestre] = useState("");
   const [deleting, setDeleting] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadPiacs();
-  }, []);
-
   async function loadPiacs() {
     setLoading(true);
     setError(null);
@@ -56,6 +52,10 @@ export function PiacList() {
     }
     setLoading(false);
   }
+
+  useEffect(() => {
+    loadPiacs();
+  }, []);
 
   async function handleDelete(piac: Piac) {
     if (piac.status !== "borrador") return;
