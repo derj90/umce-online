@@ -2829,6 +2829,136 @@ app.post('/api/piac/discrepancy/:id/resolve', adminOrEditorMiddleware, async (re
   }
 });
 
+// --- API: Curso Virtual (authenticated, read-only) ---
+app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    if (isNaN(linkId)) return res.status(400).json({ error: 'ID inválido' });
+
+    const links = await portalQuery('piac_links', `id=eq.${linkId}&status=eq.active`);
+    if (links.length === 0) return res.status(404).json({ error: 'Curso no encontrado' });
+    const link = links[0];
+
+    const [parsedArr, snapshotArr, matchingArr] = await Promise.all([
+      portalQuery('piac_parsed', `piac_link_id=eq.${linkId}&order=parsed_at.desc&limit=1`),
+      portalQuery('moodle_snapshots', `piac_link_id=eq.${linkId}&order=snapshot_at.desc&limit=1`),
+      portalQuery('matching_results', `piac_link_id=eq.${linkId}&order=created_at.desc&limit=1`)
+    ]);
+
+    const piac = parsedArr[0]?.parsed_json || null;
+    const snapshot = snapshotArr[0]?.snapshot_json || null;
+    if (!piac || !snapshot) return res.status(404).json({ error: 'Curso sin análisis — contacta al DI' });
+
+    // Build the merged "curso virtual" view
+    const nucleos = piac.nucleos || [];
+    const sections = snapshot.sections || [];
+    const allModules = sections.flatMap(s => (s.modules || []).map(m => ({ ...m, sectionNumber: s.number, sectionName: s.name })));
+
+    // Find support elements (shared across nucleos)
+    const supportPatterns = /synchronous|sesion.?es? sincr|grabacion|uso exclusivo|presentaci|general/i;
+    const contentPatterns = /core|nucleo|núcleo|unidad|module|tema|bloque/i;
+
+    // Shared resources from S0 and support sections
+    const sharedResources = [];
+    sections.filter(s => s.number === 0 || supportPatterns.test(s.name || '')).forEach(s => {
+      (s.modules || []).forEach(m => {
+        if (m.visible !== false && m.modname !== 'label') {
+          sharedResources.push({ id: m.id, name: m.name, modname: m.modname, url: m.url, description: m.description, sectionName: s.name });
+        }
+      });
+    });
+
+    // Match sections to nucleos (same logic as matching engine)
+    function findSection(nucleo) {
+      for (const s of sections) {
+        const sName = (s.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const sNum = sName.match(/(\d+)/);
+        if (sNum && parseInt(sNum[1]) === nucleo.numero && contentPatterns.test(s.name)) return s;
+      }
+      return null;
+    }
+
+    // All forums indexed by session number
+    const forumsBySession = {};
+    allModules.filter(m => m.modname === 'forum').forEach(f => {
+      const match = f.name.match(/(?:session|sesión|sesion)\s*(\d+)/i);
+      if (match) forumsBySession[parseInt(match[1])] = f;
+    });
+
+    // Build merged nucleos
+    const mergedNucleos = nucleos.map(nucleo => {
+      const section = findSection(nucleo);
+      const modules = section ? (section.modules || []) : [];
+      const weekStart = nucleo.semanas?.inicio;
+      const weekEnd = nucleo.semanas?.fin;
+
+      // Content (books, pages, resources)
+      const contenido = modules.filter(m => ['book', 'page', 'resource', 'url', 'scorm', 'h5pactivity', 'lesson'].includes(m.modname) && m.visible !== false).map(m => ({
+        id: m.id, name: m.name, modname: m.modname, url: m.url, description: m.description
+      }));
+
+      // Forums for this nucleo's weeks
+      const foros = [];
+      if (weekStart && weekEnd) {
+        for (let i = weekStart; i <= weekEnd; i++) {
+          if (forumsBySession[i]) {
+            const f = forumsBySession[i];
+            foros.push({ id: f.id, name: f.name, url: f.url, session: i });
+          }
+        }
+      }
+
+      // Evaluaciones from this section
+      const evaluaciones = modules.filter(m => ['assign', 'quiz'].includes(m.modname)).map(m => ({
+        id: m.id, name: m.name, modname: m.modname, url: m.url, dates: m.dates
+      }));
+
+      return {
+        numero: nucleo.numero,
+        nombre: nucleo.nombre,
+        semanas: nucleo.semanas,
+        resultado_formativo: nucleo.resultado_formativo,
+        criterios_evaluacion: nucleo.criterios_evaluacion,
+        temas: nucleo.temas,
+        visible: section ? section.visible : false,
+        contenido,
+        foros,
+        evaluaciones,
+        totalElementos: contenido.length + foros.length + evaluaciones.length
+      };
+    });
+
+    const platformObj = PLATFORMS.find(p => p.id === link.moodle_platform);
+
+    res.json({
+      curso: {
+        nombre: piac.identificacion?.nombre || link.course_name,
+        programa: piac.identificacion?.programa,
+        docente: piac.identificacion?.docente,
+        email_docente: piac.identificacion?.email_docente,
+        modalidad: piac.identificacion?.modalidad,
+        semanas: piac.identificacion?.semanas,
+        creditos_sct: piac.identificacion?.creditos_sct,
+        horas: piac.identificacion?.horas,
+        metodologia: piac.metodologia,
+        bibliografia: piac.bibliografia
+      },
+      nucleos: mergedNucleos,
+      recursos_compartidos: sharedResources,
+      evaluaciones_sumativas: piac.evaluaciones_sumativas || [],
+      moodle: {
+        platform: link.moodle_platform,
+        platformName: platformObj?.name || link.moodle_platform,
+        courseId: link.moodle_course_id,
+        courseUrl: `${platformObj?.url || ''}/course/view.php?id=${link.moodle_course_id}`
+      }
+    });
+  } catch (err) {
+    console.error('Curso virtual API error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --- API: Health check ---
 app.get('/api/health', (req, res) => {
   res.json({
@@ -2850,6 +2980,7 @@ app.get('/privacidad', (req, res) => res.sendFile(path.join(__dirname, 'public',
 
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/piac', (req, res) => res.sendFile(path.join(__dirname, 'public', 'piac.html')));
+app.get('/curso-virtual/:linkId', (req, res) => res.sendFile(path.join(__dirname, 'public', 'curso-virtual.html')));
 
 // Dynamic slug-based pages
 app.get('/programa/:slug', (req, res) => res.sendFile(path.join(__dirname, 'public', 'programa.html')));
