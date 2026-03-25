@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const labels: Record<string, string> = {
   piac: "PIAC",
   "mis-piacs": "Mis PIACs",
+  di: "Panel DI",
   login: "Ingresar",
   registro: "Registro",
 };

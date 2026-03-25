@@ -5,24 +5,38 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
+import type { UserRol } from "@/lib/database.types";
 
-const links = [
+const baseLinks = [
   { href: "/", label: "Inicio" },
   { href: "/piac", label: "PIAC" },
   { href: "/piac/mis-piacs", label: "Mis PIACs" },
 ];
 
+const diLink = { href: "/di", label: "Panel DI" };
+
 export function Nav() {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [userRole, setUserRole] = useState<UserRol | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
 
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
+    supabase.auth.getUser().then(({ data: { user: u } }) => {
+      setUser(u);
+      if (u) {
+        supabase
+          .from("profiles")
+          .select("rol")
+          .eq("id", u.id)
+          .single()
+          .then(({ data }) => {
+            if (data) setUserRole(data.rol);
+          });
+      }
     });
 
     const {
@@ -33,6 +47,11 @@ export function Nav() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const links =
+    userRole === "di" || userRole === "coordinador"
+      ? [...baseLinks, diLink]
+      : baseLinks;
 
   useEffect(() => {
     setMenuOpen(false);

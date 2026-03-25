@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-const protectedPaths = ["/piac"];
+const protectedPaths = ["/piac", "/di"];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
