@@ -54,7 +54,8 @@ export function PiacList() {
   }
 
   useEffect(() => {
-    loadPiacs();
+    void loadPiacs();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
   }, []);
 
   async function handleDelete(piac: Piac) {

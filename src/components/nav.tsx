@@ -42,7 +42,20 @@ export function Nav() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const newUser = session?.user ?? null;
+      setUser(newUser);
+      if (newUser) {
+        supabase
+          .from("profiles")
+          .select("rol")
+          .eq("id", newUser.id)
+          .single()
+          .then(({ data }) => {
+            if (data) setUserRole(data.rol);
+          });
+      } else {
+        setUserRole(null);
+      }
     });
 
     return () => subscription.unsubscribe();

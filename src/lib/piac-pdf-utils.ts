@@ -3,18 +3,15 @@ import type { PiacData, Nucleo, Evaluacion } from "@/types/piac";
 /** Labels for tipoDocencia */
 const TIPO_DOCENCIA_LABEL: Record<string, string> = {
   docencia: "Docencia",
-  practica: "Práctica",
-  taller: "Taller",
-  laboratorio: "Laboratorio",
-  seminario: "Seminario",
+  "co-docencia": "Co-docencia",
+  colegiada: "Colegiada",
+  mixta: "Mixta",
 };
 
 /** Labels for tipoInteraccion */
 const TIPO_INTERACCION_LABEL: Record<string, string> = {
-  presencial: "Presencial",
   virtual: "Virtual",
-  hibrida: "Híbrida",
-  blended: "B-Learning",
+  semipresencial: "Semipresencial",
 };
 
 /** Labels for evaluation types */

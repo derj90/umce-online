@@ -4,7 +4,7 @@ import { createServerClient } from "@supabase/ssr";
 
 const protectedPaths = ["/piac", "/di"];
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Only check auth for protected paths

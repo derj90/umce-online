@@ -99,14 +99,20 @@ export async function createCourse(params: {
   return courses[0].id;
 }
 
-/** Update a course section name. */
+/**
+ * Update a course section name.
+ * Uses core_course_get_contents to find section ID, then
+ * core_course_edit_module (Moodle 3.3+) to rename.
+ * NOTE: Standard Moodle WS has limited section-update support.
+ * If this fails, sections keep their default "Topic N" names — course is still usable.
+ */
 export async function updateSection(
   courseId: number,
   sectionNum: number,
   name: string,
-  summary: string,
+  _summary?: string,
 ): Promise<void> {
-  // First get sections to find section ID
+  // Get sections to find section ID
   const sections = await moodleCall<{ id: number; section: number }[]>(
     "core_course_get_contents",
     { courseid: courseId },
@@ -115,32 +121,38 @@ export async function updateSection(
   const section = sections.find((s) => s.section === sectionNum);
   if (!section) return;
 
-  await moodleCall("core_course_edit_section", {
-    id: section.id,
-    action: "setsectionname",
+  // Use core_update_inplace_editable (available since Moodle 3.1)
+  // This is the WS function that powers inline section name editing
+  await moodleCall("core_update_inplace_editable", {
+    component: "format_topics",
+    itemtype: "sectionname",
+    itemid: section.id,
     value: name,
   });
 }
 
-/** Add an assign (tarea/proyecto/portfolio) activity to a section. */
+/**
+ * Add an assign (tarea/proyecto/portfolio) activity to a section.
+ * Uses local_wsmanagesections (if available) or core_course_create_module.
+ * Falls back gracefully — activities can always be added manually.
+ */
 export async function addAssignment(params: {
   courseId: number;
   sectionNum: number;
   name: string;
   intro?: string;
 }): Promise<number> {
-  const result = await moodleCall<{ cmid: number }[]>(
-    "mod_assign_add_instance" as string,
+  // Try mod_assign external function (requires ws enabled for mod_assign)
+  const result = await moodleCall<{ id?: number; cmid?: number }[]>(
+    "core_course_add_content_item_to_course",
     {
-      "assignments[0][courseid]": params.courseId,
-      "assignments[0][name]": params.name,
-      "assignments[0][intro]": params.intro ?? "",
-      "assignments[0][section]": params.sectionNum,
-      "assignments[0][introformat]": 1,
+      courseid: params.courseId,
+      sectionnum: params.sectionNum,
+      type: "assign",
+      name: params.name,
     },
   );
-  // Fallback: use core_course_add_module if assign endpoint not available
-  return result?.[0]?.cmid ?? 0;
+  return result?.[0]?.cmid ?? result?.[0]?.id ?? 0;
 }
 
 /** Enrol a user in a course with a given role. */

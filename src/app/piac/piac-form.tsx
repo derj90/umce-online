@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { PiacStatus, UserRol, PiacComentario, TipoDocencia, TipoInteraccion, TipoEvaluacion } from "@/lib/database.types";
 import {
@@ -10,7 +10,7 @@ import {
   validateForSubmission,
   TRANSITION_LABELS,
 } from "@/lib/piac-states";
-import { SectionComments, CommentBadge } from "@/components/piac-comentarios";
+import { SectionComments } from "@/components/piac-comentarios";
 import { countUnresolvedBySeccion, STEP_TO_SECCION } from "@/lib/piac-comentarios-utils";
 
 import type { PiacData, SaveStatus } from "@/types/piac";
@@ -29,7 +29,6 @@ const DEBOUNCE_MS = 5000;
 
 export function PiacForm() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const [step, setStep] = useState(0);
   const [data, setData] = useState<PiacData>(initialPiacData);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");

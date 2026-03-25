@@ -142,9 +142,15 @@ export function DiPanel() {
         data: { user },
       } = await supabase.auth.getUser();
 
+      // Get next version number
+      const { count } = await supabase
+        .from("piac_versiones")
+        .select("*", { count: "exact", head: true })
+        .eq("piac_id", piac.id);
+
       await supabase.from("piac_versiones").insert({
         piac_id: piac.id,
-        version: Date.now(),
+        version: (count ?? 0) + 1,
         data_snapshot: { ...piac, status: newStatus },
         changed_by: user?.id ?? null,
       });
@@ -188,9 +194,15 @@ export function DiPanel() {
       data: { user },
     } = await supabase.auth.getUser();
 
+    // Get next version number
+    const { count } = await supabase
+      .from("piac_versiones")
+      .select("*", { count: "exact", head: true })
+      .eq("piac_id", piac.id);
+
     await supabase.from("piac_versiones").insert({
       piac_id: piac.id,
-      version: Date.now(),
+      version: (count ?? 0) + 1,
       data_snapshot: {
         ...piac,
         status: "devuelto",
@@ -240,7 +252,7 @@ export function DiPanel() {
       }
 
       setGenerationResult(data);
-    } catch (err) {
+    } catch {
       alert("Error de conexión al generar aula.");
     } finally {
       setGenerating(null);

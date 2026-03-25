@@ -4,12 +4,7 @@ import { statusToNotificationType, buildTemplate } from "./templates";
 import type { TemplateData } from "./templates";
 import { sendEmail } from "./client";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
-  ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin.replace(
-      "supabase.",
-      "",
-    )
-  : "https://umce.online";
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://umce.online";
 
 /** Build the public PIAC URL. */
 export function buildPiacUrl(piacId: string): string {

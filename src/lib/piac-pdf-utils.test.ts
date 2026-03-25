@@ -63,7 +63,7 @@ const sampleData: PiacData = {
 describe("tipoDocenciaLabel", () => {
   it("returns known label", () => {
     expect(tipoDocenciaLabel("docencia")).toBe("Docencia");
-    expect(tipoDocenciaLabel("practica")).toBe("Práctica");
+    expect(tipoDocenciaLabel("co-docencia")).toBe("Co-docencia");
   });
   it("returns raw value for unknown type", () => {
     expect(tipoDocenciaLabel("unknown")).toBe("unknown");
@@ -73,7 +73,7 @@ describe("tipoDocenciaLabel", () => {
 describe("tipoInteraccionLabel", () => {
   it("returns known label", () => {
     expect(tipoInteraccionLabel("virtual")).toBe("Virtual");
-    expect(tipoInteraccionLabel("hibrida")).toBe("Híbrida");
+    expect(tipoInteraccionLabel("semipresencial")).toBe("Semipresencial");
   });
 });
 
