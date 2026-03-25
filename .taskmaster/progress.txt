@@ -1,0 +1,16 @@
+
+# Taskmaster Loop Progress
+# Started: 2026-03-25T10:05:29.773Z
+# Preset: default
+# Max Iterations: 10
+
+---
+
+## Task #1 — Verificar DNS y acceso público (DONE)
+- DNS: umce.online, www, piac, cursos all resolve to 82.29.61.165 ✅
+- HTTPS: Initially serving Traefik default self-signed cert (no domains configured in Dokploy)
+- Fix: Created 3 domains in Dokploy (umce.online, www.umce.online, piac.umce.online) with Let's Encrypt
+- After deploy: All 3 domains serve valid Let's Encrypt certs (issuer: R13), HTTP/2 200
+- cursos.umce.online: DNS resolves but returns 404 (no dedicated app yet, separate concern)
+- Note: cursos subdomain domain not added to Dokploy — will be a separate app/route later
+

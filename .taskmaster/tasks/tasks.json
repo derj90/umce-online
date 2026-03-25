@@ -1,0 +1,202 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Verificar DNS y acceso público",
+      "description": "Confirmar que umce.online resuelve correctamente a 82.29.61.165, HTTPS funcional via Traefik, y subdominios piac.umce.online, cursos.umce.online, www.umce.online responden.",
+      "status": "done",
+      "dependencies": [],
+      "priority": "high",
+      "details": "1. dig umce.online / nslookup para verificar resolución A record\n2. curl -I https://umce.online para verificar HTTPS y certificado SSL\n3. Verificar subdominios: piac, cursos, www\n4. Si DNS no propaga, verificar nameservers en Hostinger (artemis/hermes.dns-parking.com)\n5. Verificar config Traefik en VPS para routing de subdominios",
+      "testStrategy": "curl -sI https://umce.online debe retornar 200. dig umce.online debe mostrar 82.29.61.165.",
+      "subtasks": [],
+      "updatedAt": "2026-03-25T10:08:09.263Z"
+    },
+    {
+      "id": "2",
+      "title": "Diseñar schema Supabase para PIACs",
+      "description": "Crear esquema de base de datos en Supabase self-hosted (supabase.udfv.cloud) para persistir formularios PIAC. Tablas: piacs, piac_nucleos, piac_evaluaciones, piac_versiones.",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "high",
+      "details": "Tablas:\n- piacs: id, user_id, nombre_actividad, programa, unidad_academica, docente_responsable, email_docente, semestre, tipo_docencia, tipo_interaccion, num_semanas, horas_sincronicas, horas_asincronicas, horas_autonomas, bibliografia_obligatoria, bibliografia_complementaria, status (borrador/enviado/en_revision/aprobado/devuelto), created_at, updated_at\n- piac_nucleos: id, piac_id, orden, nombre, semana_inicio, semana_fin, resultado_formativo, criterios_evaluacion, temas, actividades_sincronicas, actividades_asincronicas, actividades_autonomas\n- piac_evaluaciones: id, piac_id, nucleo_id, nombre, tipo, ponderacion, semana_entrega\n- piac_versiones: id, piac_id, version, data_snapshot (jsonb), changed_by, created_at\nRLS policies: docentes solo sus PIACs, DIs ven todos.",
+      "testStrategy": "Conectar a supabase.udfv.cloud, crear tablas via SQL, insertar PIAC de prueba, verificar CRUD completo.",
+      "subtasks": []
+    },
+    {
+      "id": "3",
+      "title": "Integrar Supabase client en Next.js",
+      "description": "Configurar @supabase/supabase-js en el proyecto. Client helper, variables de entorno, utilidades de conexión para browser y server.",
+      "status": "pending",
+      "dependencies": [
+        "2"
+      ],
+      "priority": "high",
+      "details": "1. npm install @supabase/supabase-js @supabase/ssr\n2. Crear src/lib/supabase/client.ts (browser client)\n3. Crear src/lib/supabase/server.ts (server client)\n4. .env.local: NEXT_PUBLIC_SUPABASE_URL=https://supabase.udfv.cloud, NEXT_PUBLIC_SUPABASE_ANON_KEY\n5. Actualizar Dockerfile para env vars",
+      "testStrategy": "Importar client, hacer SELECT a piacs, verificar conexión exitosa.",
+      "subtasks": []
+    },
+    {
+      "id": "4",
+      "title": "Persistir formulario PIAC en Supabase",
+      "description": "Conectar piac-form.tsx a Supabase para guardar/cargar PIACs. Autoguardado con debounce 5s. Indicador de estado de guardado.",
+      "status": "pending",
+      "dependencies": [
+        "3"
+      ],
+      "priority": "high",
+      "details": "1. Modificar piac-form.tsx: autoguardado debounce 5s\n2. Funciones: savePiac(), loadPiac(), createPiac()\n3. Guardar núcleos y evaluaciones en sus tablas (transacción)\n4. Indicador: guardando... / guardado / error\n5. piac_versiones entry al enviar a revisión\n6. Query param ?id=xxx para cargar PIAC existente",
+      "testStrategy": "Llenar formulario, esperar 5s, recargar con ?id=xxx, datos persisten. Núcleos y evaluaciones correctos.",
+      "subtasks": []
+    },
+    {
+      "id": "5",
+      "title": "Listado de PIACs (mis borradores)",
+      "description": "Página /piac/mis-piacs con PIACs guardados del usuario: estado, fecha, acciones (editar, eliminar, ver).",
+      "status": "pending",
+      "dependencies": [
+        "4"
+      ],
+      "priority": "medium",
+      "details": "1. src/app/piac/mis-piacs/page.tsx\n2. Listar PIACs del usuario desde Supabase\n3. Columnas: nombre, programa, semestre, estado (badge), última modificación\n4. Acciones: Editar → /piac?id=xxx, Eliminar borrador, Ver detalle\n5. Filtros: estado, semestre\n6. Link en nav.tsx",
+      "testStrategy": "3 PIACs con distintos estados, lista muestra correctamente, filtros funcionales.",
+      "subtasks": []
+    },
+    {
+      "id": "6",
+      "title": "Autenticación con Supabase Auth",
+      "description": "Login con email institucional @umce.cl via Supabase Auth. Roles: docente, DI, coordinador. Proteger rutas /piac.",
+      "status": "pending",
+      "dependencies": [
+        "3"
+      ],
+      "priority": "high",
+      "details": "1. Configurar Supabase Auth (email provider) en supabase.udfv.cloud\n2. Tabla profiles: id (FK auth.users), email, nombre, rol\n3. src/app/login/page.tsx — email/password\n4. src/app/registro/page.tsx — solo @umce.cl\n5. Middleware Next.js: /piac/* requiere auth\n6. AuthProvider context\n7. Nav: nombre usuario + logout",
+      "testStrategy": "Registrar @umce.cl, login, acceder a /piac. Sin login → redirect /login. Email no @umce.cl rechazado.",
+      "subtasks": []
+    },
+    {
+      "id": "7",
+      "title": "Flujo de estados del PIAC",
+      "description": "Máquina de estados: borrador → enviado → en_revision → aprobado/devuelto. Botones según rol y estado actual.",
+      "status": "pending",
+      "dependencies": [
+        "4",
+        "6"
+      ],
+      "priority": "high",
+      "details": "Estados: borrador, enviado, en_revision, aprobado, devuelto\nTransiciones:\n- Docente: borrador→enviado, devuelto→enviado\n- DI: enviado→en_revision, en_revision→aprobado/devuelto\n- Coordinador: cualquiera\nValidaciones al enviar: ponderación=100%, mín 3 evaluaciones\npiac_versiones entry en cada cambio\nVista readonly para docente en estados != borrador",
+      "testStrategy": "Docente crea y envía. DI toma revisión y aprueba. Docente no puede editar PIAC aprobado.",
+      "subtasks": []
+    },
+    {
+      "id": "8",
+      "title": "Panel DI: PIACs pendientes de revisión",
+      "description": "Dashboard para Diseñadores Instruccionales: lista PIACs en estado enviado/en_revision, filtros, acciones de revisión, estadísticas.",
+      "status": "pending",
+      "dependencies": [
+        "7"
+      ],
+      "priority": "medium",
+      "details": "1. src/app/di/page.tsx — dashboard DI\n2. Lista PIACs status enviado/en_revision\n3. Filtros: programa, docente, semestre\n4. Botones: Tomar revisión, Aprobar, Devolver\n5. Devolver: textarea para comentarios\n6. Estadísticas: PIACs por estado\n7. Solo accesible para rol di/coordinador",
+      "testStrategy": "Login DI, ver lista pendientes. Tomar uno, agregar comentario, devolver. Docente ve comentario.",
+      "subtasks": []
+    },
+    {
+      "id": "9",
+      "title": "Comentarios inline del DI por sección",
+      "description": "DI puede comentar secciones específicas del PIAC (por núcleo, evaluación, general). Docente ve y resuelve comentarios.",
+      "status": "pending",
+      "dependencies": [
+        "8"
+      ],
+      "priority": "medium",
+      "details": "1. Tabla piac_comentarios: id, piac_id, user_id, seccion, texto, created_at, resolved\n2. Botón comentario junto a cada sección en vista revisión\n3. Badges/tooltips en formulario docente\n4. Docente marca como resuelto\n5. Historial visible para ambos roles",
+      "testStrategy": "DI comenta Núcleo 2. Docente ve comentario, lo marca resuelto. DI ve que fue resuelto.",
+      "subtasks": []
+    },
+    {
+      "id": "10",
+      "title": "Notificaciones email via Brevo SMTP",
+      "description": "Emails transaccionales al cambiar estado de PIAC. Templates: enviado (→DI), aprobado (→docente), devuelto (→docente+comentarios).",
+      "status": "pending",
+      "dependencies": [
+        "7"
+      ],
+      "priority": "low",
+      "details": "1. Configurar nodemailer con Brevo SMTP (noreply@udfv.cloud)\n2. Templates email: PIAC enviado, aprobado, devuelto\n3. Trigger en cambios de estado\n4. API route /api/notify\n5. Link directo al PIAC en cada email",
+      "testStrategy": "Cambiar estado, verificar email llega con link funcional al PIAC.",
+      "subtasks": []
+    },
+    {
+      "id": "11",
+      "title": "Exportar PIAC como PDF",
+      "description": "Generar PDF del PIAC con diseño institucional (logo UMCE). Botón Descargar PDF en vista detalle.",
+      "status": "pending",
+      "dependencies": [
+        "4"
+      ],
+      "priority": "low",
+      "details": "1. Usar @react-pdf/renderer o html2pdf (client-side)\n2. Template: encabezado UMCE, identificación, modalidad/SCT, núcleos, evaluaciones, bibliografía\n3. Botón en /piac?id=xxx\n4. Nombre: PIAC_{programa}_{actividad}_{semestre}.pdf",
+      "testStrategy": "PIAC completo → PDF con todos los datos correctamente formateados.",
+      "subtasks": []
+    },
+    {
+      "id": "12",
+      "title": "Motor generación aulas Moodle",
+      "description": "PIAC aprobado genera aula Moodle automáticamente via Web Services API. Secciones=núcleos, actividades=evaluaciones.",
+      "status": "pending",
+      "dependencies": [
+        "7"
+      ],
+      "priority": "medium",
+      "details": "1. src/lib/moodle/generator.ts\n2. core_course_create_courses para crear curso\n3. Núcleos → secciones, evaluaciones → actividades (tarea→assign, prueba→quiz, proyecto→assign, portfolio→assign)\n4. Configurar calificaciones según ponderaciones\n5. Inscribir docente como editingteacher\n6. Destino: virtual.umce.cl\n7. Botón 'Generar aula' en panel DI post-aprobación",
+      "testStrategy": "Aprobar PIAC de prueba, generar en curso de prueba de virtual.umce.cl. Verificar secciones y actividades.",
+      "subtasks": []
+    },
+    {
+      "id": "13",
+      "title": "Mejorar landing page y navegación",
+      "description": "Refinar landing: mejor diseño, nav persistente responsive, footer institucional, mobile-first.",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "medium",
+      "details": "1. Hero con gradiente y tipografía impactante\n2. Sección 'Cómo funciona' con pasos\n3. Footer: logo UMCE, links, créditos UDFV\n4. Nav responsive hamburger\n5. Breadcrumbs páginas internas\n6. Meta tags OG",
+      "testStrategy": "Visual en desktop (1920, 1440) y mobile (375, 768). Lighthouse > 90.",
+      "subtasks": []
+    },
+    {
+      "id": "14",
+      "title": "Deploy pipeline CI/CD",
+      "description": "GitHub Actions: build+lint on push to main, deploy automático al VPS, healthcheck post-deploy.",
+      "status": "pending",
+      "dependencies": [
+        "1"
+      ],
+      "priority": "low",
+      "details": "1. .github/workflows/deploy.yml\n2. On push main: build Docker, lint\n3. SSH al VPS, /opt/deploy-umce-online.sh\n4. Healthcheck: curl https://umce.online\n5. Notificación si falla",
+      "testStrategy": "Push a main, Action corre, deploy exitoso, healthcheck pasa.",
+      "subtasks": []
+    },
+    {
+      "id": "15",
+      "title": "Refactorizar piac-form.tsx en componentes",
+      "description": "Separar piac-form.tsx (812 líneas) en componentes: steps/, preview/, ui/ para mantenibilidad.",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "low",
+      "details": "1. src/components/piac/steps/ — cada step en su archivo\n2. src/components/piac/preview/ — PiacPreview\n3. src/components/ui/ — Field, NumberField, TextArea\n4. src/types/piac.ts — tipos extraídos\n5. piac-form.tsx queda ~100 líneas como orquestador",
+      "testStrategy": "Formulario funciona exactamente igual. Sin cambios visuales ni funcionales.",
+      "subtasks": []
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "lastModified": "2026-03-25T10:08:09.266Z",
+    "taskCount": 15,
+    "completedCount": 1,
+    "tags": [
+      "master"
+    ]
+  }
+}
