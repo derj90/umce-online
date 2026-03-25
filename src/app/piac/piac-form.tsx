@@ -327,6 +327,13 @@ export function PiacForm() {
 
     setPiacStatus(newStatus);
     setSaveStatus("saved");
+
+    // Fire-and-forget email notification
+    fetch("/api/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ piacId, newStatus }),
+    }).catch(() => {});
   }, [data, piacStatus, isEditable, savePiac]);
 
   const allowedTransitions = getAllowedTransitions(userRole, piacStatus);

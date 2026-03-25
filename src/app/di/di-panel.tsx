@@ -152,6 +152,13 @@ export function DiPanel() {
       setPiacs((prev) =>
         prev.map((p) => (p.id === piac.id ? { ...p, status: newStatus } : p)),
       );
+
+      // Fire-and-forget email notification
+      fetch("/api/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ piacId: piac.id, newStatus }),
+      }).catch(() => {});
     }
     setTransitioning(null);
   }
@@ -197,6 +204,17 @@ export function DiPanel() {
         p.id === piac.id ? { ...p, status: "devuelto" as PiacStatus } : p,
       ),
     );
+
+    // Fire-and-forget email notification with comment
+    fetch("/api/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        piacId: piac.id,
+        newStatus: "devuelto",
+        comentario: returnComment.trim(),
+      }),
+    }).catch(() => {});
 
     setReturnModal(null);
     setReturnComment("");
