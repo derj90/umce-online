@@ -2227,38 +2227,59 @@ async function takeMoodleSnapshot(platform, courseId) {
 function runMatching(piacJson, snapshotJson) {
   const nucleos = piacJson.nucleos || [];
   const sections = snapshotJson.sections || [];
-  // Section 0 is usually "General" in Moodle — skip for nucleus matching
-  const contentSections = sections.filter(s => s.number > 0);
+  const allSections = sections;
+  const allModules = sections.flatMap(s => (s.modules || []).map(m => ({ ...m, sectionNumber: s.number, sectionName: s.name })));
+
+  // Classify sections by role
+  const supportPatterns = /synchronous|sesion.?es? sincr|grabacion|uso exclusivo|presentaci|general/i;
+  const contentPatterns = /core|nucleo|núcleo|unidad|module|tema|bloque/i;
+
+  function classifySection(s) {
+    if (s.number === 0) return 'general';
+    const name = s.name || '';
+    if (supportPatterns.test(name)) return 'support';
+    if (contentPatterns.test(name)) return 'content';
+    return 'unknown';
+  }
+
+  const sectionRoles = {};
+  allSections.forEach(s => { sectionRoles[s.id] = classifySection(s); });
+
+  // Smart section matching: by name/number, skipping support sections
+  function findBestSection(nucleo) {
+    const nucleoNum = nucleo.numero;
+    const nucleoName = (nucleo.nombre || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    // Try matching by number in section name (e.g., "Learning Core 1" → nucleo 1)
+    for (const s of allSections) {
+      if (sectionRoles[s.id] === 'general') continue;
+      const sName = (s.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const sNum = sName.match(/(\d+)/);
+      if (sNum && parseInt(sNum[1]) === nucleoNum && contentPatterns.test(s.name)) return s;
+    }
+    // Try name similarity
+    for (const s of allSections) {
+      if (sectionRoles[s.id] !== 'content' && sectionRoles[s.id] !== 'unknown') continue;
+      const sName = (s.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      if (nucleoName.length > 5 && (sName.includes(nucleoName.substring(0, 12)) || nucleoName.includes(sName.substring(0, 12)))) return s;
+    }
+    return null;
+  }
+
+  // Collect all forums across all sections (some courses put forums in utility sections)
+  const allForums = allModules.filter(m => m.modname === 'forum');
+  const allAssigns = allModules.filter(m => m.modname === 'assign');
+  const allQuizzes = allModules.filter(m => m.modname === 'quiz');
 
   const matches = [];
   const allDiscrepancies = [];
-
-  // Smart section matching: try by name similarity first, then by position
-  function findBestSection(nucleo, idx) {
-    const nucleoName = (nucleo.nombre || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    const nucleoNum = nucleo.numero;
-
-    // Try exact/fuzzy name match first
-    for (const s of contentSections) {
-      const sName = (s.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      // Match "Learning Core 1" to "nucleo 1" or by shared keywords
-      if (sName.includes(nucleoName.substring(0, 10)) || nucleoName.includes(sName.substring(0, 10))) return s;
-      // Match by number: "Learning Core 1" matches nucleo.numero=1
-      const sNum = sName.match(/(\d+)/);
-      if (sNum && parseInt(sNum[1]) === nucleoNum) return s;
-      // Match "core" or "nucleo" + number
-      if ((sName.includes('core') || sName.includes('nucleo') || sName.includes('unidad')) && sNum && parseInt(sNum[1]) === nucleoNum) return s;
-    }
-    // Fallback: skip known non-content sections (synchronous sessions, uso exclusivo, presentacion)
-    const skipPatterns = /synchronous|sesion|grabacion|uso exclusivo|presentacion|general/i;
-    const candidateSections = contentSections.filter(s => !skipPatterns.test(s.name));
-    return candidateSections[idx] || contentSections[idx] || null;
-  }
-
   const matchedSectionIds = new Set();
-  nucleos.forEach((nucleo, idx) => {
-    const section = findBestSection(nucleo, idx);
+  const matchedModuleIds = new Set();
+
+  nucleos.forEach((nucleo) => {
+    const section = findBestSection(nucleo);
     if (section) matchedSectionIds.add(section.id);
+
     const nucleoMatch = {
       nucleo: { numero: nucleo.numero, nombre: nucleo.nombre, rf: nucleo.resultado_formativo },
       section: section ? { number: section.number, name: section.name, visible: section.visible } : null,
@@ -2272,124 +2293,179 @@ function runMatching(piacJson, snapshotJson) {
         severity: 'critical',
         piac_element: `Núcleo ${nucleo.numero}: ${nucleo.nombre}`,
         moodle_element: null,
-        description: `No hay sección en Moodle para el Núcleo ${nucleo.numero} "${nucleo.nombre}"`
+        description: `No hay sección en Moodle correspondiente al Núcleo ${nucleo.numero}`
       });
       matches.push(nucleoMatch);
       return;
     }
 
+    // Section visibility check
     if (!section.visible) {
       allDiscrepancies.push({
         type: 'mismatch',
         severity: 'critical',
         piac_element: `Núcleo ${nucleo.numero}: ${nucleo.nombre}`,
         moodle_element: `Sección ${section.number}: ${section.name}`,
-        description: `Sección ${section.number} está oculta en Moodle pero corresponde al Núcleo ${nucleo.numero}`
+        description: `Sección ${section.number} "${section.name}" está oculta en Moodle`
       });
     }
 
     const modules = section.modules || [];
+    const weekStart = nucleo.semanas?.inicio;
+    const weekEnd = nucleo.semanas?.fin;
 
-    // Check evaluaciones declared in PIAC for this nucleus
-    const nucleoEvals = (piacJson.evaluaciones_sumativas || []).filter(e => e.nucleo === nucleo.numero);
-    nucleoEvals.forEach(ev => {
-      const assignMatch = modules.find(m => m.modname === 'assign' && m.name.toLowerCase().includes(ev.nombre.toLowerCase().substring(0, 15)));
+    // --- Content modules (books, pages, resources IN the section) count as nucleo content ---
+    const contentMods = modules.filter(m => ['book', 'page', 'resource', 'url', 'scorm', 'h5pactivity', 'lesson'].includes(m.modname));
+    if (contentMods.length > 0) {
       nucleoMatch.elements.push({
-        piac: { type: 'evaluacion', name: ev.nombre, ponderacion: ev.ponderacion },
-        moodle: assignMatch ? { id: assignMatch.id, name: assignMatch.name, modname: 'assign', visible: assignMatch.visible, url: assignMatch.url } : null,
-        matched: !!assignMatch
+        piac: { type: 'contenido', name: `${contentMods.length} recurso(s) de contenido` },
+        moodle: contentMods.map(m => ({ id: m.id, name: m.name, modname: m.modname, visible: m.visible })),
+        matched: true
       });
-      if (!assignMatch) {
-        allDiscrepancies.push({
-          type: 'missing_in_moodle',
-          severity: 'critical',
-          piac_element: `Evaluación "${ev.nombre}" (${ev.ponderacion || '?'}%) — Núcleo ${nucleo.numero}`,
-          moodle_element: null,
-          description: `Evaluación "${ev.nombre}" declarada en PIAC no tiene tarea correspondiente en Moodle`
-        });
-      } else if (!assignMatch.visible) {
-        allDiscrepancies.push({
-          type: 'mismatch',
-          severity: 'warning',
-          piac_element: `Evaluación "${ev.nombre}"`,
-          moodle_element: `Tarea "${assignMatch.name}" (ID: ${assignMatch.id})`,
-          description: `Tarea "${assignMatch.name}" existe pero está oculta`
-        });
-      }
-    });
+      contentMods.forEach(m => matchedModuleIds.add(m.id));
+    } else if (section.visible) {
+      allDiscrepancies.push({
+        type: 'missing_in_moodle',
+        severity: 'warning',
+        piac_element: `Núcleo ${nucleo.numero}: ${nucleo.nombre}`,
+        moodle_element: `Sección ${section.number}: ${section.name}`,
+        description: `Sección visible pero sin contenido (0 recursos de contenido)`
+      });
+    }
 
-    // Check repertorio evaluativo items
-    (nucleo.repertorio_evaluativo || []).forEach(item => {
-      const itemLower = item.toLowerCase();
-      let found = null;
-      if (itemLower.includes('foro') || itemLower.includes('debate') || itemLower.includes('discusión')) {
-        found = modules.find(m => m.modname === 'forum');
-      } else if (itemLower.includes('tarea') || itemLower.includes('ensayo') || itemLower.includes('informe') || itemLower.includes('trabajo')) {
-        found = modules.find(m => m.modname === 'assign');
-      } else if (itemLower.includes('prueba') || itemLower.includes('quiz') || itemLower.includes('test') || itemLower.includes('examen')) {
-        found = modules.find(m => m.modname === 'quiz');
-      }
-      if (found) {
+    // --- Match forums by session number range ---
+    // Forums named "Forum session N" where N falls within nucleo weeks
+    if (weekStart && weekEnd) {
+      const nucleoForums = allForums.filter(f => {
+        const m = f.name.match(/(?:session|sesión|sesion)\s*(\d+)/i);
+        if (!m) return false;
+        const sessionNum = parseInt(m[1]);
+        return sessionNum >= weekStart && sessionNum <= weekEnd;
+      });
+      if (nucleoForums.length > 0) {
         nucleoMatch.elements.push({
-          piac: { type: 'repertorio', name: item },
-          moodle: { id: found.id, name: found.name, modname: found.modname, visible: found.visible, url: found.url },
+          piac: { type: 'foros', name: `${nucleoForums.length} foro(s) de sesiones ${weekStart}-${weekEnd}` },
+          moodle: nucleoForums.map(f => ({ id: f.id, name: f.name, modname: 'forum', visible: f.visible, sectionName: f.sectionName })),
           matched: true
         });
+        nucleoForums.forEach(f => matchedModuleIds.add(f.id));
       }
+    }
+
+    // --- Match assigns (evaluaciones) in the section ---
+    const sectionAssigns = modules.filter(m => m.modname === 'assign');
+    sectionAssigns.forEach(a => {
+      nucleoMatch.elements.push({
+        piac: { type: 'evaluacion', name: a.name },
+        moodle: { id: a.id, name: a.name, modname: 'assign', visible: a.visible },
+        matched: true
+      });
+      matchedModuleIds.add(a.id);
     });
 
-    // Check for Zoom/videollamada links
-    const zoomUrls = modules.filter(m => m.modname === 'url' && m.externalurl && (m.externalurl.includes('zoom.us') || m.name.toLowerCase().includes('zoom') || m.name.toLowerCase().includes('clase')));
-    if (zoomUrls.length > 0) {
+    // --- LTI (Zoom/external tools) in the section ---
+    const ltiMods = modules.filter(m => m.modname === 'lti');
+    ltiMods.forEach(m => {
       nucleoMatch.elements.push({
-        piac: { type: 'sincronico', name: 'Sesión sincrónica' },
-        moodle: { id: zoomUrls[0].id, name: zoomUrls[0].name, modname: 'url', visible: zoomUrls[0].visible, url: zoomUrls[0].url, externalurl: zoomUrls[0].externalurl },
+        piac: { type: 'herramienta', name: m.name },
+        moodle: { id: m.id, name: m.name, modname: 'lti', visible: m.visible },
         matched: true
       });
-    }
+      matchedModuleIds.add(m.id);
+    });
 
-    // Check for resources/files
-    const resourceModules = modules.filter(m => m.modname === 'resource' || (m.modname === 'url' && !zoomUrls.includes(m)));
-    if (resourceModules.length > 0) {
+    // --- Data activities (grabaciones, etc.) ---
+    const dataMods = modules.filter(m => m.modname === 'data');
+    dataMods.forEach(m => {
       nucleoMatch.elements.push({
-        piac: { type: 'recursos', name: `${resourceModules.length} recurso(s)` },
-        moodle: resourceModules.map(r => ({ id: r.id, name: r.name, modname: r.modname, visible: r.visible, url: r.url })),
+        piac: { type: 'base_datos', name: m.name },
+        moodle: { id: m.id, name: m.name, modname: 'data', visible: m.visible },
         matched: true
       });
-    }
+      matchedModuleIds.add(m.id);
+    });
 
-    // Check for unmatched Moodle modules (exist in Moodle but not tracked in PIAC)
-    const matchedModuleIds = new Set(nucleoMatch.elements.filter(e => e.moodle).flatMap(e => Array.isArray(e.moodle) ? e.moodle.map(m => m.id) : [e.moodle.id]));
-    const unmatchedModules = modules.filter(m => !matchedModuleIds.has(m.id) && m.modname !== 'label');
-    unmatchedModules.forEach(mod => {
-      allDiscrepancies.push({
-        type: 'missing_in_piac',
-        severity: 'info',
-        piac_element: null,
-        moodle_element: `${mod.modname}: "${mod.name}" (Sección ${section.number})`,
-        description: `Elemento en Moodle sin correspondencia directa en PIAC`
+    // --- Quizzes in the section ---
+    const sectionQuizzes = modules.filter(m => m.modname === 'quiz');
+    sectionQuizzes.forEach(q => {
+      nucleoMatch.elements.push({
+        piac: { type: 'evaluacion', name: q.name },
+        moodle: { id: q.id, name: q.name, modname: 'quiz', visible: q.visible },
+        matched: true
       });
+      matchedModuleIds.add(q.id);
     });
 
     matches.push(nucleoMatch);
   });
 
-  // Check for unmatched sections (not matched to any nucleus)
-  contentSections.forEach(s => {
-    if (!matchedSectionIds.has(s.id) && s.modules && s.modules.length > 0) {
+  // --- Evaluaciones sumativas: check across whole course ---
+  const evals = piacJson.evaluaciones_sumativas || [];
+  evals.forEach(ev => {
+    const evName = (ev.nombre || '').toLowerCase();
+
+    // Try to find matching activity anywhere in course
+    let found = null;
+    if (evName.includes('foro') || evName.includes('discusi') || evName.includes('participaci')) {
+      const unmatched = allForums.filter(f => !matchedModuleIds.has(f.id));
+      if (unmatched.length > 0) {
+        found = { type: 'forums', items: unmatched, count: unmatched.length };
+        unmatched.forEach(f => matchedModuleIds.add(f.id));
+      }
+    } else if (evName.includes('prueba') || evName.includes('quiz') || evName.includes('examen') || evName.includes('test')) {
+      const match = allQuizzes.find(q => !matchedModuleIds.has(q.id));
+      if (match) { found = { type: 'quiz', item: match }; matchedModuleIds.add(match.id); }
+    } else if (evName.includes('tarea') || evName.includes('trabajo') || evName.includes('ensayo') || evName.includes('producción') || evName.includes('escrit')) {
+      const match = allAssigns.find(a => !matchedModuleIds.has(a.id));
+      if (match) { found = { type: 'assign', item: match }; matchedModuleIds.add(match.id); }
+    }
+
+    if (!found) {
+      // Not a critical issue — evaluaciones often use Moodle's gradebook or folders, not dedicated activities
+      allDiscrepancies.push({
+        type: 'missing_in_moodle',
+        severity: 'warning',
+        piac_element: `Evaluación: "${ev.nombre}" (${ev.ponderacion || '?'}%)`,
+        moodle_element: null,
+        description: `Evaluación "${ev.nombre}" del PIAC sin actividad evaluativa dedicada en Moodle`
+      });
+    }
+  });
+
+  // --- Support sections: mark modules as recognized (not discrepancies) ---
+  allSections.filter(s => sectionRoles[s.id] === 'support' || sectionRoles[s.id] === 'general').forEach(s => {
+    (s.modules || []).forEach(m => matchedModuleIds.add(m.id));
+  });
+
+  // --- Truly unmatched modules (in content sections, not recognized by anything) ---
+  allSections.filter(s => matchedSectionIds.has(s.id)).forEach(s => {
+    (s.modules || []).filter(m => !matchedModuleIds.has(m.id) && m.modname !== 'label').forEach(mod => {
+      allDiscrepancies.push({
+        type: 'missing_in_piac',
+        severity: 'info',
+        piac_element: null,
+        moodle_element: `${mod.modname}: "${mod.name}" (Sección ${s.number})`,
+        description: `Elemento en Moodle no reconocido en PIAC`
+      });
+    });
+  });
+
+  // --- Unmatched content sections (not support, not matched to nucleos) ---
+  allSections.filter(s => s.number > 0 && !matchedSectionIds.has(s.id) && sectionRoles[s.id] !== 'support' && sectionRoles[s.id] !== 'general').forEach(s => {
+    if (s.modules && s.modules.length > 0) {
       allDiscrepancies.push({
         type: 'missing_in_piac',
         severity: 'info',
         piac_element: null,
         moodle_element: `Sección ${s.number}: "${s.name}" (${s.modules.length} elementos)`,
-        description: `Sección en Moodle sin núcleo correspondiente en PIAC`
+        description: `Sección de contenido en Moodle sin núcleo correspondiente en PIAC`
       });
     }
   });
 
   // Build summary
-  const totalPiacElements = nucleos.length + (piacJson.evaluaciones_sumativas || []).length;
-  const totalMoodleActivities = contentSections.reduce((sum, s) => sum + (s.modules || []).length, 0);
+  const totalPiacElements = nucleos.length + evals.length + nucleos.reduce((s, n) => s + (n.repertorio_evaluativo || []).length, 0);
+  const totalMoodleActivities = allSections.reduce((sum, s) => sum + (s.modules || []).length, 0);
   const matchedCount = matches.reduce((sum, m) => sum + m.elements.filter(e => e.matched).length, 0);
   const criticalCount = allDiscrepancies.filter(d => d.severity === 'critical').length;
   const warningCount = allDiscrepancies.filter(d => d.severity === 'warning').length;
@@ -2397,7 +2473,7 @@ function runMatching(piacJson, snapshotJson) {
 
   const summary = {
     nucleos_piac: nucleos.length,
-    sections_moodle: contentSections.length,
+    sections_moodle: allSections.filter(s => s.number > 0).length,
     nucleos_matched: matches.filter(m => m.sectionMatched).length,
     total_piac_elements: totalPiacElements,
     total_moodle_activities: totalMoodleActivities,
