@@ -3,7 +3,15 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import type { TipoDocencia, TipoInteraccion, TipoEvaluacion } from "@/lib/database.types";
+import type { PiacStatus, UserRol, TipoDocencia, TipoInteraccion, TipoEvaluacion } from "@/lib/database.types";
+import {
+  getAllowedTransitions,
+  canEdit,
+  validateForSubmission,
+  STATUS_LABELS,
+  STATUS_COLORS,
+  TRANSITION_LABELS,
+} from "@/lib/piac-states";
 
 type Nucleo = {
   nombre: string;
@@ -107,6 +115,8 @@ export function PiacForm() {
   const [data, setData] = useState<PiacData>(initialData);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [isLoading, setIsLoading] = useState(false);
+  const [piacStatus, setPiacStatus] = useState<PiacStatus>("borrador");
+  const [userRole, setUserRole] = useState<UserRol>("docente");
 
   const supabase = useRef(createClient());
   const piacIdRef = useRef<string | null>(searchParams.get("id"));
@@ -114,14 +124,26 @@ export function PiacForm() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const skipNextAutosave = useRef(true); // skip initial render
 
+  const isEditable = canEdit(userRole, piacStatus);
+
   const update = <K extends keyof PiacData>(key: K, value: PiacData[K]) => {
+    if (!isEditable) return;
     setData((prev) => ({ ...prev, [key]: value }));
   };
 
-  // ─── Get current user ──────────────────────────────────────────────────
+  // ─── Get current user + profile (role) ─────────────────────────────────
   useEffect(() => {
-    supabase.current.auth.getUser().then(({ data: { user } }) => {
+    const sb = supabase.current;
+    sb.auth.getUser().then(async ({ data: { user } }) => {
       userIdRef.current = user?.id ?? null;
+      if (user) {
+        const { data: profile } = await sb
+          .from("profiles")
+          .select("rol")
+          .eq("id", user.id)
+          .single();
+        if (profile?.rol) setUserRole(profile.rol as UserRol);
+      }
     });
   }, []);
 
@@ -150,6 +172,8 @@ export function PiacForm() {
     const p = piacRes.data;
     const nucleos = nucleosRes.data ?? [];
     const evals = evalsRes.data ?? [];
+
+    setPiacStatus(p.status as PiacStatus);
 
     // Map nucleo IDs to indices for evaluacion.nucleoIndex
     const nucleoIdToIndex = new Map(nucleos.map((n, i) => [n.id, i]));
@@ -209,6 +233,7 @@ export function PiacForm() {
 
   // ─── Save PIAC ──────────────────────────────────────────────────────────
   const savePiac = useCallback(async () => {
+    if (!isEditable) return;
     setSaveStatus("saving");
     const sb = supabase.current;
 
@@ -229,7 +254,7 @@ export function PiacForm() {
         horas_autonomas: data.horasAutonomas,
         bibliografia_obligatoria: data.bibliografiaObligatoria,
         bibliografia_complementaria: data.bibliografiaComplementaria,
-        status: "borrador" as const,
+        status: piacStatus,
       };
 
       let piacId = piacIdRef.current;
@@ -303,11 +328,11 @@ export function PiacForm() {
       console.error("Error saving PIAC:", err);
       setSaveStatus("error");
     }
-  }, [data]);
+  }, [data, piacStatus, isEditable]);
 
   // ─── Autosave with debounce ─────────────────────────────────────────────
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || !isEditable) return;
     if (skipNextAutosave.current) {
       skipNextAutosave.current = false;
       return;
@@ -319,37 +344,73 @@ export function PiacForm() {
     }, DEBOUNCE_MS);
 
     return () => clearTimeout(debounceRef.current);
-  }, [data, isLoading, savePiac]);
+  }, [data, isLoading, isEditable, savePiac]);
 
-  // ─── Submit for review ──────────────────────────────────────────────────
-  const submitForReview = useCallback(async () => {
-    // Save first
-    await savePiac();
+  // ─── Transition status ──────────────────────────────────────────────────
+  const transitionStatus = useCallback(async (newStatus: PiacStatus) => {
     const piacId = piacIdRef.current;
     if (!piacId) return;
 
+    // If moving to "enviado", validate first
+    if (newStatus === "enviado") {
+      const errors = validateForSubmission(data.evaluaciones);
+      if (errors.length > 0) {
+        alert(errors.map((e) => e.message).join("\n"));
+        return;
+      }
+      // Save content before submitting
+      if (isEditable) await savePiac();
+    }
+
     const sb = supabase.current;
+
+    // Get current version count for this PIAC
+    const { count } = await sb
+      .from("piac_versiones")
+      .select("*", { count: "exact", head: true })
+      .eq("piac_id", piacId);
 
     // Create version snapshot
     await sb.from("piac_versiones").insert({
       piac_id: piacId,
-      version: 1,
-      data_snapshot: data as unknown as Record<string, unknown>,
-      changed_by: null,
+      version: (count ?? 0) + 1,
+      data_snapshot: { ...data, status_from: piacStatus, status_to: newStatus } as unknown as Record<string, unknown>,
+      changed_by: userIdRef.current,
     });
 
-    // Update status to 'enviado'
-    await sb.from("piacs").update({ status: "enviado" }).eq("id", piacId);
+    // Update status
+    const { error } = await sb
+      .from("piacs")
+      .update({ status: newStatus })
+      .eq("id", piacId);
 
+    if (error) {
+      console.error("Error transitioning status:", error);
+      alert("Error al cambiar el estado del PIAC.");
+      return;
+    }
+
+    setPiacStatus(newStatus);
     setSaveStatus("saved");
-    alert("PIAC enviado para revisión exitosamente.");
-  }, [data, savePiac]);
+  }, [data, piacStatus, isEditable, savePiac]);
+
+  const allowedTransitions = getAllowedTransitions(userRole, piacStatus);
 
   return (
     <div className="grid gap-8 lg:grid-cols-2">
       {/* Formulario */}
       <div>
-        {/* Steps indicator + save status */}
+        {/* Status badge + Steps indicator + save status */}
+        <div className="mb-4 flex items-center gap-3">
+          <StatusBadge status={piacStatus} />
+          {!isEditable && (
+            <span className="text-xs text-gray-500">Solo lectura</span>
+          )}
+          <div className="ml-auto">
+            <SaveIndicator status={saveStatus} />
+          </div>
+        </div>
+
         <div className="mb-6 flex items-center gap-4">
           <div className="flex flex-1 gap-1">
             {STEPS.map((label, i) => (
@@ -368,7 +429,6 @@ export function PiacForm() {
               </button>
             ))}
           </div>
-          <SaveIndicator status={saveStatus} />
         </div>
 
         {isLoading ? (
@@ -378,17 +438,18 @@ export function PiacForm() {
         ) : (
           <div className="rounded-xl border border-gray-200 bg-white p-6">
             {step === 0 && (
-              <StepIdentificacion data={data} update={update} />
+              <StepIdentificacion data={data} update={update} disabled={!isEditable} />
             )}
             {step === 1 && (
-              <StepModalidad data={data} update={update} sct={sctTotal} />
+              <StepModalidad data={data} update={update} sct={sctTotal} disabled={!isEditable} />
             )}
-            {step === 2 && <StepNucleos data={data} setData={setData} />}
-            {step === 3 && <StepEvaluaciones data={data} setData={setData} />}
-            {step === 4 && <StepBibliografia data={data} update={update} />}
+            {step === 2 && <StepNucleos data={data} setData={setData} disabled={!isEditable} />}
+            {step === 3 && <StepEvaluaciones data={data} setData={setData} disabled={!isEditable} />}
+            {step === 4 && <StepBibliografia data={data} update={update} disabled={!isEditable} />}
           </div>
         )}
 
+        {/* Navigation buttons */}
         <div className="mt-4 flex justify-between">
           <button
             onClick={() => setStep((s) => Math.max(0, s - 1))}
@@ -397,22 +458,41 @@ export function PiacForm() {
           >
             Anterior
           </button>
-          {step < STEPS.length - 1 ? (
+          {step < STEPS.length - 1 && (
             <button
               onClick={() => setStep((s) => s + 1)}
               className="rounded-lg bg-[var(--color-umce-blue)] px-4 py-2 text-sm font-medium text-white hover:bg-blue-800"
             >
               Siguiente
             </button>
-          ) : (
-            <button
-              onClick={submitForReview}
-              className="rounded-lg bg-[var(--color-umce-accent)] px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600"
-            >
-              Enviar para revisión
-            </button>
           )}
         </div>
+
+        {/* Status transition actions */}
+        {piacIdRef.current && allowedTransitions.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2 rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <span className="w-full text-xs font-medium text-gray-500 mb-1">
+              Acciones disponibles:
+            </span>
+            {allowedTransitions.map((target) => (
+              <button
+                key={target}
+                onClick={() => transitionStatus(target)}
+                className={`rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors ${
+                  target === "aprobado"
+                    ? "bg-green-600 hover:bg-green-700"
+                    : target === "devuelto"
+                      ? "bg-red-600 hover:bg-red-700"
+                      : target === "enviado"
+                        ? "bg-[var(--color-umce-accent)] hover:bg-emerald-600"
+                        : "bg-[var(--color-umce-blue)] hover:bg-blue-800"
+                }`}
+              >
+                {TRANSITION_LABELS[target]}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Preview */}
@@ -425,6 +505,20 @@ export function PiacForm() {
         </div>
       </div>
     </div>
+  );
+}
+
+/* ─── Status Badge ─── */
+
+function StatusBadge({ status }: { status: PiacStatus }) {
+  const colors = STATUS_COLORS[status];
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${colors.bg} ${colors.text}`}
+    >
+      <span className={`h-1.5 w-1.5 rounded-full ${colors.dot}`} />
+      {STATUS_LABELS[status]}
+    </span>
   );
 }
 
@@ -466,9 +560,11 @@ function SaveIndicator({ status }: { status: SaveStatus }) {
 function StepIdentificacion({
   data,
   update,
+  disabled,
 }: {
   data: PiacData;
   update: <K extends keyof PiacData>(key: K, value: PiacData[K]) => void;
+  disabled?: boolean;
 }) {
   return (
     <div className="space-y-4">
@@ -478,29 +574,34 @@ function StepIdentificacion({
         value={data.nombreActividad}
         onChange={(v) => update("nombreActividad", v)}
         placeholder="Ej: Comunicación y Aprendizaje para NEE"
+        disabled={disabled}
       />
       <Field
         label="Programa de postgrado"
         value={data.programa}
         onChange={(v) => update("programa", v)}
         placeholder="Ej: Magíster en Educación Especial"
+        disabled={disabled}
       />
       <Field
         label="Unidad académica"
         value={data.unidadAcademica}
         onChange={(v) => update("unidadAcademica", v)}
         placeholder="Ej: Depto. Educación Diferencial"
+        disabled={disabled}
       />
       <Field
         label="Docente(s) responsable(s)"
         value={data.docenteResponsable}
         onChange={(v) => update("docenteResponsable", v)}
+        disabled={disabled}
       />
       <Field
         label="Email docente"
         value={data.emailDocente}
         onChange={(v) => update("emailDocente", v)}
         type="email"
+        disabled={disabled}
       />
       <div>
         <label className="block text-sm font-medium text-gray-700">
@@ -509,7 +610,8 @@ function StepIdentificacion({
         <select
           value={data.semestre}
           onChange={(e) => update("semestre", e.target.value)}
-          className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+          disabled={disabled}
+          className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
         >
           <option value="2026-1">1° Semestre 2026</option>
           <option value="2026-2">2° Semestre 2026</option>
@@ -524,10 +626,12 @@ function StepModalidad({
   data,
   update,
   sct,
+  disabled,
 }: {
   data: PiacData;
   update: <K extends keyof PiacData>(key: K, value: PiacData[K]) => void;
   sct: number;
+  disabled?: boolean;
 }) {
   return (
     <div className="space-y-4">
@@ -541,7 +645,8 @@ function StepModalidad({
         <select
           value={data.tipoDocencia}
           onChange={(e) => update("tipoDocencia", e.target.value)}
-          className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+          disabled={disabled}
+          className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
         >
           <option value="docencia">Docencia</option>
           <option value="co-docencia">Co-docencia</option>
@@ -556,7 +661,8 @@ function StepModalidad({
         <select
           value={data.tipoInteraccion}
           onChange={(e) => update("tipoInteraccion", e.target.value)}
-          className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+          disabled={disabled}
+          className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
         >
           <option value="virtual">Virtual</option>
           <option value="semipresencial">Semipresencial</option>
@@ -568,6 +674,7 @@ function StepModalidad({
         onChange={(v) => update("numSemanas", v)}
         min={4}
         max={20}
+        disabled={disabled}
       />
       <div className="grid grid-cols-3 gap-3">
         <NumberField
@@ -576,6 +683,7 @@ function StepModalidad({
           onChange={(v) => update("horasSincronicas", v)}
           min={0}
           max={20}
+          disabled={disabled}
         />
         <NumberField
           label="Hrs asincrónicas/sem"
@@ -583,6 +691,7 @@ function StepModalidad({
           onChange={(v) => update("horasAsincronicas", v)}
           min={0}
           max={20}
+          disabled={disabled}
         />
         <NumberField
           label="Hrs autónomas/sem"
@@ -590,6 +699,7 @@ function StepModalidad({
           onChange={(v) => update("horasAutonomas", v)}
           min={0}
           max={20}
+          disabled={disabled}
         />
       </div>
       <div className="rounded-lg bg-blue-50 p-4 text-sm">
@@ -608,11 +718,14 @@ function StepModalidad({
 function StepNucleos({
   data,
   setData,
+  disabled,
 }: {
   data: PiacData;
   setData: React.Dispatch<React.SetStateAction<PiacData>>;
+  disabled?: boolean;
 }) {
-  const addNucleo = () =>
+  const addNucleo = () => {
+    if (disabled) return;
     setData((prev) => ({
       ...prev,
       nucleos: [
@@ -631,38 +744,45 @@ function StepNucleos({
         },
       ],
     }));
+  };
 
-  const updateNucleo = (index: number, field: keyof Nucleo, value: string | number) =>
+  const updateNucleo = (index: number, field: keyof Nucleo, value: string | number) => {
+    if (disabled) return;
     setData((prev) => ({
       ...prev,
       nucleos: prev.nucleos.map((n, i) =>
         i === index ? { ...n, [field]: value } : n
       ),
     }));
+  };
 
-  const removeNucleo = (index: number) =>
+  const removeNucleo = (index: number) => {
+    if (disabled) return;
     setData((prev) => ({
       ...prev,
       nucleos: prev.nucleos.filter((_, i) => i !== index),
     }));
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Bloque 3 — Núcleos de aprendizaje</h2>
-        <button
-          onClick={addNucleo}
-          className="rounded-lg bg-[var(--color-umce-blue)] px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-800"
-        >
-          + Agregar núcleo
-        </button>
+        {!disabled && (
+          <button
+            onClick={addNucleo}
+            className="rounded-lg bg-[var(--color-umce-blue)] px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-800"
+          >
+            + Agregar núcleo
+          </button>
+        )}
       </div>
 
       {data.nucleos.map((nucleo, i) => (
         <div key={i} className="rounded-lg border border-gray-200 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="font-medium text-gray-900">Núcleo {i + 1}</h3>
-            {data.nucleos.length > 1 && (
+            {!disabled && data.nucleos.length > 1 && (
               <button
                 onClick={() => removeNucleo(i)}
                 className="text-xs text-red-500 hover:text-red-700"
@@ -676,6 +796,7 @@ function StepNucleos({
             value={nucleo.nombre}
             onChange={(v) => updateNucleo(i, "nombre", v)}
             placeholder="Ej: Fundamentos de la comunicación aumentativa"
+            disabled={disabled}
           />
           <div className="grid grid-cols-2 gap-3">
             <NumberField
@@ -684,6 +805,7 @@ function StepNucleos({
               onChange={(v) => updateNucleo(i, "semanaInicio", v)}
               min={1}
               max={data.numSemanas}
+              disabled={disabled}
             />
             <NumberField
               label="Semana fin"
@@ -691,6 +813,7 @@ function StepNucleos({
               onChange={(v) => updateNucleo(i, "semanaFin", v)}
               min={nucleo.semanaInicio}
               max={data.numSemanas}
+              disabled={disabled}
             />
           </div>
           <TextArea
@@ -698,32 +821,38 @@ function StepNucleos({
             value={nucleo.resultadoFormativo}
             onChange={(v) => updateNucleo(i, "resultadoFormativo", v)}
             placeholder="Verbo en presente indicativo: Diseña, Analiza, Evalúa..."
+            disabled={disabled}
           />
           <TextArea
             label="Criterios de evaluación"
             value={nucleo.criteriosEvaluacion}
             onChange={(v) => updateNucleo(i, "criteriosEvaluacion", v)}
+            disabled={disabled}
           />
           <TextArea
             label="Temas / contenidos"
             value={nucleo.temas}
             onChange={(v) => updateNucleo(i, "temas", v)}
+            disabled={disabled}
           />
           <TextArea
             label="Actividades sincrónicas"
             value={nucleo.actividadesSincronicas}
             onChange={(v) => updateNucleo(i, "actividadesSincronicas", v)}
             placeholder="Nombre + descripción breve"
+            disabled={disabled}
           />
           <TextArea
             label="Actividades asincrónicas (foro, tarea, wiki, cuestionario)"
             value={nucleo.actividadesAsincronicas}
             onChange={(v) => updateNucleo(i, "actividadesAsincronicas", v)}
+            disabled={disabled}
           />
           <TextArea
             label="Actividades autónomas (lecturas)"
             value={nucleo.actividadesAutonomas}
             onChange={(v) => updateNucleo(i, "actividadesAutonomas", v)}
+            disabled={disabled}
           />
         </div>
       ))}
@@ -734,29 +863,37 @@ function StepNucleos({
 function StepEvaluaciones({
   data,
   setData,
+  disabled,
 }: {
   data: PiacData;
   setData: React.Dispatch<React.SetStateAction<PiacData>>;
+  disabled?: boolean;
 }) {
-  const addEval = () =>
+  const addEval = () => {
+    if (disabled) return;
     setData((prev) => ({
       ...prev,
       evaluaciones: [...prev.evaluaciones, { ...defaultEvaluacion }],
     }));
+  };
 
-  const updateEval = (index: number, field: keyof Evaluacion, value: string | number) =>
+  const updateEval = (index: number, field: keyof Evaluacion, value: string | number) => {
+    if (disabled) return;
     setData((prev) => ({
       ...prev,
       evaluaciones: prev.evaluaciones.map((e, i) =>
         i === index ? { ...e, [field]: value } : e
       ),
     }));
+  };
 
-  const removeEval = (index: number) =>
+  const removeEval = (index: number) => {
+    if (disabled) return;
     setData((prev) => ({
       ...prev,
       evaluaciones: prev.evaluaciones.filter((_, i) => i !== index),
     }));
+  };
 
   const totalPonderacion = data.evaluaciones.reduce(
     (sum, e) => sum + e.ponderacion,
@@ -767,12 +904,14 @@ function StepEvaluaciones({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Bloque 4 — Evaluaciones sumativas</h2>
-        <button
-          onClick={addEval}
-          className="rounded-lg bg-[var(--color-umce-blue)] px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-800"
-        >
-          + Agregar evaluación
-        </button>
+        {!disabled && (
+          <button
+            onClick={addEval}
+            className="rounded-lg bg-[var(--color-umce-blue)] px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-800"
+          >
+            + Agregar evaluación
+          </button>
+        )}
       </div>
 
       {data.evaluaciones.length < 3 && (
@@ -785,7 +924,7 @@ function StepEvaluaciones({
         <div key={i} className="rounded-lg border border-gray-200 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="font-medium text-gray-900">Evaluación {i + 1}</h3>
-            {data.evaluaciones.length > 1 && (
+            {!disabled && data.evaluaciones.length > 1 && (
               <button
                 onClick={() => removeEval(i)}
                 className="text-xs text-red-500 hover:text-red-700"
@@ -798,6 +937,7 @@ function StepEvaluaciones({
             label="Nombre"
             value={ev.nombre}
             onChange={(v) => updateEval(i, "nombre", v)}
+            disabled={disabled}
           />
           <div className="grid grid-cols-3 gap-3">
             <div>
@@ -805,7 +945,8 @@ function StepEvaluaciones({
               <select
                 value={ev.tipo}
                 onChange={(e) => updateEval(i, "tipo", e.target.value)}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                disabled={disabled}
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
               >
                 <option value="tarea">Tarea</option>
                 <option value="prueba">Prueba</option>
@@ -819,6 +960,7 @@ function StepEvaluaciones({
               onChange={(v) => updateEval(i, "ponderacion", v)}
               min={0}
               max={100}
+              disabled={disabled}
             />
             <NumberField
               label="Semana entrega"
@@ -826,6 +968,7 @@ function StepEvaluaciones({
               onChange={(v) => updateEval(i, "semanaEntrega", v)}
               min={1}
               max={data.numSemanas}
+              disabled={disabled}
             />
           </div>
           <div>
@@ -835,7 +978,8 @@ function StepEvaluaciones({
             <select
               value={ev.nucleoIndex}
               onChange={(e) => updateEval(i, "nucleoIndex", Number(e.target.value))}
-              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              disabled={disabled}
+              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
             >
               {data.nucleos.map((n, ni) => (
                 <option key={ni} value={ni}>
@@ -864,9 +1008,11 @@ function StepEvaluaciones({
 function StepBibliografia({
   data,
   update,
+  disabled,
 }: {
   data: PiacData;
   update: <K extends keyof PiacData>(key: K, value: PiacData[K]) => void;
+  disabled?: boolean;
 }) {
   return (
     <div className="space-y-4">
@@ -877,6 +1023,7 @@ function StepBibliografia({
         onChange={(v) => update("bibliografiaObligatoria", v)}
         placeholder="Formato APA. Una referencia por línea."
         rows={6}
+        disabled={disabled}
       />
       <TextArea
         label="Bibliografía complementaria"
@@ -884,6 +1031,7 @@ function StepBibliografia({
         onChange={(v) => update("bibliografiaComplementaria", v)}
         placeholder="Formato APA. Una referencia por línea."
         rows={4}
+        disabled={disabled}
       />
     </div>
   );
@@ -1014,12 +1162,14 @@ function Field({
   onChange,
   placeholder,
   type = "text",
+  disabled,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   type?: string;
+  disabled?: boolean;
 }) {
   return (
     <div>
@@ -1029,7 +1179,8 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+        disabled={disabled}
+        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
       />
     </div>
   );
@@ -1041,12 +1192,14 @@ function NumberField({
   onChange,
   min,
   max,
+  disabled,
 }: {
   label: string;
   value: number;
   onChange: (v: number) => void;
   min?: number;
   max?: number;
+  disabled?: boolean;
 }) {
   return (
     <div>
@@ -1057,7 +1210,8 @@ function NumberField({
         onChange={(e) => onChange(Number(e.target.value))}
         min={min}
         max={max}
-        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+        disabled={disabled}
+        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
       />
     </div>
   );
@@ -1069,12 +1223,14 @@ function TextArea({
   onChange,
   placeholder,
   rows = 3,
+  disabled,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   rows?: number;
+  disabled?: boolean;
 }) {
   return (
     <div>
@@ -1084,7 +1240,8 @@ function TextArea({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={rows}
-        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none resize-y"
+        disabled={disabled}
+        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none resize-y disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
       />
     </div>
   );
