@@ -49,6 +49,15 @@ export function DiPanel() {
   const [returnModal, setReturnModal] = useState<PiacForReview | null>(null);
   const [returnComment, setReturnComment] = useState("");
 
+  // Moodle generation state
+  const [generating, setGenerating] = useState<string | null>(null);
+  const [generationResult, setGenerationResult] = useState<{
+    courseUrl: string;
+    sectionsCreated: number;
+    activitiesCreated: number;
+    teacherEnrolled: boolean;
+  } | null>(null);
+
   useEffect(() => {
     loadData();
   }, []);
@@ -192,6 +201,32 @@ export function DiPanel() {
     setReturnModal(null);
     setReturnComment("");
     setTransitioning(null);
+  }
+
+  async function handleGenerateMoodle(piacId: string) {
+    if (!confirm("¿Generar aula Moodle para este PIAC aprobado?")) return;
+
+    setGenerating(piacId);
+    try {
+      const res = await fetch("/api/moodle/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ piacId }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert("Error: " + (data.error ?? "Error desconocido"));
+        return;
+      }
+
+      setGenerationResult(data);
+    } catch (err) {
+      alert("Error de conexión al generar aula.");
+    } finally {
+      setGenerating(null);
+    }
   }
 
   const filtered = filterDiPiacs(piacs, {
@@ -416,6 +451,17 @@ export function DiPanel() {
                         >
                           Ver
                         </Link>
+                        {piac.status === "aprobado" && (
+                          <button
+                            onClick={() => handleGenerateMoodle(piac.id)}
+                            disabled={generating === piac.id}
+                            className="rounded-md bg-[var(--color-umce-blue)] px-2.5 py-1 text-xs font-medium text-white hover:opacity-90 disabled:opacity-50"
+                          >
+                            {generating === piac.id
+                              ? "Generando..."
+                              : "Generar aula"}
+                          </button>
+                        )}
                         {transitions.map((target) =>
                           target === "devuelto" ? (
                             <button
@@ -463,6 +509,41 @@ export function DiPanel() {
       {filtered.length === 0 && piacs.length > 0 && (
         <div className="mt-6 text-center text-sm text-gray-500">
           No hay PIACs con los filtros seleccionados.
+        </div>
+      )}
+
+      {/* Generation result modal */}
+      {generationResult && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
+            <h3 className="text-lg font-semibold text-green-700">
+              Aula Moodle creada
+            </h3>
+            <div className="mt-4 space-y-2 text-sm text-gray-700">
+              <p>Secciones creadas: {generationResult.sectionsCreated}</p>
+              <p>Actividades creadas: {generationResult.activitiesCreated}</p>
+              <p>
+                Docente inscrito:{" "}
+                {generationResult.teacherEnrolled ? "Sí" : "No (verificar manualmente)"}
+              </p>
+            </div>
+            <div className="mt-4 flex justify-end gap-3">
+              <button
+                onClick={() => setGenerationResult(null)}
+                className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Cerrar
+              </button>
+              <a
+                href={generationResult.courseUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-md bg-[var(--color-umce-blue)] px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+              >
+                Ir al aula
+              </a>
+            </div>
+          </div>
         </div>
       )}
 
