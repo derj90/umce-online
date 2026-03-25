@@ -9,6 +9,7 @@ import type { User } from "@supabase/supabase-js";
 const links = [
   { href: "/", label: "Inicio" },
   { href: "/piac", label: "PIAC" },
+  { href: "/piac/mis-piacs", label: "Mis PIACs" },
 ];
 
 export function Nav() {
