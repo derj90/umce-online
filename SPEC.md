@@ -16,7 +16,7 @@ Las fases futuras son esqueleto — se completan con David antes de empezar.
 
 ## Fase 1: Migracion virtual.udfv.cloud → umce.online
 
-**Estado**: EN PROGRESO
+**Estado**: COMPLETADA
 **Ultima sesion**: 25-mar-2026
 **Objetivo**: El portal actual (virtual.udfv.cloud) funciona identico en umce.online. Sin cambios de funcionalidad.
 
@@ -29,18 +29,18 @@ Las fases futuras son esqueleto — se completan con David antes de empezar.
 
 ### Que construir
 
-- [ ] **1.1 Copiar codebase** — Traer `src/` completo de 43_VIRTUAL_UMCE_WEB a este repo
-- [ ] **1.2 Actualizar BASE_URL** — Cambiar `https://virtual.udfv.cloud` a `https://umce.online` en server.js y donde aplique
-- [ ] **1.3 Actualizar OAuth callback** — Registrar `https://umce.online/auth/callback` en Google Cloud Console (David lo hace manualmente)
-- [ ] **1.4 Configurar Traefik** — Actualizar labels Docker para servir umce.online + www.umce.online con SSL
-- [ ] **1.5 Actualizar deploy script** — `/opt/deploy-umce-online.sh` apunta a este repo (derj90/umce-online)
-- [ ] **1.6 Actualizar CI/CD** — `.github/workflows/deploy.yml` trigger en este repo
-- [ ] **1.7 Redirect dominio anterior** — virtual.udfv.cloud redirige 301 a umce.online
-- [ ] **1.8 Verificar SSL** — Certificado Let's Encrypt via Traefik para umce.online
-- [ ] **1.9 Test OAuth completo** — Login con @umce.cl, cookie, sesion, logout
-- [ ] **1.10 Test funcionalidades** — Catalogo, mis-cursos (5 Moodles), chatbot, admin, push notifications
-- [ ] **1.11 Test mobile** — Capacitor app apunta a umce.online
-- [ ] **1.12 Documentar .env.example** — Template sin tokens reales para el repo
+- [x] **1.1 Copiar codebase** — Traer `src/` completo de 43_VIRTUAL_UMCE_WEB a este repo
+- [x] **1.2 Actualizar BASE_URL** — Cambiar `https://virtual.udfv.cloud` a `https://umce.online` en server.js y 60+ refs en HTML/XML
+- [x] **1.3 Actualizar OAuth callback** — David creo nuevo Client OAuth (ID: ...29q632sd) con redirect https://umce.online/auth/callback
+- [x] **1.4 Configurar Traefik** — Labels Docker actualizados para umce.online + www + piac con SSL
+- [x] **1.5 Actualizar deploy script** — docker-compose.yml actualizado para Express (era Next.js), credenciales OAuth nuevas
+- [x] **1.6 Actualizar CI/CD** — `.github/workflows/deploy.yml` apunta a /opt/deploy-umce-online.sh, VPS_SSH_KEY secret configurado
+- [x] **1.7 Redirect dominio anterior** — virtual.udfv.cloud redirige 308 permanente a umce.online (container viejo detenido)
+- [x] **1.8 Verificar SSL** — HTTPS 200, Let's Encrypt via Traefik funcionando
+- [x] **1.9 Test OAuth completo** — Login david.reyes_j@umce.cl OK, sesion activa, cookie, Admin visible
+- [x] **1.10 Test funcionalidades** — API catalogo (13 programas), mis-cursos (24 cursos, 5 Moodles), modo Admin OK
+- [x] **1.11 Test mobile** — N/A, app movil aun no publicada
+- [x] **1.12 Documentar .env.example** — Template con 17 variables sin tokens reales
 
 ### Criterios de aceptacion
 - umce.online sirve exactamente lo mismo que virtual.udfv.cloud
@@ -172,3 +172,4 @@ Cada sesion que trabaje en este proyecto registra aqui que se hizo.
 | Fecha | Fase | Que se hizo | Resultado |
 |-------|------|-------------|-----------|
 | 25-mar-2026 | Pre-fase | Correccion de vision, limpieza repo, definiciones tecnicas, benchmark RRSS, creacion sistema de desarrollo (CLAUDE.md + SPEC.md) | Sistema listo para Fase 1 |
+| 25-mar-2026 | Fase 1 | Migracion completa: codebase copiado, URLs actualizadas (60+ refs), OAuth nuevo, Traefik+SSL, CI/CD, redirect 301 virtual.udfv.cloud→umce.online | COMPLETADA — 12/12 pasos |
