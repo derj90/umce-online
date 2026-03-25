@@ -1,36 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# UMCE.online — Ecosistema Academico Virtual
 
-## Getting Started
+Evolucion de [virtual.udfv.cloud](https://virtual.udfv.cloud) al dominio institucional.
 
-First, run the development server:
+## Estado
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+EN PLANIFICACION — El codigo anterior (Next.js) fue descartado. Este proyecto extendera el codebase de virtual.udfv.cloud (Express + vanilla JS + Tailwind CDN).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Documentacion
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Pagina indice del proyecto en Notion:
+https://www.notion.so/32e0778552798118ab7dcf2563971f21
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Infraestructura lista
 
-## Learn More
+- Dominio: umce.online (DNS + SSL activos)
+- VPS: 82.29.61.165 (container Docker + Traefik)
+- Subdominios: piac.umce.online, cursos.umce.online, www.umce.online
 
-To learn more about Next.js, take a look at the following resources:
+## Codigo fuente
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+El codigo del portal actual esta en:
+- `~/Documents/43_VIRTUAL_UMCE_WEB/` (virtual.udfv.cloud)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Este repo se repoblara cuando se inicie la migracion (Fase 1).
