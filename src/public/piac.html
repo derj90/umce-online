@@ -450,9 +450,7 @@
       }, 5000);
 
       try {
-        const controller = new AbortController();
-        setTimeout(() => controller.abort(), 300000); // 5 min client timeout
-        const res = await fetch(`/api/piac/${currentLinkId}/${action}`, { method: 'POST', signal: controller.signal });
+        const res = await fetch(`/api/piac/${currentLinkId}/${action}`, { method: 'POST' });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
         clearInterval(timer);
