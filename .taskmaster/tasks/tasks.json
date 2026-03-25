@@ -69,14 +69,15 @@
       "id": "6",
       "title": "Autenticación con Supabase Auth",
       "description": "Login con email institucional @umce.cl via Supabase Auth. Roles: docente, DI, coordinador. Proteger rutas /piac.",
-      "status": "pending",
+      "status": "done",
       "dependencies": [
         "3"
       ],
       "priority": "high",
       "details": "1. Configurar Supabase Auth (email provider) en supabase.udfv.cloud\n2. Tabla profiles: id (FK auth.users), email, nombre, rol\n3. src/app/login/page.tsx — email/password\n4. src/app/registro/page.tsx — solo @umce.cl\n5. Middleware Next.js: /piac/* requiere auth\n6. AuthProvider context\n7. Nav: nombre usuario + logout",
       "testStrategy": "Registrar @umce.cl, login, acceder a /piac. Sin login → redirect /login. Email no @umce.cl rechazado.",
-      "subtasks": []
+      "subtasks": [],
+      "updatedAt": "2026-03-25T10:32:09.478Z"
     },
     {
       "id": "7",
@@ -195,9 +196,9 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastModified": "2026-03-25T10:25:27.032Z",
+    "lastModified": "2026-03-25T10:32:09.479Z",
     "taskCount": 15,
-    "completedCount": 4,
+    "completedCount": 5,
     "tags": [
       "master"
     ]

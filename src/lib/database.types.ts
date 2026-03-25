@@ -8,6 +8,7 @@ export type PiacStatus =
 export type TipoDocencia = "docencia" | "co-docencia" | "colegiada" | "mixta";
 export type TipoInteraccion = "virtual" | "semipresencial";
 export type TipoEvaluacion = "tarea" | "prueba" | "proyecto" | "portfolio";
+export type UserRol = "docente" | "di" | "coordinador";
 
 // ─── Row types (what you get back from queries) ─────────────────────────────
 // Using `type` instead of `interface` so they satisfy Record<string, unknown>
@@ -69,6 +70,18 @@ export type PiacVersion = {
   created_at: string;
 };
 
+export type Profile = {
+  id: string;
+  email: string;
+  nombre: string;
+  rol: UserRol;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ProfileInsert = Omit<Profile, "created_at" | "updated_at">;
+export type ProfileUpdate = Partial<Omit<Profile, "id" | "created_at" | "updated_at">>;
+
 // ─── Insert types (omit server-generated fields) ────────────────────────────
 
 export type PiacInsert = Omit<Piac, "id" | "created_at" | "updated_at"> & {
@@ -98,6 +111,12 @@ export type PiacEvaluacionUpdate = Partial<Omit<PiacEvaluacion, "id" | "piac_id"
 export type Database = {
   public: {
     Tables: {
+      profiles: {
+        Row: Profile;
+        Insert: ProfileInsert;
+        Update: ProfileUpdate;
+        Relationships: [];
+      };
       piacs: {
         Row: Piac;
         Insert: PiacInsert;

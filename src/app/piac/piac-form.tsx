@@ -110,12 +110,20 @@ export function PiacForm() {
 
   const supabase = useRef(createClient());
   const piacIdRef = useRef<string | null>(searchParams.get("id"));
+  const userIdRef = useRef<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const skipNextAutosave = useRef(true); // skip initial render
 
   const update = <K extends keyof PiacData>(key: K, value: PiacData[K]) => {
     setData((prev) => ({ ...prev, [key]: value }));
   };
+
+  // ─── Get current user ──────────────────────────────────────────────────
+  useEffect(() => {
+    supabase.current.auth.getUser().then(({ data: { user } }) => {
+      userIdRef.current = user?.id ?? null;
+    });
+  }, []);
 
   const sctTotal = Math.round(
     (data.horasSincronicas + data.horasAsincronicas + data.horasAutonomas) *
@@ -206,7 +214,7 @@ export function PiacForm() {
 
     try {
       const piacRow = {
-        user_id: null,
+        user_id: userIdRef.current,
         nombre_actividad: data.nombreActividad,
         programa: data.programa,
         unidad_academica: data.unidadAcademica,

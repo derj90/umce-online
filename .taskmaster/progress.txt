@@ -26,3 +26,33 @@
 - REST API accessible via PostgREST (service_role key)
 - `tsc --noEmit` passes clean
 
+## Task #3 — Integrar Supabase client en Next.js (DONE)
+- Installed `@supabase/ssr` ^0.9.0
+- Created `src/lib/supabase/client.ts` — browser client via `createBrowserClient<Database>`
+- Created `src/lib/supabase/server.ts` — server client via `createServerClient<Database>` with cookie handling
+- Updated `src/lib/supabase.ts` to re-export from new client (backward compat)
+- Dockerfile: added `ARG`/`ENV` for `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `tsc --noEmit` passes clean
+
+## Task #4 — Persistir formulario PIAC en Supabase (DONE)
+- Autosave debounce 5s on data changes, save indicator (guardando/guardado/error)
+- Load existing PIAC via `?id=xxx` query param (parallel fetch piacs + nucleos + evaluaciones)
+- Save: upsert PIAC row, delete+reinsert nucleos/evaluaciones (simpler than diffing)
+- nucleoIndex → nucleo_id mapping via insert order
+- Submit for review: creates piac_versiones snapshot, sets status='enviado'
+- Fixed Database types: `interface` → `type` for Supabase GenericTable compat, added `Relationships: []`
+- Migration 002: temporary anon RLS policies (user_id IS NULL) for dev without auth
+- Learning: Supabase v2.100 requires `Relationships` field in table types, and Row types must be `type` not `interface` to satisfy `Record<string, unknown>`
+
+## Task #6 — Autenticación con Supabase Auth (DONE)
+- Migration 003: profiles table (id FK auth.users, email, nombre, rol), RLS, auto-create trigger on signup
+- Login page: `src/app/login/page.tsx` — email/password with Supabase signInWithPassword
+- Registration page: `src/app/registro/page.tsx` — @umce.cl domain validation, signUp with nombre metadata
+- Auth callback: `src/app/auth/callback/route.ts` — exchanges code for session
+- Route protection: `src/proxy.ts` — Next.js 16 proxy (replaces middleware), protects /piac/*, refreshes session
+- Nav updated: shows user email + logout button when authenticated, "Ingresar" link when not
+- PIAC form: user_id now set from auth session instead of hardcoded null
+- Database types: added Profile, ProfileInsert, ProfileUpdate, UserRol types
+- Learning: Next.js 16 renamed middleware.ts → proxy.ts with `export function proxy()` (not default export)
+- `tsc --noEmit` + `npm run build` pass clean
+
