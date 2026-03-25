@@ -3,6 +3,8 @@ const path = require('path');
 const crypto = require('crypto');
 const fs = require('fs');
 const multer = require('multer');
+const mammoth = require('mammoth');
+const { google } = require('googleapis');
 
 // Load .env manually (no dotenv dependency needed)
 try {
@@ -1978,6 +1980,758 @@ app.post('/api/admin/chat/rebuild-prompt', adminMiddleware, async (req, res) => 
   }
 });
 
+// === PIAC System — Fase 2: Lector PIAC + Lector Moodle + Matching ===
+
+// --- Google Drive API setup (udfv@ OAuth) ---
+let driveClient = null;
+function getDriveClient() {
+  if (driveClient) return driveClient;
+  const clientId = process.env.GOOGLE_DRIVE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_DRIVE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET;
+  const refreshToken = process.env.GOOGLE_DRIVE_REFRESH_TOKEN;
+  if (!clientId || !clientSecret || !refreshToken) return null;
+  const oauth2 = new google.auth.OAuth2(clientId, clientSecret);
+  oauth2.setCredentials({ refresh_token: refreshToken });
+  driveClient = google.drive({ version: 'v3', auth: oauth2 });
+  return driveClient;
+}
+
+// Helper: extract Google Drive file ID from various URL formats
+function extractDriveFileId(url) {
+  if (!url) return null;
+  // https://drive.google.com/file/d/FILE_ID/view
+  let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return m[1];
+  // https://drive.google.com/open?id=FILE_ID
+  m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (m) return m[1];
+  // https://docs.google.com/document/d/FILE_ID/
+  m = url.match(/\/document\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return m[1];
+  // Raw file ID (no URL)
+  if (/^[a-zA-Z0-9_-]{10,}$/.test(url)) return url;
+  return null;
+}
+
+// Helper: download .docx from Drive and extract text with mammoth
+async function downloadAndExtractPiac(driveFileId) {
+  const drive = getDriveClient();
+  if (!drive) throw new Error('Google Drive no configurado (falta GOOGLE_DRIVE_REFRESH_TOKEN)');
+
+  // Get file metadata to verify it exists and is a docx
+  const meta = await drive.files.get({ fileId: driveFileId, fields: 'id,name,mimeType,size' });
+  const file = meta.data;
+
+  let buffer;
+  if (file.mimeType === 'application/vnd.google-apps.document') {
+    // Google Doc — export as docx
+    const res = await drive.files.export({ fileId: driveFileId, mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }, { responseType: 'arraybuffer' });
+    buffer = Buffer.from(res.data);
+  } else {
+    // Regular .docx — download directly
+    const res = await drive.files.get({ fileId: driveFileId, alt: 'media' }, { responseType: 'arraybuffer' });
+    buffer = Buffer.from(res.data);
+  }
+
+  // Extract text with mammoth
+  const result = await mammoth.extractRawText({ buffer });
+  return { text: result.value, fileName: file.name, mimeType: file.mimeType };
+}
+
+// Helper: call claude-proxy-container for LLM tasks
+async function callClaudeProxy(prompt, systemPrompt) {
+  let proxyUrl = CLAUDE_PROXY_URL;
+  let response;
+  try {
+    const proxyRes = await fetch(proxyUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, system_prompt: systemPrompt }),
+      signal: AbortSignal.timeout(120000) // 2 min for PIAC parsing
+    });
+    response = await proxyRes.json();
+  } catch (e) {
+    proxyUrl = CLAUDE_PROXY_FALLBACK;
+    const proxyRes = await fetch(proxyUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, system_prompt: systemPrompt }),
+      signal: AbortSignal.timeout(120000)
+    });
+    response = await proxyRes.json();
+  }
+  if (response.error) throw new Error(`Claude proxy: ${response.error}`);
+  return response.response || '';
+}
+
+// System prompt for PIAC parsing
+const PIAC_PARSE_SYSTEM_PROMPT = `Eres un experto en diseño instruccional de la UMCE (Universidad Metropolitana de Ciencias de la Educación).
+Tu tarea es extraer la estructura de un PIAC (Plan Instruccional de Actividad Curricular) desde texto plano y devolver JSON estructurado.
+
+El PIAC sigue las Orientaciones UGCI 004-2020 y tiene esta estructura:
+- Identificación: nombre, programa, docente, semestre, modalidad, horas, créditos SCT
+- Núcleos de Aprendizaje (1 a N): ejes temáticos que articulan conocimientos centrales
+- Por cada Núcleo: Resultado Formativo (RF), Criterios de Evaluación (CE), Temas, Repertorio de Situaciones Evaluativas
+- Evaluaciones sumativas con ponderaciones
+- Metodología
+- Bibliografía
+
+REGLAS:
+- Devuelve SOLO JSON válido, sin texto adicional, sin markdown, sin \`\`\`
+- Si un campo no está presente en el texto, usa null
+- Los porcentajes de ponderación son números (ej: 30 para 30%)
+- Normaliza nombres de núcleos eliminando "Núcleo 1:", "Unidad 1:", etc. del inicio
+- Las semanas son números enteros
+- Si no puedes determinar el rango de semanas de un núcleo, usa null para inicio y fin
+
+SCHEMA JSON REQUERIDO:
+{
+  "identificacion": {
+    "nombre": "string",
+    "programa": "string",
+    "docente": "string",
+    "email_docente": "string|null",
+    "semestre": "string",
+    "modalidad": "virtual|semipresencial|null",
+    "tipo_docencia": "string|null",
+    "horas": { "sincronicas": "number|null", "asincronicas": "number|null", "autonomas": "number|null" },
+    "semanas": "number|null",
+    "creditos_sct": "number|null"
+  },
+  "nucleos": [{
+    "numero": "number",
+    "nombre": "string",
+    "semanas": { "inicio": "number|null", "fin": "number|null" },
+    "resultado_formativo": "string",
+    "criterios_evaluacion": ["string"],
+    "temas": ["string"],
+    "repertorio_evaluativo": ["string"]
+  }],
+  "evaluaciones_sumativas": [{ "nombre": "string", "ponderacion": "number|null", "nucleo": "number|null" }],
+  "metodologia": "string|null",
+  "bibliografia": [{ "referencia": "string", "url": "string|null" }]
+}`;
+
+// Helper: parse LLM response as JSON (handles markdown fences)
+function parseLlmJson(text) {
+  let cleaned = text.trim();
+  // Remove markdown code fences if present
+  if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '');
+  }
+  return JSON.parse(cleaned);
+}
+
+// Helper: take Moodle course snapshot
+async function takeMoodleSnapshot(platform, courseId) {
+  const platformObj = PLATFORMS.find(p => p.id === platform);
+  if (!platformObj) throw new Error(`Plataforma "${platform}" no encontrada`);
+  if (!platformObj.url || !platformObj.token) throw new Error(`Plataforma "${platform}" no configurada`);
+
+  // Fetch course contents (sections + modules)
+  const contents = await moodleCall(platformObj, 'core_course_get_contents', { courseid: courseId });
+
+  // Fetch additional module details in parallel
+  const [assigns, forums, urls, resources] = await Promise.all([
+    moodleCall(platformObj, 'mod_assign_get_assignments', { 'courseids[0]': courseId }).then(r => r.courses?.[0]?.assignments || []).catch(() => []),
+    moodleCall(platformObj, 'mod_forum_get_forums_by_courses', { 'courseids[0]': courseId }).catch(() => []),
+    moodleCall(platformObj, 'mod_url_get_urls_by_courses', { 'courseids[0]': courseId }).then(r => r.urls || []).catch(() => []),
+    moodleCall(platformObj, 'mod_resource_get_resources_by_courses', { 'courseids[0]': courseId }).then(r => r.resources || []).catch(() => [])
+  ]);
+
+  // Index extra data by cmid for enrichment
+  const assignMap = {};
+  assigns.forEach(a => { assignMap[a.cmid] = a; });
+  const forumMap = {};
+  (Array.isArray(forums) ? forums : []).forEach(f => { forumMap[f.cmid] = f; });
+  const urlMap = {};
+  urls.forEach(u => { urlMap[u.coursemodule] = u; });
+  const resourceMap = {};
+  resources.forEach(r => { resourceMap[r.coursemodule] = r; });
+
+  // Build normalized snapshot
+  let totalActivities = 0;
+  const sections = (contents || []).map(section => {
+    const modules = (section.modules || []).map(mod => {
+      totalActivities++;
+      const base = {
+        id: mod.id,
+        modname: mod.modname,
+        name: mod.name,
+        visible: mod.visible === 1,
+        uservisible: mod.uservisible !== false,
+        url: mod.url || null,
+        description: (mod.description || '').replace(/<[^>]*>/g, '').substring(0, 500) || null
+      };
+
+      // Enrich with module-specific data
+      if (mod.modname === 'assign' && assignMap[mod.id]) {
+        const a = assignMap[mod.id];
+        base.dates = {
+          allowsubmissionsfromdate: a.allowsubmissionsfromdate || null,
+          duedate: a.duedate || null,
+          cutoffdate: a.cutoffdate || null
+        };
+        base.grade = a.grade || null;
+      } else if (mod.modname === 'forum' && forumMap[mod.id]) {
+        const f = forumMap[mod.id];
+        base.forumType = f.type || null;
+        base.numdiscussions = f.numdiscussions || 0;
+      } else if (mod.modname === 'url' && urlMap[mod.id]) {
+        const u = urlMap[mod.id];
+        base.externalurl = u.externalurl || null;
+      } else if (mod.modname === 'resource' && resourceMap[mod.id]) {
+        const r = resourceMap[mod.id];
+        base.contents = (r.contentfiles || []).map(f => ({
+          filename: f.filename,
+          filesize: f.filesize,
+          fileurl: f.fileurl,
+          mimetype: f.mimetype
+        }));
+      }
+
+      // Generic contents from core_course_get_contents
+      if (!base.contents && mod.contents && mod.contents.length > 0) {
+        base.contents = mod.contents.map(c => ({
+          filename: c.filename,
+          filesize: c.filesize,
+          fileurl: c.fileurl,
+          mimetype: c.mimetype
+        }));
+      }
+
+      return base;
+    });
+
+    return {
+      id: section.id,
+      number: section.section,
+      name: section.name || `Sección ${section.section}`,
+      visible: section.visible === 1,
+      summary: (section.summary || '').replace(/<[^>]*>/g, '').substring(0, 300) || null,
+      modules
+    };
+  });
+
+  return {
+    course: { id: courseId, platform, platformName: platformObj.name },
+    sections,
+    sectionsCount: sections.length,
+    activitiesCount: totalActivities,
+    snapshotAt: new Date().toISOString()
+  };
+}
+
+// --- PIAC Matching Engine (deterministic, no LLM) ---
+
+function runMatching(piacJson, snapshotJson) {
+  const nucleos = piacJson.nucleos || [];
+  const sections = snapshotJson.sections || [];
+  // Section 0 is usually "General" in Moodle — skip for nucleus matching
+  const contentSections = sections.filter(s => s.number > 0);
+
+  const matches = [];
+  const allDiscrepancies = [];
+
+  nucleos.forEach((nucleo, idx) => {
+    const section = contentSections[idx] || null;
+    const nucleoMatch = {
+      nucleo: { numero: nucleo.numero, nombre: nucleo.nombre, rf: nucleo.resultado_formativo },
+      section: section ? { number: section.number, name: section.name, visible: section.visible } : null,
+      sectionMatched: !!section,
+      elements: []
+    };
+
+    if (!section) {
+      allDiscrepancies.push({
+        type: 'missing_in_moodle',
+        severity: 'critical',
+        piac_element: `Núcleo ${nucleo.numero}: ${nucleo.nombre}`,
+        moodle_element: null,
+        description: `No hay sección en Moodle para el Núcleo ${nucleo.numero} "${nucleo.nombre}"`
+      });
+      matches.push(nucleoMatch);
+      return;
+    }
+
+    if (!section.visible) {
+      allDiscrepancies.push({
+        type: 'mismatch',
+        severity: 'critical',
+        piac_element: `Núcleo ${nucleo.numero}: ${nucleo.nombre}`,
+        moodle_element: `Sección ${section.number}: ${section.name}`,
+        description: `Sección ${section.number} está oculta en Moodle pero corresponde al Núcleo ${nucleo.numero}`
+      });
+    }
+
+    const modules = section.modules || [];
+
+    // Check evaluaciones declared in PIAC for this nucleus
+    const nucleoEvals = (piacJson.evaluaciones_sumativas || []).filter(e => e.nucleo === nucleo.numero);
+    nucleoEvals.forEach(ev => {
+      const assignMatch = modules.find(m => m.modname === 'assign' && m.name.toLowerCase().includes(ev.nombre.toLowerCase().substring(0, 15)));
+      nucleoMatch.elements.push({
+        piac: { type: 'evaluacion', name: ev.nombre, ponderacion: ev.ponderacion },
+        moodle: assignMatch ? { id: assignMatch.id, name: assignMatch.name, modname: 'assign', visible: assignMatch.visible, url: assignMatch.url } : null,
+        matched: !!assignMatch
+      });
+      if (!assignMatch) {
+        allDiscrepancies.push({
+          type: 'missing_in_moodle',
+          severity: 'critical',
+          piac_element: `Evaluación "${ev.nombre}" (${ev.ponderacion || '?'}%) — Núcleo ${nucleo.numero}`,
+          moodle_element: null,
+          description: `Evaluación "${ev.nombre}" declarada en PIAC no tiene tarea correspondiente en Moodle`
+        });
+      } else if (!assignMatch.visible) {
+        allDiscrepancies.push({
+          type: 'mismatch',
+          severity: 'warning',
+          piac_element: `Evaluación "${ev.nombre}"`,
+          moodle_element: `Tarea "${assignMatch.name}" (ID: ${assignMatch.id})`,
+          description: `Tarea "${assignMatch.name}" existe pero está oculta`
+        });
+      }
+    });
+
+    // Check repertorio evaluativo items
+    (nucleo.repertorio_evaluativo || []).forEach(item => {
+      const itemLower = item.toLowerCase();
+      let found = null;
+      if (itemLower.includes('foro') || itemLower.includes('debate') || itemLower.includes('discusión')) {
+        found = modules.find(m => m.modname === 'forum');
+      } else if (itemLower.includes('tarea') || itemLower.includes('ensayo') || itemLower.includes('informe') || itemLower.includes('trabajo')) {
+        found = modules.find(m => m.modname === 'assign');
+      } else if (itemLower.includes('prueba') || itemLower.includes('quiz') || itemLower.includes('test') || itemLower.includes('examen')) {
+        found = modules.find(m => m.modname === 'quiz');
+      }
+      if (found) {
+        nucleoMatch.elements.push({
+          piac: { type: 'repertorio', name: item },
+          moodle: { id: found.id, name: found.name, modname: found.modname, visible: found.visible, url: found.url },
+          matched: true
+        });
+      }
+    });
+
+    // Check for Zoom/videollamada links
+    const zoomUrls = modules.filter(m => m.modname === 'url' && m.externalurl && (m.externalurl.includes('zoom.us') || m.name.toLowerCase().includes('zoom') || m.name.toLowerCase().includes('clase')));
+    if (zoomUrls.length > 0) {
+      nucleoMatch.elements.push({
+        piac: { type: 'sincronico', name: 'Sesión sincrónica' },
+        moodle: { id: zoomUrls[0].id, name: zoomUrls[0].name, modname: 'url', visible: zoomUrls[0].visible, url: zoomUrls[0].url, externalurl: zoomUrls[0].externalurl },
+        matched: true
+      });
+    }
+
+    // Check for resources/files
+    const resourceModules = modules.filter(m => m.modname === 'resource' || (m.modname === 'url' && !zoomUrls.includes(m)));
+    if (resourceModules.length > 0) {
+      nucleoMatch.elements.push({
+        piac: { type: 'recursos', name: `${resourceModules.length} recurso(s)` },
+        moodle: resourceModules.map(r => ({ id: r.id, name: r.name, modname: r.modname, visible: r.visible, url: r.url })),
+        matched: true
+      });
+    }
+
+    // Check for unmatched Moodle modules (exist in Moodle but not tracked in PIAC)
+    const matchedModuleIds = new Set(nucleoMatch.elements.filter(e => e.moodle).flatMap(e => Array.isArray(e.moodle) ? e.moodle.map(m => m.id) : [e.moodle.id]));
+    const unmatchedModules = modules.filter(m => !matchedModuleIds.has(m.id) && m.modname !== 'label');
+    unmatchedModules.forEach(mod => {
+      allDiscrepancies.push({
+        type: 'missing_in_piac',
+        severity: 'info',
+        piac_element: null,
+        moodle_element: `${mod.modname}: "${mod.name}" (Sección ${section.number})`,
+        description: `Elemento en Moodle sin correspondencia directa en PIAC`
+      });
+    });
+
+    matches.push(nucleoMatch);
+  });
+
+  // Check for sections beyond nucleos
+  if (contentSections.length > nucleos.length) {
+    for (let i = nucleos.length; i < contentSections.length; i++) {
+      const extraSection = contentSections[i];
+      if (extraSection.modules && extraSection.modules.length > 0) {
+        allDiscrepancies.push({
+          type: 'missing_in_piac',
+          severity: 'info',
+          piac_element: null,
+          moodle_element: `Sección ${extraSection.number}: "${extraSection.name}" (${extraSection.modules.length} elementos)`,
+          description: `Sección extra en Moodle sin núcleo correspondiente en PIAC`
+        });
+      }
+    }
+  }
+
+  // Build summary
+  const totalPiacElements = nucleos.length + (piacJson.evaluaciones_sumativas || []).length;
+  const totalMoodleActivities = contentSections.reduce((sum, s) => sum + (s.modules || []).length, 0);
+  const matchedCount = matches.reduce((sum, m) => sum + m.elements.filter(e => e.matched).length, 0);
+  const criticalCount = allDiscrepancies.filter(d => d.severity === 'critical').length;
+  const warningCount = allDiscrepancies.filter(d => d.severity === 'warning').length;
+  const infoCount = allDiscrepancies.filter(d => d.severity === 'info').length;
+
+  const summary = {
+    nucleos_piac: nucleos.length,
+    sections_moodle: contentSections.length,
+    nucleos_matched: matches.filter(m => m.sectionMatched).length,
+    total_piac_elements: totalPiacElements,
+    total_moodle_activities: totalMoodleActivities,
+    matched_elements: matchedCount,
+    discrepancies: { critical: criticalCount, warning: warningCount, info: infoCount, total: allDiscrepancies.length }
+  };
+
+  return { matches, discrepancies: allDiscrepancies, summary };
+}
+
+// --- PIAC API Endpoints ---
+
+// POST /api/piac/link — DI vincula PIAC Drive + curso Moodle
+app.post('/api/piac/link', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const { moodle_platform, moodle_course_id, drive_url, program_id } = req.body;
+    if (!moodle_platform || !moodle_course_id || !drive_url) {
+      return res.status(400).json({ error: 'moodle_platform, moodle_course_id y drive_url son requeridos' });
+    }
+
+    const platformObj = PLATFORMS.find(p => p.id === moodle_platform);
+    if (!platformObj) return res.status(400).json({ error: `Plataforma "${moodle_platform}" no existe` });
+
+    // Verify course exists in Moodle
+    let courseName = null;
+    try {
+      const courses = await moodleCall(platformObj, 'core_course_get_courses', { 'options[ids][0]': moodle_course_id });
+      if (!courses || courses.length === 0) return res.status(404).json({ error: `Curso ID ${moodle_course_id} no encontrado en ${moodle_platform}` });
+      courseName = courses[0].fullname;
+    } catch (e) {
+      return res.status(400).json({ error: `Error verificando curso en Moodle: ${e.message}` });
+    }
+
+    // Extract Drive file ID
+    const driveFileId = extractDriveFileId(drive_url);
+
+    // Check for duplicate
+    const existing = await portalQuery('piac_links', `moodle_platform=eq.${encodeURIComponent(moodle_platform)}&moodle_course_id=eq.${moodle_course_id}&status=eq.active`);
+    if (existing.length > 0) {
+      return res.status(409).json({ error: 'Ya existe un vínculo activo para este curso', existing: existing[0] });
+    }
+
+    const link = await portalMutate('piac_links', 'POST', {
+      program_id: program_id || null,
+      moodle_course_id: parseInt(moodle_course_id),
+      moodle_platform,
+      drive_file_id: driveFileId,
+      drive_url,
+      course_name: courseName,
+      linked_by: req.userEmail
+    });
+
+    res.json({ created: true, link: link[0] || link });
+  } catch (err) {
+    console.error('PIAC link error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/piac/links — list all active links with latest analysis status
+app.get('/api/piac/links', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const links = await portalQuery('piac_links', 'status=eq.active&order=created_at.desc');
+
+    // Enrich with latest matching summary for each link
+    const enriched = await Promise.all(links.map(async (link) => {
+      try {
+        const matchings = await portalQuery('matching_results', `piac_link_id=eq.${link.id}&order=created_at.desc&limit=1`);
+        const latestParsed = await portalQuery('piac_parsed', `piac_link_id=eq.${link.id}&order=parsed_at.desc&limit=1`);
+        return {
+          ...link,
+          last_analysis: matchings[0] ? { summary: matchings[0].summary_json, date: matchings[0].created_at } : null,
+          last_parsed: latestParsed[0] ? { date: latestParsed[0].parsed_at, version: latestParsed[0].version } : null
+        };
+      } catch {
+        return { ...link, last_analysis: null, last_parsed: null };
+      }
+    }));
+
+    res.json(enriched);
+  } catch (err) {
+    console.error('PIAC links list error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/piac/link/:id — full detail with parsed, snapshot, matching, discrepancies
+app.get('/api/piac/link/:id', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+
+    const links = await portalQuery('piac_links', `id=eq.${id}`);
+    if (links.length === 0) return res.status(404).json({ error: 'Vínculo no encontrado' });
+    const link = links[0];
+
+    const [parsed, snapshots, matchings] = await Promise.all([
+      portalQuery('piac_parsed', `piac_link_id=eq.${id}&order=parsed_at.desc&limit=1`),
+      portalQuery('moodle_snapshots', `piac_link_id=eq.${id}&order=snapshot_at.desc&limit=1`),
+      portalQuery('matching_results', `piac_link_id=eq.${id}&order=created_at.desc&limit=1`)
+    ]);
+
+    let discrepancies = [];
+    if (matchings.length > 0) {
+      discrepancies = await portalQuery('discrepancies', `matching_id=eq.${matchings[0].id}&order=severity.asc,created_at.desc`);
+    }
+
+    res.json({
+      link,
+      parsed: parsed[0] || null,
+      snapshot: snapshots[0] || null,
+      matching: matchings[0] || null,
+      discrepancies
+    });
+  } catch (err) {
+    console.error('PIAC link detail error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE /api/piac/link/:id — soft delete (archive)
+app.delete('/api/piac/link/:id', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    if (!isAdmin(req.userEmail)) return res.status(403).json({ error: 'Solo admin puede eliminar vínculos' });
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+
+    await portalMutate('piac_links', 'PATCH', { status: 'archived', updated_at: new Date().toISOString() }, `id=eq.${id}`);
+    res.json({ archived: true });
+  } catch (err) {
+    console.error('PIAC link delete error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/piac/:linkId/parse — download PIAC from Drive, extract text, parse with LLM
+app.post('/api/piac/:linkId/parse', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    if (isNaN(linkId)) return res.status(400).json({ error: 'ID inválido' });
+
+    const links = await portalQuery('piac_links', `id=eq.${linkId}&status=eq.active`);
+    if (links.length === 0) return res.status(404).json({ error: 'Vínculo no encontrado' });
+    const link = links[0];
+
+    if (!link.drive_file_id) return res.status(400).json({ error: 'No hay file ID de Drive — verifica el link' });
+
+    // Step 1: Download and extract text
+    console.log(`PIAC parse: downloading ${link.drive_file_id}...`);
+    const { text, fileName } = await downloadAndExtractPiac(link.drive_file_id);
+    if (!text || text.trim().length < 100) {
+      return res.status(400).json({ error: 'El documento está vacío o tiene muy poco contenido' });
+    }
+    console.log(`PIAC parse: extracted ${text.length} chars from "${fileName}"`);
+
+    // Step 2: Parse with LLM
+    const llmResponse = await callClaudeProxy(
+      `Extrae la estructura de este PIAC y devuelve el JSON:\n\n${text.substring(0, 30000)}`,
+      PIAC_PARSE_SYSTEM_PROMPT
+    );
+
+    const parsedJson = parseLlmJson(llmResponse);
+
+    // Step 3: Determine version
+    const prevVersions = await portalQuery('piac_parsed', `piac_link_id=eq.${linkId}&order=version.desc&limit=1`);
+    const nextVersion = prevVersions.length > 0 ? prevVersions[0].version + 1 : 1;
+
+    // Step 4: Save
+    const saved = await portalMutate('piac_parsed', 'POST', {
+      piac_link_id: linkId,
+      version: nextVersion,
+      raw_text: text.substring(0, 100000),
+      parsed_json: parsedJson,
+      llm_model: 'claude-proxy',
+      tokens_used: Math.round(text.length / 4)
+    });
+
+    // Update link timestamp
+    await portalMutate('piac_links', 'PATCH', { updated_at: new Date().toISOString() }, `id=eq.${linkId}`);
+
+    res.json({ parsed: true, version: nextVersion, data: saved[0] || saved });
+  } catch (err) {
+    console.error('PIAC parse error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/piac/:linkId/snapshot — take Moodle course snapshot
+app.post('/api/piac/:linkId/snapshot', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    if (isNaN(linkId)) return res.status(400).json({ error: 'ID inválido' });
+
+    const links = await portalQuery('piac_links', `id=eq.${linkId}&status=eq.active`);
+    if (links.length === 0) return res.status(404).json({ error: 'Vínculo no encontrado' });
+    const link = links[0];
+
+    console.log(`Moodle snapshot: ${link.moodle_platform} course ${link.moodle_course_id}...`);
+    const snapshot = await takeMoodleSnapshot(link.moodle_platform, link.moodle_course_id);
+
+    const saved = await portalMutate('moodle_snapshots', 'POST', {
+      piac_link_id: linkId,
+      sections_count: snapshot.sectionsCount,
+      activities_count: snapshot.activitiesCount,
+      snapshot_json: snapshot
+    });
+
+    res.json({ snapshot: true, data: saved[0] || saved });
+  } catch (err) {
+    console.error('Moodle snapshot error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/piac/:linkId/match — run matching engine on latest parsed + snapshot
+app.post('/api/piac/:linkId/match', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    if (isNaN(linkId)) return res.status(400).json({ error: 'ID inválido' });
+
+    const [parsedArr, snapshotArr] = await Promise.all([
+      portalQuery('piac_parsed', `piac_link_id=eq.${linkId}&order=parsed_at.desc&limit=1`),
+      portalQuery('moodle_snapshots', `piac_link_id=eq.${linkId}&order=snapshot_at.desc&limit=1`)
+    ]);
+
+    if (parsedArr.length === 0) return res.status(400).json({ error: 'No hay PIAC parseado — ejecuta /parse primero' });
+    if (snapshotArr.length === 0) return res.status(400).json({ error: 'No hay snapshot Moodle — ejecuta /snapshot primero' });
+
+    const parsed = parsedArr[0];
+    const snapshot = snapshotArr[0];
+
+    console.log(`Matching: link ${linkId}, PIAC v${parsed.version}, snapshot ${snapshot.id}...`);
+    const result = runMatching(parsed.parsed_json, snapshot.snapshot_json);
+
+    // Save matching result
+    const savedMatching = await portalMutate('matching_results', 'POST', {
+      piac_link_id: linkId,
+      piac_parsed_id: parsed.id,
+      moodle_snapshot_id: snapshot.id,
+      matches_json: result.matches,
+      summary_json: result.summary
+    });
+    const matchingId = (savedMatching[0] || savedMatching).id;
+
+    // Save individual discrepancies
+    if (result.discrepancies.length > 0) {
+      await portalMutate('discrepancies', 'POST',
+        result.discrepancies.map(d => ({ matching_id: matchingId, ...d }))
+      );
+    }
+
+    res.json({ matched: true, summary: result.summary, matchingId, discrepancies: result.discrepancies.length });
+  } catch (err) {
+    console.error('Matching error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/piac/:linkId/analyze — full pipeline: parse + snapshot + match
+app.post('/api/piac/:linkId/analyze', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    if (isNaN(linkId)) return res.status(400).json({ error: 'ID inválido' });
+
+    const links = await portalQuery('piac_links', `id=eq.${linkId}&status=eq.active`);
+    if (links.length === 0) return res.status(404).json({ error: 'Vínculo no encontrado' });
+    const link = links[0];
+
+    const steps = { parse: null, snapshot: null, match: null };
+
+    // Step 1: Parse PIAC
+    if (link.drive_file_id) {
+      try {
+        const { text, fileName } = await downloadAndExtractPiac(link.drive_file_id);
+        if (text && text.trim().length >= 100) {
+          const llmResponse = await callClaudeProxy(
+            `Extrae la estructura de este PIAC y devuelve el JSON:\n\n${text.substring(0, 30000)}`,
+            PIAC_PARSE_SYSTEM_PROMPT
+          );
+          const parsedJson = parseLlmJson(llmResponse);
+          const prevVersions = await portalQuery('piac_parsed', `piac_link_id=eq.${linkId}&order=version.desc&limit=1`);
+          const nextVersion = prevVersions.length > 0 ? prevVersions[0].version + 1 : 1;
+          await portalMutate('piac_parsed', 'POST', {
+            piac_link_id: linkId, version: nextVersion, raw_text: text.substring(0, 100000),
+            parsed_json: parsedJson, llm_model: 'claude-proxy', tokens_used: Math.round(text.length / 4)
+          });
+          steps.parse = { ok: true, version: nextVersion, fileName };
+        } else {
+          steps.parse = { ok: false, error: 'Documento vacío' };
+        }
+      } catch (e) {
+        steps.parse = { ok: false, error: e.message };
+      }
+    } else {
+      steps.parse = { ok: false, error: 'No hay file ID de Drive' };
+    }
+
+    // Step 2: Moodle snapshot
+    try {
+      const snapshot = await takeMoodleSnapshot(link.moodle_platform, link.moodle_course_id);
+      await portalMutate('moodle_snapshots', 'POST', {
+        piac_link_id: linkId, sections_count: snapshot.sectionsCount,
+        activities_count: snapshot.activitiesCount, snapshot_json: snapshot
+      });
+      steps.snapshot = { ok: true, sections: snapshot.sectionsCount, activities: snapshot.activitiesCount };
+    } catch (e) {
+      steps.snapshot = { ok: false, error: e.message };
+    }
+
+    // Step 3: Match (only if both parse and snapshot succeeded)
+    if (steps.parse?.ok && steps.snapshot?.ok) {
+      try {
+        const [parsedArr, snapshotArr] = await Promise.all([
+          portalQuery('piac_parsed', `piac_link_id=eq.${linkId}&order=parsed_at.desc&limit=1`),
+          portalQuery('moodle_snapshots', `piac_link_id=eq.${linkId}&order=snapshot_at.desc&limit=1`)
+        ]);
+        const result = runMatching(parsedArr[0].parsed_json, snapshotArr[0].snapshot_json);
+        const savedMatching = await portalMutate('matching_results', 'POST', {
+          piac_link_id: linkId, piac_parsed_id: parsedArr[0].id,
+          moodle_snapshot_id: snapshotArr[0].id, matches_json: result.matches, summary_json: result.summary
+        });
+        const matchingId = (savedMatching[0] || savedMatching).id;
+        if (result.discrepancies.length > 0) {
+          await portalMutate('discrepancies', 'POST', result.discrepancies.map(d => ({ matching_id: matchingId, ...d })));
+        }
+        steps.match = { ok: true, summary: result.summary, discrepancies: result.discrepancies.length };
+      } catch (e) {
+        steps.match = { ok: false, error: e.message };
+      }
+    } else {
+      steps.match = { ok: false, error: 'Parse o snapshot fallaron — no se puede hacer matching' };
+    }
+
+    await portalMutate('piac_links', 'PATCH', { updated_at: new Date().toISOString() }, `id=eq.${linkId}`);
+    res.json({ analyzed: true, steps });
+  } catch (err) {
+    console.error('Full analyze error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/piac/discrepancy/:id/resolve — mark discrepancy as resolved
+app.post('/api/piac/discrepancy/:id/resolve', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+    await portalMutate('discrepancies', 'PATCH', {
+      resolved: true, resolved_by: req.userEmail, resolved_at: new Date().toISOString()
+    }, `id=eq.${id}`);
+    res.json({ resolved: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --- API: Health check ---
 app.get('/api/health', (req, res) => {
   res.json({
@@ -1998,6 +2752,7 @@ app.get('/ayuda', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ayu
 app.get('/privacidad', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacidad.html')));
 
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
+app.get('/piac', (req, res) => res.sendFile(path.join(__dirname, 'public', 'piac.html')));
 
 // Dynamic slug-based pages
 app.get('/programa/:slug', (req, res) => res.sendFile(path.join(__dirname, 'public', 'programa.html')));

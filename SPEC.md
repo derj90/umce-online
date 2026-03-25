@@ -66,30 +66,175 @@ Las fases futuras son esqueleto — se completan con David antes de empezar.
 
 ## Fase 2: Lector PIAC + Lector Moodle + Matching
 
-**Estado**: PENDIENTE
-**Ultima sesion**: —
-**Objetivo**: El sistema lee un PIAC desde Google Drive, lee un curso Moodle via API, y encuentra relaciones/discrepancias entre ambos.
+**Estado**: EN PROGRESO
+**Ultima sesion**: 25-mar-2026
+**Objetivo**: El sistema lee un PIAC desde Google Drive, lee un curso Moodle via API, y encuentra relaciones/discrepancias entre ambos. El DI ve el resultado en un panel.
 
-### Leer antes de empezar (completar cuando se inicie)
-- SPEC Fase 2 detallada (este archivo, se completa antes de empezar)
-- Notion: definiciones tecnicas del PIAC → https://www.notion.so/32e0778552798118ab7dcf2563971f21
-- `server.js` — endpoints existentes de Moodle API (lineas ~700-900)
-- Orientaciones PIAC UGCI → https://www.notion.so/2696ea8a1d8f43a68458dea55f29606a
+### Leer antes de empezar
+- [x] SPEC Fase 2 detallada (este archivo)
+- [x] Notion: definiciones tecnicas del PIAC → https://www.notion.so/32e0778552798118ab7dcf2563971f21
+- [x] Notion: Orientaciones PIAC UGCI → https://www.notion.so/2696ea8a1d8f43a68458dea55f29606a
+- [x] Notion: Arquitectura umce.online → https://www.notion.so/32e07785527981b48f90e52a5db26506
+- [x] Notion: Motor IA Cron + LLM → https://www.notion.so/32e077855279818ea757d4449a7c4760
+- [x] `server.js` — moodleCall helper (linea 154), PLATFORMS config (linea 88), queryAllPlatforms (linea 285)
+- [x] `server.js` — portalQuery/portalMutate helpers (lineas 577-618)
+- [x] `server.js` — claude-proxy-container (linea 1202, puerto 3099)
+- [x] `server.js` — adminOrEditorMiddleware (linea 353)
+- [x] `schema-portal.sql` — tablas existentes: programs, courses, team_members, etc.
 
-### Esqueleto (se detalla con David antes de ejecutar)
-- [ ] 2.1 Endpoint para vincular PIAC (link Drive) + curso Moodle (ID) — config manual por DI
-- [ ] 2.2 Google Drive API: leer documento Word, extraer estructura (nucleos, RF, CE, repertorio evaluativo)
-- [ ] 2.3 LLM: parsear PIAC a JSON estructurado
-- [ ] 2.4 Moodle API: leer estructura del curso (secciones, actividades, visibility, mod_data)
-- [ ] 2.5 Motor matching: relacionar elementos PIAC ↔ Moodle
-- [ ] 2.6 Detectar discrepancias (elemento en PIAC sin correspondencia en Moodle y viceversa)
-- [ ] 2.7 Almacenar resultado en Supabase schema portal (nuevas tablas)
-- [ ] 2.8 UI basica para ver resultado del matching (vista DI)
+### Decisiones de David (25-mar-2026)
+- Drive API: usar cuenta udfv@umce.cl (OAuth existente)
+- LLM: reutilizar claude-proxy-container del VPS (suscripcion Claude Max)
+- Visualizacion del "curso virtual" (cruce PIAC↔Moodle) requiere revision iterativa
+- Plataformas foco: virtual.umce.cl (principal), evirtual.umce.cl (secundario)
+
+### Dependencias nuevas
+- `mammoth` — Word (.docx) → texto/HTML, ~200KB, sin binarios nativos
+- `googleapis` — Google Drive API v3 para descargar PIACs
+
+### Variables de entorno nuevas (.env)
+- `GOOGLE_DRIVE_CLIENT_ID` — OAuth client ID (puede reusar el existente)
+- `GOOGLE_DRIVE_CLIENT_SECRET` — OAuth client secret
+- `GOOGLE_DRIVE_REFRESH_TOKEN` — refresh token de udfv@umce.cl con scope drive.readonly
+
+### Que construir
+
+- [x] **2.1 Tablas SQL en schema portal**
+  - `piac_links` — vinculo PIAC Drive ↔ curso Moodle (DI configura manualmente)
+    - id, program_id (FK nullable), moodle_course_id, moodle_platform, drive_file_id, drive_url, course_name, linked_by, status (active|archived), created_at, updated_at
+  - `piac_parsed` — estructura JSON extraida del Word
+    - id, piac_link_id (FK), version, raw_text, parsed_json (JSONB), llm_model, tokens_used, parsed_at
+  - `moodle_snapshots` — snapshot de la estructura del curso Moodle
+    - id, piac_link_id (FK), sections_count, activities_count, snapshot_json (JSONB), snapshot_at
+  - `matching_results` — resultado del matching PIAC↔Moodle
+    - id, piac_link_id (FK), piac_parsed_id (FK), moodle_snapshot_id (FK), matches_json (JSONB), summary_json (JSONB), created_at
+  - `discrepancies` — discrepancias individuales
+    - id, matching_id (FK), type (missing_in_moodle|missing_in_piac|mismatch), severity (critical|warning|info), piac_element, moodle_element, description, resolved (bool), resolved_by, resolved_at, created_at
+  - Crear archivo `schema-piac.sql` con la migracion
+  - Agregar RLS, indices, grants (mismo patron que schema-portal.sql)
+
+- [x] **2.2 Endpoints vincular PIAC + curso Moodle**
+  - `POST /api/piac/link` (adminOrEditor) — body: { moodle_platform, moodle_course_id, drive_url }
+    - Validar: curso existe en Moodle via moodleCall(platform, 'core_course_get_courses', {options: {ids: [id]}})
+    - Extraer drive_file_id del URL de Drive
+    - Guardar en piac_links
+  - `GET /api/piac/links` (adminOrEditor) — lista todos los vinculos con ultimo estado de matching
+  - `GET /api/piac/link/:id` (adminOrEditor) — detalle con parsed, snapshot, matching, discrepancias
+  - `DELETE /api/piac/link/:id` (admin) — soft delete (status→archived)
+
+- [x] **2.3 Lector Drive: descargar Word**
+  - Google Drive API v3: files.get + files.export (o media download para .docx)
+  - Auth: OAuth2 con refresh token de udfv@umce.cl (scope drive.readonly)
+  - Extraer texto con mammoth: docx buffer → texto plano
+  - Guardar raw_text en piac_parsed
+  - Endpoint: `POST /api/piac/:linkId/parse` (adminOrEditor) — trigger manual
+
+- [x] **2.4 LLM: PIAC texto → JSON estructurado**
+  - Llamar claude-proxy-container con system prompt + texto del PIAC
+  - System prompt con schema JSON esperado + definiciones UGCI (nucleos, RF, CE, repertorio)
+  - Output JSON:
+    ```json
+    {
+      "identificacion": {
+        "nombre": "", "programa": "", "docente": "", "email_docente": "",
+        "semestre": "", "modalidad": "", "tipo_docencia": "",
+        "horas": { "sincronicas": 0, "asincronicas": 0, "autonomas": 0 },
+        "semanas": 0, "creditos_sct": 0
+      },
+      "nucleos": [{
+        "numero": 1, "nombre": "",
+        "semanas": { "inicio": 1, "fin": 4 },
+        "resultado_formativo": "",
+        "criterios_evaluacion": [""],
+        "temas": [""],
+        "repertorio_evaluativo": [""]
+      }],
+      "evaluaciones_sumativas": [{ "nombre": "", "ponderacion": 0, "nucleo": 0 }],
+      "metodologia": "",
+      "bibliografia": [{ "referencia": "", "url": "" }]
+    }
+    ```
+  - Guardar parsed_json + llm_model + tokens en piac_parsed
+
+- [x] **2.5 Lector Moodle: snapshot estructura del curso**
+  - `core_course_get_contents` → secciones, modulos, visibilidad
+  - `mod_assign_get_assignments` → tareas con fechas
+  - `mod_forum_get_forums_by_courses` → foros
+  - `mod_url_get_urls_by_courses` → URLs (Zoom, recursos externos)
+  - `mod_resource_get_resources_by_courses` → archivos adjuntos
+  - Snapshot JSON normalizado:
+    ```json
+    {
+      "course": { "id": 0, "fullname": "", "platform": "" },
+      "sections": [{
+        "id": 0, "number": 0, "name": "", "visible": true,
+        "modules": [{
+          "id": 0, "modname": "", "name": "", "visible": true,
+          "modplural": "", "url": "", "description": "",
+          "dates": { "added": 0, "due": 0 },
+          "contents": [{ "filename": "", "fileurl": "" }]
+        }]
+      }]
+    }
+    ```
+  - Guardar en moodle_snapshots
+  - Endpoint: `POST /api/piac/:linkId/snapshot` (adminOrEditor) — trigger manual
+
+- [x] **2.6 Motor matching (logica determinista, sin LLM)**
+  - Input: piac_parsed.parsed_json + moodle_snapshot.snapshot_json
+  - Mapeo: seccion Moodle N → nucleo PIAC N (por posicion, seccion 0 = general)
+  - Por cada nucleo: buscar actividades Moodle que correspondan a lo declarado
+    - Sincronicas (RF/sesion) → URLs tipo Zoom
+    - Asincronicas (foros, tareas) → mod_forum, mod_assign
+    - Evaluaciones → mod_assign con fecha
+    - Recursos → mod_resource, mod_url
+  - Clasificar: { matched, unmatched_piac, unmatched_moodle, partial }
+  - Guardar matches_json + summary_json en matching_results
+  - Endpoint: `POST /api/piac/:linkId/match` (adminOrEditor) — trigger manual
+  - Endpoint alternativo: `POST /api/piac/:linkId/analyze` — ejecuta parse + snapshot + match en secuencia
+
+- [x] **2.7 Detectar y clasificar discrepancias**
+  - Se ejecuta como parte del matching (paso 2.6)
+  - Tipos:
+    - `missing_in_moodle`: PIAC declara actividad/evaluacion/recurso que no existe en Moodle
+    - `missing_in_piac`: Moodle tiene elemento sin correspondencia en PIAC
+    - `mismatch`: existe en ambos pero inconsistente (nombre, fecha, visibilidad)
+  - Severidad:
+    - `critical`: seccion oculta que deberia estar visible, tarea sin fecha, zoom link ausente
+    - `warning`: foro sin descripcion, nombre no coincide, recurso sin contenido
+    - `info`: elementos extra en Moodle no declarados en PIAC
+  - Guardar en discrepancies con FK a matching_results
+
+- [x] **2.8 UI basica vista DI (piac.html)**
+  - Nueva pagina `public/piac.html` protegida por auth (adminOrEditor)
+  - Agregar link en nav para admin/editor
+  - Secciones:
+    1. Lista de vinculos PIAC-Moodle con badges de estado (sin analizar / ok / alertas)
+    2. Formulario para crear nuevo vinculo (seleccionar plataforma + course ID + pegar link Drive)
+    3. Vista de detalle al hacer click en un vinculo:
+       - Panel izquierdo: estructura PIAC (nucleos, RF, CE, actividades declaradas)
+       - Panel derecho: estructura Moodle (secciones, modulos, visibilidad)
+       - Centro/abajo: discrepancias coloreadas por severidad
+       - Cada discrepancia con link directo al elemento en Moodle
+    4. Boton "Analizar" → ejecuta parse + snapshot + match
+  - Estilo: Tailwind CDN, consistente con paginas existentes del portal
+
+### Criterios de aceptacion
+- DI puede vincular un PIAC de Drive con un curso de cualquier plataforma Moodle
+- El sistema descarga el Word, extrae estructura via LLM, y la muestra como JSON legible
+- El sistema lee la estructura completa del curso Moodle via API
+- El matching muestra lado a lado: que hay en PIAC vs que hay en Moodle
+- Las discrepancias se clasifican con severidad y tienen link directo a Moodle
+- No se modifica nada en Moodle ni en Drive — todo es lectura
+- Las tablas en Supabase almacenan el historial de analisis
 
 ### Anti-patrones de esta fase
 - NO crear formulario que reemplace el PIAC — se LEE desde Drive
 - NO modificar nada en Moodle — solo lectura
 - NO generar elementos automaticamente — la IA observa y reporta
+- NO usar LLM para el matching — es logica determinista (comparar JSONs)
+- NO implementar cron automatico — en Fase 2 todo es trigger manual (cron es Fase 4)
+- NO construir vista de estudiante — eso es Fase 3, aqui solo vista DI
 
 ---
 
@@ -173,3 +318,4 @@ Cada sesion que trabaje en este proyecto registra aqui que se hizo.
 |-------|------|-------------|-----------|
 | 25-mar-2026 | Pre-fase | Correccion de vision, limpieza repo, definiciones tecnicas, benchmark RRSS, creacion sistema de desarrollo (CLAUDE.md + SPEC.md) | Sistema listo para Fase 1 |
 | 25-mar-2026 | Fase 1 | Migracion completa: codebase copiado, URLs actualizadas (60+ refs), OAuth nuevo, Traefik+SSL, CI/CD, redirect 301 virtual.udfv.cloud→umce.online | COMPLETADA — 12/12 pasos |
+| 25-mar-2026 | Fase 2 | Implementacion completa: schema SQL (5 tablas), Drive API + mammoth, LLM parse via claude-proxy, Moodle snapshot (5 endpoints), motor matching determinista, detector discrepancias, UI panel DI (piac.html) | 8/8 pasos codificados — pendiente deploy + test con PIAC real |

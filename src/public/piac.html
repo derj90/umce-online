@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel PIAC — UMCE Virtual</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .font-heading { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    .spinner { width: 20px; height: 20px; border: 2px solid #E5E7EB; border-top-color: #0033A1; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .badge-critical { background: #FEE2E2; color: #991B1B; }
+    .badge-warning { background: #FEF3C7; color: #92400E; }
+    .badge-info { background: #DBEAFE; color: #1E40AF; }
+    .badge-ok { background: #D1FAE5; color: #065F46; }
+    .badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+    .disc-row { transition: background 0.15s; }
+    .disc-row:hover { background: #F9FAFB; }
+    .fade-in { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .panel-card { background: white; border: 1px solid #E5E7EB; border-radius: 0.75rem; }
+    .section-header { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #6B7280; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- Simple top bar (no nav — internal tool) -->
+  <header class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between sticky top-0 z-40">
+    <div class="flex items-center gap-3">
+      <a href="/" class="flex items-center gap-2 text-gray-400 hover:text-gray-600 transition-colors">
+        <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+          <span class="font-heading font-extrabold text-sm text-gray-600">U</span>
+        </div>
+      </a>
+      <span class="text-gray-300">/</span>
+      <h1 class="font-heading font-bold text-gray-800">Panel PIAC</h1>
+      <span class="badge badge-info">Fase 2</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="/admin" class="text-sm text-gray-500 hover:text-gray-700">Admin</a>
+      <a href="/mis-cursos" class="text-sm text-gray-500 hover:text-gray-700">Mis cursos</a>
+      <span id="user-email" class="text-xs text-gray-400"></span>
+    </div>
+  </header>
+
+  <!-- Auth gate -->
+  <div id="auth-gate" class="flex-1 flex items-center justify-center py-20">
+    <div class="text-center">
+      <div class="spinner mx-auto mb-3"></div>
+      <p class="text-gray-400 text-sm">Verificando acceso...</p>
+    </div>
+  </div>
+
+  <!-- Unauthorized -->
+  <div id="unauthorized" class="hidden flex-1 flex items-center justify-center py-20">
+    <div class="text-center max-w-sm">
+      <p class="text-red-500 font-medium mb-2">Sin permisos</p>
+      <p class="text-gray-500 text-sm">Necesitas ser admin o editor para acceder al Panel PIAC.</p>
+      <a href="/" class="mt-4 inline-block text-sm text-blue-600 hover:underline">Volver al inicio</a>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <main id="main-content" class="hidden max-w-7xl mx-auto px-6 py-6">
+
+    <!-- Header row -->
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-gray-500 text-sm">Gestiona los vinculos entre PIACs (Google Drive) y cursos Moodle. Analiza coherencia y detecta discrepancias.</p>
+      </div>
+      <button id="btn-new-link" class="flex items-center gap-2 bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Nuevo vinculo
+      </button>
+    </div>
+
+    <!-- Links list -->
+    <div id="links-list" class="space-y-3 mb-8">
+      <div class="text-gray-400 text-sm py-8 text-center">Cargando vinculos...</div>
+    </div>
+
+    <!-- New link form (hidden by default) -->
+    <div id="new-link-form" class="hidden panel-card p-6 mb-8 fade-in">
+      <h3 class="font-heading font-bold text-gray-800 mb-4">Nuevo vinculo PIAC — Moodle</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Plataforma Moodle</label>
+          <select id="f-platform" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="virtual">Virtual (virtual.umce.cl)</option>
+            <option value="evirtual">eVirtual (evirtual.umce.cl)</option>
+            <option value="pregrado">Pregrado</option>
+            <option value="postgrado">Postgrado</option>
+            <option value="practica">Practica</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">ID del curso Moodle</label>
+          <input id="f-course-id" type="number" placeholder="Ej: 1234" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Link PIAC en Google Drive</label>
+          <input id="f-drive-url" type="url" placeholder="https://drive.google.com/file/d/..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="btn-save-link" class="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Crear vinculo</button>
+        <button id="btn-cancel-link" class="text-gray-500 text-sm hover:text-gray-700">Cancelar</button>
+        <span id="link-form-status" class="text-sm"></span>
+      </div>
+    </div>
+
+    <!-- Detail view (hidden until a link is selected) -->
+    <div id="detail-view" class="hidden fade-in">
+      <div class="flex items-center gap-3 mb-4">
+        <button id="btn-back" class="text-gray-400 hover:text-gray-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <h2 id="detail-title" class="font-heading font-bold text-lg text-gray-800"></h2>
+        <span id="detail-platform-badge" class="badge"></span>
+      </div>
+
+      <!-- Action bar -->
+      <div class="flex items-center gap-3 mb-6">
+        <button id="btn-analyze" class="flex items-center gap-2 bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          Analizar (completo)
+        </button>
+        <button id="btn-parse-only" class="text-sm text-gray-500 hover:text-gray-700 border border-gray-300 px-3 py-2 rounded-lg">Solo parsear PIAC</button>
+        <button id="btn-snapshot-only" class="text-sm text-gray-500 hover:text-gray-700 border border-gray-300 px-3 py-2 rounded-lg">Solo snapshot Moodle</button>
+        <span id="analyze-status" class="text-sm text-gray-400"></span>
+      </div>
+
+      <!-- Summary cards -->
+      <div id="summary-cards" class="hidden grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+        <div class="panel-card p-4 text-center">
+          <div class="text-2xl font-bold text-gray-800" id="sum-nucleos">-</div>
+          <div class="text-xs text-gray-500">Nucleos PIAC</div>
+        </div>
+        <div class="panel-card p-4 text-center">
+          <div class="text-2xl font-bold text-gray-800" id="sum-sections">-</div>
+          <div class="text-xs text-gray-500">Secciones Moodle</div>
+        </div>
+        <div class="panel-card p-4 text-center">
+          <div class="text-2xl font-bold text-gray-800" id="sum-matched">-</div>
+          <div class="text-xs text-gray-500">Elementos matched</div>
+        </div>
+        <div class="panel-card p-4 text-center">
+          <div class="text-2xl font-bold text-red-600" id="sum-critical">-</div>
+          <div class="text-xs text-gray-500">Criticas</div>
+        </div>
+        <div class="panel-card p-4 text-center">
+          <div class="text-2xl font-bold text-yellow-600" id="sum-warnings">-</div>
+          <div class="text-xs text-gray-500">Advertencias</div>
+        </div>
+      </div>
+
+      <!-- Two-column: PIAC structure / Moodle structure -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+        <!-- PIAC panel -->
+        <div class="panel-card p-5">
+          <div class="section-header">Estructura PIAC (Drive)</div>
+          <div id="piac-structure" class="text-sm text-gray-500">Sin datos — ejecuta "Analizar"</div>
+        </div>
+        <!-- Moodle panel -->
+        <div class="panel-card p-5">
+          <div class="section-header">Estructura Moodle (API)</div>
+          <div id="moodle-structure" class="text-sm text-gray-500">Sin datos — ejecuta "Analizar"</div>
+        </div>
+      </div>
+
+      <!-- Discrepancies -->
+      <div class="panel-card p-5">
+        <div class="section-header">Discrepancias</div>
+        <div id="discrepancies-list" class="text-sm text-gray-500">Sin datos</div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- Auth & Init ---
+    let currentUser = null;
+    let currentLinks = [];
+    let currentLinkId = null;
+    let currentDetail = null;
+
+    async function init() {
+      try {
+        const roleRes = await fetch('/api/admin/role');
+        if (!roleRes.ok) throw new Error('not auth');
+        const roleData = await roleRes.json();
+        if (!roleData.role) throw new Error('no role');
+        currentUser = roleData;
+        document.getElementById('user-email').textContent = roleData.email || '';
+        document.getElementById('auth-gate').classList.add('hidden');
+        document.getElementById('main-content').classList.remove('hidden');
+        loadLinks();
+      } catch {
+        document.getElementById('auth-gate').classList.add('hidden');
+        document.getElementById('unauthorized').classList.remove('hidden');
+      }
+    }
+
+    // --- Links List ---
+    async function loadLinks() {
+      const container = document.getElementById('links-list');
+      try {
+        const res = await fetch('/api/piac/links');
+        if (!res.ok) throw new Error('Error cargando');
+        currentLinks = await res.json();
+        renderLinks();
+      } catch (e) {
+        container.innerHTML = `<div class="text-red-500 text-sm py-4">${e.message}</div>`;
+      }
+    }
+
+    function renderLinks() {
+      const container = document.getElementById('links-list');
+      if (currentLinks.length === 0) {
+        container.innerHTML = `
+          <div class="panel-card p-8 text-center">
+            <p class="text-gray-400 mb-2">No hay vinculos PIAC — Moodle configurados</p>
+            <p class="text-gray-400 text-sm">Haz click en "Nuevo vinculo" para comenzar</p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = currentLinks.map(link => {
+        const analysis = link.last_analysis;
+        let statusBadge = '<span class="badge badge-info">Sin analizar</span>';
+        if (analysis && analysis.summary) {
+          const s = analysis.summary;
+          const d = s.discrepancies || {};
+          if (d.critical > 0) statusBadge = `<span class="badge badge-critical">${d.critical} critica${d.critical > 1 ? 's' : ''}</span>`;
+          else if (d.warning > 0) statusBadge = `<span class="badge badge-warning">${d.warning} advertencia${d.warning > 1 ? 's' : ''}</span>`;
+          else statusBadge = '<span class="badge badge-ok">OK</span>';
+        }
+
+        const parsedInfo = link.last_parsed ? `v${link.last_parsed.version}` : 'no parseado';
+        const date = analysis ? new Date(analysis.date).toLocaleDateString('es-CL') : '';
+
+        return `
+          <div class="panel-card p-4 hover:border-blue-300 cursor-pointer transition-colors" onclick="openDetail(${link.id})">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                  <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+                <div>
+                  <div class="font-medium text-gray-800">${link.course_name || 'Curso ' + link.moodle_course_id}</div>
+                  <div class="text-xs text-gray-400">${link.moodle_platform} / ID ${link.moodle_course_id} / PIAC ${parsedInfo}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                ${statusBadge}
+                <span class="text-xs text-gray-400">${date}</span>
+                <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    // --- New Link Form ---
+    document.getElementById('btn-new-link').addEventListener('click', () => {
+      document.getElementById('new-link-form').classList.remove('hidden');
+    });
+    document.getElementById('btn-cancel-link').addEventListener('click', () => {
+      document.getElementById('new-link-form').classList.add('hidden');
+    });
+    document.getElementById('btn-save-link').addEventListener('click', async () => {
+      const status = document.getElementById('link-form-status');
+      const platform = document.getElementById('f-platform').value;
+      const courseId = document.getElementById('f-course-id').value;
+      const driveUrl = document.getElementById('f-drive-url').value;
+      if (!courseId || !driveUrl) { status.textContent = 'Completa todos los campos'; status.className = 'text-sm text-red-500'; return; }
+
+      status.innerHTML = '<span class="spinner"></span> Creando...';
+      try {
+        const res = await fetch('/api/piac/link', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ moodle_platform: platform, moodle_course_id: parseInt(courseId), drive_url: driveUrl })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        status.textContent = 'Vinculo creado';
+        status.className = 'text-sm text-green-600';
+        document.getElementById('new-link-form').classList.add('hidden');
+        document.getElementById('f-course-id').value = '';
+        document.getElementById('f-drive-url').value = '';
+        loadLinks();
+      } catch (e) {
+        status.textContent = e.message;
+        status.className = 'text-sm text-red-500';
+      }
+    });
+
+    // --- Detail View ---
+    async function openDetail(linkId) {
+      currentLinkId = linkId;
+      document.getElementById('links-list').classList.add('hidden');
+      document.getElementById('btn-new-link').classList.add('hidden');
+      document.getElementById('detail-view').classList.remove('hidden');
+      document.getElementById('analyze-status').innerHTML = '<span class="spinner"></span> Cargando...';
+
+      try {
+        const res = await fetch(`/api/piac/link/${linkId}`);
+        if (!res.ok) throw new Error('Error cargando detalle');
+        currentDetail = await res.json();
+        renderDetail();
+      } catch (e) {
+        document.getElementById('analyze-status').textContent = e.message;
+      }
+    }
+
+    function renderDetail() {
+      const d = currentDetail;
+      if (!d) return;
+
+      document.getElementById('detail-title').textContent = d.link.course_name || `Curso ${d.link.moodle_course_id}`;
+      document.getElementById('detail-platform-badge').textContent = d.link.moodle_platform;
+      document.getElementById('detail-platform-badge').className = 'badge badge-info';
+      document.getElementById('analyze-status').textContent = '';
+
+      // Summary cards
+      if (d.matching && d.matching.summary_json) {
+        const s = d.matching.summary_json;
+        const disc = s.discrepancies || {};
+        document.getElementById('summary-cards').classList.remove('hidden');
+        document.getElementById('sum-nucleos').textContent = s.nucleos_piac || 0;
+        document.getElementById('sum-sections').textContent = s.sections_moodle || 0;
+        document.getElementById('sum-matched').textContent = s.matched_elements || 0;
+        document.getElementById('sum-critical').textContent = disc.critical || 0;
+        document.getElementById('sum-warnings').textContent = disc.warning || 0;
+      } else {
+        document.getElementById('summary-cards').classList.add('hidden');
+      }
+
+      // PIAC structure
+      const piacEl = document.getElementById('piac-structure');
+      if (d.parsed && d.parsed.parsed_json) {
+        const p = d.parsed.parsed_json;
+        let html = '';
+        if (p.identificacion) {
+          const id = p.identificacion;
+          html += `<div class="mb-3 p-3 bg-blue-50 rounded-lg">
+            <div class="font-medium text-blue-900">${id.nombre || 'Sin nombre'}</div>
+            <div class="text-xs text-blue-700">${id.programa || ''} / ${id.modalidad || ''} / ${id.semanas || '?'} semanas / ${id.creditos_sct || '?'} SCT</div>
+            ${id.docente ? `<div class="text-xs text-blue-600 mt-1">Docente: ${id.docente}</div>` : ''}
+          </div>`;
+        }
+        (p.nucleos || []).forEach(n => {
+          html += `<div class="mb-3 border-l-4 border-blue-400 pl-3">
+            <div class="font-medium text-gray-800">Nucleo ${n.numero}: ${n.nombre}</div>
+            <div class="text-xs text-gray-500 mt-1">${n.semanas?.inicio ? `Semanas ${n.semanas.inicio}-${n.semanas.fin}` : 'Semanas no definidas'}</div>
+            <div class="text-xs text-gray-600 mt-1"><strong>RF:</strong> ${(n.resultado_formativo || '').substring(0, 150)}${(n.resultado_formativo || '').length > 150 ? '...' : ''}</div>
+            <div class="text-xs text-gray-500 mt-1">CE: ${(n.criterios_evaluacion || []).length} / Temas: ${(n.temas || []).length} / Repertorio: ${(n.repertorio_evaluativo || []).length}</div>
+          </div>`;
+        });
+        if ((p.evaluaciones_sumativas || []).length > 0) {
+          html += `<div class="mt-3 pt-3 border-t border-gray-200">
+            <div class="text-xs font-medium text-gray-600 mb-1">Evaluaciones sumativas</div>
+            ${p.evaluaciones_sumativas.map(e => `<div class="text-xs text-gray-500">- ${e.nombre} (${e.ponderacion || '?'}%)</div>`).join('')}
+          </div>`;
+        }
+        piacEl.innerHTML = html || 'Sin estructura';
+      } else {
+        piacEl.innerHTML = '<span class="text-gray-400">Sin datos — ejecuta "Analizar"</span>';
+      }
+
+      // Moodle structure
+      const moodleEl = document.getElementById('moodle-structure');
+      if (d.snapshot && d.snapshot.snapshot_json) {
+        const snap = d.snapshot.snapshot_json;
+        let html = `<div class="mb-3 p-3 bg-green-50 rounded-lg">
+          <div class="font-medium text-green-900">${snap.course?.platform || ''} / Curso ${snap.course?.id || ''}</div>
+          <div class="text-xs text-green-700">${snap.sectionsCount || 0} secciones, ${snap.activitiesCount || 0} actividades</div>
+        </div>`;
+        (snap.sections || []).forEach(s => {
+          const visClass = s.visible ? 'border-green-400' : 'border-red-300';
+          const visLabel = s.visible ? '' : ' <span class="badge badge-critical">OCULTA</span>';
+          html += `<div class="mb-2 border-l-4 ${visClass} pl-3">
+            <div class="font-medium text-gray-800 text-xs">S${s.number}: ${s.name}${visLabel}</div>
+            <div class="text-xs text-gray-500">${(s.modules || []).length} elementos: ${(s.modules || []).map(m => m.modname).filter((v,i,a) => a.indexOf(v) === i).join(', ') || 'vacio'}</div>
+          </div>`;
+        });
+        moodleEl.innerHTML = html;
+      } else {
+        moodleEl.innerHTML = '<span class="text-gray-400">Sin datos — ejecuta "Analizar"</span>';
+      }
+
+      // Discrepancies
+      const discEl = document.getElementById('discrepancies-list');
+      if (d.discrepancies && d.discrepancies.length > 0) {
+        const severityOrder = { critical: 0, warning: 1, info: 2 };
+        const sorted = [...d.discrepancies].sort((a, b) => (severityOrder[a.severity] || 9) - (severityOrder[b.severity] || 9));
+        let html = `<div class="text-xs text-gray-400 mb-2">${sorted.length} discrepancia${sorted.length > 1 ? 's' : ''}</div>`;
+        sorted.forEach(disc => {
+          const badgeClass = disc.severity === 'critical' ? 'badge-critical' : disc.severity === 'warning' ? 'badge-warning' : 'badge-info';
+          const resolvedClass = disc.resolved ? 'opacity-50 line-through' : '';
+          html += `<div class="disc-row flex items-start gap-3 py-2 px-2 rounded ${resolvedClass}">
+            <span class="badge ${badgeClass} mt-0.5">${disc.severity}</span>
+            <div class="flex-1">
+              <div class="text-sm text-gray-800">${disc.description}</div>
+              <div class="text-xs text-gray-400 mt-0.5">
+                ${disc.piac_element ? `PIAC: ${disc.piac_element}` : ''}
+                ${disc.moodle_element ? ` | Moodle: ${disc.moodle_element}` : ''}
+              </div>
+            </div>
+            ${!disc.resolved ? `<button onclick="resolveDisc(${disc.id})" class="text-xs text-green-600 hover:text-green-800 whitespace-nowrap">Resolver</button>` : '<span class="text-xs text-gray-400">Resuelto</span>'}
+          </div>`;
+        });
+        discEl.innerHTML = html;
+      } else if (d.matching) {
+        discEl.innerHTML = '<div class="text-green-600 text-sm py-2">Sin discrepancias detectadas</div>';
+      } else {
+        discEl.innerHTML = '<span class="text-gray-400">Sin datos</span>';
+      }
+    }
+
+    // --- Actions ---
+    document.getElementById('btn-back').addEventListener('click', () => {
+      document.getElementById('detail-view').classList.add('hidden');
+      document.getElementById('links-list').classList.remove('hidden');
+      document.getElementById('btn-new-link').classList.remove('hidden');
+      currentLinkId = null;
+      currentDetail = null;
+      loadLinks();
+    });
+
+    document.getElementById('btn-analyze').addEventListener('click', () => runAction('analyze'));
+    document.getElementById('btn-parse-only').addEventListener('click', () => runAction('parse'));
+    document.getElementById('btn-snapshot-only').addEventListener('click', () => runAction('snapshot'));
+
+    async function runAction(action) {
+      if (!currentLinkId) return;
+      const status = document.getElementById('analyze-status');
+      const labels = { analyze: 'Analizando (puede tomar ~30s)...', parse: 'Parseando PIAC...', snapshot: 'Tomando snapshot Moodle...' };
+      status.innerHTML = `<span class="spinner"></span> ${labels[action] || 'Procesando...'}`;
+
+      try {
+        const res = await fetch(`/api/piac/${currentLinkId}/${action}`, { method: 'POST' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        status.textContent = 'Listo';
+        status.className = 'text-sm text-green-600';
+        // Reload detail
+        openDetail(currentLinkId);
+      } catch (e) {
+        status.textContent = e.message;
+        status.className = 'text-sm text-red-500';
+      }
+    }
+
+    async function resolveDisc(id) {
+      try {
+        const res = await fetch(`/api/piac/discrepancy/${id}/resolve`, { method: 'POST' });
+        if (!res.ok) throw new Error('Error');
+        openDetail(currentLinkId);
+      } catch (e) {
+        alert('Error resolviendo: ' + e.message);
+      }
+    }
+
+    // Boot
+    init();
+  </script>
+</body>
+</html>
