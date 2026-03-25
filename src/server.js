@@ -2066,23 +2066,27 @@ async function callClaudeProxy(prompt, systemPrompt) {
 
 // System prompt for PIAC parsing
 const PIAC_PARSE_SYSTEM_PROMPT = `Eres un experto en diseño instruccional de la UMCE (Universidad Metropolitana de Ciencias de la Educación).
-Tu tarea es extraer la estructura de un PIAC (Plan Instruccional de Actividad Curricular) desde texto plano y devolver JSON estructurado.
+Tu tarea es extraer la estructura COMPLETA de un PIAC (Plan Instruccional de Actividad Curricular) desde texto plano y devolver JSON estructurado.
 
-El PIAC sigue las Orientaciones UGCI 004-2020 y tiene esta estructura:
-- Identificación: nombre, programa, docente, semestre, modalidad, horas, créditos SCT
-- Núcleos de Aprendizaje (1 a N): ejes temáticos que articulan conocimientos centrales
-- Por cada Núcleo: Resultado Formativo (RF), Criterios de Evaluación (CE), Temas, Repertorio de Situaciones Evaluativas
-- Evaluaciones sumativas con ponderaciones
-- Metodología
-- Bibliografía
+IMPORTANTE: El documento puede contener las "Orientaciones UGCI" (plantilla institucional) al inicio. IGNORA toda la sección de orientaciones/definiciones/alcance y enfócate SOLO en el contenido del PIAC del curso específico, que típicamente empieza con la identificación de la actividad curricular (nombre real del curso, docente, programa).
+
+ESTRUCTURA QUE DEBES EXTRAER:
+1. Identificación: nombre del curso, programa, docente, semestre, modalidad, horas, créditos SCT
+2. Núcleos de Aprendizaje (1 a N): ejes temáticos. Cada uno tiene RF, CE, temas, repertorio
+3. Sesiones individuales: cada sesión tiene número, título, y puede tener actividad sincrónica, asincrónica y autónoma
+4. Evaluaciones sumativas con ponderaciones
+5. Metodología y bibliografía
 
 REGLAS:
-- Devuelve SOLO JSON válido, sin texto adicional, sin markdown, sin \`\`\`
+- Devuelve SOLO JSON válido, sin texto adicional, sin markdown, sin backticks
 - Si un campo no está presente en el texto, usa null
 - Los porcentajes de ponderación son números (ej: 30 para 30%)
 - Normaliza nombres de núcleos eliminando "Núcleo 1:", "Unidad 1:", etc. del inicio
 - Las semanas son números enteros
-- Si no puedes determinar el rango de semanas de un núcleo, usa null para inicio y fin
+- Extrae TODAS las sesiones que encuentres (session 1, session 2, etc.)
+- Para cada sesión extrae el título/tema de la actividad sincrónica
+- Si el RF o CE están vacíos en el documento, usa null (no inventes)
+- Busca videos de YouTube (URLs) y agrégalos como recursos de la sesión
 
 SCHEMA JSON REQUERIDO:
 {
@@ -2102,10 +2106,18 @@ SCHEMA JSON REQUERIDO:
     "numero": "number",
     "nombre": "string",
     "semanas": { "inicio": "number|null", "fin": "number|null" },
-    "resultado_formativo": "string",
+    "resultado_formativo": "string|null",
     "criterios_evaluacion": ["string"],
     "temas": ["string"],
-    "repertorio_evaluativo": ["string"]
+    "repertorio_evaluativo": ["string"],
+    "sesiones": [{
+      "numero": "number",
+      "titulo": "string",
+      "sincronico": "string|null (descripción breve de la actividad sincrónica)",
+      "asincronico": "string|null (descripción breve de la actividad asincrónica)",
+      "autonomo": "string|null (descripción breve del trabajo autónomo)",
+      "recursos": [{ "tipo": "video|lectura|documento|link", "titulo": "string", "url": "string|null" }]
+    }]
   }],
   "evaluaciones_sumativas": [{ "nombre": "string", "ponderacion": "number|null", "nucleo": "number|null" }],
   "metodologia": "string|null",
@@ -2314,9 +2326,58 @@ function runMatching(piacJson, snapshotJson) {
     const weekStart = nucleo.semanas?.inicio;
     const weekEnd = nucleo.semanas?.fin;
 
-    // --- Content modules (books, pages, resources IN the section) count as nucleo content ---
+    // --- Match PIAC sessions to Moodle books/content by name ---
     const contentMods = modules.filter(m => ['book', 'page', 'resource', 'url', 'scorm', 'h5pactivity', 'lesson'].includes(m.modname));
-    if (contentMods.length > 0) {
+    const piacSesiones = nucleo.sesiones || [];
+
+    if (piacSesiones.length > 0 && contentMods.length > 0) {
+      // Try to match each PIAC session to a Moodle module by name
+      piacSesiones.forEach(sesion => {
+        const sesionTitle = (sesion.titulo || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const sesionNum = sesion.numero;
+
+        // Find Moodle module by session number or title similarity
+        let bestMatch = null;
+        for (const mod of contentMods) {
+          const modName = (mod.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+          // Match by session number: "Session 3: ..." matches sesion.numero=3
+          const modNum = modName.match(/session\s*(\d+)/i);
+          if (modNum && parseInt(modNum[1]) === sesionNum) { bestMatch = mod; break; }
+          // Match by title keywords (at least 12 chars overlap)
+          if (sesionTitle.length > 12 && modName.includes(sesionTitle.substring(0, 15))) { bestMatch = mod; break; }
+          if (modName.length > 12 && sesionTitle.includes(modName.substring(modName.indexOf(':') + 1).trim().substring(0, 15))) { bestMatch = mod; break; }
+        }
+
+        nucleoMatch.elements.push({
+          piac: { type: 'sesion', name: `Sesión ${sesionNum}: ${sesion.titulo}`, sincronico: sesion.sincronico, asincronico: sesion.asincronico, recursos: sesion.recursos },
+          moodle: bestMatch ? { id: bestMatch.id, name: bestMatch.name, modname: bestMatch.modname, visible: bestMatch.visible } : null,
+          matched: !!bestMatch
+        });
+
+        if (bestMatch) {
+          matchedModuleIds.add(bestMatch.id);
+        } else {
+          allDiscrepancies.push({
+            type: 'missing_in_moodle',
+            severity: 'warning',
+            piac_element: `Sesión ${sesionNum}: "${sesion.titulo}" — Núcleo ${nucleo.numero}`,
+            moodle_element: null,
+            description: `Sesión del PIAC sin contenido correspondiente en Moodle`
+          });
+        }
+      });
+
+      // Mark remaining content mods as matched (part of the section content)
+      contentMods.filter(m => !matchedModuleIds.has(m.id)).forEach(m => {
+        nucleoMatch.elements.push({
+          piac: { type: 'contenido_extra', name: m.name },
+          moodle: { id: m.id, name: m.name, modname: m.modname, visible: m.visible },
+          matched: true
+        });
+        matchedModuleIds.add(m.id);
+      });
+    } else if (contentMods.length > 0) {
+      // No PIAC sessions extracted — count content as bulk match
       nucleoMatch.elements.push({
         piac: { type: 'contenido', name: `${contentMods.length} recurso(s) de contenido` },
         moodle: contentMods.map(m => ({ id: m.id, name: m.name, modname: m.modname, visible: m.visible })),
@@ -2329,7 +2390,7 @@ function runMatching(piacJson, snapshotJson) {
         severity: 'warning',
         piac_element: `Núcleo ${nucleo.numero}: ${nucleo.nombre}`,
         moodle_element: `Sección ${section.number}: ${section.name}`,
-        description: `Sección visible pero sin contenido (0 recursos de contenido)`
+        description: `Sección visible pero sin contenido (0 recursos)`
       });
     }
 
