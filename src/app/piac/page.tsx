@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { PiacForm } from "./piac-form";
 
 export const metadata: Metadata = {
@@ -18,7 +19,9 @@ export default function PiacPage() {
         </p>
       </div>
 
-      <PiacForm />
+      <Suspense fallback={<div className="text-gray-500">Cargando formulario...</div>}>
+        <PiacForm />
+      </Suspense>
     </div>
   );
 }

@@ -42,14 +42,15 @@
       "id": "4",
       "title": "Persistir formulario PIAC en Supabase",
       "description": "Conectar piac-form.tsx a Supabase para guardar/cargar PIACs. Autoguardado con debounce 5s. Indicador de estado de guardado.",
-      "status": "pending",
+      "status": "done",
       "dependencies": [
         "3"
       ],
       "priority": "high",
       "details": "1. Modificar piac-form.tsx: autoguardado debounce 5s\n2. Funciones: savePiac(), loadPiac(), createPiac()\n3. Guardar núcleos y evaluaciones en sus tablas (transacción)\n4. Indicador: guardando... / guardado / error\n5. piac_versiones entry al enviar a revisión\n6. Query param ?id=xxx para cargar PIAC existente",
       "testStrategy": "Llenar formulario, esperar 5s, recargar con ?id=xxx, datos persisten. Núcleos y evaluaciones correctos.",
-      "subtasks": []
+      "subtasks": [],
+      "updatedAt": "2026-03-25T10:25:27.031Z"
     },
     {
       "id": "5",
@@ -194,9 +195,9 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastModified": "2026-03-25T10:16:40.313Z",
+    "lastModified": "2026-03-25T10:25:27.032Z",
     "taskCount": 15,
-    "completedCount": 3,
+    "completedCount": 4,
     "tags": [
       "master"
     ]

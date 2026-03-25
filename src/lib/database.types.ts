@@ -10,8 +10,10 @@ export type TipoInteraccion = "virtual" | "semipresencial";
 export type TipoEvaluacion = "tarea" | "prueba" | "proyecto" | "portfolio";
 
 // ─── Row types (what you get back from queries) ─────────────────────────────
+// Using `type` instead of `interface` so they satisfy Record<string, unknown>
+// which is required by Supabase's GenericTable constraint.
 
-export interface Piac {
+export type Piac = {
   id: string;
   user_id: string | null;
   nombre_actividad: string;
@@ -31,9 +33,9 @@ export interface Piac {
   status: PiacStatus;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface PiacNucleo {
+export type PiacNucleo = {
   id: string;
   piac_id: string;
   orden: number;
@@ -46,9 +48,9 @@ export interface PiacNucleo {
   actividades_sincronicas: string;
   actividades_asincronicas: string;
   actividades_autonomas: string;
-}
+};
 
-export interface PiacEvaluacion {
+export type PiacEvaluacion = {
   id: string;
   piac_id: string;
   nucleo_id: string | null;
@@ -56,16 +58,16 @@ export interface PiacEvaluacion {
   tipo: TipoEvaluacion;
   ponderacion: number;
   semana_entrega: number;
-}
+};
 
-export interface PiacVersion {
+export type PiacVersion = {
   id: string;
   piac_id: string;
   version: number;
   data_snapshot: Record<string, unknown>;
   changed_by: string | null;
   created_at: string;
-}
+};
 
 // ─── Insert types (omit server-generated fields) ────────────────────────────
 
@@ -93,32 +95,42 @@ export type PiacEvaluacionUpdate = Partial<Omit<PiacEvaluacion, "id" | "piac_id"
 
 // ─── Supabase Database type (for createClient<Database>) ────────────────────
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       piacs: {
         Row: Piac;
         Insert: PiacInsert;
         Update: PiacUpdate;
+        Relationships: [];
       };
       piac_nucleos: {
         Row: PiacNucleo;
         Insert: PiacNucleoInsert;
         Update: PiacNucleoUpdate;
+        Relationships: [];
       };
       piac_evaluaciones: {
         Row: PiacEvaluacion;
         Insert: PiacEvaluacionInsert;
         Update: PiacEvaluacionUpdate;
+        Relationships: [];
       };
       piac_versiones: {
         Row: PiacVersion;
         Insert: PiacVersionInsert;
         Update: Record<string, never>;
+        Relationships: [];
       };
     };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
-    Enums: Record<string, never>;
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      [_ in never]: never;
+    };
+    Enums: {
+      [_ in never]: never;
+    };
   };
-}
+};

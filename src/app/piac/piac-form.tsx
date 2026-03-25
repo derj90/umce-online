@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import type { TipoDocencia, TipoInteraccion, TipoEvaluacion } from "@/lib/database.types";
 
 type Nucleo = {
   nombre: string;
@@ -93,9 +96,22 @@ const STEPS = [
   "Bibliografía",
 ];
 
+type SaveStatus = "idle" | "saving" | "saved" | "error";
+
+const DEBOUNCE_MS = 5000;
+
 export function PiacForm() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [step, setStep] = useState(0);
   const [data, setData] = useState<PiacData>(initialData);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const supabase = useRef(createClient());
+  const piacIdRef = useRef<string | null>(searchParams.get("id"));
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const skipNextAutosave = useRef(true); // skip initial render
 
   const update = <K extends keyof PiacData>(key: K, value: PiacData[K]) => {
     setData((prev) => ({ ...prev, [key]: value }));
@@ -107,40 +123,263 @@ export function PiacForm() {
       27
   );
 
+  // ─── Load existing PIAC ─────────────────────────────────────────────────
+  const loadPiac = useCallback(async (id: string) => {
+    setIsLoading(true);
+    const sb = supabase.current;
+
+    const [piacRes, nucleosRes, evalsRes] = await Promise.all([
+      sb.from("piacs").select("*").eq("id", id).single(),
+      sb.from("piac_nucleos").select("*").eq("piac_id", id).order("orden"),
+      sb.from("piac_evaluaciones").select("*").eq("piac_id", id),
+    ]);
+
+    if (piacRes.error || !piacRes.data) {
+      setIsLoading(false);
+      return;
+    }
+
+    const p = piacRes.data;
+    const nucleos = nucleosRes.data ?? [];
+    const evals = evalsRes.data ?? [];
+
+    // Map nucleo IDs to indices for evaluacion.nucleoIndex
+    const nucleoIdToIndex = new Map(nucleos.map((n, i) => [n.id, i]));
+
+    setData({
+      nombreActividad: p.nombre_actividad,
+      programa: p.programa,
+      unidadAcademica: p.unidad_academica,
+      docenteResponsable: p.docente_responsable,
+      emailDocente: p.email_docente,
+      semestre: p.semestre,
+      tipoDocencia: p.tipo_docencia,
+      tipoInteraccion: p.tipo_interaccion,
+      numSemanas: p.num_semanas,
+      horasSincronicas: p.horas_sincronicas,
+      horasAsincronicas: p.horas_asincronicas,
+      horasAutonomas: p.horas_autonomas,
+      nucleos: nucleos.length > 0
+        ? nucleos.map((n) => ({
+            nombre: n.nombre,
+            semanaInicio: n.semana_inicio,
+            semanaFin: n.semana_fin,
+            resultadoFormativo: n.resultado_formativo,
+            criteriosEvaluacion: n.criterios_evaluacion,
+            temas: n.temas,
+            actividadesSincronicas: n.actividades_sincronicas,
+            actividadesAsincronicas: n.actividades_asincronicas,
+            actividadesAutonomas: n.actividades_autonomas,
+          }))
+        : [{ ...defaultNucleo }],
+      evaluaciones: evals.length > 0
+        ? evals.map((e) => ({
+            nombre: e.nombre,
+            tipo: e.tipo,
+            nucleoIndex: nucleoIdToIndex.get(e.nucleo_id ?? "") ?? 0,
+            ponderacion: e.ponderacion,
+            semanaEntrega: e.semana_entrega,
+          }))
+        : [{ ...defaultEvaluacion }],
+      bibliografiaObligatoria: p.bibliografia_obligatoria,
+      bibliografiaComplementaria: p.bibliografia_complementaria,
+    });
+
+    // Allow autosave after load completes
+    skipNextAutosave.current = true;
+    setIsLoading(false);
+  }, []);
+
+  // Load on mount if ?id= is present
+  useEffect(() => {
+    const id = searchParams.get("id");
+    if (id) {
+      piacIdRef.current = id;
+      loadPiac(id);
+    }
+  }, [searchParams, loadPiac]);
+
+  // ─── Save PIAC ──────────────────────────────────────────────────────────
+  const savePiac = useCallback(async () => {
+    setSaveStatus("saving");
+    const sb = supabase.current;
+
+    try {
+      const piacRow = {
+        user_id: null,
+        nombre_actividad: data.nombreActividad,
+        programa: data.programa,
+        unidad_academica: data.unidadAcademica,
+        docente_responsable: data.docenteResponsable,
+        email_docente: data.emailDocente,
+        semestre: data.semestre,
+        tipo_docencia: data.tipoDocencia as TipoDocencia,
+        tipo_interaccion: data.tipoInteraccion as TipoInteraccion,
+        num_semanas: data.numSemanas,
+        horas_sincronicas: data.horasSincronicas,
+        horas_asincronicas: data.horasAsincronicas,
+        horas_autonomas: data.horasAutonomas,
+        bibliografia_obligatoria: data.bibliografiaObligatoria,
+        bibliografia_complementaria: data.bibliografiaComplementaria,
+        status: "borrador" as const,
+      };
+
+      let piacId = piacIdRef.current;
+
+      if (!piacId) {
+        // CREATE
+        const { data: inserted, error } = await sb
+          .from("piacs")
+          .insert(piacRow)
+          .select("id")
+          .single();
+        if (error) throw error;
+        piacId = inserted.id;
+        piacIdRef.current = piacId;
+        // Update URL without full navigation
+        window.history.replaceState(null, "", `?id=${piacId}`);
+      } else {
+        // UPDATE
+        const { error } = await sb
+          .from("piacs")
+          .update(piacRow)
+          .eq("id", piacId);
+        if (error) throw error;
+      }
+
+      // Sync nucleos: delete all, re-insert
+      await sb.from("piac_evaluaciones").delete().eq("piac_id", piacId);
+      await sb.from("piac_nucleos").delete().eq("piac_id", piacId);
+
+      const nucleoInserts = data.nucleos.map((n, i) => ({
+        piac_id: piacId!,
+        orden: i + 1,
+        nombre: n.nombre || `Núcleo ${i + 1}`,
+        semana_inicio: n.semanaInicio,
+        semana_fin: n.semanaFin,
+        resultado_formativo: n.resultadoFormativo,
+        criterios_evaluacion: n.criteriosEvaluacion,
+        temas: n.temas,
+        actividades_sincronicas: n.actividadesSincronicas,
+        actividades_asincronicas: n.actividadesAsincronicas,
+        actividades_autonomas: n.actividadesAutonomas,
+      }));
+
+      const { data: insertedNucleos, error: nucleoErr } = await sb
+        .from("piac_nucleos")
+        .insert(nucleoInserts)
+        .select("id");
+      if (nucleoErr) throw nucleoErr;
+
+      // Map evaluacion nucleoIndex → nucleo_id
+      const nucleoIds = (insertedNucleos ?? []).map((n) => n.id);
+
+      const evalInserts = data.evaluaciones.map((e) => ({
+        piac_id: piacId!,
+        nucleo_id: nucleoIds[e.nucleoIndex] ?? null,
+        nombre: e.nombre || "Sin nombre",
+        tipo: e.tipo as TipoEvaluacion,
+        ponderacion: e.ponderacion,
+        semana_entrega: e.semanaEntrega,
+      }));
+
+      if (evalInserts.length > 0) {
+        const { error: evalErr } = await sb
+          .from("piac_evaluaciones")
+          .insert(evalInserts);
+        if (evalErr) throw evalErr;
+      }
+
+      setSaveStatus("saved");
+    } catch (err) {
+      console.error("Error saving PIAC:", err);
+      setSaveStatus("error");
+    }
+  }, [data]);
+
+  // ─── Autosave with debounce ─────────────────────────────────────────────
+  useEffect(() => {
+    if (isLoading) return;
+    if (skipNextAutosave.current) {
+      skipNextAutosave.current = false;
+      return;
+    }
+
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      savePiac();
+    }, DEBOUNCE_MS);
+
+    return () => clearTimeout(debounceRef.current);
+  }, [data, isLoading, savePiac]);
+
+  // ─── Submit for review ──────────────────────────────────────────────────
+  const submitForReview = useCallback(async () => {
+    // Save first
+    await savePiac();
+    const piacId = piacIdRef.current;
+    if (!piacId) return;
+
+    const sb = supabase.current;
+
+    // Create version snapshot
+    await sb.from("piac_versiones").insert({
+      piac_id: piacId,
+      version: 1,
+      data_snapshot: data as unknown as Record<string, unknown>,
+      changed_by: null,
+    });
+
+    // Update status to 'enviado'
+    await sb.from("piacs").update({ status: "enviado" }).eq("id", piacId);
+
+    setSaveStatus("saved");
+    alert("PIAC enviado para revisión exitosamente.");
+  }, [data, savePiac]);
+
   return (
     <div className="grid gap-8 lg:grid-cols-2">
       {/* Formulario */}
       <div>
-        {/* Steps indicator */}
-        <div className="mb-6 flex gap-1">
-          {STEPS.map((label, i) => (
-            <button
-              key={label}
-              onClick={() => setStep(i)}
-              className={`flex-1 rounded-md px-2 py-2 text-xs font-medium transition-colors ${
-                i === step
-                  ? "bg-[var(--color-umce-blue)] text-white"
-                  : i < step
-                    ? "bg-blue-100 text-blue-800"
-                    : "bg-gray-100 text-gray-500"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        {/* Steps indicator + save status */}
+        <div className="mb-6 flex items-center gap-4">
+          <div className="flex flex-1 gap-1">
+            {STEPS.map((label, i) => (
+              <button
+                key={label}
+                onClick={() => setStep(i)}
+                className={`flex-1 rounded-md px-2 py-2 text-xs font-medium transition-colors ${
+                  i === step
+                    ? "bg-[var(--color-umce-blue)] text-white"
+                    : i < step
+                      ? "bg-blue-100 text-blue-800"
+                      : "bg-gray-100 text-gray-500"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <SaveIndicator status={saveStatus} />
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-white p-6">
-          {step === 0 && (
-            <StepIdentificacion data={data} update={update} />
-          )}
-          {step === 1 && (
-            <StepModalidad data={data} update={update} sct={sctTotal} />
-          )}
-          {step === 2 && <StepNucleos data={data} setData={setData} />}
-          {step === 3 && <StepEvaluaciones data={data} setData={setData} />}
-          {step === 4 && <StepBibliografia data={data} update={update} />}
-        </div>
+        {isLoading ? (
+          <div className="rounded-xl border border-gray-200 bg-white p-6 text-center text-gray-500">
+            Cargando PIAC...
+          </div>
+        ) : (
+          <div className="rounded-xl border border-gray-200 bg-white p-6">
+            {step === 0 && (
+              <StepIdentificacion data={data} update={update} />
+            )}
+            {step === 1 && (
+              <StepModalidad data={data} update={update} sct={sctTotal} />
+            )}
+            {step === 2 && <StepNucleos data={data} setData={setData} />}
+            {step === 3 && <StepEvaluaciones data={data} setData={setData} />}
+            {step === 4 && <StepBibliografia data={data} update={update} />}
+          </div>
+        )}
 
         <div className="mt-4 flex justify-between">
           <button
@@ -159,7 +398,7 @@ export function PiacForm() {
             </button>
           ) : (
             <button
-              onClick={() => alert("Envío a revisión DI — pendiente implementar")}
+              onClick={submitForReview}
               className="rounded-lg bg-[var(--color-umce-accent)] px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600"
             >
               Enviar para revisión
@@ -178,6 +417,39 @@ export function PiacForm() {
         </div>
       </div>
     </div>
+  );
+}
+
+/* ─── Save Indicator ─── */
+
+function SaveIndicator({ status }: { status: SaveStatus }) {
+  if (status === "idle") return null;
+
+  const styles: Record<SaveStatus, { text: string; className: string }> = {
+    idle: { text: "", className: "" },
+    saving: {
+      text: "Guardando...",
+      className: "text-blue-600",
+    },
+    saved: {
+      text: "Guardado",
+      className: "text-green-600",
+    },
+    error: {
+      text: "Error al guardar",
+      className: "text-red-600",
+    },
+  };
+
+  const { text, className } = styles[status];
+
+  return (
+    <span className={`shrink-0 text-xs font-medium ${className}`}>
+      {status === "saving" && (
+        <span className="mr-1 inline-block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
+      )}
+      {text}
+    </span>
   );
 }
 
