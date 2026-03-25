@@ -2233,8 +2233,32 @@ function runMatching(piacJson, snapshotJson) {
   const matches = [];
   const allDiscrepancies = [];
 
+  // Smart section matching: try by name similarity first, then by position
+  function findBestSection(nucleo, idx) {
+    const nucleoName = (nucleo.nombre || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const nucleoNum = nucleo.numero;
+
+    // Try exact/fuzzy name match first
+    for (const s of contentSections) {
+      const sName = (s.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      // Match "Learning Core 1" to "nucleo 1" or by shared keywords
+      if (sName.includes(nucleoName.substring(0, 10)) || nucleoName.includes(sName.substring(0, 10))) return s;
+      // Match by number: "Learning Core 1" matches nucleo.numero=1
+      const sNum = sName.match(/(\d+)/);
+      if (sNum && parseInt(sNum[1]) === nucleoNum) return s;
+      // Match "core" or "nucleo" + number
+      if ((sName.includes('core') || sName.includes('nucleo') || sName.includes('unidad')) && sNum && parseInt(sNum[1]) === nucleoNum) return s;
+    }
+    // Fallback: skip known non-content sections (synchronous sessions, uso exclusivo, presentacion)
+    const skipPatterns = /synchronous|sesion|grabacion|uso exclusivo|presentacion|general/i;
+    const candidateSections = contentSections.filter(s => !skipPatterns.test(s.name));
+    return candidateSections[idx] || contentSections[idx] || null;
+  }
+
+  const matchedSectionIds = new Set();
   nucleos.forEach((nucleo, idx) => {
-    const section = contentSections[idx] || null;
+    const section = findBestSection(nucleo, idx);
+    if (section) matchedSectionIds.add(section.id);
     const nucleoMatch = {
       nucleo: { numero: nucleo.numero, nombre: nucleo.nombre, rf: nucleo.resultado_formativo },
       section: section ? { number: section.number, name: section.name, visible: section.visible } : null,
@@ -2350,21 +2374,18 @@ function runMatching(piacJson, snapshotJson) {
     matches.push(nucleoMatch);
   });
 
-  // Check for sections beyond nucleos
-  if (contentSections.length > nucleos.length) {
-    for (let i = nucleos.length; i < contentSections.length; i++) {
-      const extraSection = contentSections[i];
-      if (extraSection.modules && extraSection.modules.length > 0) {
-        allDiscrepancies.push({
-          type: 'missing_in_piac',
-          severity: 'info',
-          piac_element: null,
-          moodle_element: `Sección ${extraSection.number}: "${extraSection.name}" (${extraSection.modules.length} elementos)`,
-          description: `Sección extra en Moodle sin núcleo correspondiente en PIAC`
-        });
-      }
+  // Check for unmatched sections (not matched to any nucleus)
+  contentSections.forEach(s => {
+    if (!matchedSectionIds.has(s.id) && s.modules && s.modules.length > 0) {
+      allDiscrepancies.push({
+        type: 'missing_in_piac',
+        severity: 'info',
+        piac_element: null,
+        moodle_element: `Sección ${s.number}: "${s.name}" (${s.modules.length} elementos)`,
+        description: `Sección en Moodle sin núcleo correspondiente en PIAC`
+      });
     }
-  }
+  });
 
   // Build summary
   const totalPiacElements = nucleos.length + (piacJson.evaluaciones_sumativas || []).length;
@@ -2534,7 +2555,7 @@ app.post('/api/piac/:linkId/parse', adminOrEditorMiddleware, async (req, res) =>
 
     // Step 2: Parse with LLM
     const llmResponse = await callClaudeProxy(
-      `Extrae la estructura de este PIAC y devuelve el JSON:\n\n${text.substring(0, 30000)}`,
+      `Extrae la estructura de este PIAC y devuelve el JSON:\n\n${text}`,
       PIAC_PARSE_SYSTEM_PROMPT
     );
 
@@ -2653,7 +2674,7 @@ app.post('/api/piac/:linkId/analyze', adminOrEditorMiddleware, async (req, res) 
         const { text, fileName } = await downloadAndExtractPiac(link.drive_file_id);
         if (text && text.trim().length >= 100) {
           const llmResponse = await callClaudeProxy(
-            `Extrae la estructura de este PIAC y devuelve el JSON:\n\n${text.substring(0, 30000)}`,
+            `Extrae la estructura de este PIAC y devuelve el JSON:\n\n${text}`,
             PIAC_PARSE_SYSTEM_PROMPT
           );
           const parsedJson = parseLlmJson(llmResponse);
