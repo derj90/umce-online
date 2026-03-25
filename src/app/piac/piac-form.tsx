@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import type { PiacStatus, UserRol, TipoDocencia, TipoInteraccion, TipoEvaluacion } from "@/lib/database.types";
+import type { PiacStatus, UserRol, PiacComentario, TipoDocencia, TipoInteraccion, TipoEvaluacion } from "@/lib/database.types";
 import {
   getAllowedTransitions,
   canEdit,
@@ -12,6 +12,8 @@ import {
   STATUS_COLORS,
   TRANSITION_LABELS,
 } from "@/lib/piac-states";
+import { SectionComments, CommentBadge } from "@/components/piac-comentarios";
+import { countUnresolvedBySeccion, STEP_TO_SECCION } from "@/lib/piac-comentarios-utils";
 
 type Nucleo = {
   nombre: string;
@@ -118,6 +120,8 @@ export function PiacForm() {
   const [piacStatus, setPiacStatus] = useState<PiacStatus>("borrador");
   const [userRole, setUserRole] = useState<UserRol>("docente");
 
+  const [comentarios, setComentarios] = useState<PiacComentario[]>([]);
+
   const supabase = useRef(createClient());
   const piacIdRef = useRef<string | null>(searchParams.get("id"));
   const userIdRef = useRef<string | null>(null);
@@ -125,6 +129,7 @@ export function PiacForm() {
   const skipNextAutosave = useRef(true); // skip initial render
 
   const isEditable = canEdit(userRole, piacStatus);
+  const unresolvedCounts = countUnresolvedBySeccion(comentarios);
 
   const update = <K extends keyof PiacData>(key: K, value: PiacData[K]) => {
     if (!isEditable) return;
@@ -152,6 +157,17 @@ export function PiacForm() {
       data.numSemanas /
       27
   );
+
+  // ─── Load comments ──────────────────────────────────────────────────────
+  const loadComentarios = useCallback(async (piacId: string) => {
+    const sb = supabase.current;
+    const { data } = await sb
+      .from("piac_comentarios")
+      .select("*")
+      .eq("piac_id", piacId)
+      .order("created_at", { ascending: true });
+    setComentarios(data ?? []);
+  }, []);
 
   // ─── Load existing PIAC ─────────────────────────────────────────────────
   const loadPiac = useCallback(async (id: string) => {
@@ -217,10 +233,13 @@ export function PiacForm() {
       bibliografiaComplementaria: p.bibliografia_complementaria,
     });
 
+    // Load comments for this PIAC
+    loadComentarios(id);
+
     // Allow autosave after load completes
     skipNextAutosave.current = true;
     setIsLoading(false);
-  }, []);
+  }, [loadComentarios]);
 
   // Load on mount if ?id= is present
   useEffect(() => {
@@ -413,21 +432,30 @@ export function PiacForm() {
 
         <div className="mb-6 flex items-center gap-4">
           <div className="flex flex-1 gap-1">
-            {STEPS.map((label, i) => (
-              <button
-                key={label}
-                onClick={() => setStep(i)}
-                className={`flex-1 rounded-md px-2 py-2 text-xs font-medium transition-colors ${
-                  i === step
-                    ? "bg-[var(--color-umce-blue)] text-white"
-                    : i < step
-                      ? "bg-blue-100 text-blue-800"
-                      : "bg-gray-100 text-gray-500"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+            {STEPS.map((label, i) => {
+              const seccion = STEP_TO_SECCION[i];
+              const unresolvedCount = seccion ? unresolvedCounts[seccion] : 0;
+              return (
+                <button
+                  key={label}
+                  onClick={() => setStep(i)}
+                  className={`relative flex-1 rounded-md px-2 py-2 text-xs font-medium transition-colors ${
+                    i === step
+                      ? "bg-[var(--color-umce-blue)] text-white"
+                      : i < step
+                        ? "bg-blue-100 text-blue-800"
+                        : "bg-gray-100 text-gray-500"
+                  }`}
+                >
+                  {label}
+                  {unresolvedCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">
+                      {unresolvedCount}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -446,6 +474,18 @@ export function PiacForm() {
             {step === 2 && <StepNucleos data={data} setData={setData} disabled={!isEditable} />}
             {step === 3 && <StepEvaluaciones data={data} setData={setData} disabled={!isEditable} />}
             {step === 4 && <StepBibliografia data={data} update={update} disabled={!isEditable} />}
+
+            {/* Inline comments for current section */}
+            {piacIdRef.current && (
+              <SectionComments
+                comentarios={comentarios}
+                seccion={STEP_TO_SECCION[step]}
+                piacId={piacIdRef.current}
+                userRole={userRole}
+                userId={userIdRef.current}
+                onUpdate={() => loadComentarios(piacIdRef.current!)}
+              />
+            )}
           </div>
         )}
 

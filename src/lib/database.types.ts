@@ -70,6 +70,36 @@ export type PiacVersion = {
   created_at: string;
 };
 
+export type ComentarioSeccion =
+  | "identificacion"
+  | "modalidad"
+  | "nucleo"
+  | "evaluaciones"
+  | "bibliografia"
+  | "general";
+
+export type PiacComentario = {
+  id: string;
+  piac_id: string;
+  user_id: string | null;
+  seccion: ComentarioSeccion;
+  nucleo_orden: number | null;
+  texto: string;
+  resolved: boolean;
+  resolved_by: string | null;
+  resolved_at: string | null;
+  created_at: string;
+};
+
+export type PiacComentarioInsert = Omit<PiacComentario, "id" | "created_at" | "resolved_at"> & {
+  id?: string;
+  resolved_at?: string | null;
+};
+
+export type PiacComentarioUpdate = Partial<
+  Pick<PiacComentario, "texto" | "resolved" | "resolved_by" | "resolved_at">
+>;
+
 export type Profile = {
   id: string;
   email: string;
@@ -139,6 +169,12 @@ export type Database = {
         Row: PiacVersion;
         Insert: PiacVersionInsert;
         Update: Record<string, never>;
+        Relationships: [];
+      };
+      piac_comentarios: {
+        Row: PiacComentario;
+        Insert: PiacComentarioInsert;
+        Update: PiacComentarioUpdate;
         Relationships: [];
       };
     };

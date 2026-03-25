@@ -18,7 +18,8 @@ import {
   type PiacForReview,
 } from "@/lib/di-panel-utils";
 import { formatDate } from "@/lib/piac-list-utils";
-import type { PiacStatus, UserRol } from "@/lib/database.types";
+import type { PiacStatus, UserRol, PiacComentario } from "@/lib/database.types";
+import { countTotalUnresolved } from "@/lib/piac-comentarios-utils";
 
 const DI_STATUS_OPTIONS: { value: "" | PiacStatus; label: string }[] = [
   { value: "", label: "Todos los estados" },
@@ -39,6 +40,9 @@ export function DiPanel() {
   const [filterPrograma, setFilterPrograma] = useState("");
   const [filterDocente, setFilterDocente] = useState("");
   const [filterSemestre, setFilterSemestre] = useState("");
+
+  // Comments per PIAC
+  const [comentariosByPiac, setComentariosByPiac] = useState<Record<string, PiacComentario[]>>({});
 
   // Action state
   const [transitioning, setTransitioning] = useState<string | null>(null);
@@ -90,6 +94,24 @@ export function DiPanel() {
       setError("Error al cargar PIACs: " + fetchError.message);
     } else {
       setPiacs(data ?? []);
+
+      // Fetch comments for all visible PIACs
+      if (data && data.length > 0) {
+        const piacIds = data.map((p) => p.id);
+        const { data: allComments } = await supabase
+          .from("piac_comentarios")
+          .select("*")
+          .in("piac_id", piacIds);
+
+        if (allComments) {
+          const grouped: Record<string, PiacComentario[]> = {};
+          for (const c of allComments) {
+            if (!grouped[c.piac_id]) grouped[c.piac_id] = [];
+            grouped[c.piac_id].push(c);
+          }
+          setComentariosByPiac(grouped);
+        }
+      }
     }
     setLoading(false);
   }
@@ -317,6 +339,9 @@ export function DiPanel() {
                 <th className="px-4 py-3 text-left font-medium text-gray-700">
                   Estado
                 </th>
+                <th className="hidden px-4 py-3 text-center font-medium text-gray-700 sm:table-cell">
+                  Notas
+                </th>
                 <th className="hidden px-4 py-3 text-left font-medium text-gray-700 lg:table-cell">
                   Modificado
                 </th>
@@ -361,6 +386,24 @@ export function DiPanel() {
                         />
                         {STATUS_LABELS[piac.status]}
                       </span>
+                    </td>
+                    <td className="hidden px-4 py-3 text-center sm:table-cell">
+                      {(() => {
+                        const comments = comentariosByPiac[piac.id] ?? [];
+                        const unresolved = countTotalUnresolved(comments);
+                        if (comments.length === 0) return <span className="text-gray-300">—</span>;
+                        return (
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+                              unresolved > 0
+                                ? "bg-amber-100 text-amber-700"
+                                : "bg-green-100 text-green-700"
+                            }`}
+                          >
+                            {unresolved > 0 ? `${unresolved} pendiente${unresolved > 1 ? "s" : ""}` : "resueltos"}
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td className="hidden px-4 py-3 text-gray-500 lg:table-cell">
                       {formatDate(piac.updated_at)}
