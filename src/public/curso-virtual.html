@@ -263,15 +263,29 @@
 
     // === Rendering ===
 
-    function renderActivityItem(el, platformUrl) {
+    function renderActivityItem(el, platformUrl, completionData) {
       const mod = getModIcon(el.modname);
       const href = el.url || (platformUrl ? `${platformUrl}/mod/${el.modname}/view.php?id=${el.id}` : '#');
+      const comp = completionData?.[el.id];
+      let statusIcon = '';
+      if (comp) {
+        if (comp.state === 1) statusIcon = '<span class="text-green-500 text-xs flex-shrink-0" title="Completado">&#10003;</span>';
+        else if (comp.state === 0 && comp.tracking > 0) statusIcon = '<span class="w-3 h-3 rounded-full border-2 border-gray-300 flex-shrink-0" title="Pendiente"></span>';
+      }
+      // Check if there's a grade for this activity
+      const grade = courseData?.personal?.grades?.find(g => g.cmid === el.id);
+      const gradeLabel = grade && grade.gradeformatted ? `<span class="text-xs font-medium text-amber-600 ml-2">${grade.gradeformatted}</span>` : '';
+
       return `<a href="${href}" target="_blank" rel="noopener" class="activity-item" aria-label="${mod.label}: ${el.name}">
         <div class="activity-icon ${mod.cls}">${icon(mod.icon)}</div>
         <div class="flex-1 min-w-0">
-          <div class="text-sm font-medium text-gray-800">${el.name}</div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-sm font-medium text-gray-800">${el.name}</span>
+            ${gradeLabel}
+          </div>
           ${el.description ? `<div class="text-xs text-gray-400 mt-0.5 line-clamp-1">${el.description.replace(/<[^>]*>/g, '')}</div>` : ''}
         </div>
+        ${statusIcon}
       </a>`;
     }
 
@@ -290,13 +304,25 @@
       </div>`;
 
       // Nucleos
+      const completion = data.personal?.completion || {};
       data.nucleos.forEach((n, i) => {
         const color = NUCLEO_COLORS[i % NUCLEO_COLORS.length];
         const locked = !n.visible;
+        // Calculate completion for this nucleo
+        const allCmids = [...(n.contenido||[]), ...(n.foros||[]), ...(n.evaluaciones||[])].map(e => e.id);
+        const completed = allCmids.filter(id => completion[id]?.state === 1).length;
+        const total = allCmids.length;
+        const pct = total > 0 ? Math.round(completed / total * 100) : 0;
+        const hasCompletion = data.personal?.resolved && total > 0;
+
         html += `<div class="sidebar-item sidebar-nucleo ${locked ? 'opacity-50' : ''}" data-section="nucleo-${n.numero}" onclick="navigate('nucleo-${n.numero}')" style="border-left-color: ${color};" role="link" tabindex="0" ${locked ? 'aria-disabled="true"' : ''}>
           <div class="flex-1 min-w-0">
-            <div class="text-xs font-semibold" style="color: ${color};">Nucleo ${n.numero}</div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold" style="color: ${color};">Nucleo ${n.numero}</span>
+              ${hasCompletion && pct === 100 ? '<span class="text-xs text-green-500">&#10003;</span>' : ''}
+            </div>
             <div class="text-xs text-gray-500 truncate">${n.nombre}</div>
+            ${hasCompletion ? `<div class="sidebar-progress mt-1" aria-label="${pct}% completado"><div class="sidebar-progress-fill" style="width: ${pct}%; background: ${color};"></div></div>` : ''}
           </div>
           ${locked ? `<div class="w-4 h-4 text-gray-300">${icon('lock')}</div>` : ''}
         </div>`;
@@ -355,10 +381,96 @@
         const href = diary.url || `${platformUrl}/mod/diary/view.php?id=${diary.id}`;
         html += `<a href="${href}" target="_blank" rel="noopener" class="qa-btn" aria-label="Abrir diario reflexivo">${icon('diary')} Diario</a>`;
       }
-      // Calendar placeholder
-      html += `<span class="qa-btn" style="cursor: default; opacity: 0.5;" aria-label="Calendario (proximamente)">${icon('calendar')} Calendario</span>`;
+      // Calendar (now functional if data exists)
+      if (data.personal?.calendar && data.personal.calendar.length > 0) {
+        html += `<button class="qa-btn" onclick="navigate('calendario')" aria-label="Ver calendario del curso">${icon('calendar')} Calendario</button>`;
+      } else {
+        html += `<span class="qa-btn" style="cursor: default; opacity: 0.5;" aria-label="Calendario (sin eventos)">${icon('calendar')} Calendario</span>`;
+      }
+
+      // Notifications badge
+      html += `<button class="qa-btn" onclick="toggleNotifDropdown()" id="notif-btn" style="position:relative;" aria-label="Notificaciones">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span id="notif-badge" class="hidden" style="position:absolute;top:-2px;right:-2px;width:16px;height:16px;background:#ef4444;color:white;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;">0</span>
+      </button>`;
+
+      // Refresh button
+      html += `<button class="qa-btn" onclick="refreshData()" id="refresh-btn" aria-label="Actualizar datos">${icon('info')} Actualizar</button>`;
 
       qa.innerHTML = html;
+
+      // Load notification count
+      loadNotifCount();
+    }
+
+    // Notification dropdown
+    let notifData = [];
+    async function loadNotifCount() {
+      try {
+        const res = await fetch('/api/notifications?unread=true&limit=5');
+        if (!res.ok) return;
+        const data = await res.json();
+        notifData = data.notifications || [];
+        const badge = document.getElementById('notif-badge');
+        if (data.unreadCount > 0) {
+          badge.textContent = data.unreadCount > 9 ? '9+' : data.unreadCount;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      } catch {}
+    }
+
+    function toggleNotifDropdown() {
+      let dd = document.getElementById('notif-dropdown');
+      if (dd) { dd.remove(); return; }
+      const btn = document.getElementById('notif-btn');
+      const rect = btn.getBoundingClientRect();
+      dd = document.createElement('div');
+      dd.id = 'notif-dropdown';
+      dd.style.cssText = `position:fixed;top:${rect.bottom+4}px;right:16px;width:320px;max-height:400px;overflow-y:auto;background:white;border:1px solid #e5e7eb;border-radius:0.75rem;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:50;`;
+      if (notifData.length === 0) {
+        dd.innerHTML = '<div class="p-4 text-sm text-gray-400 text-center">Sin notificaciones</div>';
+      } else {
+        dd.innerHTML = '<div class="p-3 border-b border-gray-100 flex items-center justify-between"><span class="text-xs font-semibold text-gray-500 uppercase">Notificaciones</span><button onclick="markAllRead()" class="text-xs text-blue-600 hover:underline">Marcar todas leidas</button></div>' +
+          notifData.map(n => `<div class="p-3 border-b border-gray-50 ${n.read ? 'opacity-50' : ''}">
+            <div class="text-sm font-medium text-gray-700">${n.title}</div>
+            <div class="text-xs text-gray-400 mt-0.5">${n.body}</div>
+            <div class="text-xs text-gray-300 mt-1">${new Date(n.created_at).toLocaleString('es-CL', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
+          </div>`).join('');
+      }
+      document.body.appendChild(dd);
+      // Close on click outside
+      setTimeout(() => document.addEventListener('click', closeNotifDropdown, { once: true }), 10);
+    }
+
+    function closeNotifDropdown(e) {
+      const dd = document.getElementById('notif-dropdown');
+      if (dd && !dd.contains(e?.target)) dd.remove();
+    }
+
+    async function markAllRead() {
+      try {
+        await fetch('/api/notifications/read-all', { method: 'PUT' });
+        loadNotifCount();
+        const dd = document.getElementById('notif-dropdown');
+        if (dd) dd.remove();
+      } catch {}
+    }
+
+    async function refreshData() {
+      const btn = document.getElementById('refresh-btn');
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+      try {
+        const res = await fetch(`/api/curso-virtual/${linkId}/refresh`, { method: 'POST' });
+        if (res.status === 429) { alert('Espera 5 minutos entre actualizaciones'); return; }
+        // Reload page data
+        await load();
+      } catch {} finally {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      }
     }
 
     function renderInicio(data) {
@@ -476,6 +588,8 @@
       const platformUrl = data.moodle.courseUrl.replace(/\/course\/view.*/, '');
       const cfg = data.config || {};
       const weekObjectives = cfg.objetivos_semanales || {};
+      const comp = data.personal?.completion || {};
+      const recordings = data.personal?.recordings || [];
 
       if (!n.visible) {
         return `<div class="cv-card p-8 text-center locked-section">
@@ -525,17 +639,28 @@
           html += `<div class="mb-4">
             <div class="week-phase">Antes de la clase</div>
             ${n.temas && n.temas.length > 0 && week === weekStart ? `<div class="flex flex-wrap gap-1.5 mb-2">${n.temas.map(t => `<span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded">${t}</span>`).join('')}</div>` : ''}
-            ${week === weekStart ? antes.map(el => renderActivityItem(el, platformUrl)).join('') : ''}
+            ${week === weekStart ? antes.map(el => renderActivityItem(el, platformUrl, comp)).join('') : ''}
           </div>`;
         }
 
         // Durante la clase
+        // Find recording for this session (fieldid 425=date timestamp, 426=youtube url)
+        const sessionRecording = recordings.find(r => {
+          const fields = r.fields || {};
+          // Match by session number via tags or by proximity
+          return r.tags?.some(t => t.name?.includes(String(week))) || false;
+        });
+
         html += `<div class="mb-4">
           <div class="week-phase">Clase sincronica</div>
           <div class="activity-item" style="background: #faf5ff; border-radius: 0.5rem;">
             <div class="activity-icon ic-zoom">${icon('video')}</div>
             <div class="text-sm text-gray-700">Sesion ${week} en vivo por Zoom</div>
           </div>
+          ${sessionRecording ? `<div class="activity-item mt-1" style="background: #fdf2f8; border-radius: 0.5rem;">
+            <div class="activity-icon ic-data">${icon('play')}</div>
+            <a href="${Object.values(sessionRecording.fields).find(v => typeof v === 'string' && v.includes('youtu')) || '#'}" target="_blank" rel="noopener" class="text-sm text-pink-700 hover:underline">Grabacion sesion ${week}</a>
+          </div>` : ''}
         </div>`;
 
         // Despues de la clase
@@ -550,7 +675,7 @@
         if (week === weekEnd && evaluaciones.length > 0) {
           html += `<div class="mb-2">
             <div class="week-phase">Evaluacion</div>
-            ${evaluaciones.map(el => renderActivityItem(el, platformUrl)).join('')}
+            ${evaluaciones.map(el => renderActivityItem(el, platformUrl, comp)).join('')}
           </div>`;
         }
 
@@ -563,6 +688,7 @@
     function renderEvaluaciones(data) {
       const evals = data.evaluaciones_sumativas || [];
       const cfg = data.config || {};
+      const grades = data.personal?.grades || [];
 
       let html = `<div class="cv-card p-6">
         <h2 class="font-heading font-bold text-lg text-gray-800 mb-4">Evaluaciones del curso</h2>`;
@@ -570,19 +696,25 @@
       if (evals.length === 0) {
         html += '<p class="text-sm text-gray-400">No hay evaluaciones sumativas definidas en el PIAC.</p>';
       } else {
+        const hasGrades = data.personal?.resolved && grades.length > 0;
         html += `<div class="overflow-x-auto"><table class="w-full text-sm" role="table">
           <thead><tr class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wide border-b">
             <th class="pb-3 pr-4" scope="col">Evaluacion</th>
             <th class="pb-3 pr-4" scope="col">Nucleo</th>
-            <th class="pb-3 text-right" scope="col">Ponderacion</th>
+            <th class="pb-3 pr-4 text-right" scope="col">Ponderacion</th>
+            ${hasGrades ? '<th class="pb-3 text-right" scope="col">Nota</th>' : ''}
           </tr></thead>
           <tbody>
-            ${evals.map(e => `<tr class="border-b border-gray-50">
+            ${evals.map(e => {
+              // Try to find matching grade by name similarity
+              const grade = grades.find(g => g.itemname && e.nombre && g.itemname.toLowerCase().includes(e.nombre.toLowerCase().substring(0, 15)));
+              return `<tr class="border-b border-gray-50">
               <td class="py-3 pr-4 font-medium text-gray-700">${e.nombre}</td>
               <td class="py-3 pr-4 text-gray-500">${e.nucleo ? 'N' + e.nucleo : '-'}</td>
-              <td class="py-3 text-right font-semibold ${e.ponderacion ? 'text-gray-800' : 'text-gray-300'}">${e.ponderacion ? e.ponderacion + '%' : '-'}</td>
-            </tr>`).join('')}
-            <tr class="font-bold"><td class="pt-3" colspan="2">Total</td><td class="pt-3 text-right">${evals.reduce((s, e) => s + (e.ponderacion || 0), 0)}%</td></tr>
+              <td class="py-3 pr-4 text-right font-semibold ${e.ponderacion ? 'text-gray-800' : 'text-gray-300'}">${e.ponderacion ? e.ponderacion + '%' : '-'}</td>
+              ${hasGrades ? `<td class="py-3 text-right">${grade?.gradeformatted ? `<span class="font-semibold text-amber-600">${grade.gradeformatted}</span>${grade.feedback ? `<div class="text-xs text-gray-400 mt-0.5">${grade.feedback}</div>` : ''}` : '<span class="text-gray-300">-</span>'}</td>` : ''}
+            </tr>`}).join('')}
+            <tr class="font-bold"><td class="pt-3" colspan="2">Total</td><td class="pt-3 text-right">${evals.reduce((s, e) => s + (e.ponderacion || 0), 0)}%</td>${hasGrades ? '<td></td>' : ''}</tr>
           </tbody>
         </table></div>`;
       }
@@ -668,6 +800,41 @@
       return html;
     }
 
+    function renderCalendar(data) {
+      const events = data.personal?.calendar || [];
+      if (events.length === 0) {
+        return `<div class="cv-card p-6"><h2 class="font-heading font-bold text-lg text-gray-800 mb-4">Calendario</h2><p class="text-sm text-gray-400">No hay eventos proximos.</p></div>`;
+      }
+
+      const sorted = [...events].sort((a, b) => a.timestart - b.timestart);
+      const now = Math.floor(Date.now() / 1000);
+
+      return `<div class="cv-card p-6">
+        <h2 class="font-heading font-bold text-lg text-gray-800 mb-4">Proximos eventos</h2>
+        <div class="space-y-3">
+          ${sorted.filter(e => e.timestart >= now - 86400).map(e => {
+            const date = new Date(e.timestart * 1000);
+            const dateStr = date.toLocaleDateString('es-CL', { weekday: 'short', day: 'numeric', month: 'short' });
+            const timeStr = date.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+            const isPast = e.timestart < now;
+            const typeColors = { course: 'border-blue-400', due: 'border-orange-400', user: 'border-green-400' };
+            const borderColor = typeColors[e.eventtype] || 'border-gray-300';
+            return `<div class="flex items-start gap-3 p-3 rounded-lg border-l-4 ${borderColor} bg-gray-50 ${isPast ? 'opacity-50' : ''}">
+              <div class="text-center flex-shrink-0" style="min-width: 48px;">
+                <div class="text-xs font-semibold text-gray-500 uppercase">${dateStr.split(' ')[0]}</div>
+                <div class="text-lg font-bold text-gray-800">${date.getDate()}</div>
+              </div>
+              <div class="flex-1">
+                <div class="text-sm font-medium text-gray-700">${e.name}</div>
+                <div class="text-xs text-gray-400">${timeStr}${e.modulename ? ' · ' + e.modulename : ''}</div>
+                ${e.description ? `<div class="text-xs text-gray-400 mt-1">${e.description}</div>` : ''}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }
+
     function navigate(section) {
       activeSection = section;
       const content = document.getElementById('main-content');
@@ -689,6 +856,8 @@
         content.innerHTML = renderBibliografia(courseData);
       } else if (section === 'info') {
         content.innerHTML = renderInfo(courseData);
+      } else if (section === 'calendario') {
+        content.innerHTML = renderCalendar(courseData);
       }
 
       // Close mobile sidebar

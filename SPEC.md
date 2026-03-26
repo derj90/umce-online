@@ -329,19 +329,43 @@ Cache personalizado por estudiante (completions, grades, submissions) se llena e
 
 ---
 
-## Fase 5: Experiencia estudiante completa
+## Fase 5: Experiencia estudiante personalizada
 
-**Estado**: PENDIENTE
-**Ultima sesion**: —
-**Objetivo**: El estudiante tiene una experiencia completa: ruta de progresion, nucleos, contenido, registro de vuelta en Moodle.
+**Estado**: EN PROGRESO
+**Ultima sesion**: 26-mar-2026
+**Objetivo**: El estudiante ve progresion, notas, grabaciones, calendario y notificaciones personalizadas.
 
-### Esqueleto (se detalla con David antes de ejecutar)
-- [ ] 5.1 Ruta de progresion visual por nucleo
-- [ ] 5.2 Grabaciones integradas (desde mod_data Moodle)
-- [ ] 5.3 Horario, companeros, docente, recursos
-- [ ] 5.4 Actividades y rubricas visibles
-- [ ] 5.5 Registro de interacciones de vuelta en Moodle (completions, grades)
-- [ ] 5.6 Landing pages por programa (alimenta estrategia de posicionamiento digital)
+### Verificacion de permisos APIs Moodle (26-mar-2026)
+- [x] `core_user_get_users_by_field(email)` — OK en virtual.umce.cl (userid=5 para david.reyes_j@)
+- [x] `core_completion_get_activities_completion_status` — OK (0 statuses, completion tracking no habilitado en curso test)
+- [x] `gradereport_user_get_grade_items` — OK (1 grade entry)
+- [x] `mod_data_get_entries` — OK (1 recording, fieldid 425=date, 426=youtube url)
+
+### Fase 5-A: Identidad y datos personalizados
+
+- [ ] **5.1 Resolucion identidad** — core_user_get_users_by_field(email) → user_moodle_mapping cache
+- [ ] **5.2 Endpoint completion** — core_completion_get_activities_completion_status → incluir en API
+- [ ] **5.3 Endpoint grades** — gradereport_user_get_grade_items → incluir en API
+- [ ] **5.4 API curso-virtual extendida** — Incluir completion + grades + recordings + calendar
+
+### Fase 5-B: UI personalizada
+
+- [ ] **5.5 Barras progresion** — Por nucleo en sidebar + por actividad en contenido
+- [ ] **5.6 Notas inline** — Calificacion junto a cada evaluacion
+- [ ] **5.7 Grabaciones por sesion** — Desde cache_recordings, mostrar en cada semana
+- [ ] **5.8 Calendario inline** — Vista mes con eventos del curso desde cache_calendar
+- [ ] **5.9 Badge notificaciones** — Campana en top bar + dropdown con alertas no leidas
+- [ ] **5.10 Boton Actualizar** — Refresh manual con throttle 5 min
+
+### Fase 5-C: Chatbot contextual
+
+- [ ] **5.11 System prompt extendido** — Inyectar datos del curso al chatbot
+- [ ] **5.12 Quick actions** — Botones rapidos: proximas entregas, grabaciones, contactar docente
+
+### Anti-patrones de esta fase
+- NO llamar APIs Moodle en tiempo real por cada page load — usar cache + refresh asincrono
+- NO bloquear la vista si completion/grades no disponibles — degradar gracefully
+- NO especular sobre permisos — ya verificados empiricamente
 
 ---
 

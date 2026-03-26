@@ -619,6 +619,83 @@ async function portalMutate(table, method, body, params = '') {
   return text ? JSON.parse(text) : [];
 }
 
+// === Moodle Identity Resolution ===
+// Resolve umce email → Moodle userid, with caching in user_moodle_mapping
+async function resolveMoodleUserId(email, platformId) {
+  if (!email) return null;
+  // Check cache first
+  const cached = await portalQuery('user_moodle_mapping',
+    `umce_email=eq.${encodeURIComponent(email)}&moodle_platform=eq.${platformId}&limit=1`);
+  if (cached.length > 0) return cached[0].moodle_userid;
+
+  // Call Moodle API
+  const platform = PLATFORMS.find(p => p.id === platformId);
+  if (!platform || !platform.url || !platform.token) return null;
+  try {
+    const users = await moodleCall(platform, 'core_user_get_users_by_field', {
+      field: 'email', 'values[0]': email
+    });
+    if (!users || users.length === 0) return null;
+    const user = users[0];
+    // Cache it
+    await portalMutate('user_moodle_mapping', 'POST', {
+      umce_email: email, moodle_platform: platformId,
+      moodle_userid: user.id, moodle_username: user.username
+    }).catch(() => {}); // ignore duplicate conflict
+    return user.id;
+  } catch (err) {
+    console.error(`Identity resolve error [${platformId}/${email}]:`, err.message);
+    return null;
+  }
+}
+
+// Fetch completion data for a user in a course
+async function fetchCompletion(platformId, courseId, userId) {
+  const platform = PLATFORMS.find(p => p.id === platformId);
+  if (!platform) return null;
+  try {
+    const data = await moodleCall(platform, 'core_completion_get_activities_completion_status', {
+      courseid: courseId, userid: userId
+    });
+    return (data.statuses || []).reduce((acc, s) => {
+      acc[s.cmid] = { state: s.state, tracking: s.tracking, timecompleted: s.timecompleted };
+      return acc;
+    }, {});
+  } catch { return null; }
+}
+
+// Fetch grades for a user in a course
+async function fetchGrades(platformId, courseId, userId) {
+  const platform = PLATFORMS.find(p => p.id === platformId);
+  if (!platform) return null;
+  try {
+    const data = await moodleCall(platform, 'gradereport_user_get_grade_items', {
+      courseid: courseId, userid: userId
+    });
+    const grades = data.usergrades?.[0]?.gradeitems || [];
+    return grades.map(g => ({
+      id: g.id, itemname: g.itemname, itemtype: g.itemtype, itemmodule: g.itemmodule,
+      cmid: g.cmid, graderaw: g.graderaw, gradeformatted: g.gradeformatted,
+      feedback: (g.feedback || '').replace(/<[^>]*>/g, '').substring(0, 300),
+      grademin: g.grademin, grademax: g.grademax, percentageformatted: g.percentageformatted
+    }));
+  } catch { return null; }
+}
+
+// Fetch cached recordings for a course
+async function fetchCachedRecordings(platformId, courseId) {
+  const cached = await portalQuery('cache_recordings',
+    `moodle_platform=eq.${platformId}&moodle_course_id=eq.${courseId}&limit=1`);
+  return cached[0]?.recordings_json || null;
+}
+
+// Fetch cached calendar for a course
+async function fetchCachedCalendar(platformId, courseId) {
+  const cached = await portalQuery('cache_calendar',
+    `moodle_platform=eq.${platformId}&moodle_course_id=eq.${courseId}&limit=1`);
+  return cached[0]?.events_json || null;
+}
+
 // === Firebase Admin / Push Notifications ===
 // Requires: FIREBASE_SERVICE_ACCOUNT_JSON (stringified JSON) or FIREBASE_SERVICE_ACCOUNT_PATH (file path)
 
@@ -3061,10 +3138,59 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
         courseId: link.moodle_course_id,
         courseUrl: `${platformObj?.url || ''}/course/view.php?id=${link.moodle_course_id}`
       },
-      config: resolvedConfig
+      config: resolvedConfig,
+      // Personalized data (async, non-blocking)
+      personal: await (async () => {
+        try {
+          const moodleUserId = await resolveMoodleUserId(req.userEmail, link.moodle_platform);
+          if (!moodleUserId) return { resolved: false };
+
+          const [completion, grades, recordings, calendar] = await Promise.all([
+            fetchCompletion(link.moodle_platform, link.moodle_course_id, moodleUserId),
+            fetchGrades(link.moodle_platform, link.moodle_course_id, moodleUserId),
+            fetchCachedRecordings(link.moodle_platform, link.moodle_course_id),
+            fetchCachedCalendar(link.moodle_platform, link.moodle_course_id)
+          ]);
+
+          return { resolved: true, moodleUserId, completion, grades, recordings, calendar };
+        } catch (err) {
+          console.error('Personal data error:', err.message);
+          return { resolved: false, error: err.message };
+        }
+      })()
     });
   } catch (err) {
     console.error('Curso virtual API error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST refresh personal data (throttled)
+const refreshThrottle = new Map();
+app.post('/api/curso-virtual/:linkId/refresh', authMiddleware, async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    const key = `${req.userEmail}:${linkId}`;
+    const lastRefresh = refreshThrottle.get(key) || 0;
+    if (Date.now() - lastRefresh < 5 * 60 * 1000) {
+      return res.status(429).json({ error: 'Espera 5 minutos entre actualizaciones' });
+    }
+    refreshThrottle.set(key, Date.now());
+
+    const links = await portalQuery('piac_links', `id=eq.${linkId}&status=eq.active`);
+    if (links.length === 0) return res.status(404).json({ error: 'Curso no encontrado' });
+    const link = links[0];
+
+    const moodleUserId = await resolveMoodleUserId(req.userEmail, link.moodle_platform);
+    if (!moodleUserId) return res.json({ refreshed: false, reason: 'Usuario no encontrado en Moodle' });
+
+    const [completion, grades] = await Promise.all([
+      fetchCompletion(link.moodle_platform, link.moodle_course_id, moodleUserId),
+      fetchGrades(link.moodle_platform, link.moodle_course_id, moodleUserId)
+    ]);
+
+    res.json({ refreshed: true, completion: !!completion, grades: !!grades });
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
