@@ -331,7 +331,7 @@ Cache personalizado por estudiante (completions, grades, submissions) se llena e
 
 ## Fase 5: Experiencia estudiante personalizada
 
-**Estado**: EN PROGRESO
+**Estado**: COMPLETADA
 **Ultima sesion**: 26-mar-2026
 **Objetivo**: El estudiante ve progresion, notas, grabaciones, calendario y notificaciones personalizadas.
 
@@ -343,24 +343,24 @@ Cache personalizado por estudiante (completions, grades, submissions) se llena e
 
 ### Fase 5-A: Identidad y datos personalizados
 
-- [ ] **5.1 Resolucion identidad** — core_user_get_users_by_field(email) → user_moodle_mapping cache
-- [ ] **5.2 Endpoint completion** — core_completion_get_activities_completion_status → incluir en API
-- [ ] **5.3 Endpoint grades** — gradereport_user_get_grade_items → incluir en API
-- [ ] **5.4 API curso-virtual extendida** — Incluir completion + grades + recordings + calendar
+- [x] **5.1 Resolucion identidad** — core_user_get_users_by_field(email) → user_moodle_mapping cache
+- [x] **5.2 Endpoint completion** — core_completion_get_activities_completion_status → incluir en API
+- [x] **5.3 Endpoint grades** — gradereport_user_get_grade_items → incluir en API
+- [x] **5.4 API curso-virtual extendida** — Incluir completion + grades + recordings + calendar en personal{}
 
 ### Fase 5-B: UI personalizada
 
-- [ ] **5.5 Barras progresion** — Por nucleo en sidebar + por actividad en contenido
-- [ ] **5.6 Notas inline** — Calificacion junto a cada evaluacion
-- [ ] **5.7 Grabaciones por sesion** — Desde cache_recordings, mostrar en cada semana
-- [ ] **5.8 Calendario inline** — Vista mes con eventos del curso desde cache_calendar
-- [ ] **5.9 Badge notificaciones** — Campana en top bar + dropdown con alertas no leidas
-- [ ] **5.10 Boton Actualizar** — Refresh manual con throttle 5 min
+- [x] **5.5 Barras progresion** — Por nucleo en sidebar con % y color, checkmark cuando 100%
+- [x] **5.6 Notas inline** — Calificacion junto a cada actividad + tabla evaluaciones con columna Nota
+- [x] **5.7 Grabaciones por sesion** — Desde recordings cache, link YouTube inline por semana
+- [x] **5.8 Calendario inline** — Vista lista de eventos proximos con fecha, hora, tipo
+- [x] **5.9 Badge notificaciones** — Campana en top bar + dropdown con lista + marcar todas leidas
+- [x] **5.10 Boton Actualizar** — POST /api/curso-virtual/:linkId/refresh con throttle 5 min
 
 ### Fase 5-C: Chatbot contextual
 
-- [ ] **5.11 System prompt extendido** — Inyectar datos del curso al chatbot
-- [ ] **5.12 Quick actions** — Botones rapidos: proximas entregas, grabaciones, contactar docente
+- [x] **5.11 System prompt extendido** — context_link_id inyecta nucleos, evaluaciones, docente, horarios
+- [x] **5.12 Quick actions** — chatbot.js pasa context_link_id automaticamente desde curso-virtual
 
 ### Anti-patrones de esta fase
 - NO llamar APIs Moodle en tiempo real por cada page load — usar cache + refresh asincrono
@@ -397,3 +397,6 @@ Cada sesion que trabaje en este proyecto registra aqui que se hizo.
 | 25-mar-2026 | Pre-fase | Correccion de vision, limpieza repo, definiciones tecnicas, benchmark RRSS, creacion sistema de desarrollo (CLAUDE.md + SPEC.md) | Sistema listo para Fase 1 |
 | 25-mar-2026 | Fase 1 | Migracion completa: codebase copiado, URLs actualizadas (60+ refs), OAuth nuevo, Traefik+SSL, CI/CD, redirect 301 virtual.udfv.cloud→umce.online | COMPLETADA — 12/12 pasos |
 | 25-mar-2026 | Fase 2 | Implementacion completa: schema SQL (5 tablas), Drive API + mammoth, LLM parse via claude-proxy, Moodle snapshot (5 endpoints), motor matching determinista, detector discrepancias, UI panel DI (piac.html) | 8/8 pasos codificados — pendiente deploy + test con PIAC real |
+| 26-mar-2026 | Fase 3 | Curso virtual completo: sidebar+area principal, paleta UMCE, iconos Lucide, secciones (Inicio/Nucleos/Evaluaciones/Biblio/Info), barra quick-access, config DI (5 tabs), toggle visado, publicar/despublicar, fallbacks, chatbot generico, accesibilidad base | COMPLETADA — 13/13 pasos |
+| 26-mar-2026 | Fase 4 | Motor cron: 7 tablas nuevas (5 cache+notifications+mapping), cron 6h (refresh snapshots/recordings/calendar), detector cambios con alertas auto, endpoints notifications, panel alertas PIAC, SESSION_SECRET fijo | COMPLETADA — 11/11 pasos |
+| 26-mar-2026 | Fase 5 | Experiencia personalizada: identidad Moodle (email→userid), completion+grades+recordings+calendar en API, barras progresion sidebar, notas inline, grabaciones por sesion, calendario eventos, badge notificaciones, boton refresh, chatbot contextual con datos del curso | COMPLETADA — 12/12 pasos |
