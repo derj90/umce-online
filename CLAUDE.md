@@ -32,7 +32,9 @@ Este proyecto usa 3 capas de contexto. Respetar el orden:
 
 ### Stack (irrompible)
 - Express + vanilla JS + Tailwind CDN (NO Next.js, NO React, NO TypeScript)
-- Solo 3 dependencias: express, firebase-admin, multer
+- Dependencias core: express, firebase-admin, multer
+- Dependencias PIAC: mammoth, googleapis
+- Dependencias Open Badges 3.0 (aprobadas 26-mar-2026): @digitalcredentials/open-badges-context, @digitalcredentials/vc, @digitalcredentials/ed25519-multikey, @digitalcredentials/eddsa-rdfc-2022-cryptosuite, @digitalcredentials/data-integrity, @digitalcredentials/security-document-loader
 - HTML pages en `public/` con shared components (nav, footer, chatbot)
 - Tailwind compilado en build, CDN como fallback
 
