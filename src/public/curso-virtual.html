@@ -338,7 +338,7 @@
       document.getElementById('sidebar-overlay').classList.toggle('open', open);
     }
 
-    function openForumByCmid(cmid) {
+    async function openForumByCmid(cmid) {
       // Find forumId from courseData nucleos or shared resources
       let forumId = null;
       if (courseData) {
@@ -355,28 +355,85 @@
         window.open(`${courseData.moodle.courseUrl.replace(/\/course\/view.*/, '')}/mod/forum/view.php?id=${cmid}`, '_blank');
         return;
       }
-      // Ensure container exists (may be inside a book chapter, not in the activity list)
-      let container = document.getElementById(`forum-content-${cmid}`);
-      if (!container) {
-        // Create a modal-style forum overlay
-        const overlay = document.createElement('div');
-        overlay.className = 'embed-modal';
-        overlay.innerHTML = `
-          <div class="embed-modal-header">
-            <span style="color:white;font-size:0.875rem;font-weight:600;margin-right:auto;">Foro de discusion</span>
-            <button class="embed-modal-close embed-modal-close-main" onclick="this.closest('.embed-modal').remove()">
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              Volver al curso
-            </button>
-          </div>
-          <div id="forum-content-${cmid}" style="flex:1;overflow-y:auto;background:white;"></div>
-        `;
-        document.body.appendChild(overlay);
-        document.addEventListener('keydown', function escHandler(e) {
-          if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', escHandler); }
+      // Always open in a modal overlay (even if container exists in the page)
+      // Remove any existing modal first
+      document.querySelectorAll('.forum-modal-overlay').forEach(el => el.remove());
+      const overlay = document.createElement('div');
+      overlay.className = 'embed-modal forum-modal-overlay';
+      overlay.innerHTML = `
+        <div class="embed-modal-header">
+          <span style="color:white;font-size:0.875rem;font-weight:600;margin-right:auto;">Foro de discusion</span>
+          <button class="embed-modal-close embed-modal-close-main" onclick="this.closest('.embed-modal').remove()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Volver al curso
+          </button>
+        </div>
+        <div id="forum-modal-content-${cmid}" style="flex:1;overflow-y:auto;background:white;"></div>
+      `;
+      document.body.appendChild(overlay);
+      document.addEventListener('keydown', function escHandler(e) {
+        if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', escHandler); }
+      });
+      // Load forum into modal container
+      const modalContainer = document.getElementById(`forum-modal-content-${cmid}`);
+      modalContainer.innerHTML = '<div class="p-4 text-center"><div class="spinner mx-auto mb-2"></div><p class="text-xs text-gray-400">Cargando foro...</p></div>';
+      try {
+        const res = await fetch(`/api/curso-virtual/forum/${courseData.moodle.platform}/${forumId}`);
+        if (!res.ok) throw new Error('Error cargando foro');
+        const data = await res.json();
+        if (!data.posts || data.posts.length === 0) {
+          modalContainer.innerHTML = '<div class="p-6 text-center text-gray-400">Sin discusiones aun.</div>';
+          return;
+        }
+        const rootPosts = data.posts.filter(p => !p.parentId);
+        const replies = data.posts.filter(p => p.parentId);
+        let html = '';
+        rootPosts.forEach(p => {
+          const date = new Date(p.time * 1000).toLocaleDateString('es-CL', { day: 'numeric', month: 'short' });
+          html += `<div class="p-4 border-b border-gray-100">
+            <div class="flex items-center gap-2 mb-2">
+              ${p.authorPic ? `<img src="${p.authorPic}" class="w-7 h-7 rounded-full" alt="">` : '<div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 text-xs font-bold">' + (p.author || 'D').charAt(0) + '</div>'}
+              <div><div class="text-sm font-medium text-gray-800">${p.author}</div><div class="text-xs text-gray-400">${date}</div></div>
+            </div>
+            <div class="prose prose-sm max-w-none book-html text-sm">${processBookHtml(p.message)}</div>
+          </div>`;
         });
+        if (replies.length > 0) {
+          html += `<div class="px-4 py-2 bg-gray-50 border-b border-gray-100"><span class="text-xs font-semibold text-gray-500">${replies.length} respuesta${replies.length > 1 ? 's' : ''}</span></div>`;
+          replies.forEach(p => { html += renderForumPost(p); });
+        }
+        html += `<div class="p-4 border-t border-gray-200 bg-white">
+          <div class="text-xs font-semibold text-gray-500 mb-2">Tu respuesta</div>
+          <textarea id="forum-modal-reply-${cmid}" rows="3" class="w-full border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:border-blue-400 resize-none" placeholder="Escribe tu respuesta aqui..."></textarea>
+          <div class="flex items-center justify-between mt-2">
+            <span class="text-xs text-gray-400">Se publicara con tu nombre</span>
+            <button onclick="submitModalForumReply(${cmid}, ${forumId}, '${courseData.moodle.platform}', ${data.discussionId})" class="px-4 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700">Responder</button>
+          </div>
+        </div>`;
+        modalContainer.innerHTML = html;
+      } catch (e) {
+        modalContainer.innerHTML = `<div class="p-6 text-center text-red-400">${e.message}</div>`;
       }
-      toggleForum(cmid, forumId, courseData.moodle.platform);
+    }
+
+    async function submitModalForumReply(cmid, forumId, platform, discussionId) {
+      const textarea = document.getElementById(`forum-modal-reply-${cmid}`);
+      const message = textarea?.value?.trim();
+      if (!message) return;
+      const btn = textarea.parentElement.querySelector('button');
+      btn.disabled = true; btn.textContent = 'Enviando...'; btn.style.opacity = '0.6';
+      try {
+        const res = await fetch(`/api/curso-virtual/forum/${platform}/${forumId}/reply`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ discussionId, message })
+        });
+        if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Error'); }
+        // Reload by re-clicking the button
+        document.querySelector('.forum-modal-overlay')?.remove();
+        delete forumCache[cmid];
+        openForumByCmid(cmid);
+      } catch (e) { alert('Error: ' + e.message); }
+      finally { btn.disabled = false; btn.textContent = 'Responder'; btn.style.opacity = '1'; }
     }
 
     function expandEmbed(src, btn) {
