@@ -3952,12 +3952,13 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
     if (links.length === 0) return res.status(404).json({ error: 'Curso no encontrado' });
     const link = links[0];
 
-    const [parsedArr, snapshotArr, matchingArr, configArr, defaultsArr] = await Promise.all([
+    const [parsedArr, snapshotArr, matchingArr, configArr, defaultsArr, recursosAdicionalesArr] = await Promise.all([
       portalQuery('piac_parsed', `piac_link_id=eq.${linkId}&order=parsed_at.desc&limit=1`),
       portalQuery('moodle_snapshots', `piac_link_id=eq.${linkId}&order=snapshot_at.desc&limit=1`),
       portalQuery('matching_results', `piac_link_id=eq.${linkId}&order=created_at.desc&limit=1`),
       portalQuery('curso_virtual_config', `piac_link_id=eq.${linkId}`),
-      getInstitutionalDefaults()
+      getInstitutionalDefaults(),
+      portalQuery('recursos_adicionales', `piac_link_id=eq.${linkId}&visible=eq.true&order=virtual_section.asc,orden.asc`)
     ]);
 
     const config = configArr[0] || null;
@@ -4195,6 +4196,12 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
       },
       nucleos: mergedNucleos,
       recursos_compartidos: sharedResources,
+      recursos_adicionales: recursosAdicionalesArr.map(r => ({
+        id: r.id, titulo: r.titulo, tipo: r.tipo, url: r.url,
+        archivo_url: r.archivo_path ? `/uploads/${r.archivo_path}` : null,
+        descripcion: r.descripcion, icono: r.icono,
+        virtual_section: r.virtual_section, orden: r.orden
+      })),
       evaluaciones_sumativas: piac.evaluaciones_sumativas || [],
       moodle: {
         platform: link.moodle_platform,
@@ -4546,6 +4553,75 @@ app.put('/api/piac/:linkId/config', adminOrEditorMiddleware, async (req, res) =>
     console.error('Config PUT error:', err.message);
     res.status(500).json({ error: err.message });
   }
+});
+
+// --- Recursos Adicionales CRUD ---
+
+// GET list recursos for a link
+app.get('/api/piac/:linkId/recursos', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    const rows = await portalQuery('recursos_adicionales', `piac_link_id=eq.${linkId}&order=virtual_section.asc,orden.asc`);
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// POST create recurso
+app.post('/api/piac/:linkId/recursos', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    const { titulo, tipo, url, descripcion, icono, virtual_section, orden } = req.body;
+    if (!titulo) return res.status(400).json({ error: 'Título requerido' });
+    const saved = await portalMutate('recursos_adicionales', 'POST', {
+      piac_link_id: linkId, titulo, tipo: tipo || 'url', url: url || null,
+      descripcion: descripcion || null, icono: icono || 'url',
+      virtual_section: virtual_section ?? 0, orden: orden ?? 0,
+      visible: true, created_by: req.user?.email || 'admin'
+    });
+    res.json(saved[0] || saved);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// POST create recurso with file upload
+app.post('/api/piac/:linkId/recursos/upload', adminOrEditorMiddleware, upload.single('archivo'), async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    const { titulo, descripcion, virtual_section, orden } = req.body;
+    if (!titulo) return res.status(400).json({ error: 'Título requerido' });
+    if (!req.file) return res.status(400).json({ error: 'Archivo requerido' });
+    const ext = path.extname(req.file.originalname).toLowerCase();
+    const iconMap = { '.pdf': 'resource', '.doc': 'resource', '.docx': 'resource', '.ppt': 'resource', '.pptx': 'resource', '.xls': 'resource', '.xlsx': 'resource' };
+    const saved = await portalMutate('recursos_adicionales', 'POST', {
+      piac_link_id: linkId, titulo, tipo: 'archivo',
+      archivo_path: req.file.filename, descripcion: descripcion || null,
+      icono: iconMap[ext] || 'resource',
+      virtual_section: parseInt(virtual_section) || 0, orden: parseInt(orden) || 0,
+      visible: true, created_by: req.user?.email || 'admin'
+    });
+    res.json(saved[0] || saved);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// PUT update recurso
+app.put('/api/piac/recursos/:id', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { titulo, tipo, url, descripcion, icono, virtual_section, orden, visible } = req.body;
+    const updated = await portalMutate('recursos_adicionales', 'PATCH', {
+      titulo, tipo, url, descripcion, icono, virtual_section, orden, visible,
+      updated_at: new Date().toISOString()
+    }, `id=eq.${id}`);
+    res.json(updated[0] || updated);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// DELETE recurso
+app.delete('/api/piac/recursos/:id', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    await portalMutate('recursos_adicionales', 'DELETE', null, `id=eq.${id}`);
+    res.json({ deleted: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // POST publish curso virtual

@@ -1221,6 +1221,20 @@
     // ===== COURSE ORGANIZER =====
     let orgData = null; // { sections: [...], config: {...} }
 
+    const TOOL_PRESETS = [
+      { label: 'Enlace web', icono: 'url', placeholder: 'https://...' },
+      { label: 'Padlet', icono: 'url', placeholder: 'https://padlet.com/...' },
+      { label: 'Kahoot', icono: 'url', placeholder: 'https://kahoot.it/...' },
+      { label: 'Genially', icono: 'url', placeholder: 'https://view.genial.ly/...' },
+      { label: 'Canva', icono: 'url', placeholder: 'https://www.canva.com/...' },
+      { label: 'Google Forms', icono: 'url', placeholder: 'https://forms.gle/...' },
+      { label: 'Google Docs', icono: 'page', placeholder: 'https://docs.google.com/...' },
+      { label: 'Mentimeter', icono: 'url', placeholder: 'https://www.menti.com/...' },
+      { label: 'Jamboard', icono: 'url', placeholder: 'https://jamboard.google.com/...' },
+      { label: 'YouTube', icono: 'url', placeholder: 'https://youtube.com/watch?v=...' },
+      { label: 'Archivo (PDF, PPT...)', icono: 'resource', placeholder: null },
+    ];
+
     function toggleOrganizer() {
       const panel = document.getElementById('organizer-panel');
       const isHidden = panel.classList.contains('hidden');
@@ -1238,12 +1252,18 @@
         return;
       }
 
-      // Load existing config
+      // Load config + recursos adicionales in parallel
       let actConfig = {};
+      let recursosAdicionales = [];
       try {
-        const res = await fetch(`/api/piac/${currentLinkId}/config`);
-        const data = await res.json();
-        actConfig = (data.config && data.config.actividades_config) || {};
+        const [cfgRes, recRes] = await Promise.all([
+          fetch(`/api/piac/${currentLinkId}/config`),
+          fetch(`/api/piac/${currentLinkId}/recursos`)
+        ]);
+        const cfgData = await cfgRes.json();
+        actConfig = (cfgData.config && cfgData.config.actividades_config) || {};
+        recursosAdicionales = await recRes.json();
+        if (!Array.isArray(recursosAdicionales)) recursosAdicionales = [];
       } catch (e) { /* no config yet */ }
 
       const snap = currentDetail.snapshot.snapshot_json;
@@ -1251,10 +1271,8 @@
       const moodleBase = PLATFORM_URLS[currentDetail.link.moodle_platform] || '';
       const courseId = currentDetail.link.moodle_course_id;
 
-      // Build section data with activities, applying saved config
-      orgData = { sections: [], actConfig: { ...actConfig }, moodleBase, courseId };
+      orgData = { sections: [], actConfig: { ...actConfig }, moodleBase, courseId, recursosAdicionales };
 
-      // Group activities by their virtual section (or original section)
       const sectionMap = {};
       sections.forEach(s => {
         sectionMap[s.number] = {
@@ -1263,7 +1281,7 @@
         };
       });
 
-      // Place items in virtual sections or original sections
+      // Place Moodle items
       sections.forEach(s => {
         (s.modules || []).forEach((m, idx) => {
           const cfg = actConfig[String(m.id)] || {};
@@ -1273,17 +1291,28 @@
             moodleVisible: m.visible !== false,
             visible: cfg.visible !== false,
             originalSection: s.number,
-            order: cfg.order !== undefined ? cfg.order : idx
+            order: cfg.order !== undefined ? cfg.order : idx,
+            source: 'moodle'
           };
-          if (sectionMap[targetSec]) {
-            sectionMap[targetSec].items.push(item);
-          } else {
-            sectionMap[s.number].items.push(item);
-          }
+          if (sectionMap[targetSec]) sectionMap[targetSec].items.push(item);
+          else sectionMap[s.number].items.push(item);
         });
       });
 
-      // Sort items within each section by order
+      // Place recursos adicionales
+      recursosAdicionales.forEach(r => {
+        const targetSec = r.virtual_section ?? 0;
+        const item = {
+          recursoId: r.id, name: r.titulo, modname: r.icono || 'url',
+          visible: r.visible !== false, url: r.url, tipo: r.tipo,
+          descripcion: r.descripcion, archivoPath: r.archivo_path,
+          originalSection: targetSec, order: r.orden || 999,
+          source: 'adicional'
+        };
+        if (sectionMap[targetSec]) sectionMap[targetSec].items.push(item);
+        else if (sectionMap[0]) sectionMap[0].items.push(item);
+      });
+
       Object.values(sectionMap).forEach(s => s.items.sort((a, b) => a.order - b.order));
       orgData.sections = Object.values(sectionMap).sort((a, b) => a.number - b.number);
 
@@ -1297,12 +1326,32 @@
       let html = '';
       orgData.sections.forEach(sec => {
         const secVis = sec.visible !== false;
+        const adicCount = sec.items.filter(i => i.source === 'adicional').length;
         html += `<div class="org-section" data-sec="${sec.number}" id="org-sec-${sec.number}">`;
         html += `<div class="org-section-header">`;
         html += `<span class="sec-num">${sec.number}</span>`;
         html += `<span class="flex-1">${sec.name || '(Sin nombre)'}${!secVis ? ' <span class="badge badge-critical" style="font-size:9px">oculta en Moodle</span>' : ''}</span>`;
-        html += `<span class="text-xs text-gray-400 font-normal">${sec.items.length} elem.</span>`;
+        html += `<span class="text-xs text-gray-400 font-normal">${sec.items.length} elem.${adicCount ? ` (${adicCount} extra)` : ''}</span>`;
+        html += `<button onclick="toggleAddForm(${sec.number})" class="text-xs text-amber-600 hover:text-amber-800 font-medium ml-2" title="Agregar recurso a esta sección">+ Recurso</button>`;
         html += `</div>`;
+
+        // Add resource form (hidden by default)
+        html += `<div id="add-form-${sec.number}" class="hidden" style="padding:8px 12px;background:#FFFBEB;border-bottom:1px solid #FDE68A">`;
+        html += `<div class="flex flex-wrap gap-2 mb-2">`;
+        TOOL_PRESETS.forEach((p, i) => {
+          html += `<button onclick="selectPreset(${sec.number},${i})" class="text-xs px-2 py-1 rounded border border-gray-200 bg-white hover:bg-amber-50 hover:border-amber-300 transition-colors">${p.label}</button>`;
+        });
+        html += `</div>`;
+        html += `<div class="flex gap-2 items-end">`;
+        html += `<div class="flex-1"><label class="text-xs text-gray-500">Título</label><input id="add-titulo-${sec.number}" class="w-full text-sm border border-gray-300 rounded px-2 py-1" placeholder="Nombre del recurso"></div>`;
+        html += `<div class="flex-1"><label class="text-xs text-gray-500">URL</label><input id="add-url-${sec.number}" class="w-full text-sm border border-gray-300 rounded px-2 py-1" placeholder="https://..."></div>`;
+        html += `<input type="hidden" id="add-icono-${sec.number}" value="url">`;
+        html += `<button onclick="submitAddRecurso(${sec.number})" class="text-sm font-medium px-3 py-1 rounded bg-amber-600 text-white hover:bg-amber-700 whitespace-nowrap">Agregar</button>`;
+        html += `<button onclick="toggleAddForm(${sec.number})" class="text-gray-400 hover:text-gray-600 text-sm px-1">✕</button>`;
+        html += `</div>`;
+        html += `<div id="add-status-${sec.number}" class="text-xs mt-1"></div>`;
+        html += `</div>`;
+
         html += `<div class="org-section-body" data-sec="${sec.number}" ondragover="orgDragOver(event)" ondragleave="orgDragLeave(event)" ondrop="orgDrop(event)">`;
         sec.items.forEach((item, idx) => {
           html += renderOrgItem(item, sec.number, idx);
@@ -1315,47 +1364,110 @@
       body.innerHTML = html;
     }
 
+    function toggleAddForm(secNum) {
+      document.getElementById(`add-form-${secNum}`).classList.toggle('hidden');
+    }
+
+    function selectPreset(secNum, presetIdx) {
+      const p = TOOL_PRESETS[presetIdx];
+      const urlInput = document.getElementById(`add-url-${secNum}`);
+      const iconInput = document.getElementById(`add-icono-${secNum}`);
+      if (p.placeholder) {
+        urlInput.placeholder = p.placeholder;
+        urlInput.parentElement.classList.remove('hidden');
+      }
+      iconInput.value = p.icono;
+      // Pre-fill title if empty
+      const tituloInput = document.getElementById(`add-titulo-${secNum}`);
+      if (!tituloInput.value) tituloInput.value = p.label !== 'Enlace web' && p.label !== 'Archivo (PDF, PPT...)' ? p.label : '';
+      tituloInput.focus();
+    }
+
+    async function submitAddRecurso(secNum) {
+      const titulo = document.getElementById(`add-titulo-${secNum}`).value.trim();
+      const url = document.getElementById(`add-url-${secNum}`).value.trim();
+      const icono = document.getElementById(`add-icono-${secNum}`).value;
+      const statusEl = document.getElementById(`add-status-${secNum}`);
+
+      if (!titulo) { statusEl.innerHTML = '<span class="text-red-500">Título requerido</span>'; return; }
+      if (!url) { statusEl.innerHTML = '<span class="text-red-500">URL requerida</span>'; return; }
+
+      statusEl.innerHTML = '<span class="spinner-sm"></span>';
+      try {
+        const secItems = orgData.sections.find(s => s.number === secNum)?.items || [];
+        const orden = secItems.length;
+        await safeFetch(`/api/piac/${currentLinkId}/recursos`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ titulo, tipo: 'url', url, icono, virtual_section: secNum, orden })
+        });
+        statusEl.innerHTML = '<span class="text-green-600">Agregado</span>';
+        setTimeout(() => loadOrganizer(), 500);
+      } catch (e) {
+        statusEl.innerHTML = `<span class="text-red-500">${e.message}</span>`;
+      }
+    }
+
     function renderOrgItem(item, secNum, idx) {
       const icon = MOD_ICONS[item.modname] || '?';
       const label = MOD_LABELS[item.modname] || item.modname;
       const bg = MOD_COLORS[item.modname] || '#F3F4F6';
+      const isAdicional = item.source === 'adicional';
+      const itemId = isAdicional ? `rec-${item.recursoId}` : String(item.cmid);
       const eyeClass = item.visible ? 'visible' : '';
       const hiddenClass = item.visible ? '' : ' hidden-item';
       const eyeSvg = item.visible
         ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>'
         : '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M3 3l18 18"/></svg>';
       const movedBadge = item.originalSection !== secNum ? `<span class="text-xs text-amber-500" title="Movido desde S${item.originalSection}">*</span>` : '';
-      const mUrl = orgData.moodleBase ? `${orgData.moodleBase}/mod/${item.modname}/view.php?id=${item.cmid}` : '';
-      const mLink = mUrl ? `<a href="${mUrl}" target="_blank" class="moodle-link" title="Abrir en Moodle">&nearr;</a>` : '';
 
-      return `<div class="org-item${hiddenClass}" draggable="true" data-cmid="${item.cmid}" data-sec="${secNum}"
-        ondragstart="orgDragStart(event)" ondragend="orgDragEnd(event)">
+      // Link: Moodle for moodle items, URL for adicionales
+      let linkHtml = '';
+      if (isAdicional && item.url) {
+        linkHtml = `<a href="${item.url}" target="_blank" class="moodle-link" title="Abrir enlace">&nearr;</a>`;
+      } else if (!isAdicional && orgData.moodleBase) {
+        linkHtml = `<a href="${orgData.moodleBase}/mod/${item.modname}/view.php?id=${item.cmid}" target="_blank" class="moodle-link" title="Abrir en Moodle">&nearr;</a>`;
+      }
+
+      // Extra badge for adicionales
+      const adicBadge = isAdicional ? '<span style="font-size:9px;background:#FEF3C7;color:#92400E;padding:1px 5px;border-radius:3px;font-weight:600">extra</span>' : '';
+
+      // Delete button for adicionales
+      const deleteBtn = isAdicional ? `<button onclick="deleteRecurso(${item.recursoId})" class="text-gray-300 hover:text-red-500 flex-shrink-0" title="Eliminar recurso"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>` : '';
+
+      const toggleFn = isAdicional ? `orgToggleVisRec(${item.recursoId})` : `orgToggleVis(${item.cmid})`;
+
+      return `<div class="org-item${hiddenClass}" draggable="true" data-id="${itemId}" data-source="${item.source}" data-sec="${secNum}"
+        ondragstart="orgDragStart(event)" ondragend="orgDragEnd(event)"${isAdicional ? ' style="border-left:3px solid #F59E0B"' : ''}>
         <span class="drag-handle"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M7 2a2 2 0 10.001 4.001A2 2 0 007 2zm0 6a2 2 0 10.001 4.001A2 2 0 007 8zm0 6a2 2 0 10.001 4.001A2 2 0 007 14zm6-8a2 2 0 10-.001-4.001A2 2 0 0013 6zm0 2a2 2 0 10.001 4.001A2 2 0 0013 8zm0 6a2 2 0 10.001 4.001A2 2 0 0013 14z"/></svg></span>
-        <button class="eye-btn ${eyeClass}" onclick="orgToggleVis(${item.cmid})" title="${item.visible ? 'Ocultar' : 'Mostrar'}">${eyeSvg}</button>
+        <button class="eye-btn ${eyeClass}" onclick="${toggleFn}" title="${item.visible ? 'Ocultar' : 'Mostrar'}">${eyeSvg}</button>
         <span class="elem-icon" style="background:${bg};width:20px;height:20px;font-size:10px">${icon}</span>
         <span class="item-name" title="${(item.name||'').replace(/"/g,'&quot;')}">${item.name || 'Sin nombre'}</span>
-        ${movedBadge}
+        ${movedBadge} ${adicBadge}
         <span class="item-type" style="background:${bg}">${label}</span>
-        ${mLink}
+        ${linkHtml} ${deleteBtn}
       </div>`;
     }
 
     // --- Drag & Drop ---
-    let draggedCmid = null;
+    let draggedId = null;    // "123" for moodle, "rec-45" for adicional
+    let draggedSource = null;
     let draggedFromSec = null;
 
     function orgDragStart(e) {
-      draggedCmid = parseInt(e.target.dataset.cmid);
+      draggedId = e.target.dataset.id;
+      draggedSource = e.target.dataset.source;
       draggedFromSec = parseInt(e.target.dataset.sec);
       e.target.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', draggedCmid);
+      e.dataTransfer.setData('text/plain', draggedId);
     }
 
     function orgDragEnd(e) {
       e.target.classList.remove('dragging');
       document.querySelectorAll('.org-section').forEach(s => s.classList.remove('drag-over'));
-      draggedCmid = null;
+      draggedId = null;
+      draggedSource = null;
       draggedFromSec = null;
     }
 
@@ -1381,24 +1493,31 @@
       }
     }
 
+    function findItemById(id, source) {
+      for (const sec of orgData.sections) {
+        const idx = sec.items.findIndex(i => {
+          if (source === 'adicional') return i.source === 'adicional' && `rec-${i.recursoId}` === id;
+          return i.source === 'moodle' && String(i.cmid) === id;
+        });
+        if (idx !== -1) return { sec, idx, item: sec.items[idx] };
+      }
+      return null;
+    }
+
     function orgDrop(e) {
       e.preventDefault();
       const targetSecNum = parseInt(e.currentTarget.dataset.sec);
       document.querySelectorAll('.org-section').forEach(s => s.classList.remove('drag-over'));
 
-      if (draggedCmid === null) return;
+      if (draggedId === null) return;
 
-      // Find and remove item from source section
-      let movedItem = null;
-      orgData.sections.forEach(sec => {
-        const idx = sec.items.findIndex(i => i.cmid === draggedCmid);
-        if (idx !== -1) {
-          movedItem = sec.items.splice(idx, 1)[0];
-        }
-      });
-      if (!movedItem) return;
+      const found = findItemById(draggedId, draggedSource);
+      if (!found) return;
 
-      // Find insertion position in target section
+      // Remove from source
+      const movedItem = found.sec.items.splice(found.idx, 1)[0];
+
+      // Find insertion position
       const targetSec = orgData.sections.find(s => s.number === targetSecNum);
       if (!targetSec) return;
 
@@ -1406,28 +1525,43 @@
       let insertIdx = targetSec.items.length;
       for (let i = 0; i < items.length; i++) {
         const box = items[i].getBoundingClientRect();
-        if (e.clientY < box.top + box.height / 2) {
-          insertIdx = i;
-          break;
-        }
+        if (e.clientY < box.top + box.height / 2) { insertIdx = i; break; }
       }
 
       targetSec.items.splice(insertIdx, 0, movedItem);
-
-      // Update orders
       targetSec.items.forEach((item, i) => item.order = i);
 
       renderOrganizer();
-      document.getElementById('org-save-status').textContent = 'Sin guardar';
-      document.getElementById('org-save-status').className = 'text-xs text-amber-600';
+      markUnsaved();
     }
 
     function orgToggleVis(cmid) {
       orgData.sections.forEach(sec => {
-        const item = sec.items.find(i => i.cmid === cmid);
+        const item = sec.items.find(i => i.source === 'moodle' && i.cmid === cmid);
         if (item) item.visible = !item.visible;
       });
       renderOrganizer();
+      markUnsaved();
+    }
+
+    function orgToggleVisRec(recId) {
+      orgData.sections.forEach(sec => {
+        const item = sec.items.find(i => i.source === 'adicional' && i.recursoId === recId);
+        if (item) item.visible = !item.visible;
+      });
+      renderOrganizer();
+      markUnsaved();
+    }
+
+    async function deleteRecurso(recId) {
+      if (!confirm('Eliminar este recurso?')) return;
+      try {
+        await safeFetch(`/api/piac/recursos/${recId}`, { method: 'DELETE' });
+        loadOrganizer();
+      } catch (e) { alert(e.message); }
+    }
+
+    function markUnsaved() {
       document.getElementById('org-save-status').textContent = 'Sin guardar';
       document.getElementById('org-save-status').className = 'text-xs text-amber-600';
     }
@@ -1437,36 +1571,56 @@
       const statusEl = document.getElementById('org-save-status');
       statusEl.innerHTML = '<span class="spinner-sm"></span> Guardando...';
 
-      // Build actividades_config from current organizer state
-      const config = {};
+      // Build actividades_config for Moodle items
+      const moodleConfig = {};
+      // Build updates for recursos adicionales
+      const recUpdates = [];
+
       orgData.sections.forEach(sec => {
         sec.items.forEach((item, idx) => {
-          const entry = {};
-          let hasChange = false;
-          if (!item.visible) { entry.visible = false; hasChange = true; }
-          if (item.originalSection !== sec.number) { entry.virtual_section = sec.number; hasChange = true; }
-          entry.order = idx;
-          if (hasChange || idx !== item.order) {
-            config[String(item.cmid)] = entry;
+          if (item.source === 'moodle') {
+            const entry = { order: idx };
+            if (!item.visible) entry.visible = false;
+            if (item.originalSection !== sec.number) entry.virtual_section = sec.number;
+            moodleConfig[String(item.cmid)] = entry;
+          } else if (item.source === 'adicional') {
+            recUpdates.push({
+              id: item.recursoId,
+              virtual_section: sec.number,
+              orden: idx,
+              visible: item.visible
+            });
           }
         });
       });
 
       try {
-        // Load existing config, merge actividades_config
+        // Save Moodle config
         const getRes = await fetch(`/api/piac/${currentLinkId}/config`);
         const getData = await getRes.json();
         const existing = getData.config || {};
-
-        const payload = { ...existing, actividades_config: config };
+        const payload = { ...existing, actividades_config: moodleConfig };
         delete payload.id; delete payload.created_at; delete payload.updated_at;
         delete payload.publicado; delete payload.publicado_at; delete payload.publicado_por;
 
-        await safeFetch(`/api/piac/${currentLinkId}/config`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+        const promises = [
+          safeFetch(`/api/piac/${currentLinkId}/config`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+        ];
+
+        // Save recurso positions
+        recUpdates.forEach(r => {
+          promises.push(safeFetch(`/api/piac/recursos/${r.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ virtual_section: r.virtual_section, orden: r.orden, visible: r.visible })
+          }));
         });
+
+        await Promise.all(promises);
 
         statusEl.textContent = 'Guardado';
         statusEl.className = 'text-xs text-green-600';
