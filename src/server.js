@@ -3713,8 +3713,22 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
       publicado: config.publicado || false
     } : null;
 
-    // Fetch live forum IDs (snapshot may not have forumId if taken before this feature)
+    // Auto-fetch docente profile pic from Moodle if not configured
     const platformObj = PLATFORMS.find(p => p.id === link.moodle_platform);
+    if (resolvedConfig && !resolvedConfig.docente_foto_url && piac.identificacion?.email_docente && platformObj) {
+      try {
+        const docenteUsers = await moodleCall(platformObj, 'core_user_get_users_by_field', { field: 'email', 'values[0]': piac.identificacion.email_docente });
+        if (docenteUsers?.[0]?.profileimageurl) {
+          const picUrl = docenteUsers[0].profileimageurl;
+          // Only use if it's not the default Moodle avatar
+          if (!picUrl.includes('/u/f1') || picUrl.includes('?rev=')) {
+            resolvedConfig.docente_foto_url = picUrl;
+          }
+        }
+      } catch {}
+    }
+
+    // Fetch live forum IDs (snapshot may not have forumId if taken before this feature)
     let liveForumMap = {};
     if (platformObj) {
       try {
