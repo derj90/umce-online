@@ -3611,16 +3611,21 @@ app.post('/api/piac/discrepancy/:id/resolve', adminOrEditorMiddleware, async (re
     const id = parseInt(req.params.id);
     if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
     const { resolution_type, resolution_note, linked_cmid, linked_mod_name, linked_mod_title, external_url } = req.body || {};
-    const patchData = {
+    // Core fields (always exist)
+    await portalMutate('discrepancies', 'PATCH', {
       resolved: true, resolved_by: req.userEmail, resolved_at: new Date().toISOString()
-    };
-    if (resolution_type) patchData.resolution_type = resolution_type;
-    if (resolution_note) patchData.resolution_note = resolution_note;
-    if (linked_cmid) patchData.linked_cmid = linked_cmid;
-    if (linked_mod_name) patchData.linked_mod_name = linked_mod_name;
-    if (linked_mod_title) patchData.linked_mod_title = linked_mod_title;
-    if (external_url) patchData.external_url = external_url;
-    await portalMutate('discrepancies', 'PATCH', patchData, `id=eq.${id}`);
+    }, `id=eq.${id}`);
+    // Extended resolution fields (may not exist yet in DB)
+    const extData = {};
+    if (resolution_type) extData.resolution_type = resolution_type;
+    if (resolution_note) extData.resolution_note = resolution_note;
+    if (linked_cmid) extData.linked_cmid = linked_cmid;
+    if (linked_mod_name) extData.linked_mod_name = linked_mod_name;
+    if (linked_mod_title) extData.linked_mod_title = linked_mod_title;
+    if (external_url) extData.external_url = external_url;
+    if (Object.keys(extData).length) {
+      try { await portalMutate('discrepancies', 'PATCH', extData, `id=eq.${id}`); } catch { /* columns may not exist yet */ }
+    }
     res.json({ resolved: true, resolution_type: resolution_type || 'legacy' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -3632,11 +3637,17 @@ app.post('/api/piac/discrepancy/:id/unresolve', adminOrEditorMiddleware, async (
   try {
     const id = parseInt(req.params.id);
     if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+    // Reset core fields first, then try new columns (may not exist yet in DB)
     await portalMutate('discrepancies', 'PATCH', {
-      resolved: false, resolved_by: null, resolved_at: null,
-      resolution_type: null, resolution_note: null,
-      linked_cmid: null, linked_mod_name: null, linked_mod_title: null, external_url: null
+      resolved: false, resolved_by: null, resolved_at: null
     }, `id=eq.${id}`);
+    // Try resetting resolution columns (ignore if not yet in schema)
+    try {
+      await portalMutate('discrepancies', 'PATCH', {
+        resolution_type: null, resolution_note: null,
+        linked_cmid: null, linked_mod_name: null, linked_mod_title: null, external_url: null
+      }, `id=eq.${id}`);
+    } catch { /* columns may not exist yet */ }
     res.json({ unresolved: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
