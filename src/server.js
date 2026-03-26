@@ -3102,11 +3102,25 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
       return null;
     }
 
+    // Helper: extract session number from activity name (handles accents, typos)
+    function extractSessionNum(name) {
+      const normalized = (name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      const match = normalized.match(/sess?ion\s*(\d+)/i);
+      return match ? parseInt(match[1]) : null;
+    }
+
     // All forums indexed by session number
     const forumsBySession = {};
     allModules.filter(m => m.modname === 'forum').forEach(f => {
-      const match = f.name.match(/(?:session|sesión|sesion)\s*(\d+)/i);
-      if (match) forumsBySession[parseInt(match[1])] = f;
+      const num = extractSessionNum(f.name);
+      if (num) forumsBySession[num] = f;
+    });
+
+    // All books indexed by session number
+    const booksBySession = {};
+    allModules.filter(m => m.modname === 'book').forEach(b => {
+      const num = extractSessionNum(b.name);
+      if (num) booksBySession[num] = b;
     });
 
     // Build merged nucleos
@@ -3116,21 +3130,25 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
       const weekStart = nucleo.semanas?.inicio;
       const weekEnd = nucleo.semanas?.fin;
 
-      // Content (books, pages, resources) — filtered by Moodle visibility AND DI visado
-      const contenido = modules.filter(m => ['book', 'page', 'resource', 'url', 'scorm', 'h5pactivity', 'lesson'].includes(m.modname) && m.visible !== false && isVisadoVisible(m.id)).map(m => ({
+      // Content NOT indexed by session (pages, resources, urls, scorm — NOT books)
+      const contenidoGeneral = modules.filter(m => ['page', 'resource', 'url', 'scorm', 'h5pactivity', 'lesson'].includes(m.modname) && m.visible !== false && isVisadoVisible(m.id)).map(m => ({
         id: m.id, name: m.name, modname: m.modname, url: m.url, description: m.description
       }));
 
-      // Forums for this nucleo's weeks — filtered by DI visado
-      const foros = [];
+      // Books and forums per session/week
+      const porSemana = {};
       if (weekStart && weekEnd) {
-        for (let i = weekStart; i <= weekEnd; i++) {
-          if (forumsBySession[i]) {
-            const f = forumsBySession[i];
-            if (isVisadoVisible(f.id)) {
-              foros.push({ id: f.id, name: f.name, url: f.url, session: i });
-            }
+        for (let w = weekStart; w <= weekEnd; w++) {
+          const weekData = { book: null, forum: null };
+          if (booksBySession[w] && isVisadoVisible(booksBySession[w].id)) {
+            const b = booksBySession[w];
+            weekData.book = { id: b.id, name: b.name, modname: 'book', url: b.url, description: b.description };
           }
+          if (forumsBySession[w] && isVisadoVisible(forumsBySession[w].id)) {
+            const f = forumsBySession[w];
+            weekData.forum = { id: f.id, name: f.name, url: f.url, session: w };
+          }
+          porSemana[w] = weekData;
         }
       }
 
@@ -3138,6 +3156,12 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
       const evaluaciones = modules.filter(m => ['assign', 'quiz'].includes(m.modname) && isVisadoVisible(m.id)).map(m => ({
         id: m.id, name: m.name, modname: m.modname, url: m.url, dates: m.dates
       }));
+
+      // Backward compat: flat contenido array (general + all books)
+      const allBooks = Object.values(porSemana).filter(w => w.book).map(w => w.book);
+      const contenido = [...contenidoGeneral, ...allBooks];
+      // Backward compat: flat foros array
+      const foros = Object.values(porSemana).filter(w => w.forum).map(w => w.forum);
 
       return {
         numero: nucleo.numero,
@@ -3147,6 +3171,7 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
         criterios_evaluacion: nucleo.criterios_evaluacion,
         temas: nucleo.temas,
         visible: section ? section.visible : false,
+        porSemana,
         contenido,
         foros,
         evaluaciones,
