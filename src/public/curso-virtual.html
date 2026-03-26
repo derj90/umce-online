@@ -1341,30 +1341,114 @@
       container.classList.remove('hidden');
       if (toggleLabel) toggleLabel.textContent = 'Cerrar';
 
-      if (!data.discussions || data.discussions.length === 0) {
-        container.innerHTML = '<div class="p-4 text-sm text-gray-400">Sin discusiones aun. Se el primero en participar.</div>';
+      if (!data.posts || data.posts.length === 0) {
+        container.innerHTML = '<div class="p-4 text-sm text-gray-400">Sin discusiones aun.</div>';
         return;
       }
 
-      let html = data.discussions.map(d => {
-        const date = new Date(d.timemodified * 1000).toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric' });
-        return `<div class="p-4 border-b border-gray-100 last:border-0">
+      // Render threaded posts
+      const rootPosts = data.posts.filter(p => !p.parentId);
+      const replies = data.posts.filter(p => p.parentId);
+
+      let html = '';
+      // Root post (the question/prompt from the teacher)
+      rootPosts.forEach(p => {
+        const date = new Date(p.time * 1000).toLocaleDateString('es-CL', { day: 'numeric', month: 'short' });
+        html += `<div class="p-4 border-b border-gray-100">
           <div class="flex items-center gap-2 mb-2">
-            ${d.authorPic ? `<img src="${d.authorPic}" class="w-7 h-7 rounded-full" alt="">` : '<div class="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center text-green-700 text-xs font-bold">' + (d.author || 'U').charAt(0) + '</div>'}
+            ${p.authorPic ? `<img src="${p.authorPic}" class="w-7 h-7 rounded-full" alt="">` : '<div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 text-xs font-bold">' + (p.author || 'D').charAt(0) + '</div>'}
             <div>
-              <div class="text-sm font-medium text-gray-800">${d.author || 'Participante'}</div>
-              <div class="text-xs text-gray-400">${date}${d.replies > 0 ? ' · ' + d.replies + ' respuesta' + (d.replies > 1 ? 's' : '') : ''}</div>
+              <div class="text-sm font-medium text-gray-800">${p.author}</div>
+              <div class="text-xs text-gray-400">${date} · Docente</div>
             </div>
           </div>
-          <div class="prose prose-sm max-w-none book-html text-sm">${processBookHtml(d.message)}</div>
+          <div class="prose prose-sm max-w-none book-html text-sm">${processBookHtml(p.message)}</div>
         </div>`;
-      }).join('');
+      });
 
-      html += `<div class="p-3 bg-gray-50 border-t border-gray-200 text-center">
-        <a href="${courseData.moodle.courseUrl.replace(/\/course\/view.*/, '')}/mod/forum/view.php?id=${cmid}" target="_blank" rel="noopener" class="text-xs text-blue-500 hover:underline">Responder en Moodle ↗</a>
+      // Replies
+      if (replies.length > 0) {
+        html += `<div class="px-4 py-2 bg-gray-50 border-b border-gray-100">
+          <span class="text-xs font-semibold text-gray-500">${replies.length} respuesta${replies.length > 1 ? 's' : ''}</span>
+        </div>`;
+        const showAll = replies.length <= 5;
+        const visibleReplies = showAll ? replies : replies.slice(-3);
+        if (!showAll) {
+          html += `<div class="px-4 py-2 text-center">
+            <button onclick="this.parentElement.nextElementSibling.classList.remove('hidden'); this.parentElement.remove();" class="text-xs text-blue-600 hover:underline">Ver las ${replies.length - 3} respuestas anteriores</button>
+          </div>
+          <div class="hidden">`;
+          replies.slice(0, -3).forEach(p => {
+            html += renderForumPost(p);
+          });
+          html += '</div>';
+        }
+        visibleReplies.forEach(p => {
+          html += renderForumPost(p);
+        });
+      }
+
+      // Reply form
+      html += `<div class="p-4 border-t border-gray-200 bg-white">
+        <div class="text-xs font-semibold text-gray-500 mb-2">Tu respuesta</div>
+        <textarea id="forum-reply-${cmid}" rows="3" class="w-full border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:border-blue-400 resize-none" placeholder="Escribe tu respuesta aqui..."></textarea>
+        <div class="flex items-center justify-between mt-2">
+          <span class="text-xs text-gray-400">Se publicara con tu nombre</span>
+          <button onclick="submitForumReply(${cmid}, ${forumId}, '${platform}', ${data.discussionId})" id="forum-submit-${cmid}" class="px-4 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">
+            Responder
+          </button>
+        </div>
       </div>`;
 
       container.innerHTML = html;
+    }
+
+    function renderForumPost(p) {
+      const date = new Date(p.time * 1000).toLocaleDateString('es-CL', { day: 'numeric', month: 'short' });
+      return `<div class="px-4 py-3 border-b border-gray-50">
+        <div class="flex items-center gap-2 mb-1.5">
+          ${p.authorPic ? `<img src="${p.authorPic}" class="w-6 h-6 rounded-full" alt="">` : '<div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-700 text-xs font-bold">' + (p.author || 'E').charAt(0) + '</div>'}
+          <span class="text-sm font-medium text-gray-700">${p.author}</span>
+          ${p.isViaUmceOnline ? '<span class="text-xs text-blue-500">via UMCE.online</span>' : ''}
+          <span class="text-xs text-gray-400">${date}</span>
+        </div>
+        <div class="prose prose-sm max-w-none text-sm text-gray-600 ml-8">${processBookHtml(p.message)}</div>
+      </div>`;
+    }
+
+    async function submitForumReply(cmid, forumId, platform, discussionId) {
+      const textarea = document.getElementById(`forum-reply-${cmid}`);
+      const btn = document.getElementById(`forum-submit-${cmid}`);
+      const message = textarea?.value?.trim();
+      if (!message) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      btn.style.opacity = '0.6';
+
+      try {
+        const res = await fetch(`/api/curso-virtual/forum/${platform}/${forumId}/reply`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ discussionId, message })
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Error al enviar');
+        }
+        const result = await res.json();
+        // Clear cache and reload forum
+        delete forumCache[cmid];
+        textarea.value = '';
+        await toggleForum(cmid, forumId, platform); // close
+        await toggleForum(cmid, forumId, platform); // reopen with fresh data
+      } catch (e) {
+        alert('Error: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Responder';
+        btn.style.opacity = '1';
+      }
     }
 
     // === Recordings section ===

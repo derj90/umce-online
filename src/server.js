@@ -4014,29 +4014,111 @@ app.get('/api/curso-virtual/forum/:platform/:forumId', authMiddleware, async (re
     if (!platform) return res.status(400).json({ error: 'Plataforma no encontrada' });
 
     const result = await moodleCall(platform, 'mod_forum_get_forum_discussions', { forumid: forumId });
-    const discussions = (result.discussions || []).map(d => {
-      let msg = d.message || '';
-      // Fix relative pluginfile URLs
+    const discussions = result.discussions || [];
+    if (discussions.length === 0) return res.json({ forumId, discussions: [], posts: [] });
+
+    // Get the first discussion's full posts (most forums have 1 discussion)
+    const discussionId = discussions[0].discussion;
+    const [postsResult, attributions] = await Promise.all([
+      moodleCall(platform, 'mod_forum_get_discussion_posts', { discussionid: discussionId }),
+      portalQuery('forum_posts_attribution', `discussion_id=eq.${discussionId}&moodle_platform=eq.${platformId}`).catch(() => [])
+    ]);
+
+    const attrMap = {};
+    attributions.forEach(a => { attrMap[a.moodle_post_id] = a; });
+
+    function fixUrls(msg) {
+      if (!msg) return '';
       msg = msg.replace(/src="\/pluginfile/g, `src="${platform.url}/pluginfile`);
       msg = msg.replace(/href="\/pluginfile/g, `href="${platform.url}/pluginfile`);
       msg = msg.replace(/(src|href)="(https?:\/\/[^"]*\/pluginfile\.php\/[^"]*?)(?:\?token=[^"]*)?"/gi, (match, attr, url) => {
         const separator = url.includes('?') ? '&' : '?';
         return `${attr}="${url}${separator}token=${platform.token}"`;
       });
+      return msg;
+    }
+
+    // Build threaded posts
+    const posts = (postsResult.posts || []).map(p => {
+      const attr = attrMap[p.id];
       return {
-        id: d.discussion,
-        subject: d.subject,
-        message: msg,
-        author: d.userfullname,
-        authorPic: d.userpictureurl,
-        replies: d.numreplies || 0,
-        timemodified: d.timemodified
+        id: p.id,
+        parentId: p.parentid || null,
+        subject: p.subject,
+        message: fixUrls(p.message),
+        author: attr ? attr.author_name : (p.author?.fullname || 'Participante'),
+        authorPic: attr ? null : (p.author?.urls?.profileimage || null),
+        isViaUmceOnline: !!attr,
+        time: p.timecreated
       };
     });
 
-    res.json({ forumId, discussions });
+    res.json({
+      forumId,
+      discussionId,
+      subject: discussions[0].subject,
+      posts
+    });
   } catch (err) {
     console.error('Forum API error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// POST forum reply (posts as admin, stores real author attribution)
+app.post('/api/curso-virtual/forum/:platform/:forumId/reply', authMiddleware, async (req, res) => {
+  try {
+    const platformId = req.params.platform;
+    const forumId = parseInt(req.params.forumId);
+    const { discussionId, message } = req.body;
+    if (!discussionId || !message || !message.trim()) return res.status(400).json({ error: 'discussionId y message requeridos' });
+
+    const platform = PLATFORMS.find(p => p.id === platformId);
+    if (!platform) return res.status(400).json({ error: 'Plataforma no encontrada' });
+
+    // Get the first post of the discussion (parent post to reply to)
+    const postsResult = await moodleCall(platform, 'mod_forum_get_discussion_posts', { discussionid: discussionId });
+    const posts = postsResult.posts || [];
+    if (posts.length === 0) return res.status(404).json({ error: 'Discusion sin posts' });
+
+    // Find the root post (parentid === null or 0, or the first post)
+    const rootPost = posts.find(p => !p.parentid) || posts[posts.length - 1];
+
+    // Format message with author attribution
+    const authorName = req.userName || req.userEmail.split('@')[0];
+    const attribution = `<p><strong>${authorName}</strong> <em>(via UMCE.online)</em></p>`;
+    const fullMessage = attribution + `<div>${message.trim()}</div>`;
+
+    // Post reply via Moodle API
+    const result = await moodleCall(platform, 'mod_forum_add_discussion_post', {
+      postid: rootPost.id,
+      subject: 'Re: ' + (rootPost.subject || 'Foro'),
+      message: fullMessage,
+      'options[0][name]': 'discussionsubscribe',
+      'options[0][value]': 'false'
+    });
+
+    const newPostId = result.postid || result.id;
+
+    // Store attribution in Supabase
+    try {
+      await portalMutate('forum_posts_attribution', 'POST', {
+        moodle_post_id: newPostId || 0,
+        moodle_platform: platformId,
+        discussion_id: discussionId,
+        forum_id: forumId,
+        author_email: req.userEmail,
+        author_name: authorName,
+        message_preview: message.trim().substring(0, 200)
+      });
+    } catch (attrErr) {
+      console.error('Attribution save error:', attrErr.message);
+    }
+
+    res.json({ success: true, postId: newPostId, author: authorName });
+  } catch (err) {
+    console.error('Forum reply error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
