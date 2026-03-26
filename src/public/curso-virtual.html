@@ -47,7 +47,7 @@
     .cv-card { background: white; border: 1px solid #e5e7eb; border-radius: 1rem; overflow: hidden; }
 
     /* Week block */
-    .week-block { border-left: 3px solid var(--nc, #e5e7eb); padding-left: 1rem; margin-bottom: 1.5rem; }
+    .week-block { border-left: 4px solid var(--nc, #e5e7eb); padding-left: 1.25rem; margin-bottom: 1.5rem; background: white; border-radius: 0 0.75rem 0.75rem 0; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
     .week-phase { font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin-bottom: 0.5rem; }
 
     /* Activity item */
@@ -368,6 +368,14 @@
         </div>`;
       });
 
+      // Recursos del curso (S0)
+      if (data.recursos_compartidos && data.recursos_compartidos.length > 0) {
+        html += `<div class="sidebar-item" data-section="recursos" onclick="navigate('recursos')" role="link" tabindex="0">
+          <div class="w-5 h-5 text-gray-400">${icon('folder')}</div>
+          <span>Recursos del curso</span>
+        </div>`;
+      }
+
       // Evaluaciones
       html += `<div class="sidebar-item" data-section="evaluaciones" onclick="navigate('evaluaciones')" role="link" tabindex="0">
         <div class="w-5 h-5 text-gray-400">${icon('star')}</div>
@@ -407,7 +415,7 @@
       let html = '';
       if (zoomLti) {
         const href = zoomLti.url || `${platformUrl}/mod/lti/view.php?id=${zoomLti.id}`;
-        html += `<a href="${href}" target="_blank" rel="noopener" class="qa-btn" style="background: #faf5ff; border-color: #e9d5ff; color: #7c3aed;" aria-label="Entrar a clase sincronica">${icon('video')} Entrar a clase</a>`;
+        html += `<a href="${href}" target="_blank" rel="noopener" class="qa-btn" style="background: var(--umce-800); border-color: var(--umce-800); color: white; font-weight: 600;" aria-label="Entrar a clase sincronica">${icon('video')} Entrar a clase</a>`;
       }
       if (recordings) {
         const href = recordings.url || `${platformUrl}/mod/data/view.php?id=${recordings.id}`;
@@ -519,6 +527,18 @@
       const horas = c.horas || {};
       const totalHoras = (horas.sincronicas || 0) + (horas.asincronicas || 0) + (horas.autonomas || 0);
 
+      // 5.5.7: Calculate overall progress
+      const comp = data.personal?.completion || {};
+      const allCmids = data.nucleos.flatMap(n => [...(n.contenido||[]), ...(n.foros||[]), ...(n.evaluaciones||[])].map(e => e.id));
+      const completedCount = allCmids.filter(id => comp[id]?.state === 1).length;
+      const totalCount = allCmids.length;
+      const pctTotal = totalCount > 0 ? Math.round(completedCount / totalCount * 100) : 0;
+      const hasProgress = data.personal?.resolved && totalCount > 0;
+
+      // 5.5.9: Truncate metodologia
+      const metodoText = cfg.docente_mensaje_bienvenida || cfg.descripcion_motivacional || c.metodologia || '';
+      const metodoShort = metodoText.length > 200;
+
       let html = `
         <!-- Welcome header -->
         <div class="cv-card p-6 mb-6" style="border-top: 4px solid var(--umce-800);">
@@ -530,38 +550,55 @@
             <div>
               <h1 class="font-heading font-bold text-xl text-gray-900 mb-1">${c.nombre}</h1>
               <p class="text-sm text-gray-500">${c.programa || ''}</p>
-              <p class="text-sm text-gray-600 mt-1">${c.docente || 'Docente no especificado'}</p>
+              <p class="text-sm text-gray-600 mt-1">${c.docente || 'Docente no especificado'}${c.email_docente ? ` · <a href="mailto:${c.email_docente}" class="text-blue-600 hover:underline">${c.email_docente}</a>` : ''}</p>
               ${cfg.docente_bio ? `<p class="text-xs text-gray-400 mt-1">${cfg.docente_bio}</p>` : ''}
             </div>
           </div>
-          ${cfg.docente_mensaje_bienvenida || cfg.descripcion_motivacional
-            ? `<div class="bg-blue-50 rounded-lg p-4 text-sm text-blue-800 mb-4">${cfg.docente_mensaje_bienvenida || cfg.descripcion_motivacional}</div>`
-            : (c.metodologia ? `<div class="bg-blue-50 rounded-lg p-4 text-sm text-blue-800 mb-4">${c.metodologia}</div>` : '')
-          }
-          ${cfg.docente_video_bienvenida ? `<div class="mb-4"><iframe src="${cfg.docente_video_bienvenida.replace('watch?v=', 'embed/')}" class="w-full rounded-lg" style="aspect-ratio: 16/9;" allowfullscreen title="Video de bienvenida"></iframe></div>` : ''}
+          ${metodoText ? `<div class="bg-blue-50 rounded-lg p-4 text-sm text-blue-800">
+            <span id="metodo-text">${metodoShort ? metodoText.substring(0, 200) + '...' : metodoText}</span>
+            ${metodoShort ? `<button onclick="document.getElementById('metodo-text').textContent='${metodoText.replace(/'/g, "\\'")}'; this.remove();" class="text-blue-600 font-medium ml-1 hover:underline">Ver mas</button>` : ''}
+          </div>` : ''}
+          ${cfg.docente_video_bienvenida ? `<div class="mt-4"><iframe src="${cfg.docente_video_bienvenida.replace('watch?v=', 'embed/')}" class="w-full rounded-lg" style="aspect-ratio: 16/9;" allowfullscreen title="Video de bienvenida"></iframe></div>` : ''}
         </div>
 
-        <!-- Course info grid -->
-        <div class="info-grid mb-6">
-          <div class="info-item">
-            <div class="info-label">Modalidad</div>
-            <div class="info-value">${c.modalidad || 'Virtual'}</div>
+        <!-- 5.5.7: Progress bar -->
+        ${hasProgress ? `
+        <div class="cv-card p-5 mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="font-heading font-bold text-base text-gray-800">Tu progreso</h2>
+            <span class="text-sm font-semibold" style="color: var(--umce-800);">${pctTotal}%</span>
           </div>
-          <div class="info-item">
-            <div class="info-label">Duracion</div>
-            <div class="info-value">${c.semanas || '?'} semanas</div>
+          <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+            <div class="h-full rounded-full transition-all" style="width: ${pctTotal}%; background: var(--gold-500);"></div>
           </div>
-          <div class="info-item">
-            <div class="info-label">Creditos SCT</div>
-            <div class="info-value">${c.creditos_sct || '-'}</div>
+          <p class="text-xs text-gray-400 mt-2">${completedCount} de ${totalCount} actividades completadas</p>
+        </div>` : ''}
+
+        <!-- 5.5.8: Compact course info -->
+        <div class="cv-card p-5 mb-6">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div>
+              <div class="info-label">Modalidad</div>
+              <div class="info-value">${c.modalidad || 'Virtual'}</div>
+            </div>
+            <div>
+              <div class="info-label">Duracion</div>
+              <div class="info-value">${c.semanas || '?'} semanas</div>
+            </div>
+            <div>
+              <div class="info-label">Creditos SCT</div>
+              <div class="info-value">${c.creditos_sct || '-'}</div>
+            </div>
+            <div>
+              <div class="info-label">Carga horaria</div>
+              <div class="info-value">${totalHoras}h/sem</div>
+            </div>
           </div>
-          <div class="info-item">
-            <div class="info-label">Carga horaria</div>
-            <div class="info-value">${totalHoras}h/sem</div>
-          </div>
-          ${horas.sincronicas ? `<div class="info-item"><div class="info-label">Sincronicas</div><div class="info-value">${horas.sincronicas}h/sem</div></div>` : ''}
-          ${horas.asincronicas ? `<div class="info-item"><div class="info-label">Asincronicas</div><div class="info-value">${horas.asincronicas}h/sem</div></div>` : ''}
-          ${horas.autonomas ? `<div class="info-item"><div class="info-label">Autonomas</div><div class="info-value">${horas.autonomas}h/sem</div></div>` : ''}
+          ${totalHoras > 0 ? `<div class="flex gap-4 mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
+            ${horas.sincronicas ? `<span>Sincronicas: ${horas.sincronicas}h</span>` : ''}
+            ${horas.asincronicas ? `<span>Asincronicas: ${horas.asincronicas}h</span>` : ''}
+            ${horas.autonomas ? `<span>Autonomas: ${horas.autonomas}h</span>` : ''}
+          </div>` : ''}
         </div>
 
         <!-- Resultados de aprendizaje -->
@@ -594,24 +631,23 @@
             </div>
             <div class="flex items-start gap-3">
               <div class="activity-icon ic-book flex-shrink-0">${icon('book')}</div>
-              <div><strong>Lecturas y recursos</strong> — Material de estudio autonomo antes y despues de cada clase.</div>
+              <div><strong>Lecturas y recursos</strong> — Material de cada sesion. Haz click en "Abrir" para ver el contenido.</div>
             </div>
             <div class="flex items-start gap-3">
               <div class="activity-icon ic-forum flex-shrink-0">${icon('forum')}</div>
-              <div><strong>Foros de discusion</strong> — Participacion asincronica para profundizar temas de cada sesion.</div>
+              <div><strong>Foros de discusion</strong> — Participacion asincronica despues de cada sesion.</div>
             </div>
             <div class="flex items-start gap-3">
               <div class="activity-icon ic-assign flex-shrink-0">${icon('assign')}</div>
-              <div><strong>Evaluaciones</strong> — Tareas y trabajos con fechas de entrega. Revisa la seccion Evaluaciones.</div>
+              <div><strong>Evaluaciones</strong> — Revisa fechas y rubricas en la seccion Evaluaciones del menu.</div>
             </div>
           </div>
         </div>
 
-        <!-- Soporte -->
+        <!-- Contacto -->
         <div class="cv-card p-5">
           <h2 class="font-heading font-bold text-base text-gray-800 mb-3">Contacto y soporte</h2>
           <div class="space-y-2 text-sm">
-            ${c.email_docente ? `<div class="flex items-center gap-2 text-gray-600"><span class="font-medium">Docente:</span> <a href="mailto:${c.email_docente}" class="text-blue-600 hover:underline">${c.email_docente}</a></div>` : ''}
             <div class="flex items-center gap-2 text-gray-600"><span class="font-medium">Horario atencion:</span> ${cfg.docente_horario_atencion || 'Consultar por email'}</div>
             <div class="flex items-center gap-2 text-gray-600"><span class="font-medium">Soporte tecnico:</span> <a href="mailto:udfv@umce.cl" class="text-blue-600 hover:underline">udfv@umce.cl</a></div>
           </div>
@@ -740,24 +776,25 @@
         <h2 class="font-heading font-bold text-lg text-gray-800 mb-4">Evaluaciones del curso</h2>`;
 
       if (evals.length === 0) {
-        html += '<p class="text-sm text-gray-400">No hay evaluaciones sumativas definidas en el PIAC.</p>';
+        html += '<p class="text-sm text-gray-500">Las evaluaciones de este curso se detallan en el PIAC y se gestionan a traves de Moodle.</p>';
       } else {
         const hasGrades = data.personal?.resolved && grades.length > 0;
+        const hasPonderacion = evals.some(e => e.ponderacion);
+        const hasNucleo = evals.some(e => e.nucleo);
         html += `<div class="overflow-x-auto"><table class="w-full text-sm" role="table">
           <thead><tr class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wide border-b">
             <th class="pb-3 pr-4" scope="col">Evaluacion</th>
-            <th class="pb-3 pr-4" scope="col">Nucleo</th>
-            <th class="pb-3 pr-4 text-right" scope="col">Ponderacion</th>
+            ${hasNucleo ? '<th class="pb-3 pr-4" scope="col">Nucleo</th>' : ''}
+            ${hasPonderacion ? '<th class="pb-3 pr-4 text-right" scope="col">Ponderacion</th>' : ''}
             ${hasGrades ? '<th class="pb-3 text-right" scope="col">Nota</th>' : ''}
           </tr></thead>
           <tbody>
             ${evals.map(e => {
-              // Try to find matching grade by name similarity
               const grade = grades.find(g => g.itemname && e.nombre && g.itemname.toLowerCase().includes(e.nombre.toLowerCase().substring(0, 15)));
               return `<tr class="border-b border-gray-50">
               <td class="py-3 pr-4 font-medium text-gray-700">${e.nombre}</td>
-              <td class="py-3 pr-4 text-gray-500">${e.nucleo ? 'N' + e.nucleo : '-'}</td>
-              <td class="py-3 pr-4 text-right font-semibold ${e.ponderacion ? 'text-gray-800' : 'text-gray-300'}">${e.ponderacion ? e.ponderacion + '%' : '-'}</td>
+              ${hasNucleo ? `<td class="py-3 pr-4 text-gray-500">${e.nucleo ? 'N' + e.nucleo : '-'}</td>` : ''}
+              ${hasPonderacion ? `<td class="py-3 pr-4 text-right font-semibold ${e.ponderacion ? 'text-gray-800' : 'text-gray-300'}">${e.ponderacion ? e.ponderacion + '%' : '-'}</td>` : ''}
               ${hasGrades ? `<td class="py-3 text-right">${grade?.gradeformatted ? `<span class="font-semibold text-amber-600">${grade.gradeformatted}</span>${grade.feedback ? `<div class="text-xs text-gray-400 mt-0.5">${grade.feedback}</div>` : ''}` : '<span class="text-gray-300">-</span>'}</td>` : ''}
             </tr>`}).join('')}
             <tr class="font-bold"><td class="pt-3" colspan="2">Total</td><td class="pt-3 text-right">${evals.reduce((s, e) => s + (e.ponderacion || 0), 0)}%</td>${hasGrades ? '<td></td>' : ''}</tr>
@@ -814,21 +851,26 @@
         </div>
       </div>`;
 
-      // Politicas
-      if (cfg.politicas_curso) {
-        html += `<div class="cv-card p-6 mb-6">
-          <h2 class="font-heading font-bold text-base text-gray-800 mb-3">Politicas del curso</h2>
-          <p class="text-sm text-gray-600 whitespace-pre-line">${cfg.politicas_curso}</p>
-        </div>`;
-      }
+      // Politicas (always show — defaults come from backend)
+      const politicas = cfg.politicas_curso || 'La asistencia a las sesiones sincronicas es obligatoria (minimo 75%). Las entregas fuera de plazo seran aceptadas con un maximo de 48 horas de retraso.';
+      html += `<div class="cv-card p-6 mb-6">
+        <h2 class="font-heading font-bold text-base text-gray-800 mb-3">Politicas del curso</h2>
+        <p class="text-sm text-gray-600 whitespace-pre-line">${politicas}</p>
+      </div>`;
+
+      // Integridad academica
+      const integridad = cfg.politica_integridad || 'La UMCE promueve la integridad academica. Todo trabajo debe ser original.';
+      html += `<div class="cv-card p-6 mb-6" style="border-left: 4px solid var(--gold-500);">
+        <h2 class="font-heading font-bold text-base text-gray-800 mb-2">Integridad academica</h2>
+        <p class="text-sm text-gray-600">${integridad}</p>
+      </div>`;
 
       // Competencias digitales
-      if (cfg.competencias_digitales) {
-        html += `<div class="cv-card p-6 mb-6">
-          <h2 class="font-heading font-bold text-base text-gray-800 mb-3">Competencias digitales esperadas</h2>
-          <p class="text-sm text-gray-600">${cfg.competencias_digitales}</p>
-        </div>`;
-      }
+      const competencias = cfg.competencias_digitales || 'Manejo basico de navegador web, correo electronico y videoconferencia (Zoom).';
+      html += `<div class="cv-card p-6 mb-6">
+        <h2 class="font-heading font-bold text-base text-gray-800 mb-3">Competencias digitales esperadas</h2>
+        <p class="text-sm text-gray-600">${competencias}</p>
+      </div>`;
 
       // Links rapidos
       html += `<div class="cv-card p-6">
@@ -843,6 +885,34 @@
         </div>
       </div>`;
 
+      return html;
+    }
+
+    function renderRecursos(data) {
+      const resources = data.recursos_compartidos || [];
+      const platformUrl = data.moodle.courseUrl.replace(/\/course\/view.*/, '');
+      const comp = data.personal?.completion || {};
+
+      // Group by section
+      const groups = {};
+      resources.forEach(r => {
+        const key = r.sectionName || 'General';
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(r);
+      });
+
+      let html = `<div class="cv-card p-6 mb-6">
+        <h2 class="font-heading font-bold text-lg text-gray-800 mb-4">Recursos del curso</h2>
+        <p class="text-sm text-gray-500 mb-4">Materiales compartidos del curso: calendario, bibliografia, rubricas y herramientas.</p>`;
+
+      Object.entries(groups).forEach(([section, items]) => {
+        html += `<div class="mb-4">
+          <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">${section}</div>
+          ${items.map(r => renderActivityItem(r, platformUrl, comp)).join('')}
+        </div>`;
+      });
+
+      html += '</div>';
       return html;
     }
 
@@ -994,6 +1064,8 @@
         content.innerHTML = renderEvaluaciones(courseData);
       } else if (section === 'bibliografia') {
         content.innerHTML = renderBibliografia(courseData);
+      } else if (section === 'recursos') {
+        content.innerHTML = renderRecursos(courseData);
       } else if (section === 'info') {
         content.innerHTML = renderInfo(courseData);
       } else if (section === 'calendario') {
