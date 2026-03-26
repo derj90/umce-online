@@ -65,9 +65,19 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const BASE_URL = process.env.BASE_URL || 'https://umce.online';
 const COOKIE_NAME = 'umce_session';
+const INDUCCION_COURSE_ID = parseInt(process.env.INDUCCION_COURSE_ID) || 252;
 
 // One-time tokens for mobile app OAuth flow (token -> {name, email, remember, created})
 const appAuthTokens = new Map();
+
+// Cache for institutional defaults (loaded once, invalidated on admin PUT)
+let _institutionalDefaultsCache = null;
+async function getInstitutionalDefaults() {
+  if (!_institutionalDefaultsCache) {
+    _institutionalDefaultsCache = await portalQuery('institutional_defaults');
+  }
+  return _institutionalDefaultsCache;
+}
 
 // --- Cookie helpers ---
 function parseCookies(req) {
@@ -274,6 +284,21 @@ function filterHistorical(courses, platform) {
   return courses.filter(c => c.visible && !isActive2026(c)).map(c => enrichCourse(c, platform));
 }
 
+// In-memory cache for course lists (TTL 5 minutes)
+const coursesCache = new Map();
+const COURSES_CACHE_TTL = 5 * 60 * 1000;
+
+function getCachedCourses(email, platformId) {
+  const key = `${email}:${platformId}`;
+  const entry = coursesCache.get(key);
+  if (entry && (Date.now() - entry.ts) < COURSES_CACHE_TTL) return entry.data;
+  return null;
+}
+
+function setCachedCourses(email, platformId, data) {
+  coursesCache.set(`${email}:${platformId}`, { data, ts: Date.now() });
+}
+
 // --- Helper: find user by email ---
 async function findUserByEmail(platform, email) {
   const users = await moodleCall(platform, 'core_user_get_users', {
@@ -284,10 +309,15 @@ async function findUserByEmail(platform, email) {
 }
 
 // --- Helper: query all platforms for a user ---
-async function queryAllPlatforms(email, filterFn) {
+async function queryAllPlatforms(email, filterFn, forceRefresh = false) {
   return Promise.all(
     PLATFORMS.map(async (platform) => {
       try {
+        if (!forceRefresh) {
+          const cached = getCachedCourses(email, platform.id);
+          if (cached) return cached;
+        }
+
         const user = await findUserByEmail(platform, email);
         if (!user) return { platform: platform.id, platformName: platform.name, platformColor: platform.color, courses: [], found: false };
 
@@ -296,7 +326,7 @@ async function queryAllPlatforms(email, filterFn) {
         // Detect singleactivity URL courses redirecting to another platform
         await resolveRedirects(filtered, platform);
 
-        return {
+        const result = {
           platform: platform.id,
           platformName: platform.name,
           platformColor: platform.color,
@@ -304,6 +334,8 @@ async function queryAllPlatforms(email, filterFn) {
           courses: filtered,
           found: true
         };
+        setCachedCourses(email, platform.id, result);
+        return result;
       } catch (err) {
         return { platform: platform.id, platformName: platform.name, platformColor: platform.color, error: err.message, courses: [], found: false };
       }
@@ -533,7 +565,7 @@ const upload = multer({
 app.get('/api/mis-cursos', authMiddleware, async (req, res) => {
   const { email, impersonating } = resolveTargetEmail(req);
 
-  const platforms = await queryAllPlatforms(email, filterAndEnrich);
+  const platforms = await queryAllPlatforms(email, filterAndEnrich, req.query.refresh === 'true');
   const totalCourses = platforms.reduce((sum, r) => sum + r.courses.length, 0);
   const userName = platforms.find(r => r.userName)?.userName || (impersonating ? email.split('@')[0] : req.userName);
 
@@ -544,7 +576,7 @@ app.get('/api/mis-cursos', authMiddleware, async (req, res) => {
 app.get('/api/historial', authMiddleware, async (req, res) => {
   const { email } = resolveTargetEmail(req);
 
-  const platforms = await queryAllPlatforms(email, filterHistorical);
+  const platforms = await queryAllPlatforms(email, filterHistorical, req.query.refresh === 'true');
   const allHistorical = platforms.flatMap(p => p.courses);
   const years = [...new Set(allHistorical.map(c => c.year).filter(Boolean))].sort((a, b) => b - a);
 
@@ -783,7 +815,7 @@ async function removeStaleTokens(tokens) {
 async function sendPushNotification({ title, body, data = {} }) {
   try {
     const messaging = getFirebaseMessaging();
-    const rows = await portalQuery('device_tokens', 'select=token');
+    const rows = await portalQuery('device_tokens', 'select=token&limit=10000');
     if (!rows || rows.length === 0) return { sent: 0, failed: 0, cleaned: 0 };
 
     const tokens = rows.map(r => r.token);
@@ -867,7 +899,8 @@ app.get('/api/ucampus', authMiddleware, async (req, res) => {
     const nombre = persona.nombres ? `${persona.nombres} ${persona.apellido1 || ''} ${persona.apellido2 || ''}`.trim() : null;
 
     // Step 2: Query docente and estudiante data in parallel
-    const periodo = '2026.1';
+    const now = new Date();
+    const periodo = `${now.getFullYear()}.${now.getMonth() < 7 ? 1 : 2}`;
     const [dictados, inscritos] = await Promise.all([
       supabaseQuery('cursos_dictados', `rut=eq.${encodeURIComponent(rut)}&periodo=eq.${periodo}`).catch(() => []),
       supabaseQuery('cursos_inscritos', `rut=eq.${encodeURIComponent(rut)}&periodo=eq.${periodo}`).catch(() => [])
@@ -1018,13 +1051,13 @@ app.get('/api/ucampus/seccion/:idCurso', authMiddleware, async (req, res) => {
       return res.status(403).json({ error: 'No autorizado para ver esta sección' });
     }
 
-    // Get course info
-    const cursoArr = await supabaseQuery('cursos', `id_curso=eq.${idCurso}&limit=1`);
+    // Get course info and inscritos in parallel
+    const [cursoArr, estudiantesRaw] = await Promise.all([
+      supabaseQuery('cursos', `id_curso=eq.${idCurso}&limit=1`),
+      supabaseQuery('cursos_inscritos', `id_curso=eq.${idCurso}&select=rut,estado,nota_final,raw_data`)
+    ]);
     const curso = cursoArr[0] || {};
     const crd = curso.raw_data || {};
-
-    // Get all inscritos for this section
-    const estudiantesRaw = await supabaseQuery('cursos_inscritos', `id_curso=eq.${idCurso}&select=rut,estado,nota_final,raw_data`);
 
     // Batch fetch persona data for all student RUTs
     const studentRuts = [...new Set(estudiantesRaw.map(e => e.rut).filter(Boolean))];
@@ -1205,13 +1238,12 @@ app.get('/api/catalog/programs/:slug/piac', async (req, res) => {
     const links = await portalQuery('piac_links', `program_id=eq.${program.id}&status=eq.active&order=created_at.desc`);
     if (!links.length) return res.json({ program_id: program.id, has_piac: false });
 
-    // Obtener datos parseados de cada PIAC vinculado
-    const piacData = [];
-    for (const link of links) {
+    // Obtener datos parseados de cada PIAC vinculado (en paralelo)
+    const piacData = (await Promise.all(links.map(async (link) => {
       const parsed = await portalQuery('piac_parsed', `piac_link_id=eq.${link.id}&order=parsed_at.desc&limit=1`);
       if (parsed.length && parsed[0].parsed_json) {
         const p = parsed[0].parsed_json;
-        piacData.push({
+        return {
           link_id: link.id,
           course_name: link.course_name,
           moodle_platform: link.moodle_platform,
@@ -1227,9 +1259,10 @@ app.get('/api/catalog/programs/:slug/piac', async (req, res) => {
           evaluaciones_sumativas: p.evaluaciones_sumativas || [],
           metodologia: p.metodologia || null,
           bibliografia: p.bibliografia || []
-        });
+        };
       }
-    }
+      return null;
+    }))).filter(Boolean);
 
     res.json({
       program_id: program.id,
@@ -1262,22 +1295,22 @@ app.get('/api/induccion/launch', authMiddleware, async (req, res) => {
       // 2. Verificar si ya está matriculado
       try {
         const enrolled = await moodleCall(virtualPlatform, 'core_enrol_get_enrolled_users', {
-          courseid: 252
+          courseid: INDUCCION_COURSE_ID
         });
         const isEnrolled = enrolled.some(u => u.id === moodleUserId);
 
         if (!isEnrolled) {
           // 3. Auto-matricular
           await moodleCall(virtualPlatform, 'enrol_manual_enrol_users', {
-            enrolments: [{ roleid: 5, userid: moodleUserId, courseid: 252 }]
+            enrolments: [{ roleid: 5, userid: moodleUserId, courseid: INDUCCION_COURSE_ID }]
           });
-          console.log(`[Induccion] Auto-enrolled ${email} (userId ${moodleUserId}) in course 252`);
+          console.log(`[Induccion] Auto-enrolled ${email} (userId ${moodleUserId}) in course ${INDUCCION_COURSE_ID}`);
         }
       } catch (enrollErr) {
         // Si falla la verificación, intentar matricular directamente
         try {
           await moodleCall(virtualPlatform, 'enrol_manual_enrol_users', {
-            enrolments: [{ roleid: 5, userid: moodleUserId, courseid: 252 }]
+            enrolments: [{ roleid: 5, userid: moodleUserId, courseid: INDUCCION_COURSE_ID }]
           });
         } catch (e) {
           console.log(`[Induccion] Enrol attempt for ${email}: ${e.message}`);
@@ -1685,7 +1718,7 @@ app.post('/api/admin/badges/revoke/:id', adminOrEditorMiddleware, async (req, re
 // GET /api/admin/badges/stats — estadisticas de insignias
 app.get('/api/admin/badges/stats', adminOrEditorMiddleware, async (req, res) => {
   try {
-    const allBadges = await portalQuery('user_badges', 'order=granted_at.desc,earned_at.desc');
+    const allBadges = await portalQuery('user_badges', 'order=granted_at.desc,earned_at.desc&limit=5000');
     const definitions = await portalQuery('badge_definitions', 'active=eq.true&order=display_order.asc');
     // Group by badge_type
     const byType = {};
@@ -3288,19 +3321,25 @@ app.get('/api/piac/links', adminOrEditorMiddleware, async (req, res) => {
   try {
     const links = await portalQuery('piac_links', 'status=eq.active&order=created_at.desc');
 
-    // Enrich with latest matching summary for each link
-    const enriched = await Promise.all(links.map(async (link) => {
-      try {
-        const matchings = await portalQuery('matching_results', `piac_link_id=eq.${link.id}&order=created_at.desc&limit=1`);
-        const latestParsed = await portalQuery('piac_parsed', `piac_link_id=eq.${link.id}&order=parsed_at.desc&limit=1`);
-        return {
-          ...link,
-          last_analysis: matchings[0] ? { summary: matchings[0].summary_json, date: matchings[0].created_at } : null,
-          last_parsed: latestParsed[0] ? { date: latestParsed[0].parsed_at, version: latestParsed[0].version } : null
-        };
-      } catch {
-        return { ...link, last_analysis: null, last_parsed: null };
-      }
+    // Enrich with latest matching summary — batch queries to avoid N+1
+    const linkIds = links.map(l => l.id);
+    const [allMatchings, allParsed] = await Promise.all([
+      linkIds.length ? portalQuery('matching_results', `piac_link_id=in.(${linkIds.join(',')})&order=created_at.desc`) : [],
+      linkIds.length ? portalQuery('piac_parsed', `piac_link_id=in.(${linkIds.join(',')})&order=parsed_at.desc`) : []
+    ]);
+    // Group by piac_link_id, take latest per link
+    const matchingsByLink = {};
+    for (const m of allMatchings) {
+      if (!matchingsByLink[m.piac_link_id]) matchingsByLink[m.piac_link_id] = m;
+    }
+    const parsedByLink = {};
+    for (const p of allParsed) {
+      if (!parsedByLink[p.piac_link_id]) parsedByLink[p.piac_link_id] = p;
+    }
+    const enriched = links.map(link => ({
+      ...link,
+      last_analysis: matchingsByLink[link.id] ? { summary: matchingsByLink[link.id].summary_json, date: matchingsByLink[link.id].created_at } : null,
+      last_parsed: parsedByLink[link.id] ? { date: parsedByLink[link.id].parsed_at, version: parsedByLink[link.id].version } : null
     }));
 
     res.json(enriched);
@@ -3594,7 +3633,7 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
       portalQuery('moodle_snapshots', `piac_link_id=eq.${linkId}&order=snapshot_at.desc&limit=1`),
       portalQuery('matching_results', `piac_link_id=eq.${linkId}&order=created_at.desc&limit=1`),
       portalQuery('curso_virtual_config', `piac_link_id=eq.${linkId}`),
-      portalQuery('institutional_defaults')
+      getInstitutionalDefaults()
     ]);
 
     const config = configArr[0] || null;
@@ -3704,7 +3743,10 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
 
       // Content NOT indexed by session (pages, resources, urls, scorm — NOT books)
       const contenidoGeneral = modules.filter(m => ['page', 'resource', 'url', 'scorm', 'h5pactivity', 'lesson'].includes(m.modname) && m.visible !== false && isVisadoVisible(m.id)).map(m => ({
-        id: m.id, name: m.name, modname: m.modname, url: m.url, description: m.description
+        id: m.id, name: m.name, modname: m.modname, url: m.url, description: m.description,
+        ...(m.externalurl && { externalurl: m.externalurl }),
+        ...(m.contents && m.contents.length > 0 && { contents: m.contents }),
+        ...(m.dates && { dates: m.dates })
       }));
 
       // Books and forums per session/week
@@ -3718,7 +3760,7 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
           }
           if (forumsBySession[w] && isVisadoVisible(forumsBySession[w].id)) {
             const f = forumsBySession[w];
-            weekData.forum = { id: f.id, name: f.name, url: f.url, session: w };
+            weekData.forum = { id: f.id, name: f.name, url: f.url, session: w, description: f.description, numdiscussions: f.numdiscussions || 0 };
           }
           porSemana[w] = weekData;
         }
@@ -3726,7 +3768,7 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
 
       // Evaluaciones from this section — filtered by DI visado
       const evaluaciones = modules.filter(m => ['assign', 'quiz'].includes(m.modname) && isVisadoVisible(m.id)).map(m => ({
-        id: m.id, name: m.name, modname: m.modname, url: m.url, dates: m.dates
+        id: m.id, name: m.name, modname: m.modname, url: m.url, dates: m.dates, description: m.description
       }));
 
       // Backward compat: flat contenido array (general + all books)
@@ -3870,34 +3912,33 @@ app.get('/api/curso-virtual/book/:platform/:cmid', authMiddleware, async (req, r
     }
     if (!bookModule) return res.status(404).json({ error: 'Book no encontrado' });
 
-    // Fetch each chapter's HTML content
-    const chapters = [];
-    for (const content of (bookModule.contents || [])) {
-      if (content.filename && content.filename.endsWith('.html') && content.fileurl) {
-        const chapterUrl = content.fileurl + (content.fileurl.includes('?') ? '&' : '?') + `token=${platform.token}`;
-        try {
-          const chRes = await fetch(chapterUrl, { signal: AbortSignal.timeout(8000) });
-          if (chRes.ok) {
-            let html = await chRes.text();
-            // Sanitize: remove script tags but keep iframes (YouTube, Genially, Padlet, Canva)
-            html = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
-            // Fix relative URLs to absolute
-            html = html.replace(/src="\/pluginfile/g, `src="${platform.url}/pluginfile`);
-            // Extract chapter number from filepath
-            const chapterMatch = content.filepath?.match(/\/(\d+)\//);
-            const chapterNum = chapterMatch ? parseInt(chapterMatch[1]) : chapters.length + 1;
-            chapters.push({
-              id: chapterNum,
-              title: content.content || `Capitulo ${chapters.length + 1}`,
-              html,
-              filename: content.filename
-            });
-          }
-        } catch (e) {
-          console.error(`Book chapter fetch error: ${e.message}`);
+    // Fetch each chapter's HTML content (in parallel)
+    const chapterContents = (bookModule.contents || []).filter(c => c.filename && c.filename.endsWith('.html') && c.fileurl);
+    const chapters = (await Promise.all(chapterContents.map(async (content) => {
+      const chapterUrl = content.fileurl + (content.fileurl.includes('?') ? '&' : '?') + `token=${platform.token}`;
+      try {
+        const chRes = await fetch(chapterUrl, { signal: AbortSignal.timeout(8000) });
+        if (chRes.ok) {
+          let html = await chRes.text();
+          // Sanitize: remove script tags but keep iframes (YouTube, Genially, Padlet, Canva)
+          html = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+          // Fix relative URLs to absolute
+          html = html.replace(/src="\/pluginfile/g, `src="${platform.url}/pluginfile`);
+          // Extract chapter number from filepath
+          const chapterMatch = content.filepath?.match(/\/(\d+)\//);
+          const chapterNum = chapterMatch ? parseInt(chapterMatch[1]) : 0;
+          return {
+            id: chapterNum,
+            title: content.content || `Capitulo`,
+            html,
+            filename: content.filename
+          };
         }
+      } catch (e) {
+        console.error(`Book chapter fetch error: ${e.message}`);
       }
-    }
+      return null;
+    }))).filter(Boolean);
 
     res.json({
       book: { cmid, name: bookModule.name, description: bookModule.description },
@@ -3905,6 +3946,45 @@ app.get('/api/curso-virtual/book/:platform/:cmid', authMiddleware, async (req, r
     });
   } catch (err) {
     console.error('Book API error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// GET page content inline (like book viewer)
+app.get('/api/curso-virtual/page/:platform/:cmid', authMiddleware, async (req, res) => {
+  try {
+    const platformId = req.params.platform;
+    const cmid = parseInt(req.params.cmid);
+    const platform = PLATFORMS.find(p => p.id === platformId);
+    if (!platform) return res.status(400).json({ error: 'Plataforma no encontrada' });
+
+    const courseId = parseInt(req.query.courseId);
+    if (!courseId) return res.status(400).json({ error: 'courseId requerido' });
+
+    const result = await moodleCall(platform, 'mod_page_get_pages_by_courses', { 'courseids[0]': courseId });
+    const pages = result.pages || [];
+    const page = pages.find(p => p.coursemodule === cmid);
+    if (!page) return res.status(404).json({ error: 'Page no encontrada' });
+
+    let html = page.content || '';
+    html = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+    html = html.replace(/src="\/pluginfile/g, `src="${platform.url}/pluginfile`);
+    html = html.replace(/href="\/pluginfile/g, `href="${platform.url}/pluginfile`);
+    html = html.replace(/(src|href)="(https?:\/\/[^"]*\/pluginfile\.php\/[^"]*?)(?:\?token=[^"]*)?"/gi, (match, attr, url) => {
+      const separator = url.includes('?') ? '&' : '?';
+      return `${attr}="${url}${separator}token=${platform.token}"`;
+    });
+
+    res.json({
+      page: { cmid, name: page.name, intro: page.intro },
+      content: html,
+      files: (page.contentfiles || []).map(f => ({
+        filename: f.filename, filesize: f.filesize, fileurl: f.fileurl, mimetype: f.mimetype
+      }))
+    });
+  } catch (err) {
+    console.error('Page API error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -3920,7 +4000,7 @@ app.get('/api/piac/:linkId/config', adminOrEditorMiddleware, async (req, res) =>
     const configs = await portalQuery('curso_virtual_config', `piac_link_id=eq.${linkId}`);
     if (configs.length === 0) {
       // Return empty config with defaults
-      const defaults = await portalQuery('institutional_defaults');
+      const defaults = await getInstitutionalDefaults();
       const defaultMap = {};
       defaults.forEach(d => { defaultMap[d.key] = d.value; });
       return res.json({ config: null, defaults: defaultMap, exists: false });
@@ -4038,7 +4118,7 @@ app.get('/api/piac/:linkId/preview', adminOrEditorMiddleware, async (req, res) =
       portalQuery('piac_parsed', `piac_link_id=eq.${linkId}&order=parsed_at.desc&limit=1`),
       portalQuery('moodle_snapshots', `piac_link_id=eq.${linkId}&order=snapshot_at.desc&limit=1`),
       portalQuery('curso_virtual_config', `piac_link_id=eq.${linkId}`),
-      portalQuery('institutional_defaults')
+      getInstitutionalDefaults()
     ]);
 
     const piac = parsedArr[0]?.parsed_json || null;
@@ -4101,6 +4181,7 @@ app.put('/api/institutional-defaults/:key', adminOrEditorMiddleware, async (req,
     } else {
       await portalMutate('institutional_defaults', 'PATCH', { value, updated_at: new Date().toISOString(), updated_by: req.userEmail }, `key=eq.${encodeURIComponent(key)}`);
     }
+    _institutionalDefaultsCache = null;
     res.json({ key, value, updated: true });
   } catch (err) {
     console.error('Defaults PUT error:', err.message);
@@ -4116,8 +4197,11 @@ app.get('/api/notifications', authMiddleware, async (req, res) => {
     const email = isAdmin(req.userEmail) && req.query.email ? req.query.email : req.userEmail;
     const unreadOnly = req.query.unread === 'true' ? '&read=eq.false' : '';
     const limit = parseInt(req.query.limit) || 50;
-    const notifications = await portalQuery('notifications', `umce_email=eq.${encodeURIComponent(email)}${unreadOnly}&order=created_at.desc&limit=${limit}`);
-    const unreadCount = (await portalQuery('notifications', `umce_email=eq.${encodeURIComponent(email)}&read=eq.false&select=id`)).length;
+    const [notifications, unreadIds] = await Promise.all([
+      portalQuery('notifications', `umce_email=eq.${encodeURIComponent(email)}${unreadOnly}&order=created_at.desc&limit=${limit}`),
+      portalQuery('notifications', `umce_email=eq.${encodeURIComponent(email)}&read=eq.false&select=id&limit=1000`)
+    ]);
+    const unreadCount = unreadIds.length;
     res.json({ notifications, unreadCount });
   } catch (err) {
     console.error('Notifications GET error:', err.message);
@@ -4270,6 +4354,17 @@ async function cronRefreshSnapshot(link, platform) {
       piac_link_id: link.id, sections_count: sections.length,
       activities_count: activitiesCount, snapshot_json: newSnapshot
     });
+
+    // Cleanup: keep only last 5 snapshots per link
+    try {
+      const oldSnapshots = await portalQuery('moodle_snapshots', `piac_link_id=eq.${link.id}&order=snapshot_at.desc&offset=5&select=id`);
+      if (oldSnapshots.length) {
+        const idsToDelete = oldSnapshots.map(s => s.id);
+        await portalMutate('moodle_snapshots', 'DELETE', null, `id=in.(${idsToDelete.join(',')})`);
+      }
+    } catch (cleanupErr) {
+      console.error(`Snapshot cleanup error for link ${link.id}:`, cleanupErr.message);
+    }
 
     // Detect changes and generate alerts
     if (oldSnapshot) {
