@@ -338,6 +338,47 @@
       document.getElementById('sidebar-overlay').classList.toggle('open', open);
     }
 
+    function openForumByCmid(cmid) {
+      // Find forumId from courseData nucleos or shared resources
+      let forumId = null;
+      if (courseData) {
+        courseData.nucleos?.forEach(n => {
+          Object.values(n.porSemana || {}).forEach(w => {
+            if (w.forum && w.forum.id === cmid) forumId = w.forum.forumId;
+          });
+        });
+        courseData.recursos_compartidos?.forEach(r => {
+          if (r.id === cmid && r.forumId) forumId = r.forumId;
+        });
+      }
+      if (!forumId) {
+        window.open(`${courseData.moodle.courseUrl.replace(/\/course\/view.*/, '')}/mod/forum/view.php?id=${cmid}`, '_blank');
+        return;
+      }
+      // Ensure container exists (may be inside a book chapter, not in the activity list)
+      let container = document.getElementById(`forum-content-${cmid}`);
+      if (!container) {
+        // Create a modal-style forum overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'embed-modal';
+        overlay.innerHTML = `
+          <div class="embed-modal-header">
+            <span style="color:white;font-size:0.875rem;font-weight:600;margin-right:auto;">Foro de discusion</span>
+            <button class="embed-modal-close embed-modal-close-main" onclick="this.closest('.embed-modal').remove()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              Volver al curso
+            </button>
+          </div>
+          <div id="forum-content-${cmid}" style="flex:1;overflow-y:auto;background:white;"></div>
+        `;
+        document.body.appendChild(overlay);
+        document.addEventListener('keydown', function escHandler(e) {
+          if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', escHandler); }
+        });
+      }
+      toggleForum(cmid, forumId, courseData.moodle.platform);
+    }
+
     function expandEmbed(src, btn) {
       // Create full-screen modal with the embed
       const modal = document.createElement('div');
@@ -1218,7 +1259,35 @@
 
     function processBookHtml(html) {
       if (!html) return '';
-      // Make YouTube embeds responsive
+
+      // Convert YouTube LINKS (not iframes) into inline embeds
+      html = html.replace(/<a[^>]*href="(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)[^"]*"[^>]*>([\s\S]*?)<\/a>/gi, (match, videoId, linkText) => {
+        const cleanText = linkText.replace(/<[^>]*>/g, '').trim();
+        return `<div style="margin:1rem 0;">
+          <div style="font-size:0.8125rem;font-weight:600;color:#1e293b;margin-bottom:0.5rem;">${cleanText}</div>
+          <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:0.75rem;background:#0f172a;">
+            <iframe src="https://www.youtube-nocookie.com/embed/${videoId}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy" title="${cleanText}"></iframe>
+          </div>
+        </div>`;
+      });
+
+      // Convert Moodle forum links into inline buttons
+      html = html.replace(/<a[^>]*href="[^"]*\/mod\/forum\/view\.php\?id=(\d+)"[^>]*>([\s\S]*?)<\/a>/gi, (match, cmid, linkText) => {
+        const cleanText = linkText.replace(/<[^>]*>/g, '').trim();
+        // Find the forumId for this cmid from courseData
+        return `<button onclick="openForumByCmid(${cmid})" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.625rem 1.25rem;background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;border-radius:0.75rem;font-size:0.875rem;font-weight:600;cursor:pointer;margin:0.75rem 0;">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          ${cleanText || 'Abrir foro'}
+        </button>`;
+      });
+
+      // Convert other Moodle internal links to open in new tab with indicator
+      html = html.replace(/<a([^>]*href="https?:\/\/[^"]*(?:virtual|evirtual|pregrado|postgrado)\.umce\.cl\/mod\/[^"]*"[^>]*)>([\s\S]*?)<\/a>/gi, (match, attrs, linkText) => {
+        if (attrs.includes('target=')) return match; // already has target
+        return `<a${attrs} target="_blank" rel="noopener">${linkText} <span style="font-size:0.75rem;opacity:0.6;">↗</span></a>`;
+      });
+
+      // Make YouTube iframes responsive (existing embeds)
       html = html.replace(/<iframe([^>]*src="[^"]*(?:youtube\.com|youtu\.be)[^"]*"[^>]*)>/gi, (match, attrs) => {
         return `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:0.5rem;margin:1rem 0;"><iframe${attrs} style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen loading="lazy">`;
       });
