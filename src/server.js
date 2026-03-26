@@ -3399,7 +3399,10 @@ app.delete('/api/piac/link/:id', adminOrEditorMiddleware, async (req, res) => {
   }
 });
 
-// POST /api/piac/:linkId/parse — download PIAC from Drive, extract text, parse with LLM
+// --- Async PIAC parse jobs (LLM can take 2-5 min) ---
+const piacJobs = new Map(); // jobId -> { status, step, progress, result, error }
+
+// POST /api/piac/:linkId/parse — start async parse job
 app.post('/api/piac/:linkId/parse', adminOrEditorMiddleware, async (req, res) => {
   try {
     const linkId = parseInt(req.params.linkId);
@@ -3408,47 +3411,65 @@ app.post('/api/piac/:linkId/parse', adminOrEditorMiddleware, async (req, res) =>
     const links = await portalQuery('piac_links', `id=eq.${linkId}&status=eq.active`);
     if (links.length === 0) return res.status(404).json({ error: 'Vínculo no encontrado' });
     const link = links[0];
-
     if (!link.drive_file_id) return res.status(400).json({ error: 'No hay file ID de Drive — verifica el link' });
 
-    // Step 1: Download and extract text
-    console.log(`PIAC parse: downloading ${link.drive_file_id}...`);
-    const { text, fileName } = await downloadAndExtractPiac(link.drive_file_id);
-    if (!text || text.trim().length < 100) {
-      return res.status(400).json({ error: 'El documento está vacío o tiene muy poco contenido' });
-    }
-    console.log(`PIAC parse: extracted ${text.length} chars from "${fileName}"`);
+    const jobId = `parse-${linkId}-${Date.now()}`;
+    piacJobs.set(jobId, { status: 'running', step: 'download', progress: 5 });
 
-    // Step 2: Parse with LLM
-    const llmResponse = await callClaudeProxy(
-      `Extrae la estructura de este PIAC y devuelve el JSON:\n\n${text}`,
-      PIAC_PARSE_SYSTEM_PROMPT
-    );
+    // Run in background — don't await
+    (async () => {
+      const job = piacJobs.get(jobId);
+      try {
+        // Step 1: Download
+        job.step = 'download'; job.progress = 10;
+        console.log(`PIAC parse [${jobId}]: downloading ${link.drive_file_id}...`);
+        const { text, fileName } = await downloadAndExtractPiac(link.drive_file_id);
+        if (!text || text.trim().length < 100) throw new Error('El documento está vacío o tiene muy poco contenido');
+        console.log(`PIAC parse [${jobId}]: extracted ${text.length} chars from "${fileName}"`);
 
-    const parsedJson = parseLlmJson(llmResponse);
+        // Step 2: LLM parse (the slow part)
+        job.step = 'llm'; job.progress = 20;
+        const llmResponse = await callClaudeProxy(
+          `Extrae la estructura de este PIAC y devuelve el JSON:\n\n${text}`,
+          PIAC_PARSE_SYSTEM_PROMPT
+        );
+        job.progress = 85;
+        const parsedJson = parseLlmJson(llmResponse);
 
-    // Step 3: Determine version
-    const prevVersions = await portalQuery('piac_parsed', `piac_link_id=eq.${linkId}&order=version.desc&limit=1`);
-    const nextVersion = prevVersions.length > 0 ? prevVersions[0].version + 1 : 1;
+        // Step 3: Save
+        job.step = 'save'; job.progress = 90;
+        const prevVersions = await portalQuery('piac_parsed', `piac_link_id=eq.${linkId}&order=version.desc&limit=1`);
+        const nextVersion = prevVersions.length > 0 ? prevVersions[0].version + 1 : 1;
+        const saved = await portalMutate('piac_parsed', 'POST', {
+          piac_link_id: linkId, version: nextVersion,
+          raw_text: text.substring(0, 100000), parsed_json: parsedJson,
+          llm_model: 'claude-proxy', tokens_used: Math.round(text.length / 4)
+        });
+        await portalMutate('piac_links', 'PATCH', { updated_at: new Date().toISOString() }, `id=eq.${linkId}`);
 
-    // Step 4: Save
-    const saved = await portalMutate('piac_parsed', 'POST', {
-      piac_link_id: linkId,
-      version: nextVersion,
-      raw_text: text.substring(0, 100000),
-      parsed_json: parsedJson,
-      llm_model: 'claude-proxy',
-      tokens_used: Math.round(text.length / 4)
-    });
+        job.status = 'done'; job.progress = 100;
+        job.result = { parsed: true, version: nextVersion, data: saved[0] || saved };
+        console.log(`PIAC parse [${jobId}]: done v${nextVersion}`);
+      } catch (err) {
+        job.status = 'error'; job.error = err.message;
+        console.error(`PIAC parse [${jobId}] error:`, err.message);
+      }
+      // Clean up job after 5 min
+      setTimeout(() => piacJobs.delete(jobId), 300000);
+    })();
 
-    // Update link timestamp
-    await portalMutate('piac_links', 'PATCH', { updated_at: new Date().toISOString() }, `id=eq.${linkId}`);
-
-    res.json({ parsed: true, version: nextVersion, data: saved[0] || saved });
+    res.json({ started: true, jobId });
   } catch (err) {
-    console.error('PIAC parse error:', err.message);
+    console.error('PIAC parse start error:', err.message);
     res.status(500).json({ error: err.message });
   }
+});
+
+// GET /api/piac/job/:jobId — poll parse job status
+app.get('/api/piac/job/:jobId', adminOrEditorMiddleware, (req, res) => {
+  const job = piacJobs.get(req.params.jobId);
+  if (!job) return res.status(404).json({ error: 'Job no encontrado o expirado' });
+  res.json({ status: job.status, step: job.step, progress: job.progress, result: job.result, error: job.error });
 });
 
 // POST /api/piac/:linkId/snapshot — take Moodle course snapshot
