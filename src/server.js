@@ -3654,6 +3654,187 @@ app.post('/api/piac/discrepancy/:id/unresolve', adminOrEditorMiddleware, async (
   }
 });
 
+// --- API: Bibliografia ---
+
+// GET /api/piac/:linkId/bibliografia — listar referencias bibliograficas del curso
+// Publico si el curso esta publicado; requiere auth en caso contrario
+app.get('/api/piac/:linkId/bibliografia', async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    if (isNaN(linkId)) return res.status(400).json({ error: 'ID inválido' });
+
+    // Verificar si el curso existe
+    const links = await portalQuery('piac_links', `id=eq.${linkId}&status=eq.active`);
+    if (!links.length) return res.status(404).json({ error: 'Curso no encontrado' });
+
+    // Comprobar si el curso esta publicado
+    const configs = await portalQuery('curso_virtual_config', `piac_link_id=eq.${linkId}&limit=1`);
+    const publicado = configs.length > 0 && configs[0].publicado;
+
+    if (!publicado) {
+      // Requiere auth si no esta publicado
+      const cookies = parseCookies(req);
+      const token = cookies[COOKIE_NAME];
+      if (!token) return res.status(401).json({ error: 'No autenticado' });
+      const user = verifyToken(token);
+      if (!user) return res.status(401).json({ error: 'Sesión expirada' });
+      const role = getUserRole(user.email);
+      if (!role) return res.status(403).json({ error: 'No autorizado' });
+    }
+
+    const refs = await portalQuery(
+      'curso_virtual_bibliografia',
+      `piac_link_id=eq.${linkId}&order=clasificacion.asc,nucleo_asociado.asc,autores.asc`
+    );
+    res.json(refs);
+  } catch (err) {
+    console.error('GET bibliografia error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/piac/:linkId/bibliografia — agregar referencia (admin/editor)
+app.post('/api/piac/:linkId/bibliografia', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    if (isNaN(linkId)) return res.status(400).json({ error: 'ID inválido' });
+
+    const { titulo, autores, anio_publicacion, tipo, clasificacion, nucleo_asociado,
+            idioma, url, doi, issn_isbn, acceso, es_clasico, origen } = req.body;
+
+    if (!titulo || !autores || !anio_publicacion) {
+      return res.status(400).json({ error: 'titulo, autores y anio_publicacion son obligatorios' });
+    }
+
+    const payload = {
+      piac_link_id: linkId,
+      titulo,
+      autores,
+      anio_publicacion: parseInt(anio_publicacion),
+      updated_by: req.userEmail
+    };
+    if (tipo !== undefined)            payload.tipo = tipo;
+    if (clasificacion !== undefined)   payload.clasificacion = clasificacion;
+    if (nucleo_asociado !== undefined) payload.nucleo_asociado = nucleo_asociado ? parseInt(nucleo_asociado) : null;
+    if (idioma !== undefined)          payload.idioma = idioma;
+    if (url !== undefined)             payload.url = url;
+    if (doi !== undefined)             payload.doi = doi;
+    if (issn_isbn !== undefined)       payload.issn_isbn = issn_isbn;
+    if (acceso !== undefined)          payload.acceso = acceso;
+    if (es_clasico !== undefined)      payload.es_clasico = Boolean(es_clasico);
+    if (origen !== undefined)          payload.origen = origen;
+
+    const result = await portalMutate('curso_virtual_bibliografia', 'POST', payload);
+    res.status(201).json(result[0] || result);
+  } catch (err) {
+    console.error('POST bibliografia error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT /api/piac/bibliografia/:id — actualizar referencia (admin/editor)
+app.put('/api/piac/bibliografia/:id', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+
+    const { titulo, autores, anio_publicacion, tipo, clasificacion, nucleo_asociado,
+            idioma, url, doi, issn_isbn, acceso, es_clasico, origen,
+            url_status, url_fail_count, doi_verificado, doi_metadata } = req.body;
+
+    const patch = { updated_at: new Date().toISOString(), updated_by: req.userEmail };
+    if (titulo !== undefined)            patch.titulo = titulo;
+    if (autores !== undefined)           patch.autores = autores;
+    if (anio_publicacion !== undefined)  patch.anio_publicacion = parseInt(anio_publicacion);
+    if (tipo !== undefined)              patch.tipo = tipo;
+    if (clasificacion !== undefined)     patch.clasificacion = clasificacion;
+    if (nucleo_asociado !== undefined)   patch.nucleo_asociado = nucleo_asociado ? parseInt(nucleo_asociado) : null;
+    if (idioma !== undefined)            patch.idioma = idioma;
+    if (url !== undefined)               patch.url = url;
+    if (doi !== undefined)               patch.doi = doi;
+    if (issn_isbn !== undefined)         patch.issn_isbn = issn_isbn;
+    if (acceso !== undefined)            patch.acceso = acceso;
+    if (es_clasico !== undefined)        patch.es_clasico = Boolean(es_clasico);
+    if (origen !== undefined)            patch.origen = origen;
+    if (url_status !== undefined)        patch.url_status = url_status;
+    if (url_fail_count !== undefined)    patch.url_fail_count = parseInt(url_fail_count);
+    if (doi_verificado !== undefined)    patch.doi_verificado = Boolean(doi_verificado);
+    if (doi_metadata !== undefined)      patch.doi_metadata = doi_metadata;
+
+    const result = await portalMutate('curso_virtual_bibliografia', 'PATCH', patch, `id=eq.${id}`);
+    res.json(result[0] || result);
+  } catch (err) {
+    console.error('PUT bibliografia error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE /api/piac/bibliografia/:id — eliminar referencia (admin/editor)
+app.delete('/api/piac/bibliografia/:id', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+    await portalMutate('curso_virtual_bibliografia', 'DELETE', null, `id=eq.${id}`);
+    res.json({ deleted: true });
+  } catch (err) {
+    console.error('DELETE bibliografia error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/piac/:linkId/bibliografia/calidad — dashboard de calidad (admin/editor)
+app.get('/api/piac/:linkId/bibliografia/calidad', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    if (isNaN(linkId)) return res.status(400).json({ error: 'ID inválido' });
+
+    // Intentar obtener desde la vista materializada primero
+    let stats = null;
+    try {
+      const rows = await portalQuery('mv_calidad_bibliografica', `piac_link_id=eq.${linkId}&limit=1`);
+      if (rows.length > 0) stats = rows[0];
+    } catch { /* vista puede no existir aun */ }
+
+    if (!stats) {
+      // Calcular directamente desde la tabla si la vista no esta disponible
+      const refs = await portalQuery('curso_virtual_bibliografia', `piac_link_id=eq.${linkId}`);
+      const total = refs.length;
+      const obligatorias = refs.filter(r => r.clasificacion === 'obligatoria').length;
+      const complementarias = refs.filter(r => r.clasificacion === 'complementaria').length;
+      const vigentes = refs.filter(r => r.vigente).length;
+      const abiertos = refs.filter(r => r.acceso === 'abierto').length;
+      const urlsActivas = refs.filter(r => r.url_status === 'activo').length;
+      const urlsRotas = refs.filter(r => r.url_status === 'roto').length;
+      const doisVerificados = refs.filter(r => r.doi_verificado).length;
+      const nucleosSet = new Set(refs.map(r => r.nucleo_asociado).filter(n => n != null));
+      const distTipos = {};
+      refs.forEach(r => {
+        const t = r.tipo || 'otro';
+        distTipos[t] = (distTipos[t] || 0) + 1;
+      });
+      stats = {
+        piac_link_id: linkId,
+        total_refs: total,
+        refs_obligatorias: obligatorias,
+        refs_complementarias: complementarias,
+        pct_vigentes: total > 0 ? Math.round(1000 * vigentes / total) / 10 : null,
+        pct_acceso_abierto: total > 0 ? Math.round(1000 * abiertos / total) / 10 : null,
+        urls_activas: urlsActivas,
+        urls_rotas: urlsRotas,
+        dois_verificados: doisVerificados,
+        nucleos_con_refs: nucleosSet.size,
+        distribucion_tipos: distTipos,
+        refreshed_at: null
+      };
+    }
+
+    res.json(stats);
+  } catch (err) {
+    console.error('GET bibliografia/calidad error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --- API: Landing publica del curso (sin auth) ---
 app.get('/api/curso-landing/:linkId', async (req, res) => {
   try {
@@ -3961,6 +4142,15 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
       }
     } catch {}
 
+    // Fetch rich bibliography entries from the DB table
+    let bibliografiaRich = [];
+    try {
+      bibliografiaRich = await portalQuery(
+        'curso_virtual_bibliografia',
+        `piac_link_id=eq.${linkId}&order=clasificacion.asc,nucleo_asociado.asc,autores.asc`
+      );
+    } catch {}
+
     // Section summaries for nucleo descriptions
     const sectionSummaries = {};
     sections.forEach(s => {
@@ -3979,6 +4169,7 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
         horas: piac.identificacion?.horas,
         metodologia: piac.metodologia,
         bibliografia: piac.bibliografia,
+        bibliografia_rich: bibliografiaRich,
         courseImage
       },
       nucleos: mergedNucleos,

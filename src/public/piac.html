@@ -152,6 +152,25 @@
           Configurar curso virtual
         </button>
         <span id="analyze-status" class="text-sm text-gray-400"></span>
+        <div id="progress-bar-container" class="hidden w-full mt-3">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
+              <div id="progress-bar-fill" class="h-full bg-blue-600 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+            </div>
+            <span id="progress-bar-pct" class="text-xs text-gray-500 font-mono w-8 text-right">0%</span>
+          </div>
+          <div id="progress-steps" class="flex gap-1">
+            <div class="progress-step flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-gray-100 text-gray-400" data-step="parse">
+              <span class="step-icon">○</span> Parsear PIAC
+            </div>
+            <div class="progress-step flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-gray-100 text-gray-400" data-step="snapshot">
+              <span class="step-icon">○</span> Snapshot Moodle
+            </div>
+            <div class="progress-step flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-gray-100 text-gray-400" data-step="match">
+              <span class="step-icon">○</span> Matching
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Summary cards -->
@@ -233,6 +252,7 @@
               <button class="config-tab py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="contenido" onclick="switchConfigTab('contenido')">Contenido</button>
               <button class="config-tab py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="objetivos" onclick="switchConfigTab('objetivos')">Objetivos semanales</button>
               <button class="config-tab py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="foros" onclick="switchConfigTab('foros')">Foros</button>
+              <button class="config-tab py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="bibliografia" onclick="switchConfigTab('bibliografia')">Bibliografia</button>
             </nav>
           </div>
 
@@ -343,6 +363,89 @@
                 <input id="cfg-foro-consultas" type="number" placeholder="Ej: 45232" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 <p class="text-xs text-gray-400 mt-1">QM 5.3 — espacio para dudas generales del curso</p>
               </div>
+            </div>
+          </div>
+
+          <!-- Tab: Bibliografia -->
+          <div id="tab-bibliografia" class="config-tab-content hidden p-5">
+            <div class="flex items-center justify-between mb-4">
+              <p class="text-sm text-gray-500">Referencias bibliograficas del curso. Complementan la bibliografia importada del PIAC con metadatos estructurados.</p>
+              <button onclick="showBiblioForm()" class="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium flex-shrink-0 ml-4">+ Agregar referencia</button>
+            </div>
+
+            <!-- Inline add/edit form (hidden by default) -->
+            <div id="biblio-form-wrap" class="hidden mb-5 bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <h4 id="biblio-form-title" class="text-sm font-semibold text-gray-700 mb-3">Nueva referencia</h4>
+              <input type="hidden" id="biblio-form-id" value="">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                <div class="md:col-span-2">
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Titulo <span class="text-red-500">*</span></label>
+                  <input id="biblio-titulo" type="text" placeholder="Titulo completo de la obra" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Autores</label>
+                  <input id="biblio-autores" type="text" placeholder="Apellido, N.; Apellido2, N." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Ano de publicacion</label>
+                  <input id="biblio-anio" type="number" placeholder="2023" min="1900" max="2100" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Tipo</label>
+                  <select id="biblio-tipo" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="libro">Libro</option>
+                    <option value="articulo">Articulo</option>
+                    <option value="capitulo">Capitulo de libro</option>
+                    <option value="web">Recurso web</option>
+                    <option value="tesis">Tesis</option>
+                    <option value="otro">Otro</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Clasificacion</label>
+                  <select id="biblio-clasificacion" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="obligatoria">Obligatoria</option>
+                    <option value="complementaria">Complementaria</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Acceso</label>
+                  <select id="biblio-acceso" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Sin especificar</option>
+                    <option value="abierto">Abierto</option>
+                    <option value="institucional">Institucional</option>
+                    <option value="restringido">Restringido</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Nucleo asociado</label>
+                  <select id="biblio-nucleo" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Todos los nucleos</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">URL</label>
+                  <input id="biblio-url" type="url" placeholder="https://..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">DOI</label>
+                  <input id="biblio-doi" type="text" placeholder="10.1000/xyz123" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="flex items-center gap-2 pt-5">
+                  <input id="biblio-clasico" type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                  <label for="biblio-clasico" class="text-sm text-gray-700">Es un recurso clasico (omite alerta de antiguedad)</label>
+                </div>
+              </div>
+              <div id="biblio-form-error" class="hidden text-xs text-red-500 mb-2"></div>
+              <div class="flex items-center gap-3">
+                <button onclick="saveBiblioEntry()" class="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700">Guardar</button>
+                <button onclick="hideBiblioForm()" class="text-sm text-gray-500 hover:text-gray-700">Cancelar</button>
+              </div>
+            </div>
+
+            <!-- Entries list -->
+            <div id="biblio-list">
+              <p class="text-sm text-gray-400">Cargando...</p>
             </div>
           </div>
 
@@ -830,6 +933,191 @@
       });
       document.querySelectorAll('.config-tab-content').forEach(c => c.classList.add('hidden'));
       document.getElementById('tab-' + tab).classList.remove('hidden');
+      if (tab === 'bibliografia') loadBibliografia();
+    }
+
+    // --- Bibliografia tab ---
+    var bibliografiaEntries = [];
+
+    async function loadBibliografia() {
+      if (!currentLinkId) return;
+      var container = document.getElementById('biblio-list');
+      container.innerHTML = '<p class="text-sm text-gray-400"><span class="spinner"></span> Cargando...</p>';
+      try {
+        var res = await fetch('/api/piac/' + currentLinkId + '/bibliografia');
+        if (!res.ok) throw new Error('Error ' + res.status);
+        bibliografiaEntries = await res.json();
+        renderBiblioList();
+        populateNucleoDropdown();
+      } catch (e) {
+        container.innerHTML = '<p class="text-sm text-red-500">' + e.message + '</p>';
+      }
+    }
+
+    function populateNucleoDropdown() {
+      var sel = document.getElementById('biblio-nucleo');
+      if (!sel) return;
+      var nucleos = [];
+      if (currentDetail && currentDetail.parsed && currentDetail.parsed.parsed_json) {
+        nucleos = currentDetail.parsed.parsed_json.nucleos || [];
+      }
+      var opts = '<option value="">Todos los nucleos</option>';
+      nucleos.forEach(function(n) {
+        opts += '<option value="' + n.numero + '">' + 'Nucleo ' + n.numero + (n.nombre ? ': ' + n.nombre : '') + '</option>';
+      });
+      sel.innerHTML = opts;
+    }
+
+    function renderBiblioList() {
+      var container = document.getElementById('biblio-list');
+      if (bibliografiaEntries.length === 0) {
+        container.innerHTML = '<p class="text-sm text-gray-400">Sin referencias. Agrega la primera usando el boton de arriba.</p>';
+        return;
+      }
+      var currentYear = new Date().getFullYear();
+      var tipoBadge = { libro: 'bg-blue-50 text-blue-700', articulo: 'bg-purple-50 text-purple-700', web: 'bg-green-50 text-green-700', tesis: 'bg-orange-50 text-orange-700', capitulo: 'bg-indigo-50 text-indigo-700', otro: 'bg-gray-100 text-gray-500' };
+
+      var html = '';
+      var grouped = { obligatoria: [], complementaria: [] };
+      bibliografiaEntries.forEach(function(e) {
+        if (e.clasificacion === 'obligatoria') grouped.obligatoria.push(e);
+        else grouped.complementaria.push(e);
+      });
+
+      function renderGroup(entries, label) {
+        if (entries.length === 0) return '';
+        var g = '<div class="mb-5">';
+        g += '<div class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">' + label + ' (' + entries.length + ')</div>';
+        entries.forEach(function(e) {
+          var isOld = e.anio_publicacion && !e.es_clasico && (currentYear - parseInt(e.anio_publicacion)) > 5;
+          var tipoC = tipoBadge[e.tipo] || tipoBadge['otro'];
+          g += '<div class="flex items-start gap-3 py-2.5 px-3 rounded-lg border border-gray-100 mb-2 hover:border-gray-200 bg-white">';
+          g += '<div class="flex-1 min-w-0">';
+          g += '<div class="flex flex-wrap items-center gap-2 mb-0.5">';
+          g += '<span class="text-sm font-medium text-gray-800">' + (e.titulo || 'Sin titulo') + '</span>';
+          g += '<span class="text-xs px-1.5 py-0.5 rounded font-medium ' + tipoC + '">' + (e.tipo || 'otro') + '</span>';
+          if (isOld) g += '<span class="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">+5 anos</span>';
+          if (e.es_clasico) g += '<span class="text-xs text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">clasico</span>';
+          if (e.url_status === 'roto') g += '<span class="text-xs text-red-500 bg-red-50 px-1.5 py-0.5 rounded">enlace roto</span>';
+          g += '</div>';
+          var meta = [];
+          if (e.autores) meta.push(e.autores);
+          if (e.anio_publicacion) meta.push(String(e.anio_publicacion));
+          if (e.acceso) meta.push(e.acceso);
+          if (e.doi) meta.push('DOI: ' + e.doi);
+          if (e.nucleo_asociado) meta.push('Nucleo ' + e.nucleo_asociado);
+          if (meta.length > 0) g += '<p class="text-xs text-gray-400">' + meta.join(' · ') + '</p>';
+          if (e.url) g += '<a href="' + e.url + '" target="_blank" rel="noopener" class="text-xs text-blue-500 hover:underline truncate block mt-0.5">' + e.url + '</a>';
+          g += '</div>';
+          g += '<div class="flex items-center gap-2 flex-shrink-0">';
+          g += '<button onclick="editBiblioEntry(' + e.id + ')" class="text-xs text-gray-500 hover:text-blue-600 px-2 py-1 rounded hover:bg-gray-100">Editar</button>';
+          g += '<button onclick="deleteBiblioEntry(' + e.id + ')" class="text-xs text-gray-500 hover:text-red-600 px-2 py-1 rounded hover:bg-gray-100">Eliminar</button>';
+          g += '</div>';
+          g += '</div>';
+        });
+        g += '</div>';
+        return g;
+      }
+
+      html += renderGroup(grouped.obligatoria, 'Obligatoria');
+      html += renderGroup(grouped.complementaria, 'Complementaria');
+      container.innerHTML = html;
+    }
+
+    function showBiblioForm(entry) {
+      var wrap = document.getElementById('biblio-form-wrap');
+      var titleEl = document.getElementById('biblio-form-title');
+      document.getElementById('biblio-form-id').value = entry ? entry.id : '';
+      document.getElementById('biblio-titulo').value = entry ? (entry.titulo || '') : '';
+      document.getElementById('biblio-autores').value = entry ? (entry.autores || '') : '';
+      document.getElementById('biblio-anio').value = entry ? (entry.anio_publicacion || '') : '';
+      document.getElementById('biblio-tipo').value = entry ? (entry.tipo || 'libro') : 'libro';
+      document.getElementById('biblio-clasificacion').value = entry ? (entry.clasificacion || 'complementaria') : 'complementaria';
+      document.getElementById('biblio-acceso').value = entry ? (entry.acceso || '') : '';
+      document.getElementById('biblio-url').value = entry ? (entry.url || '') : '';
+      document.getElementById('biblio-doi').value = entry ? (entry.doi || '') : '';
+      document.getElementById('biblio-clasico').checked = entry ? !!entry.es_clasico : false;
+      if (entry && entry.nucleo_asociado) {
+        document.getElementById('biblio-nucleo').value = String(entry.nucleo_asociado);
+      } else {
+        document.getElementById('biblio-nucleo').value = '';
+      }
+      titleEl.textContent = entry ? 'Editar referencia' : 'Nueva referencia';
+      document.getElementById('biblio-form-error').classList.add('hidden');
+      wrap.classList.remove('hidden');
+      document.getElementById('biblio-titulo').focus();
+    }
+
+    function hideBiblioForm() {
+      document.getElementById('biblio-form-wrap').classList.add('hidden');
+    }
+
+    function editBiblioEntry(id) {
+      var entry = bibliografiaEntries.find(function(e) { return e.id === id; });
+      if (entry) showBiblioForm(entry);
+    }
+
+    async function saveBiblioEntry() {
+      var errEl = document.getElementById('biblio-form-error');
+      errEl.classList.add('hidden');
+      var id = document.getElementById('biblio-form-id').value;
+      var titulo = document.getElementById('biblio-titulo').value.trim();
+      if (!titulo) {
+        errEl.textContent = 'El titulo es obligatorio.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      var nucleoVal = document.getElementById('biblio-nucleo').value;
+      var payload = {
+        titulo: titulo,
+        autores: document.getElementById('biblio-autores').value.trim() || null,
+        anio_publicacion: parseInt(document.getElementById('biblio-anio').value) || null,
+        tipo: document.getElementById('biblio-tipo').value,
+        clasificacion: document.getElementById('biblio-clasificacion').value,
+        acceso: document.getElementById('biblio-acceso').value || null,
+        url: document.getElementById('biblio-url').value.trim() || null,
+        doi: document.getElementById('biblio-doi').value.trim() || null,
+        es_clasico: document.getElementById('biblio-clasico').checked,
+        nucleo_asociado: nucleoVal ? parseInt(nucleoVal) : null
+      };
+      try {
+        var url, method;
+        if (id) {
+          url = '/api/piac/bibliografia/' + id;
+          method = 'PUT';
+        } else {
+          url = '/api/piac/' + currentLinkId + '/bibliografia';
+          method = 'POST';
+        }
+        var res = await fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          var err = await res.json();
+          throw new Error(err.error || 'Error guardando');
+        }
+        hideBiblioForm();
+        loadBibliografia();
+      } catch (e) {
+        errEl.textContent = e.message;
+        errEl.classList.remove('hidden');
+      }
+    }
+
+    async function deleteBiblioEntry(id) {
+      if (!confirm('Eliminar esta referencia bibliografica?')) return;
+      try {
+        var res = await fetch('/api/piac/bibliografia/' + id, { method: 'DELETE' });
+        if (!res.ok) {
+          var err = await res.json();
+          throw new Error(err.error || 'Error eliminando');
+        }
+        loadBibliografia();
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
     }
 
     async function loadConfig() {
