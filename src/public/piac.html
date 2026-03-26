@@ -44,6 +44,7 @@
     .elem-row { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.5rem 1rem; border-bottom: 1px solid #F9FAFB; font-size: 13px; }
     .elem-row:last-child { border-bottom: none; }
     .elem-row:hover { background: #FAFBFC; }
+    .rotate-180 { transform: rotate(180deg); }
     .elem-icon { width: 22px; height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
     .elem-matched { color: #065F46; }
     .elem-missing { color: #991B1B; }
@@ -116,7 +117,7 @@
     <!-- Header row -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <p class="text-gray-500 text-sm">Gestiona los vinculos entre PIACs (Google Drive) y cursos Moodle. Analiza coherencia y detecta discrepancias.</p>
+        <p class="text-gray-500 text-sm">Esta herramienta compara la planificación del curso (PIAC) con lo que está configurado en Moodle, y te muestra dónde hay diferencias o problemas por resolver.</p>
       </div>
       <button id="btn-new-link" class="flex items-center gap-2 bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -173,11 +174,8 @@
       <div class="flex flex-wrap items-center gap-3 mb-6">
         <button id="btn-analyze" class="flex items-center gap-2 bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-          Analizar (completo)
+          Analizar
         </button>
-        <button id="btn-parse-only" class="text-sm text-gray-500 hover:text-gray-700 border border-gray-300 px-3 py-2 rounded-lg">Solo parsear PIAC</button>
-        <button id="btn-snapshot-only" class="text-sm text-gray-500 hover:text-gray-700 border border-gray-300 px-3 py-2 rounded-lg">Solo snapshot Moodle</button>
-        <div class="border-l border-gray-200 h-6 mx-1"></div>
         <a id="btn-view-curso" href="#" target="_blank" class="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-purple-300 text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
           Ver curso virtual
@@ -190,6 +188,17 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
           Configurar curso virtual
         </button>
+        <div class="relative">
+          <button onclick="document.getElementById('advanced-opts').classList.toggle('hidden')" class="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+            Opciones avanzadas
+          </button>
+          <div id="advanced-opts" class="hidden absolute left-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-20 min-w-48">
+            <button id="btn-parse-only" class="block w-full text-left text-sm text-gray-600 hover:bg-gray-50 px-3 py-1.5 rounded">Solo parsear PIAC</button>
+            <button id="btn-snapshot-only" class="block w-full text-left text-sm text-gray-600 hover:bg-gray-50 px-3 py-1.5 rounded">Solo snapshot Moodle</button>
+            <button onclick="toggleRawPanels()" class="block w-full text-left text-sm text-gray-600 hover:bg-gray-50 px-3 py-1.5 rounded">Ver datos crudos</button>
+          </div>
+        </div>
         <span id="analyze-status" class="text-sm text-gray-400"></span>
         <div id="progress-bar-container" class="hidden w-full mt-3">
           <div class="flex items-center gap-3 mb-2">
@@ -216,21 +225,24 @@
       <div id="summary-cards" class="hidden grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
         <div class="panel-card p-4 text-center">
           <div class="text-2xl font-bold text-gray-800" id="sum-nucleos">-</div>
-          <div class="text-xs text-gray-500">Nucleos PIAC</div>
+          <div class="text-xs text-gray-500">Núcleos PIAC</div>
         </div>
         <div class="panel-card p-4 text-center">
           <div class="text-2xl font-bold text-gray-800" id="sum-sections">-</div>
           <div class="text-xs text-gray-500">Secciones Moodle</div>
         </div>
         <div class="panel-card p-4 text-center">
-          <div class="text-2xl font-bold text-gray-800" id="sum-matched">-</div>
-          <div class="text-xs text-gray-500">Elementos matched</div>
+          <div id="sum-matched" class="text-2xl font-bold text-gray-800">-</div>
+          <div class="text-xs text-gray-500">Elementos vinculados</div>
+          <div id="sum-matched-bar" class="hidden mt-2 w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+            <div id="sum-matched-fill" class="h-full bg-green-500 rounded-full transition-all" style="width:0%"></div>
+          </div>
         </div>
-        <div class="panel-card p-4 text-center">
+        <div class="panel-card p-4 text-center cursor-pointer hover:border-red-300 transition-colors" onclick="document.getElementById('discrepancies-section').scrollIntoView({behavior:'smooth'})">
           <div class="text-2xl font-bold text-red-600" id="sum-critical">-</div>
-          <div class="text-xs text-gray-500">Criticas</div>
+          <div class="text-xs text-gray-500">Críticas</div>
         </div>
-        <div class="panel-card p-4 text-center">
+        <div class="panel-card p-4 text-center cursor-pointer hover:border-yellow-300 transition-colors" onclick="document.getElementById('discrepancies-section').scrollIntoView({behavior:'smooth'})">
           <div class="text-2xl font-bold text-yellow-600" id="sum-warnings">-</div>
           <div class="text-xs text-gray-500">Advertencias</div>
         </div>
@@ -240,7 +252,6 @@
       <div class="panel-card p-5 mb-6">
         <div class="flex items-center justify-between mb-3">
           <div class="section-header mb-0">Mapa del Curso — PIAC vs Moodle</div>
-          <button id="btn-toggle-raw" onclick="toggleRawPanels()" class="text-xs text-gray-400 hover:text-blue-600">Ver datos crudos</button>
         </div>
         <div id="matching-map" class="text-sm text-gray-500">Sin datos — ejecuta "Analizar"</div>
       </div>
@@ -260,7 +271,7 @@
       </div>
 
       <!-- Discrepancies -->
-      <div class="panel-card p-5">
+      <div id="discrepancies-section" class="panel-card p-5">
         <div class="section-header">Discrepancias</div>
         <div id="discrepancies-list" class="text-sm text-gray-500">Sin datos</div>
       </div>
@@ -706,11 +717,11 @@
       const label = MOD_LABELS[mod.modname] || mod.modname;
       const bg = MOD_COLORS[mod.modname] || '#F3F4F6';
       const url = moodleModUrl(mod.modname, mod.id);
-      const vis = mod.visible === false ? ' <span class="badge badge-critical" style="font-size:9px">oculto</span>' : '';
-      const secLabel = showSection ? `<span class="text-xs text-gray-400 ml-1">(S${mod.sectionNumber || '?'})</span>` : '';
+      const vis = mod.visible === false ? ' <span class="badge badge-critical" style="font-size:9px" title="Este elemento está oculto para los estudiantes en Moodle">oculto</span>' : '';
+      const secLabel = showSection ? `<span class="text-xs text-gray-400 ml-1" title="Sección ${mod.sectionNumber || '?'} en Moodle">(S${mod.sectionNumber || '?'})</span>` : '';
       const link = url ? `<a href="${url}" target="_blank" class="elem-link" title="Abrir en Moodle">abrir &nearr;</a>` : '';
       return `<div class="flex items-center gap-2 flex-1 min-w-0">
-        <span class="elem-icon" style="background:${bg}">${icon}</span>
+        <span class="elem-icon" style="background:${bg}" title="${label}">${icon}</span>
         <span class="text-gray-700 truncate" title="${(mod.name||'').replace(/"/g,'&quot;')}">${mod.name || 'Sin nombre'}${vis}${secLabel}</span>
         ${link}
       </div>`;
@@ -735,9 +746,19 @@
         document.getElementById('summary-cards').classList.remove('hidden');
         document.getElementById('sum-nucleos').textContent = s.nucleos_piac || 0;
         document.getElementById('sum-sections').textContent = s.sections_moodle || 0;
-        document.getElementById('sum-matched').textContent = s.matched_elements || 0;
-        document.getElementById('sum-critical').textContent = disc.critical || 0;
-        document.getElementById('sum-warnings').textContent = disc.warning || 0;
+        const matched = s.matched_elements || 0;
+        const total = s.total_elements || matched;
+        const pct = total > 0 ? Math.round((matched / total) * 100) : 0;
+        document.getElementById('sum-matched').textContent = total > matched ? `${matched}/${total}` : matched;
+        if (total > 0) {
+          document.getElementById('sum-matched-bar').classList.remove('hidden');
+          document.getElementById('sum-matched-fill').style.width = pct + '%';
+          document.getElementById('sum-matched-fill').style.background = pct === 100 ? '#059669' : pct >= 70 ? '#F59E0B' : '#EF4444';
+        }
+        const critCount = disc.critical || 0;
+        const warnCount = disc.warning || 0;
+        document.getElementById('sum-critical').textContent = critCount;
+        document.getElementById('sum-warnings').textContent = warnCount;
       } else {
         document.getElementById('summary-cards').classList.add('hidden');
       }
@@ -748,6 +769,20 @@
       if (d.matching && d.matching.matches_json) {
         const matchList = d.matching.matches_json;
         let html = '';
+        // Legend
+        html += `<div class="flex flex-wrap items-center gap-4 text-xs text-gray-400 mb-3 pb-3 border-b border-gray-100">`;
+        html += `<span class="font-medium text-gray-500" title="Los títulos del PIAC provienen de la planificación (español). Los títulos de Moodle provienen de la plataforma y pueden estar en otro idioma.">Simbología <span style="font-weight:400">(los nombres PIAC y Moodle pueden diferir porque vienen de fuentes distintas)</span>:</span>`;
+        html += `<span title="Tarea"><span class="elem-icon inline-flex" style="background:#DBEAFE;width:18px;height:18px;font-size:10px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center">T</span> Tarea</span>`;
+        html += `<span title="Cuestionario"><span class="elem-icon inline-flex" style="background:#E0E7FF;width:18px;height:18px;font-size:10px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center">Q</span> Cuestionario</span>`;
+        html += `<span title="Foro"><span class="elem-icon inline-flex" style="background:#FEF3C7;width:18px;height:18px;font-size:10px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center">F</span> Foro</span>`;
+        html += `<span title="Libro"><span class="elem-icon inline-flex" style="background:#DBEAFE;width:18px;height:18px;font-size:10px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center">B</span> Libro</span>`;
+        html += `<span title="Página"><span class="elem-icon inline-flex" style="background:#D1FAE5;width:18px;height:18px;font-size:10px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center">P</span> Página</span>`;
+        html += `<span title="LTI/Zoom"><span class="elem-icon inline-flex" style="background:#CFFAFE;width:18px;height:18px;font-size:10px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center">Z</span> Zoom/LTI</span>`;
+        html += `<span><span class="badge badge-critical" style="font-size:9px">oculto</span> No visible para estudiantes</span>`;
+        html += `<span>(S#) = Sección en Moodle</span>`;
+        html += `<span style="color:#059669">&#10003; Vinculado</span>`;
+        html += `<span style="color:#DC2626">&#9888; Sin match</span>`;
+        html += `</div>`;
         if (courseUrl) {
           html += `<div class="text-xs text-gray-400 mb-3"><a href="${courseUrl}" target="_blank" class="elem-link">Abrir curso en Moodle &nearr;</a></div>`;
         }
@@ -778,24 +813,49 @@
           if (nuc.rf) {
             html += `<div class="px-4 py-2 text-xs text-gray-500 bg-gray-50 border-b border-gray-100"><strong>RF:</strong> ${(nuc.rf || '').substring(0, 200)}${(nuc.rf || '').length > 200 ? '...' : ''}</div>`;
           }
-          (m.elements || []).forEach(el => {
-            html += `<div class="elem-row">`;
-            // PIAC side
+          (m.elements || []).forEach((el, elIdx) => {
             const piac = el.piac || {};
             const typeLabel = piac.type === 'sesion' ? 'Sesión' : piac.type === 'evaluacion' ? 'Evaluación' : piac.type === 'foros' ? 'Foros' : piac.type === 'herramienta' ? 'Herramienta' : piac.type === 'base_datos' ? 'BD' : piac.type === 'contenido' ? 'Contenido' : piac.type === 'contenido_extra' ? 'Extra' : piac.type || '?';
-            html += `<div class="flex-1 min-w-0">`;
-            html += `<div class="text-xs text-gray-400">${typeLabel}</div>`;
-            html += `<div class="text-gray-700 truncate" title="${(piac.name||'').replace(/"/g,'&quot;')}">${piac.name || '—'}</div>`;
-            if (piac.sincronico) html += `<div class="text-xs text-blue-500">Sincrónico: ${piac.sincronico}</div>`;
-            if (piac.asincronico) html += `<div class="text-xs text-purple-500">Asincrónico: ${piac.asincronico}</div>`;
-            if (piac.recursos) html += `<div class="text-xs text-gray-400">Recursos: ${Array.isArray(piac.recursos) ? piac.recursos.join(', ') : piac.recursos}</div>`;
+            const statusIcon = el.matched ? '<span style="color:#059669" title="Vinculado en Moodle">&#10003;</span>' : '<span style="color:#DC2626" title="Sin match en Moodle">&#9888;</span>';
+            const moodleName = el.matched && el.moodle ? (Array.isArray(el.moodle) ? el.moodle.map(mod => mod.name).join(', ') : el.moodle.name || '') : '';
+            const elemId = `elem-${idx}-${elIdx}`;
+
+            // Collapsed summary row (always visible)
+            html += `<div class="elem-row" style="cursor:pointer;padding:0.5rem 1rem;border-bottom:1px solid #F3F4F6" onclick="document.getElementById('${elemId}').classList.toggle('hidden');this.querySelector('.elem-chevron').classList.toggle('rotate-180')">`;
+            html += `<span class="text-xs text-gray-400 w-16 flex-shrink-0">${typeLabel}</span>`;
+            html += `<span class="flex-1 text-gray-700 truncate text-sm" title="${(piac.name||'').replace(/"/g,'&quot;')}">${piac.name || '—'}</span>`;
+            html += `<span class="mx-2">${statusIcon}</span>`;
+            html += `<span class="flex-1 text-gray-500 truncate text-xs">${moodleName || '<em class="text-red-400">Sin match</em>'}</span>`;
+            html += `<svg class="w-3.5 h-3.5 text-gray-400 transition-transform elem-chevron flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>`;
             html += `</div>`;
 
+            // Expanded detail (hidden by default)
+            html += `<div id="${elemId}" class="hidden" style="padding:0.5rem 1rem 0.75rem;background:#FAFBFC;border-bottom:1px solid #F3F4F6">`;
+            html += `<div class="grid gap-3" style="grid-template-columns:1fr auto 1fr">`;
+            // PIAC side
+            html += `<div class="min-w-0">`;
+            html += `<div class="text-xs font-medium text-gray-500 mb-1" title="Dato del PIAC (planificación)">PIAC</div>`;
+            html += `<div class="text-gray-700 text-sm">${piac.name || '—'}</div>`;
+            if (piac.sincronico) html += `<div class="text-xs text-blue-500 mt-1">Sincrónico: ${piac.sincronico}</div>`;
+            if (piac.asincronico) html += `<div class="text-xs text-purple-500 mt-1">Asincrónico: ${piac.asincronico}</div>`;
+            if (piac.recursos) {
+              const resList = Array.isArray(piac.recursos) ? piac.recursos : [piac.recursos];
+              const resHtml = resList.map(r => {
+                if (typeof r === 'object' && r !== null) {
+                  const name = r.nombre || r.name || r.titulo || r.title || JSON.stringify(r);
+                  const url = r.url || r.link || r.href || '';
+                  return url ? `<a href="${url}" target="_blank" class="text-blue-600 hover:underline">${name}</a>` : name;
+                }
+                return r;
+              }).join(', ');
+              html += `<div class="text-xs text-gray-400 mt-1">Recursos: ${resHtml}</div>`;
+            }
+            html += `</div>`;
             // Arrow
-            html += `<span class="arrow-icon mt-2">${el.matched ? '→' : '✗'}</span>`;
-
+            html += `<span class="arrow-icon mt-4">${el.matched ? '→' : '✗'}</span>`;
             // Moodle side
-            html += `<div class="flex-1 min-w-0">`;
+            html += `<div class="min-w-0">`;
+            html += `<div class="text-xs font-medium text-gray-500 mb-1" title="Dato de Moodle (plataforma)">Moodle</div>`;
             if (el.matched && el.moodle) {
               if (Array.isArray(el.moodle)) {
                 el.moodle.forEach(mod => { html += renderModuleEl(mod, !!mod.sectionName); });
@@ -806,10 +866,11 @@
               html += `<div class="text-xs elem-missing italic">Sin match en Moodle</div>`;
             }
             html += `</div>`;
-            html += `</div>`; // elem-row
+            html += `</div>`; // grid
+            html += `</div>`; // detail
           });
           if ((m.elements || []).length === 0) {
-            html += `<div class="px-4 py-3 text-xs text-gray-400 italic">Sin elementos mapeados</div>`;
+            html += `<div class="px-4 py-3 text-xs text-gray-400 italic">Esta sección ${sec && sec.visible === false ? 'está oculta en Moodle y ' : ''}aún no tiene contenido asignado. Usa "Organizar curso" para agregar actividades.</div>`;
           }
           html += `</div>`; // body
           html += `</div>`; // nucleus-card
@@ -877,8 +938,32 @@
       if (d.discrepancies && d.discrepancies.length > 0) {
         const severityOrder = { critical: 0, warning: 1, info: 2 };
         const sorted = [...d.discrepancies].sort((a, b) => (severityOrder[a.severity] || 9) - (severityOrder[b.severity] || 9));
-        let html = `<div class="text-xs text-gray-400 mb-2">${sorted.length} discrepancia${sorted.length > 1 ? 's' : ''}</div>`;
-        sorted.forEach(disc => {
+
+        // Group similar unresolved discrepancies by description pattern
+        const groups = [];
+        const ungrouped = [];
+        const grouped = new Set();
+        sorted.forEach((disc, i) => {
+          if (grouped.has(i) || disc.resolved) { if (!grouped.has(i)) ungrouped.push(disc); return; }
+          const similar = sorted.filter((d2, j) => j > i && !grouped.has(j) && !d2.resolved && d2.severity === disc.severity && d2.description === disc.description);
+          if (similar.length >= 2) {
+            const items = [disc, ...similar];
+            items.forEach(it => grouped.add(sorted.indexOf(it)));
+            groups.push({ description: disc.description, severity: disc.severity, items });
+          } else {
+            ungrouped.push(disc);
+          }
+        });
+
+        function resolveButtonLabel(disc) {
+          const desc = (disc.description || '').toLowerCase();
+          if (desc.includes('sin actividad') || desc.includes('no tiene actividad')) return 'Vincular actividad';
+          if (desc.includes('oculta') || desc.includes('visibilidad')) return 'Revisar visibilidad';
+          if (desc.includes('evaluación') || desc.includes('evaluacion')) return 'Vincular evaluación';
+          return 'Ver opciones';
+        }
+
+        function renderSingleDisc(disc) {
           const badgeClass = disc.severity === 'critical' ? 'badge-critical' : disc.severity === 'warning' ? 'badge-warning' : 'badge-info';
           const resolvedClass = disc.resolved ? 'opacity-60' : '';
           let actionHtml = '';
@@ -893,9 +978,8 @@
             actionHtml = `<div class="resolution-info">${resInfo}</div>
               <button onclick="unresolveDisc(${disc.id})" class="text-xs text-gray-400 hover:text-red-600 mt-1">Reabrir</button>`;
           } else {
-            actionHtml = `<button onclick="openResolvePanel(${disc.id})" class="text-xs text-blue-600 hover:text-blue-800 whitespace-nowrap font-medium">Resolver</button>`;
+            actionHtml = `<button onclick="openResolvePanel(${disc.id})" class="text-xs text-blue-600 hover:text-blue-800 whitespace-nowrap font-medium">${resolveButtonLabel(disc)}</button>`;
           }
-          // Build Moodle link for the discrepancy if it references a moodle element
           let moodleLink = '';
           if (disc.moodle_element) {
             const modMatch = disc.moodle_element.match(/^(\w+):\s*"(.+?)"\s*\(Secci/);
@@ -904,7 +988,7 @@
               if (mUrl) moodleLink = ` <a href="${mUrl}#section-${disc.moodle_element.match(/Sección (\d+)/)?.[1] || 0}" target="_blank" class="elem-link">ver &nearr;</a>`;
             }
           }
-          html += `<div class="disc-row py-2 px-2 rounded ${resolvedClass}" id="disc-${disc.id}">
+          return `<div class="disc-row py-2 px-2 rounded ${resolvedClass}" id="disc-${disc.id}">
             <div class="flex items-start gap-3">
               <span class="badge ${badgeClass} mt-0.5">${disc.severity}</span>
               <div class="flex-1">
@@ -919,7 +1003,31 @@
             </div>
             <div id="resolve-panel-${disc.id}" class="hidden"></div>
           </div>`;
+        }
+
+        let html = `<div class="text-xs text-gray-400 mb-2">${sorted.length} discrepancia${sorted.length > 1 ? 's' : ''}${groups.length ? ` (${groups.length} grupo${groups.length > 1 ? 's' : ''} similares)` : ''}</div>`;
+
+        // Render grouped discrepancies
+        groups.forEach((g, gi) => {
+          const badgeClass = g.severity === 'critical' ? 'badge-critical' : g.severity === 'warning' ? 'badge-warning' : 'badge-info';
+          const groupId = `disc-group-${gi}`;
+          html += `<div class="disc-row py-2 px-2 rounded mb-1 border border-gray-100">
+            <div class="flex items-start gap-3 cursor-pointer" onclick="document.getElementById('${groupId}').classList.toggle('hidden');this.querySelector('.group-chevron').classList.toggle('rotate-180')">
+              <span class="badge ${badgeClass} mt-0.5">${g.severity}</span>
+              <div class="flex-1">
+                <div class="text-sm text-gray-800 font-medium">${g.items.length} ${g.description.toLowerCase().includes('evaluaci') ? 'evaluaciones' : 'elementos'}: ${g.description}</div>
+              </div>
+              <svg class="w-4 h-4 text-gray-400 transition-transform group-chevron flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+            <div id="${groupId}" class="hidden mt-2 ml-6 space-y-1 border-l-2 border-gray-200 pl-3">
+              ${g.items.map(disc => renderSingleDisc(disc)).join('')}
+            </div>
+          </div>`;
         });
+
+        // Render ungrouped discrepancies
+        ungrouped.forEach(disc => { html += renderSingleDisc(disc); });
+
         discEl.innerHTML = html;
       } else if (d.matching) {
         discEl.innerHTML = '<div class="text-green-600 text-sm py-2">Sin discrepancias detectadas</div>';
