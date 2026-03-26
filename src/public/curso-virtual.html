@@ -476,6 +476,24 @@
         }
       }
 
+      // Forums open inline
+      if (el.modname === 'forum' && el.forumId) {
+        return `<div>
+          <div class="activity-item cursor-pointer" onclick="toggleForum(${el.id}, ${el.forumId}, '${courseData.moodle.platform}')" aria-label="${mod.label}: ${el.name}">
+            <div class="activity-icon ${mod.cls}">${icon(mod.icon)}</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-1.5">
+                <span class="text-sm font-medium text-gray-800">${el.name}</span>
+                <span class="text-xs text-green-600 font-medium cursor-pointer" id="forum-toggle-${el.id}">Abrir</span>
+              </div>
+              ${descHtml}${metaHtml}
+            </div>
+            ${statusIcon}
+          </div>
+          <div id="forum-content-${el.id}" class="hidden mt-2 mb-3 border border-gray-200 rounded-xl overflow-x-auto bg-white shadow-sm"></div>
+        </div>`;
+      }
+
       // Default: enriched link
       return `<a href="${href}" target="_blank" rel="noopener" class="activity-item" aria-label="${mod.label}: ${el.name}">
         <div class="activity-icon ${mod.cls}">${icon(mod.icon)}</div>
@@ -578,8 +596,7 @@
         html += `<a href="${href}" target="_blank" rel="noopener" class="qa-btn" style="background: var(--umce-800); border-color: var(--umce-800); color: white; font-weight: 600;" aria-label="Entrar a clase sincronica">${icon('video')} Entrar a clase</a>`;
       }
       if (recordings) {
-        const href = recordings.url || `${platformUrl}/mod/data/view.php?id=${recordings.id}`;
-        html += `<a href="${href}" target="_blank" rel="noopener" class="qa-btn" aria-label="Ver grabaciones">${icon('play')} Grabaciones</a>`;
+        html += `<button class="qa-btn" onclick="navigate('grabaciones')" aria-label="Ver grabaciones">${icon('play')} Grabaciones</button>`;
       }
       if (taskFolder) {
         const href = taskFolder.url || `${platformUrl}/mod/folder/view.php?id=${taskFolder.id}`;
@@ -1246,6 +1263,98 @@
       container.innerHTML = html;
     }
 
+    // === Forum inline viewer ===
+    const forumCache = {};
+
+    async function toggleForum(cmid, forumId, platform) {
+      const container = document.getElementById(`forum-content-${cmid}`);
+      const toggleLabel = document.getElementById(`forum-toggle-${cmid}`);
+      if (!container) return;
+
+      if (!container.classList.contains('hidden') && container.innerHTML) {
+        container.classList.add('hidden');
+        if (toggleLabel) toggleLabel.textContent = 'Abrir';
+        return;
+      }
+
+      if (!forumCache[cmid]) {
+        container.innerHTML = '<div class="p-4 text-center"><div class="spinner mx-auto mb-2"></div><p class="text-xs text-gray-400">Cargando foro...</p></div>';
+        container.classList.remove('hidden');
+        if (toggleLabel) toggleLabel.textContent = 'Cerrar';
+
+        try {
+          const res = await fetch(`/api/curso-virtual/forum/${platform}/${forumId}`);
+          if (!res.ok) throw new Error('Error cargando foro');
+          forumCache[cmid] = await res.json();
+        } catch (e) {
+          container.innerHTML = `<div class="p-4 text-center text-sm text-red-400">${e.message}</div>`;
+          return;
+        }
+      }
+
+      const data = forumCache[cmid];
+      container.classList.remove('hidden');
+      if (toggleLabel) toggleLabel.textContent = 'Cerrar';
+
+      if (!data.discussions || data.discussions.length === 0) {
+        container.innerHTML = '<div class="p-4 text-sm text-gray-400">Sin discusiones aun. Se el primero en participar.</div>';
+        return;
+      }
+
+      let html = data.discussions.map(d => {
+        const date = new Date(d.timemodified * 1000).toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric' });
+        return `<div class="p-4 border-b border-gray-100 last:border-0">
+          <div class="flex items-center gap-2 mb-2">
+            ${d.authorPic ? `<img src="${d.authorPic}" class="w-7 h-7 rounded-full" alt="">` : '<div class="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center text-green-700 text-xs font-bold">' + (d.author || 'U').charAt(0) + '</div>'}
+            <div>
+              <div class="text-sm font-medium text-gray-800">${d.author || 'Participante'}</div>
+              <div class="text-xs text-gray-400">${date}${d.replies > 0 ? ' · ' + d.replies + ' respuesta' + (d.replies > 1 ? 's' : '') : ''}</div>
+            </div>
+          </div>
+          <div class="prose prose-sm max-w-none book-html text-sm">${processBookHtml(d.message)}</div>
+        </div>`;
+      }).join('');
+
+      html += `<div class="p-3 bg-gray-50 border-t border-gray-200 text-center">
+        <a href="${courseData.moodle.courseUrl.replace(/\/course\/view.*/, '')}/mod/forum/view.php?id=${cmid}" target="_blank" rel="noopener" class="text-xs text-blue-500 hover:underline">Responder en Moodle ↗</a>
+      </div>`;
+
+      container.innerHTML = html;
+    }
+
+    // === Recordings section ===
+    function renderGrabaciones(data) {
+      const recordings = data.personal?.recordings || [];
+
+      let html = `<div class="cv-card p-5">
+        <h2 class="font-heading font-bold text-lg text-gray-800 mb-1">Grabaciones de clases</h2>
+        <p class="text-sm text-gray-500 mb-4">Videos de las sesiones sincronicas.</p>`;
+
+      if (recordings.length === 0) {
+        html += '<p class="text-sm text-gray-400 py-4">No hay grabaciones disponibles aun.</p>';
+      } else {
+        recordings.forEach((r, i) => {
+          const ytUrl = Object.values(r.fields || {}).find(v => typeof v === 'string' && v.includes('youtu'));
+          const ytId = ytUrl ? extractYouTubeId(ytUrl) : null;
+          const dateField = Object.values(r.fields || {}).find(v => typeof v === 'string' && /\d{4}/.test(v) && !v.includes('youtu'));
+          const sessionTag = r.tags?.find(t => /sesi|session/i.test(t.name || ''));
+          const label = sessionTag ? sessionTag.name : ('Grabacion ' + (i + 1));
+
+          html += `<div class="mb-4 pb-4 border-b border-gray-100 last:border-0">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="activity-icon" style="background:#fce7f3;color:#db2777;width:32px;height:32px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2c-.3-1-1-1.8-2-2.1C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.5.6c-1 .3-1.7 1.1-2 2.1C0 8.1 0 12 0 12s0 3.9.5 5.8c.3 1 1 1.8 2 2.1 1.9.6 9.5.6 9.5.6s7.6 0 9.5-.6c1-.3 1.7-1.1 2-2.1.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98" fill="white"/></svg></div>
+              <div class="text-sm font-medium text-gray-800">${label}</div>
+              ${dateField ? '<span class="text-xs text-gray-400">' + dateField + '</span>' : ''}
+            </div>
+            ${ytId ? `<div class="yt-inline-embed"><iframe src="https://www.youtube-nocookie.com/embed/${ytId}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" title="${label}"></iframe></div>` : (ytUrl ? `<a href="${ytUrl}" target="_blank" class="text-sm text-blue-600 hover:underline">Ver en YouTube</a>` : '<span class="text-xs text-gray-400">Sin enlace de video</span>')}
+          </div>`;
+        });
+      }
+
+      html += '</div>';
+      return html;
+    }
+
     function renderCalendar(data) {
       const events = data.personal?.calendar || [];
       if (events.length === 0) {
@@ -1306,6 +1415,8 @@
         content.innerHTML = renderInfo(courseData);
       } else if (section === 'calendario') {
         content.innerHTML = renderCalendar(courseData);
+      } else if (section === 'grabaciones') {
+        content.innerHTML = renderGrabaciones(courseData);
       }
 
       // Close mobile sidebar

@@ -2909,6 +2909,7 @@ async function takeMoodleSnapshot(platform, courseId) {
         base.grade = a.grade || null;
       } else if (mod.modname === 'forum' && forumMap[mod.id]) {
         const f = forumMap[mod.id];
+        base.forumId = f.id || null;
         base.forumType = f.type || null;
         base.numdiscussions = f.numdiscussions || 0;
       } else if (mod.modname === 'url' && urlMap[mod.id]) {
@@ -3760,7 +3761,7 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
           }
           if (forumsBySession[w] && isVisadoVisible(forumsBySession[w].id)) {
             const f = forumsBySession[w];
-            weekData.forum = { id: f.id, name: f.name, url: f.url, session: w, description: f.description, numdiscussions: f.numdiscussions || 0 };
+            weekData.forum = { id: f.id, name: f.name, url: f.url, session: w, description: f.description, numdiscussions: f.numdiscussions || 0, forumId: f.forumId };
           }
           porSemana[w] = weekData;
         }
@@ -3985,6 +3986,43 @@ app.get('/api/curso-virtual/page/:platform/:cmid', authMiddleware, async (req, r
     });
   } catch (err) {
     console.error('Page API error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// GET forum discussions inline
+app.get('/api/curso-virtual/forum/:platform/:forumId', authMiddleware, async (req, res) => {
+  try {
+    const platformId = req.params.platform;
+    const forumId = parseInt(req.params.forumId);
+    const platform = PLATFORMS.find(p => p.id === platformId);
+    if (!platform) return res.status(400).json({ error: 'Plataforma no encontrada' });
+
+    const result = await moodleCall(platform, 'mod_forum_get_forum_discussions', { forumid: forumId, sortby: 'timemodified', sortdirection: 'DESC' });
+    const discussions = (result.discussions || []).map(d => {
+      let msg = d.message || '';
+      // Fix relative pluginfile URLs
+      msg = msg.replace(/src="\/pluginfile/g, `src="${platform.url}/pluginfile`);
+      msg = msg.replace(/href="\/pluginfile/g, `href="${platform.url}/pluginfile`);
+      msg = msg.replace(/(src|href)="(https?:\/\/[^"]*\/pluginfile\.php\/[^"]*?)(?:\?token=[^"]*)?"/gi, (match, attr, url) => {
+        const separator = url.includes('?') ? '&' : '?';
+        return `${attr}="${url}${separator}token=${platform.token}"`;
+      });
+      return {
+        id: d.discussion,
+        subject: d.subject,
+        message: msg,
+        author: d.userfullname,
+        authorPic: d.userpictureurl,
+        replies: d.numreplies || 0,
+        timemodified: d.timemodified
+      };
+    });
+
+    res.json({ forumId, discussions });
+  } catch (err) {
+    console.error('Forum API error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
