@@ -3715,17 +3715,18 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
 
     // Auto-fetch docente profile pic from Moodle if not configured
     const platformObj = PLATFORMS.find(p => p.id === link.moodle_platform);
-    if (resolvedConfig && !resolvedConfig.docente_foto_url && piac.identificacion?.email_docente && platformObj) {
+    let docenteFotoFallback = null;
+    if (piac.identificacion?.email_docente && platformObj) {
       try {
         const docenteUsers = await moodleCall(platformObj, 'core_user_get_users_by_field', { field: 'email', 'values[0]': piac.identificacion.email_docente });
         if (docenteUsers?.[0]?.profileimageurl) {
           const picUrl = docenteUsers[0].profileimageurl;
-          // Only use if it's not the default Moodle avatar
-          if (!picUrl.includes('/u/f1') || picUrl.includes('?rev=')) {
-            resolvedConfig.docente_foto_url = picUrl;
-          }
+          if (picUrl.includes('?rev=')) docenteFotoFallback = picUrl;
         }
       } catch {}
+    }
+    if (resolvedConfig && !resolvedConfig.docente_foto_url && docenteFotoFallback) {
+      resolvedConfig.docente_foto_url = docenteFotoFallback;
     }
 
     // Fetch live forum IDs (snapshot may not have forumId if taken before this feature)
@@ -3903,7 +3904,7 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
         courseId: link.moodle_course_id,
         courseUrl: `${platformObj?.url || ''}/course/view.php?id=${link.moodle_course_id}`
       },
-      config: resolvedConfig,
+      config: resolvedConfig || (docenteFotoFallback ? { docente_foto_url: docenteFotoFallback } : null),
       // Personalized data (async, non-blocking)
       personal: await (async () => {
         try {
