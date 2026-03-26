@@ -3845,14 +3845,18 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
       };
     });
 
-    // Fetch course image from Moodle
+    // Fetch course image from Moodle (must use /webservice/pluginfile.php for token auth)
     let courseImage = null;
     try {
       const courseInfo = await moodleCall(platformObj, 'core_course_get_courses_by_field', { field: 'id', value: link.moodle_course_id });
       const ci = courseInfo.courses?.[0];
       if (ci) {
-        const imgUrl = ci.courseimage || ci.overviewfiles?.[0]?.fileurl;
-        if (imgUrl) courseImage = imgUrl + (imgUrl.includes('?') ? '&' : '?') + `token=${platformObj.token}`;
+        let imgUrl = ci.overviewfiles?.[0]?.fileurl || ci.courseimage;
+        if (imgUrl) {
+          // Ensure we use /webservice/pluginfile.php (not /pluginfile.php) for token-based access
+          imgUrl = imgUrl.replace('/pluginfile.php/', '/webservice/pluginfile.php/').replace(/\/webservice\/webservice\//, '/webservice/');
+          courseImage = imgUrl + (imgUrl.includes('?') ? '&' : '?') + `token=${platformObj.token}`;
+        }
       }
     } catch {}
 
