@@ -3160,8 +3160,7 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
       politica_integridad: config.politica_integridad || defaultMap.politica_integridad || '',
       actividades_config: config.actividades_config || {},
       objetivos_semanales: config.objetivos_semanales || {},
-      publicado: config.publicado || false,
-      modo: config.modo || 'docente',
+      publicado: config.publicado || false
     } : null;
 
     // Build the merged "curso virtual" view
@@ -3593,8 +3592,7 @@ app.get('/api/piac/:linkId/preview', adminOrEditorMiddleware, async (req, res) =
       foro_consultas_cmid: config.foro_consultas_cmid || null,
       actividades_config: config.actividades_config || {},
       objetivos_semanales: config.objetivos_semanales || {},
-      publicado: config.publicado || false,
-      modo: config.modo || 'docente',
+      publicado: config.publicado || false
     };
 
     res.json({ config: resolvedConfig, defaults: defaultMap });

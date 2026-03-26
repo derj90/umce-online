@@ -305,8 +305,6 @@
     let activeSection = 'inicio';
     const linkId = window.location.pathname.split('/').pop();
 
-    function isAutoMode() { return courseData?.config?.modo === 'autoinstruccional'; }
-
     function getModIcon(modname) {
       return MOD_ICON_MAP[modname] || { icon: 'url', cls: 'ic-resource', label: 'Recurso' };
     }
@@ -393,7 +391,7 @@
         html += `<div class="sidebar-item sidebar-nucleo ${locked ? 'opacity-50' : ''}" data-section="nucleo-${n.numero}" onclick="navigate('nucleo-${n.numero}')" style="border-left-color: ${color};" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}" ${locked ? 'aria-disabled="true"' : ''}>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2">
-              <span class="text-xs font-semibold" style="color: ${color};">${isAutoMode() ? 'Modulo' : 'Nucleo'} ${n.numero}</span>
+              <span class="text-xs font-semibold" style="color: ${color};">Nucleo ${n.numero}</span>
               ${hasCompletion && pct === 100 ? '<span class="text-xs text-green-500">&#10003;</span>' : ''}
             </div>
             <div class="text-xs text-gray-500 truncate">${n.nombre}</div>
@@ -448,11 +446,11 @@
       const taskFolder = data.recursos_compartidos.find(r => r.modname === 'folder');
 
       let html = '';
-      if (zoomLti && !isAutoMode()) {
+      if (zoomLti) {
         const href = zoomLti.url || `${platformUrl}/mod/lti/view.php?id=${zoomLti.id}`;
         html += `<a href="${href}" target="_blank" rel="noopener" class="qa-btn" style="background: var(--umce-800); border-color: var(--umce-800); color: white; font-weight: 600;" aria-label="Entrar a clase sincronica">${icon('video')} Entrar a clase</a>`;
       }
-      if (recordings && !isAutoMode()) {
+      if (recordings) {
         const href = recordings.url || `${platformUrl}/mod/data/view.php?id=${recordings.id}`;
         html += `<a href="${href}" target="_blank" rel="noopener" class="qa-btn" aria-label="Ver grabaciones">${icon('play')} Grabaciones</a>`;
       }
@@ -578,19 +576,16 @@
         <!-- Welcome header -->
         <div class="cv-card p-6 mb-6" style="border-top: 4px solid var(--umce-800);">
           <div class="flex items-start gap-4 mb-4">
-            ${isAutoMode()
-              ? `<div><h1 class="font-heading font-bold text-xl text-gray-900 mb-1">${c.nombre}</h1><p class="text-sm text-gray-500">${c.programa || ''}</p></div>`
-              : `${cfg.docente_foto_url
-                  ? `<img src="${cfg.docente_foto_url}" alt="Foto docente" class="w-16 h-16 rounded-full object-cover flex-shrink-0">`
-                  : `<div class="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 text-white font-heading font-bold text-xl" style="background: var(--umce-800);">${(c.docente || 'D').charAt(0)}</div>`
-                }
-                <div>
-                  <h1 class="font-heading font-bold text-xl text-gray-900 mb-1">${c.nombre}</h1>
-                  <p class="text-sm text-gray-500">${c.programa || ''}</p>
-                  <p class="text-sm text-gray-600 mt-1">${c.docente || 'Docente no especificado'}${c.email_docente ? ` · <a href="mailto:${c.email_docente}" class="text-blue-600 hover:underline">${c.email_docente}</a>` : ''}</p>
-                  ${cfg.docente_bio ? `<p class="text-xs text-gray-400 mt-1">${cfg.docente_bio}</p>` : ''}
-                </div>`
+            ${cfg.docente_foto_url
+              ? `<img src="${cfg.docente_foto_url}" alt="Foto docente" class="w-16 h-16 rounded-full object-cover flex-shrink-0">`
+              : `<div class="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 text-white font-heading font-bold text-xl" style="background: var(--umce-800);">${(c.docente || 'D').charAt(0)}</div>`
             }
+            <div>
+              <h1 class="font-heading font-bold text-xl text-gray-900 mb-1">${c.nombre}</h1>
+              <p class="text-sm text-gray-500">${c.programa || ''}</p>
+              <p class="text-sm text-gray-600 mt-1">${c.docente || 'Docente no especificado'}${c.email_docente ? ` · <a href="mailto:${c.email_docente}" class="text-blue-600 hover:underline">${c.email_docente}</a>` : ''}</p>
+              ${cfg.docente_bio ? `<p class="text-xs text-gray-400 mt-1">${cfg.docente_bio}</p>` : ''}
+            </div>
           </div>
           ${metodoText ? `<div class="bg-blue-50 rounded-lg p-4 text-sm text-blue-800">
             <span id="metodo-text">${metodoShort ? metodoText.substring(0, 200) + '...' : metodoText}</span>
@@ -632,7 +627,7 @@
               <div class="info-value">${totalHoras}h/sem</div>
             </div>
           </div>
-          ${totalHoras > 0 && !isAutoMode() ? `<div class="flex gap-4 mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
+          ${totalHoras > 0 ? `<div class="flex gap-4 mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
             ${horas.sincronicas ? `<span>Sincronicas: ${horas.sincronicas}h</span>` : ''}
             ${horas.asincronicas ? `<span>Asincronicas: ${horas.asincronicas}h</span>` : ''}
             ${horas.autonomas ? `<span>Autonomas: ${horas.autonomas}h</span>` : ''}
@@ -660,23 +655,7 @@
         </div>` : ''}
 
         <!-- Como funciona -->
-        ${isAutoMode() ? `<div class="cv-card p-5 mb-6">
-          <h2 class="font-heading font-bold text-base text-gray-800 mb-3">Como funciona este curso</h2>
-          <div class="space-y-3 text-sm text-gray-600">
-            <div class="flex items-start gap-3">
-              <div class="activity-icon ic-book flex-shrink-0">${icon('book')}</div>
-              <div><strong>Contenido por modulos</strong> — Avanza a tu ritmo por cada modulo. Cada uno tiene lecturas, actividades y evaluaciones.</div>
-            </div>
-            <div class="flex items-start gap-3">
-              <div class="activity-icon ic-assign flex-shrink-0">${icon('check-circle') || icon('assign')}</div>
-              <div><strong>Actividades y quizzes</strong> — Completa las actividades de cada modulo para avanzar en tu progreso.</div>
-            </div>
-            <div class="flex items-start gap-3">
-              <div class="activity-icon ic-resource flex-shrink-0">${icon('bar-chart') || icon('resource')}</div>
-              <div><strong>Progreso personal</strong> — Tu avance se registra automaticamente. Puedes retomar donde lo dejaste.</div>
-            </div>
-          </div>
-        </div>` : `<div class="cv-card p-5 mb-6">
+        <div class="cv-card p-5 mb-6">
           <h2 class="font-heading font-bold text-base text-gray-800 mb-3">Como funciona este curso</h2>
           <div class="space-y-3 text-sm text-gray-600">
             <div class="flex items-start gap-3">
@@ -696,13 +675,13 @@
               <div><strong>Evaluaciones</strong> — Revisa fechas y rubricas en la seccion Evaluaciones del menu.</div>
             </div>
           </div>
-        </div>`}
+        </div>
 
         <!-- Contacto -->
         <div class="cv-card p-5">
           <h2 class="font-heading font-bold text-base text-gray-800 mb-3">Contacto y soporte</h2>
           <div class="space-y-2 text-sm">
-            ${!isAutoMode() ? `<div class="flex items-center gap-2 text-gray-600"><span class="font-medium">Horario atencion:</span> ${cfg.docente_horario_atencion || 'Consultar por email'}</div>` : ''}
+            <div class="flex items-center gap-2 text-gray-600"><span class="font-medium">Horario atencion:</span> ${cfg.docente_horario_atencion || 'Consultar por email'}</div>
             <div class="flex items-center gap-2 text-gray-600"><span class="font-medium">Soporte tecnico:</span> <a href="mailto:udfv@umce.cl" class="text-blue-600 hover:underline">udfv@umce.cl</a></div>
           </div>
         </div>
@@ -721,12 +700,10 @@
       const comp = data.personal?.completion || {};
       const recordings = data.personal?.recordings || [];
 
-      const nucleoLabel = isAutoMode() ? 'Modulo' : 'Nucleo';
-
       if (!n.visible) {
         return `<div class="cv-card p-8 text-center locked-section">
           <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3 text-gray-300">${icon('lock')}</div>
-          <h2 class="font-heading font-bold text-lg text-gray-400 mb-1">${nucleoLabel} ${n.numero}: ${n.nombre}</h2>
+          <h2 class="font-heading font-bold text-lg text-gray-400 mb-1">Nucleo ${n.numero}: ${n.nombre}</h2>
           <p class="text-sm text-gray-400">Disponible pronto</p>
         </div>`;
       }
@@ -741,8 +718,8 @@
       let html = `
         <div class="cv-card p-6 mb-6" style="border-top: 4px solid ${color};">
           <div class="flex items-center gap-3 mb-2">
-            <span class="text-xs font-bold px-3 py-1 rounded-full" style="background: ${color}15; color: ${color};">${nucleoLabel} ${n.numero}</span>
-            ${isAutoMode() ? '' : `<span class="text-xs text-gray-400">Semanas ${weekStart}–${weekEnd}</span>`}
+            <span class="text-xs font-bold px-3 py-1 rounded-full" style="background: ${color}15; color: ${color};">Nucleo ${n.numero}</span>
+            <span class="text-xs text-gray-400">Semanas ${weekStart}–${weekEnd}</span>
           </div>
           <h2 class="font-heading font-bold text-xl text-gray-900 mb-2">${n.nombre}</h2>
           ${n.resultado_formativo ? `<p class="text-sm text-gray-600 mb-3">${n.resultado_formativo}</p>` : ''}
@@ -760,47 +737,6 @@
       `;
 
       // Render week blocks
-      if (isAutoMode()) {
-        // Modo autoinstruccional: lista plana de actividades
-        const allActivities = [];
-        // Recoger books de porSemana
-        for (const [wk, wkData] of Object.entries(porSemana || {})) {
-          if (wkData.book) allActivities.push(wkData.book);
-        }
-        // Agregar contenido general del nucleo (books ya filtrados arriba, aqui va el resto)
-        if (n.contenido) allActivities.push(...n.contenido.filter(el => el.modname === 'book'));
-
-        if (allActivities.length > 0) {
-          html += `<div class="cv-card p-5 mb-4">
-            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Contenido del modulo</div>
-            ${allActivities.map(el => renderActivityItem(el, platformUrl, comp)).join('')}
-          </div>`;
-        }
-
-        // Foros opcionales en modo auto
-        const forosAuto = [];
-        for (const [wk, wkData] of Object.entries(porSemana || {})) {
-          if (wkData.forum) forosAuto.push(wkData.forum);
-        }
-        if (forosAuto.length > 0) {
-          html += `<div class="cv-card p-5 mb-4">
-            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Foros</div>
-            ${forosAuto.map(el => renderActivityItem(el, platformUrl, comp)).join('')}
-          </div>`;
-        }
-
-        // Evaluaciones del modulo
-        const evals = n.evaluaciones || [];
-        if (evals.length > 0) {
-          html += `<div class="cv-card p-5 mb-4">
-            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Evaluacion</div>
-            ${evals.map(el => renderActivityItem(el, platformUrl, comp)).join('')}
-          </div>`;
-        }
-
-        return html;
-      }
-
       for (let week = weekStart; week <= weekEnd; week++) {
         const objective = weekObjectives[String(week)];
         const weekData = porSemana[week] || {};
@@ -937,11 +873,11 @@
             <div class="text-sm text-gray-700">${c.docente || 'No especificado'}</div>
             ${c.email_docente ? `<a href="mailto:${c.email_docente}" class="text-sm text-blue-600 hover:underline">${c.email_docente}</a>` : ''}
           </div>
-          ${!isAutoMode() ? `<div>
+          <div>
             <div class="info-label">Horario de atencion</div>
             <div class="text-sm text-gray-700">${cfg.docente_horario_atencion || 'Consultar por email'}</div>
-          </div>` : ''}
-          ${!isAutoMode() && cfg.docente_tiempos_respuesta ? `<div>
+          </div>
+          ${cfg.docente_tiempos_respuesta ? `<div>
             <div class="info-label">Tiempos de respuesta</div>
             <div class="text-sm text-gray-600">Email: ${cfg.docente_tiempos_respuesta.email || '48h'} · Foro: ${cfg.docente_tiempos_respuesta.foro || '48h'} · Tareas: ${cfg.docente_tiempos_respuesta.tareas || '7 dias'}</div>
           </div>` : ''}

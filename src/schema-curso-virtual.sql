@@ -13,9 +13,6 @@ CREATE TABLE IF NOT EXISTS portal.curso_virtual_config (
     id                          SERIAL PRIMARY KEY,
     piac_link_id                INT NOT NULL REFERENCES portal.piac_links(id) ON DELETE CASCADE,
 
-    -- Modo del curso: 'docente' (default, con Zoom/sincrónico) o 'autoinstruccional' (sin docente, a tu ritmo)
-    modo                        VARCHAR DEFAULT 'docente' CHECK (modo IN ('docente', 'autoinstruccional')),
-
     -- Docente (QM 1.1)
     docente_foto_url            TEXT,
     docente_bio                 TEXT,
