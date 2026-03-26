@@ -9,14 +9,14 @@
   <link rel="stylesheet" href="/shared/tailwind.min.css">
   <style>
     :root {
-      --umce-900: #152042;
+      --umce-900: #0f172a;
       --umce-800: #1e3a8a;
-      --umce-700: #2952b0;
-      --umce-600: #3366cc;
-      --gold-500: #d4940f;
-      --gold-400: #e8a020;
-      --sand-200: #ede5d8;
-      --sand-100: #f5f0e8;
+      --umce-700: #2563eb;
+      --umce-600: #3b82f6;
+      --gold-500: #f59e0b;
+      --gold-400: #fbbf24;
+      --sand-200: #e2e8f0;
+      --sand-100: #f1f5f9;
     }
     body { font-family: 'Inter', -apple-system, system-ui, sans-serif; background: var(--sand-100); margin: 0; }
     .font-heading { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
@@ -28,7 +28,7 @@
     .cv-sidebar { width: 280px; background: white; border-right: 1px solid #e5e7eb; position: fixed; top: 0; left: 0; bottom: 0; z-index: 30; overflow-y: auto; overflow-x: hidden; transition: transform 0.3s ease; display: flex; flex-direction: column; }
     .cv-main { flex: 1; margin-left: 280px; min-height: 100vh; overflow-x: hidden; max-width: calc(100vw - 280px); }
     .cv-topbar { position: sticky; top: 0; z-index: 20; background: white; border-bottom: 1px solid #e5e7eb; }
-    .cv-content { max-width: 1100px; margin: 0 auto; padding: 2rem 2rem; width: 100%; box-sizing: border-box; overflow-x: hidden; }
+    .cv-content { max-width: 1200px; margin: 0 auto; padding: 1.25rem 1.5rem; width: 100%; box-sizing: border-box; overflow-x: hidden; }
 
     /* Sidebar items */
     .sidebar-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 1rem; margin: 0 0.5rem; border-radius: 0.5rem; font-size: 0.875rem; color: #475569; cursor: pointer; transition: all 0.15s; text-decoration: none; }
@@ -44,26 +44,38 @@
     .nucleo-color-5 { --nc: #F59E0B; } .nucleo-color-6 { --nc: #EF4444; }
 
     /* Cards */
-    .cv-card { background: white; border: 1px solid #e5e7eb; border-radius: 1rem; overflow-wrap: break-word; word-wrap: break-word; overflow: hidden; max-width: 100%; }
+    .cv-card { background: white; border: 1px solid #e2e8f0; border-radius: 0.875rem; overflow-wrap: break-word; word-wrap: break-word; overflow: hidden; max-width: 100%; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
 
     /* Week block */
-    .week-block { border-left: 4px solid var(--nc, #e5e7eb); padding-left: 1.25rem; margin-bottom: 1.5rem; background: white; border-radius: 0 0.75rem 0.75rem 0; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-    .week-phase { font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin-bottom: 0.5rem; }
+    .week-block { border-left: 4px solid var(--nc, #e5e7eb); margin-bottom: 1rem; background: white; border-radius: 0 0.75rem 0.75rem 0; padding: 1rem 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .week-phase { font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin-bottom: 0.375rem; display: flex; align-items: center; gap: 0.375rem; }
+    .week-phase::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; }
 
     /* Activity item */
-    .activity-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.75rem; border-radius: 0.5rem; transition: background 0.15s; text-decoration: none; color: inherit; }
-    .activity-item:hover { background: #f8fafc; }
-    .activity-icon { width: 36px; height: 36px; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .activity-icon svg { width: 18px; height: 18px; }
+    .activity-item { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.625rem 0.75rem; border-radius: 0.75rem; transition: all 0.15s; text-decoration: none; color: inherit; border: 1px solid transparent; }
+    .activity-item:hover { background: #f8fafc; border-color: #e2e8f0; }
+    .activity-icon { width: 40px; height: 40px; border-radius: 0.625rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .activity-icon svg { width: 20px; height: 20px; }
+    .activity-meta { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-top: 0.25rem; }
+    .activity-badge { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.6875rem; padding: 0.125rem 0.5rem; border-radius: 999px; font-weight: 500; }
+    .badge-file { background: #f1f5f9; color: #475569; }
+    .badge-date { background: #fff7ed; color: #c2410c; }
+    .badge-discussions { background: #f0fdf4; color: #15803d; }
+    .badge-youtube { background: #fef2f2; color: #dc2626; }
+    .badge-link { background: #eff6ff; color: #1d4ed8; }
+
+    /* YouTube inline embed */
+    .yt-inline-embed { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 0.75rem; margin: 0.5rem 0; background: #0f172a; }
+    .yt-inline-embed iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
 
     /* Icon colors */
-    .ic-book { background: #eff6ff; color: #3b82f6; }
-    .ic-forum { background: #f0fdf4; color: #22c55e; }
-    .ic-assign { background: #fff7ed; color: #f97316; }
-    .ic-zoom { background: #faf5ff; color: #a855f7; }
-    .ic-resource { background: #f1f5f9; color: #64748b; }
-    .ic-data { background: #fdf2f8; color: #ec4899; }
-    .ic-diary { background: #f0fdfa; color: #14b8a6; }
+    .ic-book { background: #dbeafe; color: #2563eb; }
+    .ic-forum { background: #dcfce7; color: #16a34a; }
+    .ic-assign { background: #ffedd5; color: #ea580c; }
+    .ic-zoom { background: #f3e8ff; color: #9333ea; }
+    .ic-resource { background: #e2e8f0; color: #475569; }
+    .ic-data { background: #fce7f3; color: #db2777; }
+    .ic-diary { background: #ccfbf1; color: #0d9488; }
 
     /* Quick access bar */
     .qa-btn { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.5rem 0.875rem; border-radius: 0.5rem; font-size: 0.8125rem; font-weight: 500; color: #475569; background: #f8fafc; border: 1px solid #e5e7eb; transition: all 0.15s; text-decoration: none; white-space: nowrap; flex-shrink: 0; }
@@ -138,7 +150,7 @@
       .cv-sidebar.open { transform: translateX(0); }
       .sidebar-overlay.open { display: block; }
       .cv-main { margin-left: 0; max-width: 100vw; }
-      .cv-content { padding: 1rem 0.5rem; max-width: 100%; }
+      .cv-content { padding: 0.75rem 0.5rem; max-width: 100%; }
       .cv-card { border-radius: 0.75rem; }
       .week-block { padding: 1rem; border-radius: 0 0.5rem 0.5rem 0; }
       .book-html { font-size: 0.875rem; }
@@ -318,19 +330,95 @@
 
     // === Rendering ===
 
+    function formatFileSize(bytes) {
+      if (!bytes) return '';
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1048576) return (bytes / 1024).toFixed(0) + ' KB';
+      return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+
+    function getFileIcon(mime) {
+      if (!mime) return 'resource';
+      if (mime.includes('pdf')) return 'page';
+      if (mime.includes('image')) return 'page';
+      if (mime.includes('video')) return 'video';
+      if (mime.includes('audio')) return 'play';
+      return 'resource';
+    }
+
+    function extractYouTubeId(url) {
+      if (!url) return null;
+      const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/);
+      return m ? m[1] : null;
+    }
+
+    function extractDomain(url) {
+      try { return new URL(url).hostname.replace('www.', ''); } catch { return ''; }
+    }
+
+    function formatDueDate(ts) {
+      if (!ts) return '';
+      const d = new Date(ts * 1000);
+      const now = new Date();
+      const diff = d - now;
+      const days = Math.ceil(diff / 86400000);
+      const dateStr = d.toLocaleDateString('es-CL', { day: 'numeric', month: 'short' });
+      if (days < 0) return `Vencio ${dateStr}`;
+      if (days === 0) return `Hoy`;
+      if (days === 1) return `Manana`;
+      if (days <= 7) return `En ${days} dias`;
+      return dateStr;
+    }
+
     function renderActivityItem(el, platformUrl, completionData) {
       const mod = getModIcon(el.modname);
       const href = el.url || (platformUrl ? `${platformUrl}/mod/${el.modname}/view.php?id=${el.id}` : '#');
       const comp = completionData?.[el.id];
       let statusIcon = '';
       if (comp) {
-        if (comp.state === 1) statusIcon = '<span class="text-green-500 text-xs flex-shrink-0" title="Completado">&#10003;</span>';
-        else if (comp.state === 0 && comp.tracking > 0) statusIcon = '<span class="w-3 h-3 rounded-full border-2 border-gray-300 flex-shrink-0" title="Pendiente"></span>';
+        if (comp.state === 1) statusIcon = '<span class="flex items-center justify-center w-5 h-5 rounded-full bg-green-100 text-green-600 flex-shrink-0" title="Completado"><svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>';
+        else if (comp.state === 0 && comp.tracking > 0) statusIcon = '<span class="w-4 h-4 rounded-full border-2 border-gray-300 flex-shrink-0" title="Pendiente"></span>';
       }
       const grade = courseData?.personal?.grades?.find(g => g.cmid === el.id);
-      const gradeLabel = grade && grade.gradeformatted ? `<span class="text-xs font-medium text-amber-600 ml-2">${grade.gradeformatted}</span>` : '';
+      const gradeLabel = grade && grade.gradeformatted ? `<span class="activity-badge" style="background:#fef3c7;color:#92400e;">${grade.gradeformatted}</span>` : '';
 
-      // Books open inline instead of redirecting to Moodle
+      // Build metadata badges
+      let metaBadges = '';
+
+      // Resource: file info
+      if (el.modname === 'resource' && el.contents && el.contents.length > 0) {
+        const f = el.contents[0];
+        const ext = f.filename ? f.filename.split('.').pop().toUpperCase() : '';
+        metaBadges += `<span class="activity-badge badge-file">${ext}${f.filesize ? ' · ' + formatFileSize(f.filesize) : ''}</span>`;
+      }
+
+      // URL: detect YouTube or show domain
+      if (el.modname === 'url' && el.externalurl) {
+        const ytId = extractYouTubeId(el.externalurl);
+        if (ytId) {
+          metaBadges += `<span class="activity-badge badge-youtube"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2c-.3-1-1-1.8-2-2.1C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.5.6c-1 .3-1.7 1.1-2 2.1C0 8.1 0 12 0 12s0 3.9.5 5.8c.3 1 1 1.8 2 2.1 1.9.6 9.5.6 9.5.6s7.6 0 9.5-.6c1-.3 1.7-1.1 2-2.1.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98" fill="white"/></svg> YouTube</span>`;
+        } else {
+          const domain = extractDomain(el.externalurl);
+          if (domain) metaBadges += `<span class="activity-badge badge-link">${domain}</span>`;
+        }
+      }
+
+      // Assign/quiz: due date
+      if ((el.modname === 'assign' || el.modname === 'quiz') && el.dates?.duedate) {
+        const dueTxt = formatDueDate(el.dates.duedate);
+        const isPast = el.dates.duedate * 1000 < Date.now();
+        metaBadges += `<span class="activity-badge ${isPast ? 'badge-file' : 'badge-date'}">${icon('calendar')} ${dueTxt}</span>`;
+      }
+
+      // Forum: discussion count
+      if (el.modname === 'forum' && el.numdiscussions > 0) {
+        metaBadges += `<span class="activity-badge badge-discussions">${el.numdiscussions} ${el.numdiscussions === 1 ? 'discusion' : 'discusiones'}</span>`;
+      }
+
+      const metaHtml = (metaBadges || gradeLabel) ? `<div class="activity-meta">${metaBadges}${gradeLabel}</div>` : '';
+      const descHtml = el.description ? `<div class="text-xs text-gray-400 mt-0.5 line-clamp-2">${el.description.replace(/<[^>]*>/g, '').substring(0, 120)}</div>` : '';
+
+      // Books open inline
       if (el.modname === 'book') {
         return `<div>
           <div class="activity-item cursor-pointer" onclick="toggleBook(${el.id}, '${courseData.moodle.platform}', ${courseData.moodle.courseId})" aria-label="${mod.label}: ${el.name}">
@@ -338,25 +426,64 @@
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-1.5">
                 <span class="text-sm font-medium text-gray-800">${el.name}</span>
-                ${gradeLabel}
-                <span class="text-xs text-blue-500" id="book-toggle-${el.id}">Abrir</span>
+                <span class="text-xs text-blue-600 font-medium cursor-pointer" id="book-toggle-${el.id}">Abrir</span>
               </div>
-              ${el.description ? `<div class="text-xs text-gray-400 mt-0.5 line-clamp-1">${el.description.replace(/<[^>]*>/g, '')}</div>` : ''}
+              ${descHtml}${metaHtml}
             </div>
             ${statusIcon}
           </div>
-          <div id="book-content-${el.id}" class="hidden mt-3 mb-4 border border-gray-200 rounded-xl overflow-x-auto bg-white shadow-sm"></div>
+          <div id="book-content-${el.id}" class="hidden mt-2 mb-3 border border-gray-200 rounded-xl overflow-x-auto bg-white shadow-sm"></div>
         </div>`;
       }
 
+      // Pages open inline (like books)
+      if (el.modname === 'page') {
+        return `<div>
+          <div class="activity-item cursor-pointer" onclick="togglePage(${el.id}, '${courseData.moodle.platform}', ${courseData.moodle.courseId})" aria-label="${mod.label}: ${el.name}">
+            <div class="activity-icon ${mod.cls}">${icon(mod.icon)}</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-1.5">
+                <span class="text-sm font-medium text-gray-800">${el.name}</span>
+                <span class="text-xs text-blue-600 font-medium cursor-pointer" id="page-toggle-${el.id}">Abrir</span>
+              </div>
+              ${descHtml}${metaHtml}
+            </div>
+            ${statusIcon}
+          </div>
+          <div id="page-content-${el.id}" class="hidden mt-2 mb-3 border border-gray-200 rounded-xl overflow-x-auto bg-white shadow-sm"></div>
+        </div>`;
+      }
+
+      // URLs with YouTube: show inline embed
+      if (el.modname === 'url' && el.externalurl) {
+        const ytId = extractYouTubeId(el.externalurl);
+        if (ytId) {
+          return `<div>
+            <a href="${el.externalurl}" target="_blank" rel="noopener" class="activity-item" aria-label="${mod.label}: ${el.name}">
+              <div class="activity-icon" style="background:#fef2f2;color:#dc2626;"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2c-.3-1-1-1.8-2-2.1C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.5.6c-1 .3-1.7 1.1-2 2.1C0 8.1 0 12 0 12s0 3.9.5 5.8c.3 1 1 1.8 2 2.1 1.9.6 9.5.6 9.5.6s7.6 0 9.5-.6c1-.3 1.7-1.1 2-2.1.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98" fill="white"/></svg></div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-sm font-medium text-gray-800">${el.name}</span>
+                </div>
+                ${descHtml}${metaHtml}
+              </div>
+              ${statusIcon}
+            </a>
+            <div class="yt-inline-embed ml-12 mr-2">
+              <iframe src="https://www.youtube-nocookie.com/embed/${ytId}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" title="${el.name}"></iframe>
+            </div>
+          </div>`;
+        }
+      }
+
+      // Default: enriched link
       return `<a href="${href}" target="_blank" rel="noopener" class="activity-item" aria-label="${mod.label}: ${el.name}">
         <div class="activity-icon ${mod.cls}">${icon(mod.icon)}</div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-1.5">
             <span class="text-sm font-medium text-gray-800">${el.name}</span>
-            ${gradeLabel}
           </div>
-          ${el.description ? `<div class="text-xs text-gray-400 mt-0.5 line-clamp-1">${el.description.replace(/<[^>]*>/g, '')}</div>` : ''}
+          ${descHtml}${metaHtml}
         </div>
         ${statusIcon}
       </a>`;
@@ -574,8 +701,8 @@
 
       let html = `
         <!-- Welcome header -->
-        <div class="cv-card p-6 mb-6" style="border-top: 4px solid var(--umce-800);">
-          <div class="flex items-start gap-4 mb-4">
+        <div class="cv-card p-5 mb-4" style="border-left: 4px solid var(--umce-800);">
+          <div class="flex items-start gap-4 mb-3">
             ${cfg.docente_foto_url
               ? `<img src="${cfg.docente_foto_url}" alt="Foto docente" class="w-16 h-16 rounded-full object-cover flex-shrink-0">`
               : `<div class="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 text-white font-heading font-bold text-xl" style="background: var(--umce-800);">${(c.docente || 'D').charAt(0)}</div>`
@@ -596,7 +723,7 @@
 
         <!-- 5.5.7: Progress bar -->
         ${hasProgress ? `
-        <div class="cv-card p-5 mb-6">
+        <div class="cv-card p-4 mb-4">
           <div class="flex items-center justify-between mb-2">
             <h2 class="font-heading font-bold text-base text-gray-800">Tu progreso</h2>
             <span class="text-sm font-semibold" style="color: var(--umce-800);">${pctTotal}%</span>
@@ -608,8 +735,8 @@
         </div>` : ''}
 
         <!-- 5.5.8: Compact course info -->
-        <div class="cv-card p-5 mb-6">
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="cv-card p-4 mb-4">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div>
               <div class="info-label">Modalidad</div>
               <div class="info-value">${c.modalidad || 'Virtual'}</div>
@@ -635,7 +762,7 @@
         </div>
 
         <!-- Resultados de aprendizaje -->
-        <div class="cv-card p-5 mb-6">
+        <div class="cv-card p-5 mb-4">
           <h2 class="font-heading font-bold text-base text-gray-800 mb-3">Que vas a lograr en este curso</h2>
           <div class="space-y-2">
             ${data.nucleos.filter(n => n.resultado_formativo).map((n, i) => `
@@ -649,13 +776,13 @@
 
         <!-- Conocimientos previos -->
         ${cfg.conocimientos_previos ? `
-        <div class="cv-card p-5 mb-6">
+        <div class="cv-card p-5 mb-4">
           <h2 class="font-heading font-bold text-base text-gray-800 mb-2">Conocimientos previos</h2>
           <p class="text-sm text-gray-600">${cfg.conocimientos_previos}</p>
         </div>` : ''}
 
         <!-- Como funciona -->
-        <div class="cv-card p-5 mb-6">
+        <div class="cv-card p-5 mb-4">
           <h2 class="font-heading font-bold text-base text-gray-800 mb-3">Como funciona este curso</h2>
           <div class="space-y-3 text-sm text-gray-600">
             <div class="flex items-start gap-3">
@@ -716,21 +843,23 @@
       const contenidoGeneral = (n.contenido || []).filter(el => el.modname !== 'book');
 
       let html = `
-        <div class="cv-card p-6 mb-6" style="border-top: 4px solid ${color};">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="text-xs font-bold px-3 py-1 rounded-full" style="background: ${color}15; color: ${color};">Nucleo ${n.numero}</span>
+        <div class="cv-card p-5 mb-4" style="border-left: 4px solid ${color};">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full" style="background: ${color}15; color: ${color};">Nucleo ${n.numero}</span>
             <span class="text-xs text-gray-400">Semanas ${weekStart}–${weekEnd}</span>
           </div>
-          <h2 class="font-heading font-bold text-xl text-gray-900 mb-2">${n.nombre}</h2>
-          ${n.resultado_formativo ? `<p class="text-sm text-gray-600 mb-3">${n.resultado_formativo}</p>` : ''}
+          <h2 class="font-heading font-bold text-lg text-gray-900 mb-1">${n.nombre}</h2>
+          ${n.resultado_formativo ? `<p class="text-sm text-gray-500 mb-2">${n.resultado_formativo}</p>` : ''}
           ${n.criterios_evaluacion && n.criterios_evaluacion.length > 0 ? `
-            <div class="bg-blue-50 rounded-lg p-4 mb-3">
-              <div class="text-xs font-semibold text-blue-700 mb-2">Criterios de evaluacion</div>
-              ${n.criterios_evaluacion.map(ce => `<div class="text-xs text-blue-600 mt-1">- ${ce}</div>`).join('')}
-            </div>` : ''}
+            <details class="mt-2">
+              <summary class="text-xs font-semibold text-blue-700 cursor-pointer hover:text-blue-900">Criterios de evaluacion</summary>
+              <div class="bg-blue-50 rounded-lg p-3 mt-1.5">
+                ${n.criterios_evaluacion.map(ce => `<div class="text-xs text-blue-600 mt-1">- ${ce}</div>`).join('')}
+              </div>
+            </details>` : ''}
           ${contenidoGeneral.length > 0 ? `
-            <div class="mt-3">
-              <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Recursos generales</div>
+            <div class="mt-3 pt-3 border-t border-gray-100">
+              <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Recursos generales</div>
               ${contenidoGeneral.map(el => renderActivityItem(el, platformUrl, comp)).join('')}
             </div>` : ''}
         </div>
@@ -771,10 +900,17 @@
           </div>
           ${sessionRecording ? (() => {
             const ytUrl = Object.values(sessionRecording.fields || {}).find(v => typeof v === 'string' && v.includes('youtu'));
-            return ytUrl ? `<a href="${ytUrl}" target="_blank" rel="noopener" class="activity-item mt-1" style="background: #fdf2f8; border-radius: 0.5rem;">
-              <div class="activity-icon ic-data">${icon('play')}</div>
-              <div class="text-sm text-pink-700">Grabacion sesion ${week}</div>
-            </a>` : '';
+            if (!ytUrl) return '';
+            const ytId = extractYouTubeId(ytUrl);
+            return `<a href="${ytUrl}" target="_blank" rel="noopener" class="activity-item mt-1" style="background: #fdf2f8; border-color: #fce7f3; border-radius: 0.75rem;">
+              <div class="activity-icon" style="background:#fce7f3;color:#db2777;"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2c-.3-1-1-1.8-2-2.1C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.5.6c-1 .3-1.7 1.1-2 2.1C0 8.1 0 12 0 12s0 3.9.5 5.8c.3 1 1 1.8 2 2.1 1.9.6 9.5.6 9.5.6s7.6 0 9.5-.6c1-.3 1.7-1.1 2-2.1.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98" fill="white"/></svg></div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-medium text-pink-800">Grabacion sesion ${week}</div>
+                <div class="text-xs text-pink-500">Ver en YouTube</div>
+              </div>
+            </a>` + (ytId ? `<div class="yt-inline-embed mt-1" style="margin-left:3.25rem;">
+              <iframe src="https://www.youtube-nocookie.com/embed/${ytId}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" title="Grabacion sesion ${week}"></iframe>
+            </div>` : '');
           })() : ''}
         </div>`;
 
@@ -1045,6 +1181,69 @@
         return `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:0.5rem;margin:1rem 0;"><iframe${attrs} style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen loading="lazy">`;
       });
       return html;
+    }
+
+    // === Page inline viewer ===
+    const pageCache = {};
+
+    async function togglePage(cmid, platform, courseId) {
+      const container = document.getElementById(`page-content-${cmid}`);
+      const toggleLabel = document.getElementById(`page-toggle-${cmid}`);
+      if (!container) return;
+
+      if (!container.classList.contains('hidden') && container.innerHTML) {
+        container.classList.add('hidden');
+        toggleLabel.textContent = 'Abrir';
+        return;
+      }
+
+      if (!pageCache[cmid]) {
+        container.innerHTML = '<div class="p-4 text-center"><div class="spinner mx-auto mb-2"></div><p class="text-xs text-gray-400">Cargando contenido...</p></div>';
+        container.classList.remove('hidden');
+        toggleLabel.textContent = 'Cerrar';
+
+        try {
+          const res = await fetch(`/api/curso-virtual/page/${platform}/${cmid}?courseId=${courseId}`);
+          if (!res.ok) throw new Error('Error cargando pagina');
+          pageCache[cmid] = await res.json();
+        } catch (e) {
+          container.innerHTML = `<div class="p-4 text-center text-sm text-red-400">${e.message} — <a href="${courseData.moodle.courseUrl.replace(/\/course\/view.*/, '')}/mod/page/view.php?id=${cmid}" target="_blank" class="text-blue-500 hover:underline">Abrir en Moodle</a></div>`;
+          return;
+        }
+      }
+
+      const data = pageCache[cmid];
+      container.classList.remove('hidden');
+      toggleLabel.textContent = 'Cerrar';
+
+      if (!data.content) {
+        container.innerHTML = '<div class="p-4 text-sm text-gray-400">Sin contenido disponible</div>';
+        return;
+      }
+
+      let html = `<div class="p-5 prose prose-sm max-w-none book-html">${processBookHtml(data.content)}</div>`;
+
+      // Attached files
+      if (data.files && data.files.length > 0) {
+        html += `<div class="px-5 pb-4 border-t border-gray-100 pt-3">
+          <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Archivos adjuntos</div>
+          <div class="space-y-1">
+            ${data.files.map(f => {
+              const ext = f.filename ? f.filename.split('.').pop().toUpperCase() : '';
+              return `<a href="${f.fileurl}" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 py-1">
+                <span class="activity-badge badge-file">${ext} · ${formatFileSize(f.filesize)}</span>
+                <span class="truncate">${f.filename}</span>
+              </a>`;
+            }).join('')}
+          </div>
+        </div>`;
+      }
+
+      html += `<div class="p-3 bg-gray-50 border-t border-gray-200 text-center">
+        <a href="${courseData.moodle.courseUrl.replace(/\/course\/view.*/, '')}/mod/page/view.php?id=${cmid}" target="_blank" rel="noopener" class="text-xs text-blue-500 hover:underline">Abrir en Moodle ↗</a>
+      </div>`;
+
+      container.innerHTML = html;
     }
 
     function renderCalendar(data) {
