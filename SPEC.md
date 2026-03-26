@@ -290,7 +290,7 @@ Las fases futuras son esqueleto — se completan con David antes de empezar.
 
 ## Fase 4: Motor IA cron + Panel DI alertas
 
-**Estado**: EN PROGRESO
+**Estado**: COMPLETADA
 **Ultima sesion**: 25-mar-2026
 **Objetivo**: El sistema corre periodicamente, detecta cambios, y alerta al DI de discrepancias.
 
@@ -301,23 +301,23 @@ Las fases futuras son esqueleto — se completan con David antes de empezar.
 
 ### Fase 4-A: Schema e infraestructura cache
 
-- [ ] **4.1 Schema cache** — 5 tablas: cache_completions, cache_grades, cache_submissions, cache_calendar, cache_recordings
-- [ ] **4.2 Schema notifications** — Tabla notifications con type, read, push_sent, indices
-- [ ] **4.3 Schema user_moodle_mapping** — Mapeo email→userid por plataforma Moodle
+- [x] **4.1 Schema cache** — 5 tablas: cache_completions, cache_grades, cache_submissions, cache_calendar, cache_recordings
+- [x] **4.2 Schema notifications** — Tabla notifications con type, read, push_sent, indices
+- [x] **4.3 Schema user_moodle_mapping** — Mapeo email→userid por plataforma Moodle
 
 ### Fase 4-B: Cron engine
 
-- [ ] **4.4 Cron interno** — setInterval en server.js, recorre piac_links activos con publicado=true
-- [ ] **4.5 Refresh snapshot** — Re-snapshot Moodle cada 6h para detectar cambios de estructura
-- [ ] **4.6 Refresh recordings** — Leer mod_data cada 6h, guardar en cache_recordings
-- [ ] **4.7 Refresh calendar** — Leer core_calendar_get_calendar_events cada 6h
-- [ ] **4.8 Detector discrepancias** — Comparar snapshot nuevo vs anterior, generar alertas si hay cambios
+- [x] **4.4 Cron interno** — setInterval 6h en server.js, recorre piac_links activos con publicado=true
+- [x] **4.5 Refresh snapshot** — Re-snapshot Moodle + detectar cambios visibilidad/actividades
+- [x] **4.6 Refresh recordings** — Leer mod_data, guardar en cache_recordings
+- [x] **4.7 Refresh calendar** — Leer core_calendar_get_calendar_events, guardar en cache_calendar
+- [x] **4.8 Detector discrepancias** — Compara snapshot nuevo vs anterior, genera alertas a editores+admins
 
 ### Fase 4-C: Notificaciones y alertas DI
 
-- [ ] **4.9 Endpoints notifications** — GET/PUT para listar y marcar como leidas
-- [ ] **4.10 Alertas al DI** — Notificar cuando: nueva discrepancia, seccion ocultada, cambio en estructura
-- [ ] **4.11 Panel alertas en PIAC** — Seccion de alertas recientes en panel PIAC
+- [x] **4.9 Endpoints notifications** — GET notifications, PUT read, PUT read-all, GET por linkId
+- [x] **4.10 Alertas al DI** — Notifica: seccion ocultada, seccion habilitada, actividades agregadas/eliminadas
+- [x] **4.11 Panel alertas en PIAC** — Seccion "Alertas del curso" en vista detalle + trigger manual admin
 
 ### Nota
 Cache personalizado por estudiante (completions, grades, submissions) se llena en Fase 5. En Fase 4 solo se crean las tablas y se cachean datos a nivel de curso (recordings, calendar).
