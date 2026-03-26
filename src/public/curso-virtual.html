@@ -101,10 +101,13 @@
     .embed-modal iframe { flex: 1; width: 100%; border: 0; border-radius: 0; }
 
     /* Quill editor overrides */
-    .ql-toolbar.ql-snow { border: 1px solid #e2e8f0; border-radius: 0.5rem 0.5rem 0 0; background: #f8fafc; }
-    .ql-container.ql-snow { border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 0.5rem 0.5rem; font-family: 'Inter', sans-serif; font-size: 0.875rem; min-height: 100px; }
-    .ql-editor { min-height: 100px; }
+    .ql-toolbar.ql-snow { border: 1px solid #e2e8f0; border-radius: 0.5rem 0.5rem 0 0; background: #f8fafc; padding: 6px 8px; }
+    .ql-toolbar.ql-snow .ql-formats { margin-right: 8px; }
+    .ql-container.ql-snow { border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 0.5rem 0.5rem; font-family: 'Inter', sans-serif; font-size: 0.875rem; }
+    .ql-editor { min-height: 120px; max-height: 300px; overflow-y: auto; }
     .ql-editor.ql-blank::before { font-style: normal; color: #94a3b8; }
+    .ql-snow .ql-tooltip { z-index: 10001; left: 0 !important; }
+    .ql-snow .ql-tooltip input[type=text] { width: 200px; }
 
     /* Info grid */
     .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
@@ -441,9 +444,13 @@
         placeholder: placeholder || 'Escribe tu respuesta...',
         modules: {
           toolbar: [
-            ['bold', 'italic', 'underline'],
+            [{ 'header': [3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'color': [] }, { 'background': [] }],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            ['link'],
+            [{ 'indent': '-1' }, { 'indent': '+1' }],
+            ['blockquote'],
+            ['link', 'image'],
             ['clean']
           ]
         }
@@ -1185,17 +1192,100 @@
     }
 
     function renderBibliografia(data) {
-      const biblio = data.curso.bibliografia || [];
-      if (biblio.length === 0) return '<p class="text-gray-400 text-sm">No hay bibliografia disponible.</p>';
+      // Support both rich entries (curso_virtual_bibliografia table) and
+      // plain entries from PIAC parsing ({ referencia, url })
+      var biblio = data.curso.bibliografia || [];
+      var richEntries = data.curso.bibliografia_rich || [];
 
-      return `<div class="cv-card p-6">
-        <h2 class="font-heading font-bold text-lg text-gray-800 mb-4">Bibliografia</h2>
-        <div class="space-y-3">
-          ${biblio.map(b => `<div class="text-sm text-gray-600 pb-3 border-b border-gray-50 last:border-0">
-            ${b.url ? `<a href="${b.url}" target="_blank" rel="noopener" class="text-blue-600 hover:underline">${b.referencia}</a>` : b.referencia}
-          </div>`).join('')}
-        </div>
-      </div>`;
+      var html = '<div class="cv-card p-6">';
+      html += '<h2 class="font-heading font-bold text-lg text-gray-800 mb-1">Bibliografia</h2>';
+
+      if (richEntries.length > 0) {
+        var currentYear = new Date().getFullYear();
+        var obligatoria = richEntries.filter(function(e) { return e.clasificacion === 'obligatoria'; });
+        var complementaria = richEntries.filter(function(e) { return e.clasificacion !== 'obligatoria'; });
+
+        var tipoBadgeColors = { libro: 'bg-blue-50 text-blue-700', articulo: 'bg-purple-50 text-purple-700', web: 'bg-green-50 text-green-700', tesis: 'bg-orange-50 text-orange-700', capitulo: 'bg-indigo-50 text-indigo-700', otro: 'bg-gray-100 text-gray-500' };
+        var accesoColors = { abierto: 'bg-emerald-50 text-emerald-700 border border-emerald-200', restringido: 'bg-amber-50 text-amber-700 border border-amber-200', institucional: 'bg-sky-50 text-sky-700 border border-sky-200' };
+        var extIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+        var warnIcon = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>';
+
+        function renderRichGroup(entries, groupTitle) {
+          if (entries.length === 0) return '';
+          var g = '<div class="mb-6">';
+          g += '<h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3 mt-4">' + groupTitle + '</h3>';
+          g += '<div class="space-y-4">';
+          entries.forEach(function(e) {
+            var isOld = e.anio_publicacion && !e.es_clasico && (currentYear - parseInt(e.anio_publicacion)) > 5;
+            var isBroken = e.url_status === 'roto';
+            var tipoColor = tipoBadgeColors[e.tipo] || tipoBadgeColors['otro'];
+            var aColor = accesoColors[e.acceso] || 'bg-gray-50 text-gray-600 border border-gray-200';
+
+            g += '<div class="pb-4 border-b border-gray-100 last:border-0">';
+            g += '<div class="flex flex-wrap items-start gap-2 mb-1">';
+            g += '<span class="text-sm font-semibold text-gray-800 flex-1 min-w-0">' + (e.titulo || 'Sin titulo') + '</span>';
+            g += '<span class="text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ' + tipoColor + '">' + (e.tipo || 'otro') + '</span>';
+            g += '</div>';
+            var meta = [];
+            if (e.autores) meta.push(e.autores);
+            if (e.anio_publicacion) meta.push(String(e.anio_publicacion));
+            if (meta.length > 0) {
+              g += '<p class="text-xs text-gray-500 mb-1.5">' + meta.join(' — ') + '</p>';
+            }
+            g += '<div class="flex flex-wrap items-center gap-2">';
+            if (e.acceso) {
+              g += '<span class="text-xs px-2 py-0.5 rounded font-medium ' + aColor + '">' + e.acceso + '</span>';
+            }
+            if (e.doi) {
+              g += '<a href="https://doi.org/' + e.doi + '" target="_blank" rel="noopener" class="text-xs px-2 py-0.5 rounded font-mono bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">DOI: ' + e.doi + '</a>';
+            }
+            if (e.url && !isBroken) {
+              g += '<a href="' + e.url + '" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline">' + extIcon + 'Ver recurso</a>';
+            }
+            if (isBroken) {
+              g += '<span class="inline-flex items-center gap-1 text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded border border-red-100">' + warnIcon + 'Enlace no disponible</span>';
+            }
+            if (isOld) {
+              g += '<span class="text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-100">Recurso con mas de 5 anos</span>';
+            }
+            if (e.es_clasico) {
+              g += '<span class="text-xs text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">Clasico</span>';
+            }
+            g += '</div>';
+            if (e.nucleo_asociado) {
+              g += '<p class="text-xs text-gray-400 mt-1">Nucleo: ' + e.nucleo_asociado + '</p>';
+            }
+            g += '</div>';
+          });
+          g += '</div>';
+          g += '</div>';
+          return g;
+        }
+
+        html += renderRichGroup(obligatoria, 'Obligatoria');
+        html += renderRichGroup(complementaria, 'Complementaria');
+
+      } else if (biblio.length > 0) {
+        html += '<p class="text-xs text-amber-600 bg-amber-50 border border-amber-100 rounded px-3 py-2 mb-4">Bibliografia importada del PIAC. El DI puede agregar metadatos desde el panel de configuracion.</p>';
+        var extIconSm = '<svg class="mt-0.5 flex-shrink-0" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+        html += '<div class="space-y-3">';
+        biblio.forEach(function(b) {
+          html += '<div class="text-sm text-gray-700 pb-3 border-b border-gray-100 last:border-0 leading-relaxed">';
+          if (b.url) {
+            html += '<a href="' + b.url + '" target="_blank" rel="noopener" class="inline-flex items-start gap-1.5 text-blue-600 hover:underline">' + extIconSm + b.referencia + '</a>';
+          } else {
+            html += b.referencia;
+          }
+          html += '</div>';
+        });
+        html += '</div>';
+
+      } else {
+        html += '<p class="text-sm text-gray-400 mt-2">No hay bibliografia disponible para este curso.</p>';
+      }
+
+      html += '</div>';
+      return html;
     }
 
     function renderInfo(data) {
