@@ -50,6 +50,26 @@
     .elem-link { color: #1D4ED8; text-decoration: none; font-size: 12px; }
     .elem-link:hover { text-decoration: underline; }
     .arrow-icon { color: #9CA3AF; flex-shrink: 0; margin-top: 2px; }
+    /* Organizer */
+    .org-section { border: 2px solid #E5E7EB; border-radius: 0.75rem; margin-bottom: 0.75rem; background: white; transition: border-color 0.15s; }
+    .org-section.drag-over { border-color: #F59E0B; background: #FFFBEB; }
+    .org-section-header { padding: 0.6rem 0.75rem; background: #F9FAFB; border-bottom: 1px solid #F3F4F6; display: flex; align-items: center; gap: 0.5rem; font-size: 13px; font-weight: 600; color: #374151; border-radius: 0.65rem 0.65rem 0 0; }
+    .org-section-header .sec-num { background: #E5E7EB; color: #6B7280; font-size: 11px; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: 700; }
+    .org-section-body { min-height: 32px; padding: 4px; }
+    .org-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.6rem; margin: 3px 4px; border: 1px solid #E5E7EB; border-radius: 8px; background: white; font-size: 13px; cursor: grab; transition: all 0.15s; user-select: none; }
+    .org-item:hover { border-color: #D1D5DB; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .org-item.dragging { opacity: 0.4; border-style: dashed; }
+    .org-item.hidden-item { opacity: 0.45; }
+    .org-item .drag-handle { color: #D1D5DB; cursor: grab; flex-shrink: 0; }
+    .org-item .eye-btn { background: none; border: none; cursor: pointer; padding: 2px; color: #9CA3AF; flex-shrink: 0; transition: color 0.15s; }
+    .org-item .eye-btn:hover { color: #374151; }
+    .org-item .eye-btn.visible { color: #059669; }
+    .org-item .item-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #374151; }
+    .org-item .item-type { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 4px; flex-shrink: 0; }
+    .org-drop-indicator { height: 3px; background: #F59E0B; border-radius: 2px; margin: 0 8px; opacity: 0; transition: opacity 0.1s; }
+    .org-drop-indicator.active { opacity: 1; }
+    .org-item .moodle-link { color: #9CA3AF; text-decoration: none; flex-shrink: 0; font-size: 12px; }
+    .org-item .moodle-link:hover { color: #1D4ED8; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -162,6 +182,10 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
           Ver curso virtual
         </a>
+        <button id="btn-organizar" onclick="toggleOrganizer()" class="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-amber-300 text-amber-700 bg-amber-50 hover:bg-amber-100 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+          Organizar curso
+        </button>
         <button id="btn-config-curso" onclick="toggleConfigPanel()" class="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-green-300 text-green-700 bg-green-50 hover:bg-green-100 transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
           Configurar curso virtual
@@ -239,6 +263,28 @@
       <div class="panel-card p-5">
         <div class="section-header">Discrepancias</div>
         <div id="discrepancies-list" class="text-sm text-gray-500">Sin datos</div>
+      </div>
+
+      <!-- Organizador visual del curso (hidden until toggled) -->
+      <div id="organizer-panel" class="hidden fade-in mb-6">
+        <div class="panel-card overflow-hidden">
+          <div class="bg-amber-50 border-b border-amber-200 px-5 py-4 flex items-center justify-between">
+            <div>
+              <h3 class="font-heading font-bold text-gray-800">Organizar curso virtual</h3>
+              <p class="text-xs text-gray-500 mt-0.5">Arrastra elementos entre secciones. Usa el ojito para mostrar/ocultar en el curso virtual.</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <span id="org-save-status" class="text-xs text-gray-400"></span>
+              <button onclick="saveOrganizer()" class="text-sm font-medium px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 transition-colors">Guardar</button>
+              <button onclick="toggleOrganizer()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+          <div id="organizer-body" class="p-4" style="max-height: 70vh; overflow-y: auto;">
+            <div class="text-sm text-gray-400">Cargando...</div>
+          </div>
+        </div>
       </div>
 
       <!-- Alertas recientes -->
@@ -1171,6 +1217,265 @@
     // --- Curso Virtual Config ---
     let currentConfig = null;
     let isPublished = false;
+
+    // ===== COURSE ORGANIZER =====
+    let orgData = null; // { sections: [...], config: {...} }
+
+    function toggleOrganizer() {
+      const panel = document.getElementById('organizer-panel');
+      const isHidden = panel.classList.contains('hidden');
+      panel.classList.toggle('hidden');
+      if (isHidden && currentDetail && currentDetail.snapshot) {
+        loadOrganizer();
+        setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+      }
+    }
+
+    async function loadOrganizer() {
+      const body = document.getElementById('organizer-body');
+      if (!currentDetail || !currentDetail.snapshot || !currentDetail.snapshot.snapshot_json) {
+        body.innerHTML = '<div class="text-sm text-gray-400">Sin snapshot Moodle — ejecuta "Analizar" primero</div>';
+        return;
+      }
+
+      // Load existing config
+      let actConfig = {};
+      try {
+        const res = await fetch(`/api/piac/${currentLinkId}/config`);
+        const data = await res.json();
+        actConfig = (data.config && data.config.actividades_config) || {};
+      } catch (e) { /* no config yet */ }
+
+      const snap = currentDetail.snapshot.snapshot_json;
+      const sections = snap.sections || [];
+      const moodleBase = PLATFORM_URLS[currentDetail.link.moodle_platform] || '';
+      const courseId = currentDetail.link.moodle_course_id;
+
+      // Build section data with activities, applying saved config
+      orgData = { sections: [], actConfig: { ...actConfig }, moodleBase, courseId };
+
+      // Group activities by their virtual section (or original section)
+      const sectionMap = {};
+      sections.forEach(s => {
+        sectionMap[s.number] = {
+          id: s.id, number: s.number, name: s.name, visible: s.visible,
+          items: []
+        };
+      });
+
+      // Place items in virtual sections or original sections
+      sections.forEach(s => {
+        (s.modules || []).forEach((m, idx) => {
+          const cfg = actConfig[String(m.id)] || {};
+          const targetSec = cfg.virtual_section !== undefined ? cfg.virtual_section : s.number;
+          const item = {
+            cmid: m.id, name: m.name, modname: m.modname,
+            moodleVisible: m.visible !== false,
+            visible: cfg.visible !== false,
+            originalSection: s.number,
+            order: cfg.order !== undefined ? cfg.order : idx
+          };
+          if (sectionMap[targetSec]) {
+            sectionMap[targetSec].items.push(item);
+          } else {
+            sectionMap[s.number].items.push(item);
+          }
+        });
+      });
+
+      // Sort items within each section by order
+      Object.values(sectionMap).forEach(s => s.items.sort((a, b) => a.order - b.order));
+      orgData.sections = Object.values(sectionMap).sort((a, b) => a.number - b.number);
+
+      renderOrganizer();
+    }
+
+    function renderOrganizer() {
+      const body = document.getElementById('organizer-body');
+      if (!orgData) { body.innerHTML = ''; return; }
+
+      let html = '';
+      orgData.sections.forEach(sec => {
+        const secVis = sec.visible !== false;
+        html += `<div class="org-section" data-sec="${sec.number}" id="org-sec-${sec.number}">`;
+        html += `<div class="org-section-header">`;
+        html += `<span class="sec-num">${sec.number}</span>`;
+        html += `<span class="flex-1">${sec.name || '(Sin nombre)'}${!secVis ? ' <span class="badge badge-critical" style="font-size:9px">oculta en Moodle</span>' : ''}</span>`;
+        html += `<span class="text-xs text-gray-400 font-normal">${sec.items.length} elem.</span>`;
+        html += `</div>`;
+        html += `<div class="org-section-body" data-sec="${sec.number}" ondragover="orgDragOver(event)" ondragleave="orgDragLeave(event)" ondrop="orgDrop(event)">`;
+        sec.items.forEach((item, idx) => {
+          html += renderOrgItem(item, sec.number, idx);
+        });
+        if (sec.items.length === 0) {
+          html += `<div class="text-xs text-gray-300 text-center py-3 italic">Sección vacía — arrastra elementos aquí</div>`;
+        }
+        html += `</div></div>`;
+      });
+      body.innerHTML = html;
+    }
+
+    function renderOrgItem(item, secNum, idx) {
+      const icon = MOD_ICONS[item.modname] || '?';
+      const label = MOD_LABELS[item.modname] || item.modname;
+      const bg = MOD_COLORS[item.modname] || '#F3F4F6';
+      const eyeClass = item.visible ? 'visible' : '';
+      const hiddenClass = item.visible ? '' : ' hidden-item';
+      const eyeSvg = item.visible
+        ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>'
+        : '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M3 3l18 18"/></svg>';
+      const movedBadge = item.originalSection !== secNum ? `<span class="text-xs text-amber-500" title="Movido desde S${item.originalSection}">*</span>` : '';
+      const mUrl = orgData.moodleBase ? `${orgData.moodleBase}/mod/${item.modname}/view.php?id=${item.cmid}` : '';
+      const mLink = mUrl ? `<a href="${mUrl}" target="_blank" class="moodle-link" title="Abrir en Moodle">&nearr;</a>` : '';
+
+      return `<div class="org-item${hiddenClass}" draggable="true" data-cmid="${item.cmid}" data-sec="${secNum}"
+        ondragstart="orgDragStart(event)" ondragend="orgDragEnd(event)">
+        <span class="drag-handle"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M7 2a2 2 0 10.001 4.001A2 2 0 007 2zm0 6a2 2 0 10.001 4.001A2 2 0 007 8zm0 6a2 2 0 10.001 4.001A2 2 0 007 14zm6-8a2 2 0 10-.001-4.001A2 2 0 0013 6zm0 2a2 2 0 10.001 4.001A2 2 0 0013 8zm0 6a2 2 0 10.001 4.001A2 2 0 0013 14z"/></svg></span>
+        <button class="eye-btn ${eyeClass}" onclick="orgToggleVis(${item.cmid})" title="${item.visible ? 'Ocultar' : 'Mostrar'}">${eyeSvg}</button>
+        <span class="elem-icon" style="background:${bg};width:20px;height:20px;font-size:10px">${icon}</span>
+        <span class="item-name" title="${(item.name||'').replace(/"/g,'&quot;')}">${item.name || 'Sin nombre'}</span>
+        ${movedBadge}
+        <span class="item-type" style="background:${bg}">${label}</span>
+        ${mLink}
+      </div>`;
+    }
+
+    // --- Drag & Drop ---
+    let draggedCmid = null;
+    let draggedFromSec = null;
+
+    function orgDragStart(e) {
+      draggedCmid = parseInt(e.target.dataset.cmid);
+      draggedFromSec = parseInt(e.target.dataset.sec);
+      e.target.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', draggedCmid);
+    }
+
+    function orgDragEnd(e) {
+      e.target.classList.remove('dragging');
+      document.querySelectorAll('.org-section').forEach(s => s.classList.remove('drag-over'));
+      draggedCmid = null;
+      draggedFromSec = null;
+    }
+
+    function orgDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const secBody = e.currentTarget;
+      secBody.closest('.org-section').classList.add('drag-over');
+
+      // Find insertion position
+      const items = [...secBody.querySelectorAll('.org-item:not(.dragging)')];
+      const afterEl = items.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = e.clientY - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) return { offset, el: child };
+        return closest;
+      }, { offset: Number.NEGATIVE_INFINITY }).el;
+    }
+
+    function orgDragLeave(e) {
+      if (!e.currentTarget.contains(e.relatedTarget)) {
+        e.currentTarget.closest('.org-section').classList.remove('drag-over');
+      }
+    }
+
+    function orgDrop(e) {
+      e.preventDefault();
+      const targetSecNum = parseInt(e.currentTarget.dataset.sec);
+      document.querySelectorAll('.org-section').forEach(s => s.classList.remove('drag-over'));
+
+      if (draggedCmid === null) return;
+
+      // Find and remove item from source section
+      let movedItem = null;
+      orgData.sections.forEach(sec => {
+        const idx = sec.items.findIndex(i => i.cmid === draggedCmid);
+        if (idx !== -1) {
+          movedItem = sec.items.splice(idx, 1)[0];
+        }
+      });
+      if (!movedItem) return;
+
+      // Find insertion position in target section
+      const targetSec = orgData.sections.find(s => s.number === targetSecNum);
+      if (!targetSec) return;
+
+      const items = [...e.currentTarget.querySelectorAll('.org-item:not(.dragging)')];
+      let insertIdx = targetSec.items.length;
+      for (let i = 0; i < items.length; i++) {
+        const box = items[i].getBoundingClientRect();
+        if (e.clientY < box.top + box.height / 2) {
+          insertIdx = i;
+          break;
+        }
+      }
+
+      targetSec.items.splice(insertIdx, 0, movedItem);
+
+      // Update orders
+      targetSec.items.forEach((item, i) => item.order = i);
+
+      renderOrganizer();
+      document.getElementById('org-save-status').textContent = 'Sin guardar';
+      document.getElementById('org-save-status').className = 'text-xs text-amber-600';
+    }
+
+    function orgToggleVis(cmid) {
+      orgData.sections.forEach(sec => {
+        const item = sec.items.find(i => i.cmid === cmid);
+        if (item) item.visible = !item.visible;
+      });
+      renderOrganizer();
+      document.getElementById('org-save-status').textContent = 'Sin guardar';
+      document.getElementById('org-save-status').className = 'text-xs text-amber-600';
+    }
+
+    async function saveOrganizer() {
+      if (!orgData || !currentLinkId) return;
+      const statusEl = document.getElementById('org-save-status');
+      statusEl.innerHTML = '<span class="spinner-sm"></span> Guardando...';
+
+      // Build actividades_config from current organizer state
+      const config = {};
+      orgData.sections.forEach(sec => {
+        sec.items.forEach((item, idx) => {
+          const entry = {};
+          let hasChange = false;
+          if (!item.visible) { entry.visible = false; hasChange = true; }
+          if (item.originalSection !== sec.number) { entry.virtual_section = sec.number; hasChange = true; }
+          entry.order = idx;
+          if (hasChange || idx !== item.order) {
+            config[String(item.cmid)] = entry;
+          }
+        });
+      });
+
+      try {
+        // Load existing config, merge actividades_config
+        const getRes = await fetch(`/api/piac/${currentLinkId}/config`);
+        const getData = await getRes.json();
+        const existing = getData.config || {};
+
+        const payload = { ...existing, actividades_config: config };
+        delete payload.id; delete payload.created_at; delete payload.updated_at;
+        delete payload.publicado; delete payload.publicado_at; delete payload.publicado_por;
+
+        await safeFetch(`/api/piac/${currentLinkId}/config`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        statusEl.textContent = 'Guardado';
+        statusEl.className = 'text-xs text-green-600';
+        setTimeout(() => { statusEl.textContent = ''; }, 3000);
+      } catch (e) {
+        statusEl.textContent = 'Error: ' + e.message;
+        statusEl.className = 'text-xs text-red-500';
+      }
+    }
 
     function toggleConfigPanel() {
       const panel = document.getElementById('config-panel');
