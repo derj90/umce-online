@@ -1286,8 +1286,20 @@ app.get('/api/induccion/launch', authMiddleware, async (req, res) => {
     }
 
     // 4. Redirigir a induccion2026 con RUT (username de Moodle) + nombre
-    const rut = users && users.length ? users[0].username : '';
-    const nombre = users && users.length ? users[0].fullname : '';
+    // Username puede ser RUT o email — si es email, buscar RUT en idnumber
+    let rut = '';
+    let nombre = '';
+    if (users && users.length) {
+      const u = users[0];
+      nombre = u.fullname || '';
+      if (u.username && !u.username.includes('@')) {
+        rut = u.username;
+      } else if (u.idnumber && !u.idnumber.includes('@')) {
+        rut = u.idnumber;
+      } else {
+        rut = email;
+      }
+    }
     const redirectUrl = `https://induccion2026.udfv.cloud?rut=${encodeURIComponent(rut)}&nombre=${encodeURIComponent(nombre)}&email=${encodeURIComponent(email)}`;
     res.redirect(redirectUrl);
   } catch (err) {
@@ -1381,13 +1393,47 @@ app.get('/api/testimonials', async (req, res) => {
 
 // ============================================================================
 // BADGES + MICROCREDENCIALES API — Insignias y credenciales apilables
+// Open Badges 3.0 (W3C Verifiable Credentials) con firma Ed25519
 // ============================================================================
 
 // Helper: generate verificacion hash for badges/microcredenciales
 function generateVerificacionHash() {
-  const bytes = require('crypto').randomBytes(16);
-  return bytes.toString('hex');
+  return crypto.randomBytes(16).toString('hex');
 }
+
+// --- Open Badges 3.0: keypair Ed25519 ---
+// Keys stored in .env: BADGE_PRIVATE_KEY (base64), BADGE_PUBLIC_KEY (base64)
+// Generated once with: node -e "const kp=require('crypto').generateKeyPairSync('ed25519'); console.log('BADGE_PRIVATE_KEY='+kp.privateKey.export({type:'pkcs8',format:'der'}).toString('base64')); console.log('BADGE_PUBLIC_KEY='+kp.publicKey.export({type:'spki',format:'der'}).toString('base64'))"
+const BADGE_PRIVATE_KEY_B64 = process.env.BADGE_PRIVATE_KEY || '';
+const BADGE_PUBLIC_KEY_B64 = process.env.BADGE_PUBLIC_KEY || '';
+
+// .well-known endpoint: public key for credential verification
+app.get('/.well-known/keys/issuer-key-1', (req, res) => {
+  if (!BADGE_PUBLIC_KEY_B64) {
+    return res.status(503).json({ error: 'Badge signing keys not configured' });
+  }
+  res.json({
+    id: 'https://umce.online/.well-known/keys/issuer-key-1',
+    type: 'Ed25519VerificationKey2020',
+    controller: 'https://umce.online',
+    publicKeyMultibase: 'z' + Buffer.from(BADGE_PUBLIC_KEY_B64, 'base64').toString('base64url')
+  });
+});
+
+// DID document for umce.online issuer
+app.get('/.well-known/did.json', (req, res) => {
+  res.json({
+    '@context': ['https://www.w3.org/ns/did/v1', 'https://w3id.org/security/suites/ed25519-2020/v1'],
+    id: 'did:web:umce.online',
+    verificationMethod: [{
+      id: 'did:web:umce.online#issuer-key-1',
+      type: 'Ed25519VerificationKey2020',
+      controller: 'did:web:umce.online',
+      publicKeyMultibase: BADGE_PUBLIC_KEY_B64 ? 'z' + Buffer.from(BADGE_PUBLIC_KEY_B64, 'base64').toString('base64url') : ''
+    }],
+    assertionMethod: ['did:web:umce.online#issuer-key-1']
+  });
+});
 
 // --- Badges: catalogo y consulta ---
 
