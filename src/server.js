@@ -3654,6 +3654,92 @@ app.post('/api/piac/discrepancy/:id/unresolve', adminOrEditorMiddleware, async (
   }
 });
 
+// --- API: Landing publica del curso (sin auth) ---
+app.get('/api/curso-landing/:linkId', async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    if (isNaN(linkId)) return res.status(400).json({ error: 'ID inválido' });
+
+    const links = await portalQuery('piac_links', `id=eq.${linkId}&status=eq.active`);
+    if (!links.length) return res.status(404).json({ error: 'Curso no encontrado' });
+    const link = links[0];
+
+    const [parsedArr, configArr, defaultsArr] = await Promise.all([
+      portalQuery('piac_parsed', `piac_link_id=eq.${linkId}&order=parsed_at.desc&limit=1`),
+      portalQuery('curso_virtual_config', `piac_link_id=eq.${linkId}`),
+      getInstitutionalDefaults()
+    ]);
+
+    const config = configArr[0] || null;
+    if (!config || !config.publicado) {
+      return res.status(404).json({ error: 'Este curso aun no esta disponible' });
+    }
+
+    const piac = parsedArr[0]?.parsed_json || null;
+    if (!piac) return res.status(404).json({ error: 'Curso sin informacion disponible' });
+
+    const defaultMap = {};
+    defaultsArr.forEach(d => { defaultMap[d.key] = d.value; });
+
+    const platformObj = PLATFORMS.find(p => p.id === link.moodle_platform);
+    let docenteFoto = config.docente_foto_url || null;
+    if (!docenteFoto && piac.identificacion?.email_docente && platformObj) {
+      try {
+        const users = await moodleCall(platformObj, 'core_user_get_users_by_field', { field: 'email', 'values[0]': piac.identificacion.email_docente });
+        if (users?.[0]?.profileimageurl?.includes('?rev=')) docenteFoto = users[0].profileimageurl;
+      } catch {}
+    }
+
+    const id = piac.identificacion || {};
+    const nucleos = (piac.nucleos || []).map(n => ({
+      numero: n.numero,
+      nombre: n.nombre,
+      resultado_formativo: n.resultado_formativo,
+      sesiones_count: (n.sesiones || []).length,
+      evaluaciones: (n.evaluaciones || []).map(e => ({ nombre: e.nombre, ponderacion: e.ponderacion }))
+    }));
+
+    const evaluaciones = nucleos.flatMap(n => n.evaluaciones.map(e => ({ ...e, nucleo: n.nombre })));
+
+    res.json({
+      curso: {
+        nombre: id.nombre_asignatura || link.course_name,
+        programa: id.programa || '',
+        docente: id.nombre_docente || '',
+        email_docente: id.email_docente || '',
+        modalidad: id.modalidad || 'Virtual',
+        semanas: id.semanas || null,
+        creditos_sct: id.creditos_sct || null,
+        horas: id.horas || {},
+        metodologia: piac.metodologia || ''
+      },
+      config: {
+        docente_foto_url: docenteFoto,
+        docente_bio: config.docente_bio || null,
+        docente_video_bienvenida: config.docente_video_bienvenida || null,
+        docente_mensaje_bienvenida: config.docente_mensaje_bienvenida || null,
+        descripcion_motivacional: config.descripcion_motivacional || null,
+        conocimientos_previos: config.conocimientos_previos || defaultMap.conocimientos_previos || null,
+        politicas_curso: config.politicas_curso || defaultMap.politicas_curso || null,
+        competencias_digitales: config.competencias_digitales || defaultMap.competencias_digitales || null
+      },
+      nucleos,
+      evaluaciones,
+      platform: {
+        name: platformObj?.name || link.moodle_platform,
+        courseUrl: platformObj ? `${platformObj.url}/course/view.php?id=${link.moodle_course_id}` : null
+      }
+    });
+  } catch (err) {
+    console.error('Landing error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/curso/:linkId', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'curso-landing.html'));
+});
+
 // --- API: Curso Virtual (authenticated, read-only) ---
 app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
   try {
