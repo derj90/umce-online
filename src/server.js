@@ -1194,6 +1194,54 @@ app.get('/api/catalog/search', async (req, res) => {
   }
 });
 
+// GET /api/catalog/programs/:slug/piac — datos PIAC públicos para landing page
+app.get('/api/catalog/programs/:slug/piac', async (req, res) => {
+  try {
+    const programs = await portalQuery('programs', `slug=eq.${encodeURIComponent(req.params.slug)}&limit=1`);
+    if (!programs.length) return res.status(404).json({ error: 'Programa no encontrado' });
+    const program = programs[0];
+
+    // Buscar piac_links asociados al programa
+    const links = await portalQuery('piac_links', `program_id=eq.${program.id}&status=eq.active&order=created_at.desc`);
+    if (!links.length) return res.json({ program_id: program.id, has_piac: false });
+
+    // Obtener datos parseados de cada PIAC vinculado
+    const piacData = [];
+    for (const link of links) {
+      const parsed = await portalQuery('piac_parsed', `piac_link_id=eq.${link.id}&order=parsed_at.desc&limit=1`);
+      if (parsed.length && parsed[0].parsed_json) {
+        const p = parsed[0].parsed_json;
+        piacData.push({
+          link_id: link.id,
+          course_name: link.course_name,
+          moodle_platform: link.moodle_platform,
+          identificacion: p.identificacion || null,
+          nucleos: (p.nucleos || []).map(n => ({
+            numero: n.numero,
+            nombre: n.nombre,
+            semanas: n.semanas,
+            resultado_formativo: n.resultado_formativo,
+            criterios_evaluacion: n.criterios_evaluacion || [],
+            temas: n.temas || []
+          })),
+          evaluaciones_sumativas: p.evaluaciones_sumativas || [],
+          metodologia: p.metodologia || null,
+          bibliografia: p.bibliografia || []
+        });
+      }
+    }
+
+    res.json({
+      program_id: program.id,
+      has_piac: piacData.length > 0,
+      courses: piacData
+    });
+  } catch (err) {
+    console.error('Program PIAC public error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET /api/news
 app.get('/api/news', async (req, res) => {
   try {
@@ -1272,6 +1320,55 @@ app.get('/api/testimonials', async (req, res) => {
     res.json(data);
   } catch (err) {
     console.error('Testimonials error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================================================
+// BADGES API — Insignias SDPA
+// ============================================================================
+
+// GET /api/badges/definitions — catálogo público de badges disponibles
+app.get('/api/badges/definitions', async (req, res) => {
+  try {
+    const defs = await portalQuery('badge_definitions', 'active=eq.true&order=display_order.asc');
+    res.json(defs);
+  } catch (err) {
+    console.error('Badge definitions error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/badges/user/:email — badges de un usuario (requiere auth)
+app.get('/api/badges/user/:email', authMiddleware, async (req, res) => {
+  try {
+    const email = decodeURIComponent(req.params.email);
+    const badges = await portalQuery('user_badges', `user_email=eq.${encodeURIComponent(email)}&order=earned_at.desc`);
+    res.json(badges);
+  } catch (err) {
+    console.error('User badges error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/badges/award — otorgar badge (admin only)
+app.post('/api/badges/award', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const { user_email, badge_type, badge_level, title, description, course_id, program_id, moodle_course_id, moodle_platform, metadata } = req.body;
+    if (!user_email || !badge_type || !title) {
+      return res.status(400).json({ error: 'user_email, badge_type y title son requeridos' });
+    }
+    const badge = await portalMutate('user_badges', 'POST', {
+      user_email, badge_type, badge_level: badge_level || null,
+      title, description: description || '',
+      course_id: course_id || null, program_id: program_id || null,
+      moodle_course_id: moodle_course_id || null, moodle_platform: moodle_platform || null,
+      verified_by: req.userEmail,
+      metadata: metadata || {}
+    });
+    res.json(badge);
+  } catch (err) {
+    console.error('Award badge error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });

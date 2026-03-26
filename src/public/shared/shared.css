@@ -10,8 +10,8 @@
   --palette-secondary: #E8F0FE;
 }
 
-body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
-h1, h2, h3, h4, h5, h6 { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+body { font-family: 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif; }
+h1, h2, h3, h4, h5, h6 { font-family: 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif; }
 
 /* Scroll animations — visible by default for crawlers/print, animated as enhancement */
 .fade-up {
@@ -389,3 +389,26 @@ body.is-native-app #app-sticky-cta {
 }
 
 /* --- Ayuda page in app: handled by JS (setupAyudaAppMode) --- */
+
+/* ==========================================
+   UMCE Brand Decorative Elements
+   Manual de Marca UMCE — dot grid & accent bar
+   ========================================== */
+
+/* UMCE brand dot grid pattern */
+.umce-dot-grid {
+  background-image: radial-gradient(circle, var(--palette-primary) 1.5px, transparent 1.5px);
+  background-size: 16px 16px;
+  opacity: 0.15;
+}
+.umce-dot-grid-light {
+  background-image: radial-gradient(circle, white 1.5px, transparent 1.5px);
+  background-size: 16px 16px;
+  opacity: 0.15;
+}
+/* UMCE brand accent bar */
+.umce-accent-bar {
+  width: 6px;
+  background: var(--palette-accent);
+  border-radius: 3px;
+}
