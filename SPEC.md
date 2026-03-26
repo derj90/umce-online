@@ -290,17 +290,42 @@ Las fases futuras son esqueleto — se completan con David antes de empezar.
 
 ## Fase 4: Motor IA cron + Panel DI alertas
 
-**Estado**: PENDIENTE
-**Ultima sesion**: —
+**Estado**: EN PROGRESO
+**Ultima sesion**: 25-mar-2026
 **Objetivo**: El sistema corre periodicamente, detecta cambios, y alerta al DI de discrepancias.
 
-### Esqueleto (se detalla con David antes de ejecutar)
-- [ ] 4.1 Cron frecuente: detectar cambios en Drive (PIAC) o Moodle (curso)
-- [ ] 4.2 Cron nocturno: reporte consolidado de discrepancias
-- [ ] 4.3 Cron horario (17-22h): verificar links Zoom para clases del dia
-- [ ] 4.4 Panel DI: vista de alertas, discrepancias, estado de visado
-- [ ] 4.5 Asignacion DI a programa/curso (editores actuales = DIs en umce.online)
-- [ ] 4.6 Notificaciones (push o email) para alertas criticas
+### Leer antes de empezar
+- [x] CURSO-VIRTUAL-SPEC.md — secciones cache, notifications, mapeo features→fases
+- [x] `src/server.js` — moodleCall helper, PLATFORMS config, portalQuery/portalMutate
+- [ ] `src/server.js` — sendPushNotification (lineas 622-743) al llegar a 4.10
+
+### Fase 4-A: Schema e infraestructura cache
+
+- [ ] **4.1 Schema cache** — 5 tablas: cache_completions, cache_grades, cache_submissions, cache_calendar, cache_recordings
+- [ ] **4.2 Schema notifications** — Tabla notifications con type, read, push_sent, indices
+- [ ] **4.3 Schema user_moodle_mapping** — Mapeo email→userid por plataforma Moodle
+
+### Fase 4-B: Cron engine
+
+- [ ] **4.4 Cron interno** — setInterval en server.js, recorre piac_links activos con publicado=true
+- [ ] **4.5 Refresh snapshot** — Re-snapshot Moodle cada 6h para detectar cambios de estructura
+- [ ] **4.6 Refresh recordings** — Leer mod_data cada 6h, guardar en cache_recordings
+- [ ] **4.7 Refresh calendar** — Leer core_calendar_get_calendar_events cada 6h
+- [ ] **4.8 Detector discrepancias** — Comparar snapshot nuevo vs anterior, generar alertas si hay cambios
+
+### Fase 4-C: Notificaciones y alertas DI
+
+- [ ] **4.9 Endpoints notifications** — GET/PUT para listar y marcar como leidas
+- [ ] **4.10 Alertas al DI** — Notificar cuando: nueva discrepancia, seccion ocultada, cambio en estructura
+- [ ] **4.11 Panel alertas en PIAC** — Seccion de alertas recientes en panel PIAC
+
+### Nota
+Cache personalizado por estudiante (completions, grades, submissions) se llena en Fase 5. En Fase 4 solo se crean las tablas y se cachean datos a nivel de curso (recordings, calendar).
+
+### Anti-patrones de esta fase
+- NO llamar APIs Moodle en tiempo real por cada request de estudiante — usar cache
+- NO implementar loop autonomo sin limites — throttle por plataforma, max requests
+- NO generar notificaciones duplicadas — verificar existencia antes de insertar
 
 ---
 

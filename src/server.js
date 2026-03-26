@@ -3268,6 +3268,271 @@ app.put('/api/institutional-defaults/:key', adminOrEditorMiddleware, async (req,
   }
 });
 
+// --- API: Notifications (Fase 4) ---
+
+// GET notifications for current user (or admin can query any email)
+app.get('/api/notifications', authMiddleware, async (req, res) => {
+  try {
+    const email = isAdmin(req.userEmail) && req.query.email ? req.query.email : req.userEmail;
+    const unreadOnly = req.query.unread === 'true' ? '&read=eq.false' : '';
+    const limit = parseInt(req.query.limit) || 50;
+    const notifications = await portalQuery('notifications', `umce_email=eq.${encodeURIComponent(email)}${unreadOnly}&order=created_at.desc&limit=${limit}`);
+    const unreadCount = (await portalQuery('notifications', `umce_email=eq.${encodeURIComponent(email)}&read=eq.false&select=id`)).length;
+    res.json({ notifications, unreadCount });
+  } catch (err) {
+    console.error('Notifications GET error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT mark notification as read
+app.put('/api/notifications/:id/read', authMiddleware, async (req, res) => {
+  try {
+    await portalMutate('notifications', 'PATCH', { read: true }, `id=eq.${req.params.id}`);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT mark all as read for current user
+app.put('/api/notifications/read-all', authMiddleware, async (req, res) => {
+  try {
+    await portalMutate('notifications', 'PATCH', { read: true }, `umce_email=eq.${encodeURIComponent(req.userEmail)}&read=eq.false`);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET notifications for a specific piac link (DI view)
+app.get('/api/piac/:linkId/notifications', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    const limit = parseInt(req.query.limit) || 20;
+    const notifications = await portalQuery('notifications', `piac_link_id=eq.${linkId}&order=created_at.desc&limit=${limit}`);
+    res.json(notifications);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- Cron Engine (Fase 4) ---
+
+async function cronCreateNotification(email, linkId, type, title, body, dataJson) {
+  // Avoid duplicates: check if same type+link exists in last 24h
+  const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const existing = await portalQuery('notifications',
+    `umce_email=eq.${encodeURIComponent(email)}&piac_link_id=eq.${linkId}&type=eq.${type}&created_at=gte.${cutoff}&limit=1`);
+  if (existing.length > 0) return null;
+
+  const result = await portalMutate('notifications', 'POST', {
+    umce_email: email, piac_link_id: linkId, type, title, body, data_json: dataJson || {}
+  });
+  return result[0] || result;
+}
+
+async function cronRefreshRecordings(link, platform) {
+  try {
+    // Find mod_data activity in the course (recordings database)
+    const contents = await moodleCall(platform, 'core_course_get_contents', { courseid: link.moodle_course_id });
+    let dataActivityId = null;
+    for (const section of contents) {
+      for (const mod of (section.modules || [])) {
+        if (mod.modname === 'data') { dataActivityId = mod.instance; break; }
+      }
+      if (dataActivityId) break;
+    }
+    if (!dataActivityId) return null;
+
+    const entries = await moodleCall(platform, 'mod_data_get_entries', { databaseid: dataActivityId });
+    const recordings = (entries.entries || []).map(entry => {
+      const fields = {};
+      (entry.contents || []).forEach(c => { fields[c.fieldid] = c.content; });
+      return { id: entry.id, fields, timecreated: entry.timecreated };
+    });
+
+    // Upsert into cache
+    await portalMutate('cache_recordings', 'POST', {
+      moodle_platform: link.moodle_platform,
+      moodle_course_id: link.moodle_course_id,
+      recordings_json: recordings,
+      fetched_at: new Date().toISOString()
+    }, 'on_conflict=moodle_platform,moodle_course_id');
+
+    return recordings.length;
+  } catch (err) {
+    console.error(`Cron recordings error [${link.moodle_platform}/${link.moodle_course_id}]:`, err.message);
+    return null;
+  }
+}
+
+async function cronRefreshCalendar(link, platform) {
+  try {
+    const now = Math.floor(Date.now() / 1000);
+    const future = now + 90 * 24 * 60 * 60; // 90 days ahead
+    const events = await moodleCall(platform, 'core_calendar_get_calendar_events', {
+      'events[courseids][0]': link.moodle_course_id,
+      'options[timestart]': now,
+      'options[timeend]': future
+    });
+
+    const eventList = (events.events || []).map(e => ({
+      id: e.id, name: e.name, description: (e.description || '').replace(/<[^>]*>/g, '').substring(0, 200),
+      timestart: e.timestart, timeduration: e.timeduration,
+      eventtype: e.eventtype, modulename: e.modulename
+    }));
+
+    await portalMutate('cache_calendar', 'POST', {
+      moodle_platform: link.moodle_platform,
+      moodle_course_id: link.moodle_course_id,
+      events_json: eventList,
+      fetched_at: new Date().toISOString()
+    }, 'on_conflict=moodle_platform,moodle_course_id');
+
+    return eventList.length;
+  } catch (err) {
+    console.error(`Cron calendar error [${link.moodle_platform}/${link.moodle_course_id}]:`, err.message);
+    return null;
+  }
+}
+
+async function cronRefreshSnapshot(link, platform) {
+  try {
+    // Get current snapshot
+    const oldSnapshots = await portalQuery('moodle_snapshots', `piac_link_id=eq.${link.id}&order=snapshot_at.desc&limit=1`);
+    const oldSnapshot = oldSnapshots[0]?.snapshot_json;
+    const oldActivitiesCount = oldSnapshots[0]?.activities_count || 0;
+
+    // Fresh snapshot from Moodle
+    const contents = await moodleCall(platform, 'core_course_get_contents', { courseid: link.moodle_course_id });
+    let activitiesCount = 0;
+    const sections = contents.map(s => {
+      const modules = (s.modules || []).map(m => {
+        activitiesCount++;
+        return {
+          id: m.id, modname: m.modname, name: m.name, visible: m.visible !== 0,
+          url: m.url, description: (m.description || '').substring(0, 500),
+          modplural: m.modplural, dates: { added: m.added },
+          contents: (m.contents || []).map(c => ({ filename: c.filename, fileurl: c.fileurl }))
+        };
+      });
+      return { id: s.id, number: s.section, name: s.name, visible: s.visible !== 0, modules };
+    });
+
+    const newSnapshot = {
+      course: { id: link.moodle_course_id, platform: link.moodle_platform },
+      sections, sectionsCount: sections.length, activitiesCount
+    };
+
+    // Save new snapshot
+    await portalMutate('moodle_snapshots', 'POST', {
+      piac_link_id: link.id, sections_count: sections.length,
+      activities_count: activitiesCount, snapshot_json: newSnapshot
+    });
+
+    // Detect changes and generate alerts
+    if (oldSnapshot) {
+      const oldSections = oldSnapshot.sections || [];
+      const changes = [];
+
+      // Check for visibility changes
+      sections.forEach(newS => {
+        const oldS = oldSections.find(o => o.number === newS.number);
+        if (oldS && oldS.visible && !newS.visible) {
+          changes.push(`Sección "${newS.name}" fue ocultada`);
+        }
+        if (oldS && !oldS.visible && newS.visible) {
+          changes.push(`Sección "${newS.name}" fue habilitada`);
+        }
+      });
+
+      // Check for activity count changes
+      if (activitiesCount !== oldActivitiesCount) {
+        const diff = activitiesCount - oldActivitiesCount;
+        changes.push(`${Math.abs(diff)} actividad${Math.abs(diff) > 1 ? 'es' : ''} ${diff > 0 ? 'agregada' + (Math.abs(diff) > 1 ? 's' : '') : 'eliminada' + (Math.abs(diff) > 1 ? 's' : '')}`);
+      }
+
+      // Notify editors about changes
+      if (changes.length > 0) {
+        const editors = [...(process.env.EDITOR_EMAILS || '').split(',').map(e => e.trim()).filter(Boolean), ...ADMIN_EMAILS];
+        for (const editor of editors) {
+          await cronCreateNotification(editor, link.id, 'structure_change',
+            `Cambios en ${link.course_name || 'Curso ' + link.moodle_course_id}`,
+            changes.join('. '),
+            { changes, platform: link.moodle_platform, courseId: link.moodle_course_id }
+          );
+        }
+      }
+
+      return { changes: changes.length, activitiesDiff: activitiesCount - oldActivitiesCount };
+    }
+    return { changes: 0, firstSnapshot: true };
+  } catch (err) {
+    console.error(`Cron snapshot error [${link.moodle_platform}/${link.moodle_course_id}]:`, err.message);
+    return null;
+  }
+}
+
+// Main cron tick — runs for all active published courses
+async function cronTick() {
+  try {
+    // Get all active piac_links with published config
+    const links = await portalQuery('piac_links', 'status=eq.active');
+    if (links.length === 0) return;
+
+    const configs = await portalQuery('curso_virtual_config', 'publicado=eq.true');
+    const publishedLinkIds = new Set(configs.map(c => c.piac_link_id));
+
+    for (const link of links) {
+      if (!publishedLinkIds.has(link.id)) continue;
+
+      const platform = PLATFORMS.find(p => p.id === link.moodle_platform);
+      if (!platform || !platform.url || !platform.token) continue;
+
+      console.log(`[Cron] Processing ${link.moodle_platform}/${link.moodle_course_id}`);
+
+      // Stagger calls to avoid overwhelming Moodle
+      await cronRefreshRecordings(link, platform);
+      await new Promise(r => setTimeout(r, 1000));
+
+      await cronRefreshCalendar(link, platform);
+      await new Promise(r => setTimeout(r, 1000));
+
+      await cronRefreshSnapshot(link, platform);
+      await new Promise(r => setTimeout(r, 2000));
+    }
+
+    console.log(`[Cron] Tick complete — processed ${links.filter(l => publishedLinkIds.has(l.id)).length} courses`);
+  } catch (err) {
+    console.error('[Cron] Tick error:', err.message);
+  }
+}
+
+// Schedule: run every 6 hours
+const CRON_INTERVAL = 6 * 60 * 60 * 1000;
+let cronTimer = null;
+
+function startCron() {
+  console.log(`[Cron] Started — interval: ${CRON_INTERVAL / 1000 / 60} min`);
+  // First run after 30s (let server warm up)
+  setTimeout(() => {
+    cronTick();
+    cronTimer = setInterval(cronTick, CRON_INTERVAL);
+  }, 30000);
+}
+
+// Manual trigger for admin
+app.post('/api/admin/cron/run', adminOrEditorMiddleware, async (req, res) => {
+  if (!isAdmin(req.userEmail)) return res.status(403).json({ error: 'Solo admin' });
+  try {
+    cronTick(); // fire and forget
+    res.json({ ok: true, message: 'Cron triggered — check server logs' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --- API: Health check ---
 app.get('/api/health', (req, res) => {
   res.json({
@@ -3366,4 +3631,5 @@ app.use((err, req, res, _next) => {
 app.listen(PORT, () => {
   console.log(`umce.online running on port ${PORT}`);
   console.log(`Platforms configured: ${PLATFORMS.map(p => p.id).join(', ')}`);
+  startCron();
 });

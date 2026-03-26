@@ -188,6 +188,15 @@
         <div id="discrepancies-list" class="text-sm text-gray-500">Sin datos</div>
       </div>
 
+      <!-- Alertas recientes -->
+      <div id="alerts-panel" class="panel-card p-5 mt-6">
+        <div class="flex items-center justify-between mb-3">
+          <div class="section-header mb-0">Alertas del curso</div>
+          <button onclick="loadAlerts()" class="text-xs text-blue-600 hover:underline">Actualizar</button>
+        </div>
+        <div id="alerts-list" class="text-sm text-gray-400">Cargando...</div>
+      </div>
+
       <!-- Curso Virtual Config Panel (hidden until toggled) -->
       <div id="config-panel" class="hidden fade-in mt-6">
         <div class="panel-card overflow-hidden">
@@ -490,6 +499,9 @@
       document.getElementById('analyze-status').textContent = '';
       document.getElementById('btn-view-curso').href = `/curso-virtual/${currentLinkId}`;
 
+      // Load alerts
+      loadAlerts();
+
       // Summary cards
       if (d.matching && d.matching.summary_json) {
         const s = d.matching.summary_json;
@@ -638,6 +650,34 @@
       } catch (e) {
         alert('Error resolviendo: ' + e.message);
       }
+    }
+
+    // --- Alerts ---
+    async function loadAlerts() {
+      const container = document.getElementById('alerts-list');
+      if (!currentLinkId) { container.innerHTML = '<span class="text-gray-400">-</span>'; return; }
+      try {
+        const res = await fetch(`/api/piac/${currentLinkId}/notifications?limit=10`);
+        if (!res.ok) throw new Error('Error');
+        const alerts = await res.json();
+        if (alerts.length === 0) {
+          container.innerHTML = '<span class="text-gray-400">Sin alertas</span>';
+          return;
+        }
+        container.innerHTML = alerts.map(a => {
+          const time = new Date(a.created_at).toLocaleString('es-CL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+          const typeColors = { structure_change: 'badge-warning', deadline_48h: 'badge-critical', recording: 'badge-info', grade: 'badge-info' };
+          const typeLabels = { structure_change: 'Cambio', deadline_48h: 'Vencimiento', recording: 'Grabacion', grade: 'Nota', course_published: 'Publicado' };
+          return `<div class="flex items-start gap-3 py-2 border-b border-gray-50 last:border-0 ${a.read ? 'opacity-50' : ''}">
+            <span class="badge ${typeColors[a.type] || 'badge-info'} mt-0.5">${typeLabels[a.type] || a.type}</span>
+            <div class="flex-1">
+              <div class="text-sm text-gray-700">${a.title}</div>
+              <div class="text-xs text-gray-400">${a.body}</div>
+            </div>
+            <span class="text-xs text-gray-300 whitespace-nowrap">${time}</span>
+          </div>`;
+        }).join('');
+      } catch { container.innerHTML = '<span class="text-gray-400">Error cargando alertas</span>'; }
     }
 
     // --- Curso Virtual Config ---
