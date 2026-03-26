@@ -124,9 +124,7 @@
     .book-html tr:nth-child(even) td { background: #f9fafb; }
     .book-html .no-overflow { overflow: hidden; }
     .book-html iframe { width: 100% !important; max-width: 100% !important; border: 0 !important; }
-    .book-html .padlet-embed { width: calc(100% + 2rem) !important; margin-left: -1rem; margin-right: -1rem; border: none !important; box-sizing: border-box; }
-    .book-html .padlet-embed p { margin: 0; padding: 0; }
-    .book-html .padlet-embed iframe { min-height: 80vh !important; width: 100% !important; }
+    .book-html .padlet-embed { display: none; }
 
     /* Book tabs styling */
     .book-ch-tab[aria-selected="true"] { border-bottom: 2px solid #0033A1; color: #0033A1; font-weight: 600; }
@@ -1223,12 +1221,23 @@
       html = html.replace(/<iframe([^>]*src="([^"]*genial\.ly[^"]*)"[^>]*)>/gi, (match, attrs, src) => {
         return `<div class="embed-wrapper" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:0.5rem;margin:1rem 0;"><button class="embed-expand-btn" onclick="expandEmbed('${src}', this)"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg> Expandir</button><iframe${attrs} style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen loading="lazy">`;
       });
-      // Make Padlet embeds responsive with expand button
-      html = html.replace(/class="padlet-embed"[^>]*style="[^"]*"/gi, 'class="padlet-embed" style="width:100%;overflow:hidden;border-radius:0.5rem;margin:1rem 0;border:none;"');
-      html = html.replace(/<iframe([^>]*src="([^"]*padlet\.com[^"]*)"[^>]*)>/gi, (match, attrs, src) => {
-        const cleanAttrs = attrs.replace(/style="[^"]*"/gi, '');
-        const embedId = 'embed-' + Math.random().toString(36).substr(2, 6);
-        return `<div class="embed-wrapper" id="${embedId}"><button class="embed-expand-btn" onclick="expandEmbed('${src}', this)"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg> Expandir</button><iframe${cleanAttrs} style="width:100%;min-height:70vh;border:0;display:block;border-radius:0.5rem;" loading="lazy">`;
+      // Padlet: show compact preview card with expand button (no inline iframe)
+      html = html.replace(/<div[^>]*class="padlet-embed"[^>]*>[\s\S]*?<\/div>/gi, '');
+      html = html.replace(/<iframe([^>]*src="([^"]*padlet\.com\/embed\/([^"?]*))[^"]*"[^>]*)>[\s\S]*?<\/iframe>/gi, (match, attrs, src, boardId) => {
+        return `<div style="border:1px solid #e2e8f0;border-radius:0.75rem;overflow:hidden;margin:1rem 0;">
+          <div style="background:linear-gradient(135deg,#4ade80 0%,#22d3ee 100%);padding:2rem 1.5rem;text-align:center;">
+            <svg width="32" height="32" fill="white" viewBox="0 0 24 24" style="margin:0 auto 0.5rem;display:block;opacity:0.9;"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            <div style="color:white;font-weight:700;font-size:0.9375rem;">Padlet interactivo</div>
+            <div style="color:rgba(255,255,255,0.8);font-size:0.8125rem;margin-top:0.25rem;">Tablero colaborativo del curso</div>
+          </div>
+          <div style="padding:0.75rem 1rem;display:flex;align-items:center;justify-content:center;gap:0.75rem;background:white;">
+            <button onclick="expandEmbed('${src}', this)" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.5rem 1.25rem;background:#0f172a;color:white;border:none;border-radius:0.5rem;font-size:0.8125rem;font-weight:600;cursor:pointer;">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+              Abrir Padlet
+            </button>
+            <a href="${src}" target="_blank" rel="noopener" style="font-size:0.75rem;color:#6b7280;text-decoration:underline;">Abrir en nueva pestaña</a>
+          </div>
+        </div>`;
       });
       // Make Canva embeds responsive
       html = html.replace(/<iframe([^>]*src="[^"]*canva\.com[^"]*"[^>]*)>/gi, (match, attrs) => {
