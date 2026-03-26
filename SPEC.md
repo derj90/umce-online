@@ -240,7 +240,7 @@ Las fases futuras son esqueleto — se completan con David antes de empezar.
 
 ## Fase 3: Visado + Curso virtual del estudiante
 
-**Estado**: EN PROGRESO
+**Estado**: COMPLETADA
 **Ultima sesion**: 25-mar-2026
 **Objetivo**: DI/docente visan elementos. El estudiante ve un "curso virtual" armado con lo visado.
 
@@ -273,7 +273,7 @@ Las fases futuras son esqueleto — se completan con David antes de empezar.
 
 ### Fase 3-B: Visado y configuracion DI
 
-- [ ] **3.9 Toggle visado** — En panel PIAC, toggle por elemento visible/oculto para estudiante (pendiente: requiere UI individual por actividad)
+- [x] **3.9 Toggle visado** — Tab "Contenido" en config con toggle por actividad, filtro en API, mostrar/ocultar todas
 - [x] **3.10 UI configuracion DI** — Pestanas: Bienvenida, Politicas, Objetivos semanales, Foros + guardar/cargar
 - [x] **3.11 Preview** — Boton Preview en config abre /curso-virtual/:linkId en nueva pestana
 - [x] **3.12 Publicar/despublicar** — Toggle switch en header del panel config, llama publish/unpublish API
