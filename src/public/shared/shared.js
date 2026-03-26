@@ -143,9 +143,17 @@
       const data = await res.json();
       if (!data.role) return;
 
-      // Inject admin button in desktop nav (before CTA div)
+      // Inject admin + PIAC buttons in desktop nav (before CTA div)
       const cta = document.querySelector('#navbar .flex.items-center.gap-3:last-child');
       if (cta) {
+        // PIAC panel button
+        const piacBtn = document.createElement('a');
+        piacBtn.href = '/piac';
+        piacBtn.className = 'inline-flex items-center gap-1.5 bg-white/15 text-white font-medium text-xs px-3 py-2 rounded-lg hover:bg-white/25 transition-colors border border-white/20';
+        piacBtn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg> PIAC';
+        cta.insertBefore(piacBtn, cta.firstChild);
+
+        // Admin button
         const btn = document.createElement('a');
         btn.href = '/admin';
         btn.className = 'inline-flex items-center gap-1.5 bg-white/15 text-white font-medium text-xs px-3 py-2 rounded-lg hover:bg-white/25 transition-colors border border-white/20';
@@ -156,6 +164,12 @@
       // Inject in mobile menu too
       const mobileMenu = document.querySelector('#mobile-menu .flex.flex-col');
       if (mobileMenu) {
+        const mobilePiacBtn = document.createElement('a');
+        mobilePiacBtn.href = '/piac';
+        mobilePiacBtn.className = 'mt-2 inline-flex items-center justify-center gap-2 bg-white/15 text-white font-bold text-sm px-5 py-2.5 rounded-lg border border-white/20';
+        mobilePiacBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg> Panel PIAC';
+        mobileMenu.appendChild(mobilePiacBtn);
+
         const mobileBtn = document.createElement('a');
         mobileBtn.href = '/admin';
         mobileBtn.className = 'mt-2 inline-flex items-center justify-center gap-2 bg-white/15 text-white font-bold text-sm px-5 py-2.5 rounded-lg border border-white/20';
