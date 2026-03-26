@@ -3235,6 +3235,83 @@ app.post('/api/curso-virtual/:linkId/refresh', authMiddleware, async (req, res) 
   }
 });
 
+// GET book chapters with HTML content (for inline rendering)
+app.get('/api/curso-virtual/book/:platform/:cmid', authMiddleware, async (req, res) => {
+  try {
+    const platformId = req.params.platform;
+    const cmid = parseInt(req.params.cmid);
+    const platform = PLATFORMS.find(p => p.id === platformId);
+    if (!platform) return res.status(400).json({ error: 'Plataforma no encontrada' });
+
+    // Get the book's chapters via core_course_get_contents (we need the file URLs)
+    // First find which course this book belongs to by checking piac_links
+    // Actually, we can get book content directly from the module
+    const contents = await moodleCall(platform, 'core_course_get_contents', {
+      courseid: 0, // We need the courseid - let's get it from the URL params
+    }).catch(() => null);
+
+    // Better approach: use the pluginfile URLs directly
+    // The frontend knows the book URL, so we proxy the chapter content
+    // Let's use mod_book_get_books_by_courses isn't ideal without courseid
+    // Instead, fetch the module info and its files
+
+    // Get all courses the token has access to that contain this cmid
+    // Simpler: the frontend passes courseId too
+    const courseId = parseInt(req.query.courseId);
+    if (!courseId) return res.status(400).json({ error: 'courseId requerido' });
+
+    const courseContents = await moodleCall(platform, 'core_course_get_contents', { courseid: courseId });
+    let bookModule = null;
+    for (const section of courseContents) {
+      for (const mod of (section.modules || [])) {
+        if (mod.id === cmid && mod.modname === 'book') {
+          bookModule = mod;
+          break;
+        }
+      }
+      if (bookModule) break;
+    }
+    if (!bookModule) return res.status(404).json({ error: 'Book no encontrado' });
+
+    // Fetch each chapter's HTML content
+    const chapters = [];
+    for (const content of (bookModule.contents || [])) {
+      if (content.filename && content.filename.endsWith('.html') && content.fileurl) {
+        const chapterUrl = content.fileurl + (content.fileurl.includes('?') ? '&' : '?') + `token=${platform.token}`;
+        try {
+          const chRes = await fetch(chapterUrl, { signal: AbortSignal.timeout(8000) });
+          if (chRes.ok) {
+            let html = await chRes.text();
+            // Sanitize: remove script tags but keep iframes (YouTube, Genially, Padlet, Canva)
+            html = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+            // Fix relative URLs to absolute
+            html = html.replace(/src="\/pluginfile/g, `src="${platform.url}/pluginfile`);
+            // Extract chapter number from filepath
+            const chapterMatch = content.filepath?.match(/\/(\d+)\//);
+            const chapterNum = chapterMatch ? parseInt(chapterMatch[1]) : chapters.length + 1;
+            chapters.push({
+              id: chapterNum,
+              title: content.content || `Capitulo ${chapters.length + 1}`,
+              html,
+              filename: content.filename
+            });
+          }
+        } catch (e) {
+          console.error(`Book chapter fetch error: ${e.message}`);
+        }
+      }
+    }
+
+    res.json({
+      book: { cmid, name: bookModule.name, description: bookModule.description },
+      chapters
+    });
+  } catch (err) {
+    console.error('Book API error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --- API: Curso Virtual Config (Fase 3) ---
 
 // GET config for a piac link
