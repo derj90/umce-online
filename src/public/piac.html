@@ -36,6 +36,20 @@
     .section-header { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #6B7280; margin-bottom: 0.5rem; }
     .config-tab { cursor: pointer; background: none; border-left: 0; border-right: 0; border-top: 0; }
     .config-tab:focus { outline: 2px solid #3B82F6; outline-offset: -2px; }
+    /* Matching map */
+    .nucleus-card { border: 1px solid #E5E7EB; border-radius: 0.75rem; margin-bottom: 0.75rem; overflow: hidden; }
+    .nucleus-header { padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; user-select: none; }
+    .nucleus-header:hover { background: #F9FAFB; }
+    .nucleus-body { border-top: 1px solid #F3F4F6; }
+    .elem-row { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.5rem 1rem; border-bottom: 1px solid #F9FAFB; font-size: 13px; }
+    .elem-row:last-child { border-bottom: none; }
+    .elem-row:hover { background: #FAFBFC; }
+    .elem-icon { width: 22px; height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .elem-matched { color: #065F46; }
+    .elem-missing { color: #991B1B; }
+    .elem-link { color: #1D4ED8; text-decoration: none; font-size: 12px; }
+    .elem-link:hover { text-decoration: underline; }
+    .arrow-icon { color: #9CA3AF; flex-shrink: 0; margin-top: 2px; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -198,17 +212,26 @@
         </div>
       </div>
 
-      <!-- Two-column: PIAC structure / Moodle structure -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-        <!-- PIAC panel -->
-        <div class="panel-card p-5">
-          <div class="section-header">Estructura PIAC (Drive)</div>
-          <div id="piac-structure" class="text-sm text-gray-500">Sin datos — ejecuta "Analizar"</div>
+      <!-- Matching Map: Nucleus → Section with all elements -->
+      <div class="panel-card p-5 mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <div class="section-header mb-0">Mapa del Curso — PIAC vs Moodle</div>
+          <button id="btn-toggle-raw" onclick="toggleRawPanels()" class="text-xs text-gray-400 hover:text-blue-600">Ver datos crudos</button>
         </div>
-        <!-- Moodle panel -->
-        <div class="panel-card p-5">
-          <div class="section-header">Estructura Moodle (API)</div>
-          <div id="moodle-structure" class="text-sm text-gray-500">Sin datos — ejecuta "Analizar"</div>
+        <div id="matching-map" class="text-sm text-gray-500">Sin datos — ejecuta "Analizar"</div>
+      </div>
+
+      <!-- Raw panels (collapsed by default) -->
+      <div id="raw-panels" class="hidden mb-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="panel-card p-5">
+            <div class="section-header">Estructura PIAC (Drive)</div>
+            <div id="piac-structure" class="text-sm text-gray-500">Sin datos</div>
+          </div>
+          <div class="panel-card p-5">
+            <div class="section-header">Estructura Moodle (API)</div>
+            <div id="moodle-structure" class="text-sm text-gray-500">Sin datos</div>
+          </div>
         </div>
       </div>
 
@@ -610,6 +633,43 @@
       }
     }
 
+    const MOD_ICONS = { assign:'T', quiz:'Q', forum:'F', url:'U', lti:'Z', page:'P', resource:'A', book:'B', scorm:'S', h5pactivity:'H', data:'D', folder:'C', lesson:'L', diary:'J', workshop:'W', label:'—' };
+    const MOD_LABELS = { assign:'Tarea', quiz:'Cuestionario', forum:'Foro', url:'URL', lti:'LTI/Zoom', page:'Página', resource:'Archivo', book:'Libro', scorm:'SCORM', h5pactivity:'H5P', data:'Base datos', folder:'Carpeta', lesson:'Lección', diary:'Diario', workshop:'Taller', label:'Etiqueta' };
+    const MOD_COLORS = { assign:'#DBEAFE', quiz:'#E0E7FF', forum:'#FEF3C7', url:'#F3E8FF', lti:'#CFFAFE', page:'#D1FAE5', resource:'#FEE2E2', book:'#DBEAFE', scorm:'#FDF2F8', h5pactivity:'#F5F3FF', data:'#ECFDF5' };
+
+    function moodleModUrl(modname, modId) {
+      if (!currentDetail || !currentDetail.link) return null;
+      const base = PLATFORM_URLS[currentDetail.link.moodle_platform];
+      if (!base || !modId) return null;
+      return `${base}/mod/${modname}/view.php?id=${modId}`;
+    }
+    function moodleCourseUrl() {
+      if (!currentDetail || !currentDetail.link) return null;
+      const base = PLATFORM_URLS[currentDetail.link.moodle_platform];
+      return base ? `${base}/course/view.php?id=${currentDetail.link.moodle_course_id}` : null;
+    }
+
+    function toggleRawPanels() {
+      const el = document.getElementById('raw-panels');
+      el.classList.toggle('hidden');
+      document.getElementById('btn-toggle-raw').textContent = el.classList.contains('hidden') ? 'Ver datos crudos' : 'Ocultar datos crudos';
+    }
+
+    function renderModuleEl(mod, showSection) {
+      const icon = MOD_ICONS[mod.modname] || '?';
+      const label = MOD_LABELS[mod.modname] || mod.modname;
+      const bg = MOD_COLORS[mod.modname] || '#F3F4F6';
+      const url = moodleModUrl(mod.modname, mod.id);
+      const vis = mod.visible === false ? ' <span class="badge badge-critical" style="font-size:9px">oculto</span>' : '';
+      const secLabel = showSection ? `<span class="text-xs text-gray-400 ml-1">(S${mod.sectionNumber || '?'})</span>` : '';
+      const link = url ? `<a href="${url}" target="_blank" class="elem-link" title="Abrir en Moodle">abrir &nearr;</a>` : '';
+      return `<div class="flex items-center gap-2 flex-1 min-w-0">
+        <span class="elem-icon" style="background:${bg}">${icon}</span>
+        <span class="text-gray-700 truncate" title="${(mod.name||'').replace(/"/g,'&quot;')}">${mod.name || 'Sin nombre'}${vis}${secLabel}</span>
+        ${link}
+      </div>`;
+    }
+
     function renderDetail() {
       const d = currentDetail;
       if (!d) return;
@@ -620,7 +680,6 @@
       document.getElementById('analyze-status').textContent = '';
       document.getElementById('btn-view-curso').href = `/curso-virtual/${currentLinkId}`;
 
-      // Load alerts
       loadAlerts();
 
       // Summary cards
@@ -637,7 +696,84 @@
         document.getElementById('summary-cards').classList.add('hidden');
       }
 
-      // PIAC structure
+      // ===== MATCHING MAP =====
+      const mapEl = document.getElementById('matching-map');
+      const courseUrl = moodleCourseUrl();
+      if (d.matching && d.matching.matches_json) {
+        const matchList = d.matching.matches_json;
+        let html = '';
+        if (courseUrl) {
+          html += `<div class="text-xs text-gray-400 mb-3"><a href="${courseUrl}" target="_blank" class="elem-link">Abrir curso en Moodle &nearr;</a></div>`;
+        }
+        matchList.forEach((m, idx) => {
+          const nuc = m.nucleo || {};
+          const sec = m.section;
+          const matched = m.sectionMatched;
+          const borderColor = matched ? '#10B981' : '#EF4444';
+          const headerBg = matched ? '#F0FDF4' : '#FEF2F2';
+
+          html += `<div class="nucleus-card" style="border-left: 4px solid ${borderColor}">`;
+          html += `<div class="nucleus-header" style="background:${headerBg}" onclick="this.nextElementSibling.classList.toggle('hidden')">`;
+          html += `<div class="flex-1">`;
+          html += `<div class="font-medium text-gray-800">Núcleo ${nuc.numero || idx+1}: ${nuc.nombre || 'Sin nombre'}</div>`;
+          if (sec) {
+            html += `<div class="text-xs text-gray-500 mt-0.5">→ Sección ${sec.number}: ${sec.name}${sec.visible === false ? ' <span class="badge badge-critical" style="font-size:9px">oculta</span>' : ''}</div>`;
+          } else {
+            html += `<div class="text-xs text-red-500 mt-0.5">Sin sección correspondiente en Moodle</div>`;
+          }
+          html += `</div>`;
+          const elemCount = (m.elements || []).length;
+          const matchedCount = (m.elements || []).filter(e => e.matched).length;
+          html += `<span class="text-xs text-gray-400">${matchedCount}/${elemCount} elem.</span>`;
+          html += `<svg class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>`;
+          html += `</div>`; // header
+
+          html += `<div class="nucleus-body">`;
+          if (nuc.rf) {
+            html += `<div class="px-4 py-2 text-xs text-gray-500 bg-gray-50 border-b border-gray-100"><strong>RF:</strong> ${(nuc.rf || '').substring(0, 200)}${(nuc.rf || '').length > 200 ? '...' : ''}</div>`;
+          }
+          (m.elements || []).forEach(el => {
+            html += `<div class="elem-row">`;
+            // PIAC side
+            const piac = el.piac || {};
+            const typeLabel = piac.type === 'sesion' ? 'Sesión' : piac.type === 'evaluacion' ? 'Evaluación' : piac.type === 'foros' ? 'Foros' : piac.type === 'herramienta' ? 'Herramienta' : piac.type === 'base_datos' ? 'BD' : piac.type === 'contenido' ? 'Contenido' : piac.type === 'contenido_extra' ? 'Extra' : piac.type || '?';
+            html += `<div class="flex-1 min-w-0">`;
+            html += `<div class="text-xs text-gray-400">${typeLabel}</div>`;
+            html += `<div class="text-gray-700 truncate" title="${(piac.name||'').replace(/"/g,'&quot;')}">${piac.name || '—'}</div>`;
+            if (piac.sincronico) html += `<div class="text-xs text-blue-500">Sincrónico: ${piac.sincronico}</div>`;
+            if (piac.asincronico) html += `<div class="text-xs text-purple-500">Asincrónico: ${piac.asincronico}</div>`;
+            if (piac.recursos) html += `<div class="text-xs text-gray-400">Recursos: ${Array.isArray(piac.recursos) ? piac.recursos.join(', ') : piac.recursos}</div>`;
+            html += `</div>`;
+
+            // Arrow
+            html += `<span class="arrow-icon mt-2">${el.matched ? '→' : '✗'}</span>`;
+
+            // Moodle side
+            html += `<div class="flex-1 min-w-0">`;
+            if (el.matched && el.moodle) {
+              if (Array.isArray(el.moodle)) {
+                el.moodle.forEach(mod => { html += renderModuleEl(mod, !!mod.sectionName); });
+              } else {
+                html += renderModuleEl(el.moodle, false);
+              }
+            } else {
+              html += `<div class="text-xs elem-missing italic">Sin match en Moodle</div>`;
+            }
+            html += `</div>`;
+            html += `</div>`; // elem-row
+          });
+          if ((m.elements || []).length === 0) {
+            html += `<div class="px-4 py-3 text-xs text-gray-400 italic">Sin elementos mapeados</div>`;
+          }
+          html += `</div>`; // body
+          html += `</div>`; // nucleus-card
+        });
+        mapEl.innerHTML = html || '<span class="text-gray-400">Sin datos de matching</span>';
+      } else {
+        mapEl.innerHTML = '<span class="text-gray-400">Sin datos — ejecuta "Analizar"</span>';
+      }
+
+      // ===== RAW PIAC STRUCTURE =====
       const piacEl = document.getElementById('piac-structure');
       if (d.parsed && d.parsed.parsed_json) {
         const p = d.parsed.parsed_json;
@@ -666,10 +802,10 @@
         }
         piacEl.innerHTML = html || 'Sin estructura';
       } else {
-        piacEl.innerHTML = '<span class="text-gray-400">Sin datos — ejecuta "Analizar"</span>';
+        piacEl.innerHTML = '<span class="text-gray-400">Sin datos</span>';
       }
 
-      // Moodle structure
+      // ===== RAW MOODLE STRUCTURE =====
       const moodleEl = document.getElementById('moodle-structure');
       if (d.snapshot && d.snapshot.snapshot_json) {
         const snap = d.snapshot.snapshot_json;
@@ -687,10 +823,10 @@
         });
         moodleEl.innerHTML = html;
       } else {
-        moodleEl.innerHTML = '<span class="text-gray-400">Sin datos — ejecuta "Analizar"</span>';
+        moodleEl.innerHTML = '<span class="text-gray-400">Sin datos</span>';
       }
 
-      // Discrepancies
+      // ===== DISCREPANCIES =====
       const discEl = document.getElementById('discrepancies-list');
       if (d.discrepancies && d.discrepancies.length > 0) {
         const severityOrder = { critical: 0, warning: 1, info: 2 };
@@ -701,7 +837,6 @@
           const resolvedClass = disc.resolved ? 'opacity-60' : '';
           let actionHtml = '';
           if (disc.resolved) {
-            // Show resolution info
             let resInfo = '';
             if (disc.resolution_type === 'linked_activity') resInfo = `Vinculado a: ${disc.linked_mod_title || disc.linked_mod_name || 'actividad Moodle'}`;
             else if (disc.resolution_type === 'external_url') resInfo = `Recurso externo: ${disc.external_url || ''}`;
@@ -714,6 +849,15 @@
           } else {
             actionHtml = `<button onclick="openResolvePanel(${disc.id})" class="text-xs text-blue-600 hover:text-blue-800 whitespace-nowrap font-medium">Resolver</button>`;
           }
+          // Build Moodle link for the discrepancy if it references a moodle element
+          let moodleLink = '';
+          if (disc.moodle_element) {
+            const modMatch = disc.moodle_element.match(/^(\w+):\s*"(.+?)"\s*\(Secci/);
+            if (modMatch) {
+              const mUrl = moodleCourseUrl();
+              if (mUrl) moodleLink = ` <a href="${mUrl}#section-${disc.moodle_element.match(/Sección (\d+)/)?.[1] || 0}" target="_blank" class="elem-link">ver &nearr;</a>`;
+            }
+          }
           html += `<div class="disc-row py-2 px-2 rounded ${resolvedClass}" id="disc-${disc.id}">
             <div class="flex items-start gap-3">
               <span class="badge ${badgeClass} mt-0.5">${disc.severity}</span>
@@ -721,7 +865,7 @@
                 <div class="text-sm text-gray-800">${disc.description}</div>
                 <div class="text-xs text-gray-400 mt-0.5">
                   ${disc.piac_element ? `PIAC: ${disc.piac_element}` : ''}
-                  ${disc.moodle_element ? ` | Moodle: ${disc.moodle_element}` : ''}
+                  ${disc.moodle_element ? ` | Moodle: ${disc.moodle_element}${moodleLink}` : ''}
                 </div>
                 ${disc.resolved ? `<div class="mt-1">${actionHtml}</div>` : ''}
               </div>
