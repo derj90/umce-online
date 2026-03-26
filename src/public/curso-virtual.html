@@ -100,9 +100,9 @@
     .book-html tr:nth-child(even) td { background: #f9fafb; }
     .book-html .no-overflow { overflow: hidden; }
     .book-html iframe { width: 100% !important; max-width: 100% !important; border: 0 !important; }
-    .book-html .padlet-embed { width: 100% !important; border: none !important; box-sizing: border-box; }
+    .book-html .padlet-embed { width: calc(100% + 2rem) !important; margin-left: -1rem; margin-right: -1rem; border: none !important; box-sizing: border-box; }
     .book-html .padlet-embed p { margin: 0; padding: 0; }
-    .book-html .padlet-embed iframe { min-height: 640px !important; }
+    .book-html .padlet-embed iframe { min-height: 640px !important; width: 100% !important; }
 
     /* Book tabs styling */
     .book-ch-tab[aria-selected="true"] { border-bottom: 2px solid #0033A1; color: #0033A1; font-weight: 600; }
@@ -345,7 +345,7 @@
             </div>
             ${statusIcon}
           </div>
-          <div id="book-content-${el.id}" class="hidden mt-3 mb-4 border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm"></div>
+          <div id="book-content-${el.id}" class="hidden mt-3 mb-4 border border-gray-200 rounded-xl overflow-x-auto bg-white shadow-sm"></div>
         </div>`;
       }
 
