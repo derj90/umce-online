@@ -4013,7 +4013,7 @@ app.get('/api/curso-virtual/forum/:platform/:forumId', authMiddleware, async (re
     const platform = PLATFORMS.find(p => p.id === platformId);
     if (!platform) return res.status(400).json({ error: 'Plataforma no encontrada' });
 
-    const result = await moodleCall(platform, 'mod_forum_get_forum_discussions', { forumid: forumId, sortby: 'timemodified', sortdirection: 'DESC' });
+    const result = await moodleCall(platform, 'mod_forum_get_forum_discussions', { forumid: forumId });
     const discussions = (result.discussions || []).map(d => {
       let msg = d.message || '';
       // Fix relative pluginfile URLs
