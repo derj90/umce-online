@@ -2958,11 +2958,18 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
     const supportPatterns = /synchronous|sesion.?es? sincr|grabacion|uso exclusivo|presentaci|general/i;
     const contentPatterns = /core|nucleo|núcleo|unidad|module|tema|bloque/i;
 
-    // Shared resources from S0 and support sections
+    // Visado: check if DI marked an activity as hidden
+    const actConfig = resolvedConfig?.actividades_config || {};
+    function isVisadoVisible(moduleId) {
+      const cfg = actConfig[String(moduleId)];
+      return !cfg || cfg.visible !== false;
+    }
+
+    // Shared resources from S0 and support sections — filtered by DI visado
     const sharedResources = [];
     sections.filter(s => s.number === 0 || supportPatterns.test(s.name || '')).forEach(s => {
       (s.modules || []).forEach(m => {
-        if (m.visible !== false && m.modname !== 'label') {
+        if (m.visible !== false && m.modname !== 'label' && isVisadoVisible(m.id)) {
           sharedResources.push({ id: m.id, name: m.name, modname: m.modname, url: m.url, description: m.description, sectionName: s.name });
         }
       });
@@ -2992,24 +2999,26 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
       const weekStart = nucleo.semanas?.inicio;
       const weekEnd = nucleo.semanas?.fin;
 
-      // Content (books, pages, resources)
-      const contenido = modules.filter(m => ['book', 'page', 'resource', 'url', 'scorm', 'h5pactivity', 'lesson'].includes(m.modname) && m.visible !== false).map(m => ({
+      // Content (books, pages, resources) — filtered by Moodle visibility AND DI visado
+      const contenido = modules.filter(m => ['book', 'page', 'resource', 'url', 'scorm', 'h5pactivity', 'lesson'].includes(m.modname) && m.visible !== false && isVisadoVisible(m.id)).map(m => ({
         id: m.id, name: m.name, modname: m.modname, url: m.url, description: m.description
       }));
 
-      // Forums for this nucleo's weeks
+      // Forums for this nucleo's weeks — filtered by DI visado
       const foros = [];
       if (weekStart && weekEnd) {
         for (let i = weekStart; i <= weekEnd; i++) {
           if (forumsBySession[i]) {
             const f = forumsBySession[i];
-            foros.push({ id: f.id, name: f.name, url: f.url, session: i });
+            if (isVisadoVisible(f.id)) {
+              foros.push({ id: f.id, name: f.name, url: f.url, session: i });
+            }
           }
         }
       }
 
-      // Evaluaciones from this section
-      const evaluaciones = modules.filter(m => ['assign', 'quiz'].includes(m.modname)).map(m => ({
+      // Evaluaciones from this section — filtered by DI visado
+      const evaluaciones = modules.filter(m => ['assign', 'quiz'].includes(m.modname) && isVisadoVisible(m.id)).map(m => ({
         id: m.id, name: m.name, modname: m.modname, url: m.url, dates: m.dates
       }));
 
