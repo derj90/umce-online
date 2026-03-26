@@ -3678,10 +3678,26 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
       publicado: config.publicado || false
     } : null;
 
+    // Fetch live forum IDs (snapshot may not have forumId if taken before this feature)
+    const platformObj = PLATFORMS.find(p => p.id === link.moodle_platform);
+    let liveForumMap = {};
+    if (platformObj) {
+      try {
+        const forums = await moodleCall(platformObj, 'mod_forum_get_forums_by_courses', { 'courseids[0]': link.moodle_course_id }).catch(() => []);
+        (Array.isArray(forums) ? forums : []).forEach(f => { liveForumMap[f.cmid] = f.id; });
+      } catch {}
+    }
+
     // Build the merged "curso virtual" view
     const nucleos = piac.nucleos || [];
     const sections = snapshot.sections || [];
-    const allModules = sections.flatMap(s => (s.modules || []).map(m => ({ ...m, sectionNumber: s.number, sectionName: s.name })));
+    const allModules = sections.flatMap(s => (s.modules || []).map(m => ({
+      ...m,
+      sectionNumber: s.number,
+      sectionName: s.name,
+      // Inject live forumId if missing from snapshot
+      ...(m.modname === 'forum' && !m.forumId && liveForumMap[m.id] ? { forumId: liveForumMap[m.id] } : {})
+    })));
 
     // Find support elements (shared across nucleos)
     const supportPatterns = /synchronous|sesion.?es? sincr|grabacion|uso exclusivo|presentaci|general/i;
@@ -3793,8 +3809,6 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
         totalElementos: contenido.length + foros.length + evaluaciones.length
       };
     });
-
-    const platformObj = PLATFORMS.find(p => p.id === link.moodle_platform);
 
     res.json({
       curso: {
