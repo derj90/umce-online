@@ -114,7 +114,7 @@
     .book-html iframe { width: 100% !important; max-width: 100% !important; border: 0 !important; }
     .book-html .padlet-embed { width: calc(100% + 2rem) !important; margin-left: -1rem; margin-right: -1rem; border: none !important; box-sizing: border-box; }
     .book-html .padlet-embed p { margin: 0; padding: 0; }
-    .book-html .padlet-embed iframe { min-height: 640px !important; width: 100% !important; }
+    .book-html .padlet-embed iframe { min-height: 80vh !important; width: 100% !important; }
 
     /* Book tabs styling */
     .book-ch-tab[aria-selected="true"] { border-bottom: 2px solid #0033A1; color: #0033A1; font-weight: 600; }
@@ -432,7 +432,7 @@
             </div>
             ${statusIcon}
           </div>
-          <div id="book-content-${el.id}" class="hidden mt-2 mb-3 border border-gray-200 rounded-xl overflow-x-auto bg-white shadow-sm"></div>
+          <div id="book-content-${el.id}" class="hidden mt-2 mb-3 border border-gray-200 rounded-xl bg-white shadow-sm" style="overflow:visible;"></div>
         </div>`;
       }
 
@@ -450,7 +450,7 @@
             </div>
             ${statusIcon}
           </div>
-          <div id="page-content-${el.id}" class="hidden mt-2 mb-3 border border-gray-200 rounded-xl overflow-x-auto bg-white shadow-sm"></div>
+          <div id="page-content-${el.id}" class="hidden mt-2 mb-3 border border-gray-200 rounded-xl bg-white shadow-sm" style="overflow:visible;"></div>
         </div>`;
       }
 
@@ -490,7 +490,7 @@
             </div>
             ${statusIcon}
           </div>
-          <div id="forum-content-${el.id}" class="hidden mt-2 mb-3 border border-gray-200 rounded-xl overflow-x-auto bg-white shadow-sm"></div>
+          <div id="forum-content-${el.id}" class="hidden mt-2 mb-3 border border-gray-200 rounded-xl bg-white shadow-sm" style="overflow:visible;"></div>
         </div>`;
       }
 
@@ -1191,7 +1191,7 @@
       html = html.replace(/<iframe([^>]*src="[^"]*padlet\.com[^"]*"[^>]*)>/gi, (match, attrs) => {
         // Remove original style and force responsive
         const cleanAttrs = attrs.replace(/style="[^"]*"/gi, '');
-        return `<iframe${cleanAttrs} style="width:100%;min-height:640px;border:0;display:block;border-radius:0.5rem;" loading="lazy">`;
+        return `<iframe${cleanAttrs} style="width:100%;min-height:80vh;border:0;display:block;border-radius:0.5rem;" loading="lazy">`;
       });
       // Make Canva embeds responsive
       html = html.replace(/<iframe([^>]*src="[^"]*canva\.com[^"]*"[^>]*)>/gi, (match, attrs) => {
