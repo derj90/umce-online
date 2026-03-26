@@ -3605,15 +3605,39 @@ app.post('/api/piac/:linkId/analyze', adminOrEditorMiddleware, async (req, res) 
   }
 });
 
-// POST /api/piac/discrepancy/:id/resolve — mark discrepancy as resolved
+// POST /api/piac/discrepancy/:id/resolve — resolve with action data
 app.post('/api/piac/discrepancy/:id/resolve', adminOrEditorMiddleware, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
-    await portalMutate('discrepancies', 'PATCH', {
+    const { resolution_type, resolution_note, linked_cmid, linked_mod_name, linked_mod_title, external_url } = req.body || {};
+    const patchData = {
       resolved: true, resolved_by: req.userEmail, resolved_at: new Date().toISOString()
+    };
+    if (resolution_type) patchData.resolution_type = resolution_type;
+    if (resolution_note) patchData.resolution_note = resolution_note;
+    if (linked_cmid) patchData.linked_cmid = linked_cmid;
+    if (linked_mod_name) patchData.linked_mod_name = linked_mod_name;
+    if (linked_mod_title) patchData.linked_mod_title = linked_mod_title;
+    if (external_url) patchData.external_url = external_url;
+    await portalMutate('discrepancies', 'PATCH', patchData, `id=eq.${id}`);
+    res.json({ resolved: true, resolution_type: resolution_type || 'legacy' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/piac/discrepancy/:id/unresolve — reopen a discrepancy
+app.post('/api/piac/discrepancy/:id/unresolve', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+    await portalMutate('discrepancies', 'PATCH', {
+      resolved: false, resolved_by: null, resolved_at: null,
+      resolution_type: null, resolution_note: null,
+      linked_cmid: null, linked_mod_name: null, linked_mod_title: null, external_url: null
     }, `id=eq.${id}`);
-    res.json({ resolved: true });
+    res.json({ unresolved: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -19,6 +19,16 @@
     .badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
     .disc-row { transition: background 0.15s; }
     .disc-row:hover { background: #F9FAFB; }
+    .resolve-panel { background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 0.5rem; padding: 0.75rem; margin-top: 0.5rem; }
+    .resolve-panel select, .resolve-panel input, .resolve-panel textarea { font-size: 13px; padding: 6px 8px; border: 1px solid #D1D5DB; border-radius: 6px; width: 100%; }
+    .resolve-panel select:focus, .resolve-panel input:focus, .resolve-panel textarea:focus { outline: none; border-color: #0033A1; box-shadow: 0 0 0 2px rgba(0,51,161,0.1); }
+    .resolve-btn { font-size: 12px; padding: 4px 12px; border-radius: 6px; font-weight: 500; cursor: pointer; border: none; }
+    .resolve-btn-primary { background: #0033A1; color: white; }
+    .resolve-btn-primary:hover { background: #002480; }
+    .resolve-btn-secondary { background: #F3F4F6; color: #374151; }
+    .resolve-btn-secondary:hover { background: #E5E7EB; }
+    .resolve-btn-link { background: none; color: #0033A1; text-decoration: underline; padding: 4px 0; }
+    .resolution-info { font-size: 11px; color: #6B7280; margin-top: 4px; padding: 4px 8px; background: #F0FDF4; border-radius: 4px; }
     .fade-in { animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
     .panel-card { background: white; border: 1px solid #E5E7EB; border-radius: 0.75rem; }
@@ -357,6 +367,13 @@
     let currentLinks = [];
     let currentLinkId = null;
     let currentDetail = null;
+    const PLATFORM_URLS = {
+      evirtual: 'https://evirtual.umce.cl',
+      practica: 'https://evirtual-practica.umce.cl',
+      virtual: 'https://virtual.umce.cl',
+      pregrado: 'https://evirtual-pregrado.umce.cl',
+      postgrado: 'https://evirtual-postgrado.umce.cl'
+    };
 
     async function init() {
       try {
@@ -577,17 +594,36 @@
         let html = `<div class="text-xs text-gray-400 mb-2">${sorted.length} discrepancia${sorted.length > 1 ? 's' : ''}</div>`;
         sorted.forEach(disc => {
           const badgeClass = disc.severity === 'critical' ? 'badge-critical' : disc.severity === 'warning' ? 'badge-warning' : 'badge-info';
-          const resolvedClass = disc.resolved ? 'opacity-50 line-through' : '';
-          html += `<div class="disc-row flex items-start gap-3 py-2 px-2 rounded ${resolvedClass}">
-            <span class="badge ${badgeClass} mt-0.5">${disc.severity}</span>
-            <div class="flex-1">
-              <div class="text-sm text-gray-800">${disc.description}</div>
-              <div class="text-xs text-gray-400 mt-0.5">
-                ${disc.piac_element ? `PIAC: ${disc.piac_element}` : ''}
-                ${disc.moodle_element ? ` | Moodle: ${disc.moodle_element}` : ''}
+          const resolvedClass = disc.resolved ? 'opacity-60' : '';
+          let actionHtml = '';
+          if (disc.resolved) {
+            // Show resolution info
+            let resInfo = '';
+            if (disc.resolution_type === 'linked_activity') resInfo = `Vinculado a: ${disc.linked_mod_title || disc.linked_mod_name || 'actividad Moodle'}`;
+            else if (disc.resolution_type === 'external_url') resInfo = `Recurso externo: ${disc.external_url || ''}`;
+            else if (disc.resolution_type === 'dismissed') resInfo = 'Descartada';
+            else if (disc.resolution_type === 'fixed_in_moodle') resInfo = 'Corregido en Moodle';
+            else resInfo = 'Resuelta';
+            if (disc.resolution_note) resInfo += ` — ${disc.resolution_note}`;
+            actionHtml = `<div class="resolution-info">${resInfo}</div>
+              <button onclick="unresolveDisc(${disc.id})" class="text-xs text-gray-400 hover:text-red-600 mt-1">Reabrir</button>`;
+          } else {
+            actionHtml = `<button onclick="openResolvePanel(${disc.id})" class="text-xs text-blue-600 hover:text-blue-800 whitespace-nowrap font-medium">Resolver</button>`;
+          }
+          html += `<div class="disc-row py-2 px-2 rounded ${resolvedClass}" id="disc-${disc.id}">
+            <div class="flex items-start gap-3">
+              <span class="badge ${badgeClass} mt-0.5">${disc.severity}</span>
+              <div class="flex-1">
+                <div class="text-sm text-gray-800">${disc.description}</div>
+                <div class="text-xs text-gray-400 mt-0.5">
+                  ${disc.piac_element ? `PIAC: ${disc.piac_element}` : ''}
+                  ${disc.moodle_element ? ` | Moodle: ${disc.moodle_element}` : ''}
+                </div>
+                ${disc.resolved ? `<div class="mt-1">${actionHtml}</div>` : ''}
               </div>
+              ${!disc.resolved ? actionHtml : ''}
             </div>
-            ${!disc.resolved ? `<button onclick="resolveDisc(${disc.id})" class="text-xs text-green-600 hover:text-green-800 whitespace-nowrap">Resolver</button>` : '<span class="text-xs text-gray-400">Resuelto</span>'}
+            <div id="resolve-panel-${disc.id}" class="hidden"></div>
           </div>`;
         });
         discEl.innerHTML = html;
@@ -642,13 +678,113 @@
       }
     }
 
-    async function resolveDisc(id) {
+    function openResolvePanel(discId) {
+      const panel = document.getElementById(`resolve-panel-${discId}`);
+      if (!panel || !panel.classList.contains('hidden')) { if (panel) panel.classList.add('hidden'); return; }
+
+      // Get all activities from snapshot for the dropdown
+      const sections = (currentDetail && currentDetail.snapshot && currentDetail.snapshot.snapshot_json) ? currentDetail.snapshot.snapshot_json.sections || [] : [];
+      const modIcons = { assign: 'Tarea', quiz: 'Cuestionario', forum: 'Foro', url: 'URL', lti: 'LTI', page: 'Pagina', resource: 'Archivo', book: 'Libro', scorm: 'SCORM', h5pactivity: 'H5P', data: 'Base datos', folder: 'Carpeta', lesson: 'Leccion', diary: 'Diario', workshop: 'Taller' };
+      let activityOptions = '<option value="">— Seleccionar actividad —</option>';
+      sections.forEach(s => {
+        (s.modules || []).forEach(m => {
+          const typeLabel = modIcons[m.modname] || m.modname;
+          activityOptions += `<option value="${m.id}" data-modname="${m.modname}" data-title="${(m.name || '').replace(/"/g, '&quot;')}">[${typeLabel}] ${m.name || 'Sin nombre'} (Sec. ${s.number})</option>`;
+        });
+      });
+
+      // Build Moodle URL for creating new activity
+      const link = currentDetail && currentDetail.link;
+      const moodleBase = link ? (PLATFORM_URLS[link.moodle_platform] || '') : '';
+      const courseId = link ? link.moodle_course_id : '';
+      const moodleEditUrl = moodleBase && courseId ? `${moodleBase}/course/view.php?id=${courseId}&notifyeditingon=1` : '';
+
+      panel.innerHTML = `<div class="resolve-panel fade-in">
+        <div class="text-xs font-semibold text-gray-600 mb-2">Como resolver esta discrepancia:</div>
+
+        <div class="mb-3">
+          <label class="text-xs text-gray-500 block mb-1">Vincular a actividad existente en Moodle</label>
+          <select id="rp-activity-${discId}" onchange="rpActivityChanged(${discId})">
+            ${activityOptions}
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="text-xs text-gray-500 block mb-1">O vincular recurso externo (Google Forms, Padlet, etc.)</label>
+          <input type="url" id="rp-url-${discId}" placeholder="https://..." />
+        </div>
+
+        <div class="mb-3">
+          <label class="text-xs text-gray-500 block mb-1">Nota (opcional)</label>
+          <textarea id="rp-note-${discId}" rows="2" placeholder="Ej: El docente usa Google Forms para esta evaluacion..."></textarea>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="submitResolve(${discId}, 'linked_activity')" id="rp-btn-link-${discId}" class="resolve-btn resolve-btn-primary" disabled>Vincular actividad</button>
+          <button onclick="submitResolve(${discId}, 'external_url')" id="rp-btn-ext-${discId}" class="resolve-btn resolve-btn-primary" disabled>Vincular URL</button>
+          <button onclick="submitResolve(${discId}, 'fixed_in_moodle')" class="resolve-btn resolve-btn-secondary">Ya corregido en Moodle</button>
+          <button onclick="submitResolve(${discId}, 'dismissed')" class="resolve-btn resolve-btn-secondary">No aplica</button>
+          ${moodleEditUrl ? `<a href="${moodleEditUrl}" target="_blank" class="resolve-btn resolve-btn-link">Abrir curso en Moodle &rarr;</a>` : ''}
+          <button onclick="document.getElementById('resolve-panel-${discId}').classList.add('hidden')" class="resolve-btn resolve-btn-secondary">Cancelar</button>
+        </div>
+      </div>`;
+      panel.classList.remove('hidden');
+    }
+
+    function rpActivityChanged(discId) {
+      const sel = document.getElementById(`rp-activity-${discId}`);
+      const btn = document.getElementById(`rp-btn-link-${discId}`);
+      if (btn) btn.disabled = !sel.value;
+    }
+
+    // Enable URL button when input has value
+    document.addEventListener('input', function(e) {
+      if (e.target.id && e.target.id.startsWith('rp-url-')) {
+        const discId = e.target.id.replace('rp-url-', '');
+        const btn = document.getElementById(`rp-btn-ext-${discId}`);
+        if (btn) btn.disabled = !e.target.value.trim();
+      }
+    });
+
+    async function submitResolve(discId, type) {
+      const body = { resolution_type: type };
+      const note = document.getElementById(`rp-note-${discId}`);
+      if (note && note.value.trim()) body.resolution_note = note.value.trim();
+
+      if (type === 'linked_activity') {
+        const sel = document.getElementById(`rp-activity-${discId}`);
+        if (!sel || !sel.value) return;
+        const opt = sel.options[sel.selectedIndex];
+        body.linked_cmid = parseInt(sel.value);
+        body.linked_mod_name = opt.dataset.modname || '';
+        body.linked_mod_title = opt.dataset.title || '';
+      } else if (type === 'external_url') {
+        const urlInput = document.getElementById(`rp-url-${discId}`);
+        if (!urlInput || !urlInput.value.trim()) return;
+        body.external_url = urlInput.value.trim();
+      }
+
       try {
-        const res = await fetch(`/api/piac/discrepancy/${id}/resolve`, { method: 'POST' });
+        const res = await fetch(`/api/piac/discrepancy/${discId}/resolve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
         if (!res.ok) throw new Error('Error');
         openDetail(currentLinkId);
       } catch (e) {
         alert('Error resolviendo: ' + e.message);
+      }
+    }
+
+    async function unresolveDisc(discId) {
+      if (!confirm('Reabrir esta discrepancia?')) return;
+      try {
+        const res = await fetch(`/api/piac/discrepancy/${discId}/unresolve`, { method: 'POST' });
+        if (!res.ok) throw new Error('Error');
+        openDetail(currentLinkId);
+      } catch (e) {
+        alert('Error: ' + e.message);
       }
     }
 

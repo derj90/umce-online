@@ -75,8 +75,22 @@ CREATE TABLE IF NOT EXISTS portal.discrepancies (
     resolved            BOOLEAN DEFAULT false,
     resolved_by         VARCHAR,
     resolved_at         TIMESTAMPTZ,
+    resolution_type     VARCHAR CHECK (resolution_type IN ('linked_activity', 'external_url', 'dismissed', 'fixed_in_moodle')),
+    resolution_note     TEXT,
+    linked_cmid         INT,              -- Moodle course module ID vinculado
+    linked_mod_name     VARCHAR,          -- modname del modulo vinculado (assign, url, quiz, etc.)
+    linked_mod_title    VARCHAR,          -- nombre del modulo vinculado
+    external_url        TEXT,             -- URL externa (Google Forms, Padlet, etc.)
     created_at          TIMESTAMPTZ DEFAULT now()
 );
+
+-- Migration: add resolution columns if table already exists
+ALTER TABLE portal.discrepancies ADD COLUMN IF NOT EXISTS resolution_type VARCHAR CHECK (resolution_type IN ('linked_activity', 'external_url', 'dismissed', 'fixed_in_moodle'));
+ALTER TABLE portal.discrepancies ADD COLUMN IF NOT EXISTS resolution_note TEXT;
+ALTER TABLE portal.discrepancies ADD COLUMN IF NOT EXISTS linked_cmid INT;
+ALTER TABLE portal.discrepancies ADD COLUMN IF NOT EXISTS linked_mod_name VARCHAR;
+ALTER TABLE portal.discrepancies ADD COLUMN IF NOT EXISTS linked_mod_title VARCHAR;
+ALTER TABLE portal.discrepancies ADD COLUMN IF NOT EXISTS external_url TEXT;
 
 -- ---------------------------------------------------------------------------
 -- INDEXES
