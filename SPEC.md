@@ -240,22 +240,51 @@ Las fases futuras son esqueleto — se completan con David antes de empezar.
 
 ## Fase 3: Visado + Curso virtual del estudiante
 
-**Estado**: PENDIENTE
-**Ultima sesion**: —
+**Estado**: EN PROGRESO
+**Ultima sesion**: 25-mar-2026
 **Objetivo**: DI/docente visan elementos. El estudiante ve un "curso virtual" armado con lo visado.
 
-### Esqueleto (se detalla con David antes de ejecutar)
-- [ ] 3.1 Toggle de visado por elemento (UI para DI/docente)
-- [ ] 3.2 Leer estado de visibilidad de Moodle (oculto / oculto-por-enlace / visible)
-- [ ] 3.3 Regla: "oculto pero disponible por enlace" requiere aprobacion manual
-- [ ] 3.4 Vista "curso virtual" para estudiante — mezcla PIAC (estructura) + Moodle (contenido visado)
-- [ ] 3.5 Click en elemento → redirige al recurso en Moodle
-- [ ] 3.6 Temporalidad configurable por DI (fecha auto o manual)
-- [ ] 3.7 Referencia visual: induccion2026.udfv.cloud como modelo de experiencia
+### Leer antes de empezar
+- [x] CURSO-VIRTUAL-SPEC.md — spec completo del curso virtual (v2, 1054 lineas, 19 secciones)
+- [x] SESSION-NOTES-CURSO-VIRTUAL.md — decisiones de David validadas con Cowork
+- [x] `src/server.js` lineas 2893-3021 — API /api/curso-virtual/:linkId existente
+- [x] `src/public/curso-virtual.html` — HTML actual (se reescribe)
+- [x] `src/schema-piac.sql` — schema actual de tablas PIAC
+- [x] induccion2026.udfv.cloud — patrones UX extraidos (paleta UMCE, split layout, sidebar, progresion)
+- [ ] `src/server.js` lineas 1202-1399 — chatbot API (leer al llegar a 3.7)
+
+### Referencia visual (extraida de induccion2026.udfv.cloud)
+- Paleta: azul UMCE #1e3a8a + dorado #d4940f + arena #ede5d8
+- Layout: sidebar con secciones jerarquicas + area principal
+- Color por modulo/nucleo para diferenciacion visual
+- Mobile: sidebar colapsa a hamburguesa, cards 100% ancho
+- Tipografia: system font, headings bold, labels uppercase
+
+### Fase 3-A: Estructura y bienvenida (MVP visor)
+
+- [ ] **3.1 Schema SQL** — Tablas `curso_virtual_config` + `institutional_defaults` en schema portal
+- [ ] **3.2 Endpoints config** — GET/PUT /api/piac/:linkId/config, publish/unpublish, preview, institutional-defaults (6 endpoints)
+- [ ] **3.3 Reescribir curso-virtual.html** — Layout sidebar + area principal, mobile-first. Paleta UMCE. Iconos Lucide SVG
+- [ ] **3.4 Seccion Inicio** — Bienvenida, docente, objetivos, modalidad, horas, como funciona, soporte
+- [ ] **3.5 Nucleos con contenido** — Vista semanal Antes/Durante/Despues. Contenido desde API existente. Sin completion. Click → Moodle
+- [ ] **3.6 Barra superior** — Entrar a clase (Zoom LTI), Grabaciones, Calendario (placeholder), Tareas, Ayuda
+- [ ] **3.7 Chatbot generico** — Incluir shared/chatbot.js (ya funcional)
+- [ ] **3.8 Accesibilidad base** — Landmarks ARIA, headings, skip links, contraste AA, focus visible, alt text, 44px touch targets
+
+### Fase 3-B: Visado y configuracion DI
+
+- [ ] **3.9 Toggle visado** — En panel PIAC, toggle por elemento visible/oculto para estudiante
+- [ ] **3.10 UI configuracion DI** — Pestanas: Bienvenida, Politicas, Contenido, Objetivos semanales, Foros
+- [ ] **3.11 Preview** — Boton que abre vista estudiante con datos del DI actual (ignora publicado)
+- [ ] **3.12 Publicar/despublicar** — Toggle que controla visibilidad para estudiantes
+- [ ] **3.13 Fallbacks** — Sin PIAC → link Moodle. No publicado → link Moodle. Sin analisis → error
 
 ### Anti-patrones de esta fase
-- NO duplicar contenido de Moodle — el curso virtual es un VISOR, los recursos estan en Moodle
+- NO datos personalizados (sin completion, sin notas) — eso es Fase 5
+- NO cron automatico — todo trigger manual
+- NO duplicar contenido de Moodle — el curso virtual es un VISOR
 - NO crear un LMS paralelo
+- NO modificar nada en Moodle — solo lectura
 
 ---
 

@@ -2900,15 +2900,54 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
     if (links.length === 0) return res.status(404).json({ error: 'Curso no encontrado' });
     const link = links[0];
 
-    const [parsedArr, snapshotArr, matchingArr] = await Promise.all([
+    const [parsedArr, snapshotArr, matchingArr, configArr, defaultsArr] = await Promise.all([
       portalQuery('piac_parsed', `piac_link_id=eq.${linkId}&order=parsed_at.desc&limit=1`),
       portalQuery('moodle_snapshots', `piac_link_id=eq.${linkId}&order=snapshot_at.desc&limit=1`),
-      portalQuery('matching_results', `piac_link_id=eq.${linkId}&order=created_at.desc&limit=1`)
+      portalQuery('matching_results', `piac_link_id=eq.${linkId}&order=created_at.desc&limit=1`),
+      portalQuery('curso_virtual_config', `piac_link_id=eq.${linkId}`),
+      portalQuery('institutional_defaults')
     ]);
+
+    const config = configArr[0] || null;
+    const isAdminOrEditor = getUserRole(req.userEmail);
+
+    // If not published and user is not admin/editor, show fallback
+    if (!isAdminOrEditor && (!config || !config.publicado)) {
+      return res.json({
+        fallback: true,
+        curso: { nombre: link.course_name },
+        moodle: {
+          platform: link.moodle_platform,
+          platformName: (PLATFORMS.find(p => p.id === link.moodle_platform))?.name || link.moodle_platform,
+          courseId: link.moodle_course_id,
+          courseUrl: `${(PLATFORMS.find(p => p.id === link.moodle_platform))?.url || ''}/course/view.php?id=${link.moodle_course_id}`
+        }
+      });
+    }
 
     const piac = parsedArr[0]?.parsed_json || null;
     const snapshot = snapshotArr[0]?.snapshot_json || null;
     if (!piac || !snapshot) return res.status(404).json({ error: 'Curso sin análisis — contacta al DI' });
+
+    // Resolve config with institutional defaults
+    const defaultMap = {};
+    defaultsArr.forEach(d => { defaultMap[d.key] = d.value; });
+    const resolvedConfig = config ? {
+      docente_foto_url: config.docente_foto_url || null,
+      docente_bio: config.docente_bio || null,
+      docente_video_bienvenida: config.docente_video_bienvenida || null,
+      docente_mensaje_bienvenida: config.docente_mensaje_bienvenida || null,
+      docente_horario_atencion: config.docente_horario_atencion || defaultMap.docente_horario_atencion || 'Consultar por email',
+      docente_tiempos_respuesta: config.docente_tiempos_respuesta || JSON.parse(defaultMap.docente_tiempos_respuesta || '{}'),
+      descripcion_motivacional: config.descripcion_motivacional || null,
+      conocimientos_previos: config.conocimientos_previos || defaultMap.conocimientos_previos || 'Sin requisitos previos específicos',
+      competencias_digitales: config.competencias_digitales || defaultMap.competencias_digitales || '',
+      politicas_curso: config.politicas_curso || defaultMap.politicas_curso || '',
+      politica_integridad: config.politica_integridad || defaultMap.politica_integridad || '',
+      actividades_config: config.actividades_config || {},
+      objetivos_semanales: config.objetivos_semanales || {},
+      publicado: config.publicado || false
+    } : null;
 
     // Build the merged "curso virtual" view
     const nucleos = piac.nucleos || [];
@@ -3012,10 +3051,210 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
         platformName: platformObj?.name || link.moodle_platform,
         courseId: link.moodle_course_id,
         courseUrl: `${platformObj?.url || ''}/course/view.php?id=${link.moodle_course_id}`
-      }
+      },
+      config: resolvedConfig
     });
   } catch (err) {
     console.error('Curso virtual API error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- API: Curso Virtual Config (Fase 3) ---
+
+// GET config for a piac link
+app.get('/api/piac/:linkId/config', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    if (isNaN(linkId)) return res.status(400).json({ error: 'ID inválido' });
+
+    const configs = await portalQuery('curso_virtual_config', `piac_link_id=eq.${linkId}`);
+    if (configs.length === 0) {
+      // Return empty config with defaults
+      const defaults = await portalQuery('institutional_defaults');
+      const defaultMap = {};
+      defaults.forEach(d => { defaultMap[d.key] = d.value; });
+      return res.json({ config: null, defaults: defaultMap, exists: false });
+    }
+    res.json({ config: configs[0], exists: true });
+  } catch (err) {
+    console.error('Config GET error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT (create or update) config for a piac link
+app.put('/api/piac/:linkId/config', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    if (isNaN(linkId)) return res.status(400).json({ error: 'ID inválido' });
+
+    // Verify piac_link exists
+    const links = await portalQuery('piac_links', `id=eq.${linkId}&status=eq.active`);
+    if (links.length === 0) return res.status(404).json({ error: 'Vínculo PIAC no encontrado' });
+
+    const existing = await portalQuery('curso_virtual_config', `piac_link_id=eq.${linkId}`);
+    const payload = { ...req.body, updated_at: new Date().toISOString(), updated_by: req.userEmail };
+    delete payload.id;
+    delete payload.piac_link_id;
+    delete payload.created_at;
+    delete payload.publicado;
+    delete payload.publicado_at;
+    delete payload.publicado_por;
+
+    let result;
+    if (existing.length === 0) {
+      result = await portalMutate('curso_virtual_config', 'POST', { piac_link_id: linkId, ...payload });
+    } else {
+      result = await portalMutate('curso_virtual_config', 'PATCH', payload, `piac_link_id=eq.${linkId}`);
+    }
+    res.json(result[0] || result);
+  } catch (err) {
+    console.error('Config PUT error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST publish curso virtual
+app.post('/api/piac/:linkId/config/publish', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    if (isNaN(linkId)) return res.status(400).json({ error: 'ID inválido' });
+
+    // Verify analysis exists before publishing
+    const [parsedArr, snapshotArr] = await Promise.all([
+      portalQuery('piac_parsed', `piac_link_id=eq.${linkId}&order=parsed_at.desc&limit=1`),
+      portalQuery('moodle_snapshots', `piac_link_id=eq.${linkId}&order=snapshot_at.desc&limit=1`)
+    ]);
+    if (parsedArr.length === 0 || snapshotArr.length === 0) {
+      return res.status(400).json({ error: 'No se puede publicar sin análisis PIAC+Moodle completo' });
+    }
+
+    // Ensure config exists
+    const existing = await portalQuery('curso_virtual_config', `piac_link_id=eq.${linkId}`);
+    const now = new Date().toISOString();
+    if (existing.length === 0) {
+      await portalMutate('curso_virtual_config', 'POST', {
+        piac_link_id: linkId, publicado: true, publicado_at: now, publicado_por: req.userEmail
+      });
+    } else {
+      await portalMutate('curso_virtual_config', 'PATCH', {
+        publicado: true, publicado_at: now, publicado_por: req.userEmail, updated_at: now, updated_by: req.userEmail
+      }, `piac_link_id=eq.${linkId}`);
+    }
+    res.json({ publicado: true });
+  } catch (err) {
+    console.error('Publish error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST unpublish curso virtual
+app.post('/api/piac/:linkId/config/unpublish', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    if (isNaN(linkId)) return res.status(400).json({ error: 'ID inválido' });
+
+    const existing = await portalQuery('curso_virtual_config', `piac_link_id=eq.${linkId}`);
+    if (existing.length === 0) return res.status(404).json({ error: 'No hay configuración para este curso' });
+
+    await portalMutate('curso_virtual_config', 'PATCH', {
+      publicado: false, updated_at: new Date().toISOString(), updated_by: req.userEmail
+    }, `piac_link_id=eq.${linkId}`);
+    res.json({ publicado: false });
+  } catch (err) {
+    console.error('Unpublish error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET preview (same as curso-virtual but ignores publicado flag — for DI)
+app.get('/api/piac/:linkId/preview', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const linkId = parseInt(req.params.linkId);
+    if (isNaN(linkId)) return res.status(400).json({ error: 'ID inválido' });
+
+    // Reuse curso-virtual logic but skip publicado check
+    const fakeReq = { ...req, params: { linkId: String(linkId) } };
+    // Forward to the existing handler by calling it directly
+    req.params.linkId = String(linkId);
+    req._isPreview = true;
+
+    // Fetch all data
+    const links = await portalQuery('piac_links', `id=eq.${linkId}&status=eq.active`);
+    if (links.length === 0) return res.status(404).json({ error: 'Curso no encontrado' });
+    const link = links[0];
+
+    const [parsedArr, snapshotArr, configArr, defaults] = await Promise.all([
+      portalQuery('piac_parsed', `piac_link_id=eq.${linkId}&order=parsed_at.desc&limit=1`),
+      portalQuery('moodle_snapshots', `piac_link_id=eq.${linkId}&order=snapshot_at.desc&limit=1`),
+      portalQuery('curso_virtual_config', `piac_link_id=eq.${linkId}`),
+      portalQuery('institutional_defaults')
+    ]);
+
+    const piac = parsedArr[0]?.parsed_json || null;
+    const snapshot = snapshotArr[0]?.snapshot_json || null;
+    if (!piac || !snapshot) return res.status(404).json({ error: 'Curso sin análisis — ejecuta Analizar primero' });
+
+    const config = configArr[0] || {};
+    const defaultMap = {};
+    defaults.forEach(d => { defaultMap[d.key] = d.value; });
+
+    // Resolve config with defaults
+    const resolvedConfig = {
+      docente_foto_url: config.docente_foto_url || null,
+      docente_bio: config.docente_bio || null,
+      docente_video_bienvenida: config.docente_video_bienvenida || null,
+      docente_mensaje_bienvenida: config.docente_mensaje_bienvenida || null,
+      docente_horario_atencion: config.docente_horario_atencion || defaultMap.docente_horario_atencion || 'Consultar por email',
+      docente_tiempos_respuesta: config.docente_tiempos_respuesta || JSON.parse(defaultMap.docente_tiempos_respuesta || '{"email":"48h hábiles","foro":"48h hábiles","tareas":"7 días hábiles"}'),
+      descripcion_motivacional: config.descripcion_motivacional || null,
+      conocimientos_previos: config.conocimientos_previos || defaultMap.conocimientos_previos || 'Sin requisitos previos específicos',
+      competencias_digitales: config.competencias_digitales || defaultMap.competencias_digitales || '',
+      politicas_curso: config.politicas_curso || defaultMap.politicas_curso || '',
+      politica_integridad: config.politica_integridad || defaultMap.politica_integridad || '',
+      requisitos_participacion: config.requisitos_participacion || null,
+      foro_presentacion_cmid: config.foro_presentacion_cmid || null,
+      foro_consultas_cmid: config.foro_consultas_cmid || null,
+      actividades_config: config.actividades_config || {},
+      objetivos_semanales: config.objetivos_semanales || {},
+      publicado: config.publicado || false
+    };
+
+    res.json({ config: resolvedConfig, defaults: defaultMap });
+  } catch (err) {
+    console.error('Preview config error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET/PUT institutional defaults (admin only)
+app.get('/api/institutional-defaults', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const defaults = await portalQuery('institutional_defaults', 'order=key.asc');
+    res.json(defaults);
+  } catch (err) {
+    console.error('Defaults GET error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/institutional-defaults/:key', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    if (!isAdmin(req.userEmail)) return res.status(403).json({ error: 'Solo admin puede editar defaults' });
+    const key = req.params.key;
+    const { value } = req.body;
+    if (!value) return res.status(400).json({ error: 'Value requerido' });
+
+    const existing = await portalQuery('institutional_defaults', `key=eq.${encodeURIComponent(key)}`);
+    if (existing.length === 0) {
+      await portalMutate('institutional_defaults', 'POST', { key, value, updated_at: new Date().toISOString(), updated_by: req.userEmail });
+    } else {
+      await portalMutate('institutional_defaults', 'PATCH', { value, updated_at: new Date().toISOString(), updated_by: req.userEmail }, `key=eq.${encodeURIComponent(key)}`);
+    }
+    res.json({ key, value, updated: true });
+  } catch (err) {
+    console.error('Defaults PUT error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
