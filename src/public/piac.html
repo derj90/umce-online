@@ -115,13 +115,15 @@
   <main id="main-content" class="hidden max-w-7xl mx-auto px-6 py-6">
 
     <!-- Header row -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
+    <div class="flex items-start justify-between mb-6 gap-6">
+      <div class="flex-1">
+        <h1 class="text-lg font-bold text-gray-800 mb-1">Panel PIAC</h1>
         <p class="text-gray-500 text-sm">Esta herramienta compara la planificación del curso (PIAC) con lo que está configurado en Moodle, y te muestra dónde hay diferencias o problemas por resolver.</p>
+        <p class="text-gray-400 text-xs mt-1">Selecciona un vínculo de la lista para ver el análisis, o crea uno nuevo para comenzar.</p>
       </div>
-      <button id="btn-new-link" class="flex items-center gap-2 bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+      <button id="btn-new-link" class="flex-shrink-0 flex items-center gap-2 bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-        Nuevo vinculo
+        Nuevo vínculo
       </button>
     </div>
 
@@ -171,7 +173,14 @@
       </div>
 
       <!-- Action bar -->
-      <div class="flex flex-wrap items-center gap-3 mb-6">
+      <div class="mb-4">
+        <h3 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          Acciones
+        </h3>
+        <p class="text-xs text-gray-400 mt-0.5">Presiona <strong>Analizar</strong> para comparar el PIAC con Moodle. Los demás botones te permiten ver y editar el curso virtual.</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-3 mb-8">
         <button id="btn-analyze" class="flex items-center gap-2 bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
           Analizar
@@ -221,58 +230,89 @@
         </div>
       </div>
 
-      <!-- Summary cards -->
-      <div id="summary-cards" class="hidden grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
-        <div class="panel-card p-4 text-center">
-          <div class="text-2xl font-bold text-gray-800" id="sum-nucleos">-</div>
-          <div class="text-xs text-gray-500">Núcleos PIAC</div>
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- SECTION 1: Resumen general                        -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <div id="summary-cards" class="hidden mb-8">
+        <div class="mb-3">
+          <h3 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            Resumen del Análisis
+          </h3>
+          <p class="text-xs text-gray-400 mt-0.5">Vista general de cómo se relaciona la planificación con lo que está configurado en Moodle. Haz clic en Críticas o Advertencias para ir directo a los problemas.</p>
         </div>
-        <div class="panel-card p-4 text-center">
-          <div class="text-2xl font-bold text-gray-800" id="sum-sections">-</div>
-          <div class="text-xs text-gray-500">Secciones Moodle</div>
-        </div>
-        <div class="panel-card p-4 text-center">
-          <div id="sum-matched" class="text-2xl font-bold text-gray-800">-</div>
-          <div class="text-xs text-gray-500">Elementos vinculados</div>
-          <div id="sum-matched-bar" class="hidden mt-2 w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
-            <div id="sum-matched-fill" class="h-full bg-green-500 rounded-full transition-all" style="width:0%"></div>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <div class="panel-card p-4 text-center">
+            <div class="text-2xl font-bold text-gray-800" id="sum-nucleos">-</div>
+            <div class="text-xs text-gray-500">Núcleos PIAC</div>
           </div>
-        </div>
-        <div class="panel-card p-4 text-center cursor-pointer hover:border-red-300 transition-colors" onclick="document.getElementById('discrepancies-section').scrollIntoView({behavior:'smooth'})">
-          <div class="text-2xl font-bold text-red-600" id="sum-critical">-</div>
-          <div class="text-xs text-gray-500">Críticas</div>
-        </div>
-        <div class="panel-card p-4 text-center cursor-pointer hover:border-yellow-300 transition-colors" onclick="document.getElementById('discrepancies-section').scrollIntoView({behavior:'smooth'})">
-          <div class="text-2xl font-bold text-yellow-600" id="sum-warnings">-</div>
-          <div class="text-xs text-gray-500">Advertencias</div>
+          <div class="panel-card p-4 text-center">
+            <div class="text-2xl font-bold text-gray-800" id="sum-sections">-</div>
+            <div class="text-xs text-gray-500">Secciones Moodle</div>
+          </div>
+          <div class="panel-card p-4 text-center">
+            <div id="sum-matched" class="text-2xl font-bold text-gray-800">-</div>
+            <div class="text-xs text-gray-500">Elementos vinculados</div>
+            <div id="sum-matched-bar" class="hidden mt-2 w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+              <div id="sum-matched-fill" class="h-full bg-green-500 rounded-full transition-all" style="width:0%"></div>
+            </div>
+          </div>
+          <div class="panel-card p-4 text-center cursor-pointer hover:border-red-300 transition-colors" onclick="document.getElementById('discrepancies-section').scrollIntoView({behavior:'smooth'})">
+            <div class="text-2xl font-bold text-red-600" id="sum-critical">-</div>
+            <div class="text-xs text-gray-500">Críticas</div>
+          </div>
+          <div class="panel-card p-4 text-center cursor-pointer hover:border-yellow-300 transition-colors" onclick="document.getElementById('discrepancies-section').scrollIntoView({behavior:'smooth'})">
+            <div class="text-2xl font-bold text-yellow-600" id="sum-warnings">-</div>
+            <div class="text-xs text-gray-500">Advertencias</div>
+          </div>
         </div>
       </div>
 
-      <!-- Matching Map: Nucleus → Section with all elements -->
-      <div class="panel-card p-5 mb-6">
-        <div class="flex items-center justify-between mb-3">
-          <div class="section-header mb-0">Mapa del Curso — PIAC vs Moodle</div>
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- SECTION 2: Mapa del Curso                          -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <div class="panel-card p-5 mb-8">
+        <div class="mb-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+              Mapa del Curso — PIAC vs Moodle
+            </h3>
+          </div>
+          <p class="text-xs text-gray-400 mt-1">Cada fila es un elemento del PIAC (sesión, foro, tarea) comparado con su equivalente en Moodle. Haz clic en una fila para ver el detalle completo y la verificación de contenido.</p>
         </div>
         <div id="matching-map" class="text-sm text-gray-500">Sin datos — ejecuta "Analizar"</div>
       </div>
 
-      <!-- Raw panels (collapsed by default) -->
-      <div id="raw-panels" class="hidden mb-6">
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- SECTION 3: Datos crudos (avanzado)                 -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <div id="raw-panels" class="hidden mb-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div class="panel-card p-5">
             <div class="section-header">Estructura PIAC (Drive)</div>
+            <p class="text-xs text-gray-400 mb-2">Datos extraídos del documento Word del PIAC en Google Drive.</p>
             <div id="piac-structure" class="text-sm text-gray-500">Sin datos</div>
           </div>
           <div class="panel-card p-5">
             <div class="section-header">Estructura Moodle (API)</div>
+            <p class="text-xs text-gray-400 mb-2">Snapshot de las secciones y actividades del curso en Moodle.</p>
             <div id="moodle-structure" class="text-sm text-gray-500">Sin datos</div>
           </div>
         </div>
       </div>
 
-      <!-- Discrepancies -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- SECTION 4: Discrepancias                           -->
+      <!-- ═══════════════════════════════════════════════════ -->
       <div id="discrepancies-section" class="panel-card p-5">
-        <div class="section-header">Discrepancias</div>
+        <div class="mb-4">
+          <h3 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+            Discrepancias
+          </h3>
+          <p class="text-xs text-gray-400 mt-1">Diferencias entre lo que dice el PIAC y lo que está configurado en Moodle. Las <strong>críticas</strong> son problemas que afectan la experiencia del estudiante (ej: secciones ocultas). Las <strong>advertencias</strong> son diferencias menores. Las <strong>notas</strong> sobre evaluaciones son informativas y no necesariamente requieren acción.</p>
+        </div>
         <div id="discrepancies-list" class="text-sm text-gray-500">Sin datos</div>
       </div>
 
