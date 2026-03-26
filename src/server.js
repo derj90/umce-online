@@ -1285,8 +1285,10 @@ app.get('/api/induccion/launch', authMiddleware, async (req, res) => {
       }
     }
 
-    // 4. Redirigir a induccion2026 con email
-    const redirectUrl = `https://induccion2026.udfv.cloud?email=${encodeURIComponent(email)}`;
+    // 4. Redirigir a induccion2026 con RUT (username de Moodle) + nombre
+    const rut = users && users.length ? users[0].username : '';
+    const nombre = users && users.length ? users[0].fullname : '';
+    const redirectUrl = `https://induccion2026.udfv.cloud?rut=${encodeURIComponent(rut)}&nombre=${encodeURIComponent(nombre)}&email=${encodeURIComponent(email)}`;
     res.redirect(redirectUrl);
   } catch (err) {
     console.error('[Induccion] Launch error:', err.message);
