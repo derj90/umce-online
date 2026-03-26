@@ -215,6 +215,17 @@
             </div>
           </div>
 
+          <!-- Modo del curso -->
+          <div class="px-5 pt-4">
+            <div class="flex items-center gap-3 mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Modo del curso:</label>
+              <select id="config-modo" class="text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white flex-1">
+                <option value="docente">Con docente (sincronico)</option>
+                <option value="autoinstruccional">Autoinstruccional (a tu ritmo)</option>
+              </select>
+            </div>
+          </div>
+
           <!-- Tabs -->
           <div class="border-b border-gray-200 px-5">
             <nav class="flex gap-6 -mb-px" role="tablist">
@@ -740,6 +751,11 @@
         const objetivos = currentConfig.objetivos_semanales || {};
         renderObjetivosFields(objetivos);
 
+        // Modo del curso
+        const modoSelect = document.getElementById('config-modo');
+        if (modoSelect) modoSelect.value = currentConfig.modo || 'docente';
+        applyModoVisibility(currentConfig.modo || 'docente');
+
         // Publish state
         isPublished = currentConfig.publicado || false;
         updatePublishUI();
@@ -804,6 +820,7 @@
       });
 
       const payload = {
+        modo: document.getElementById('config-modo')?.value || 'docente',
         docente_foto_url: document.getElementById('cfg-docente-foto').value.trim() || null,
         docente_video_bienvenida: document.getElementById('cfg-docente-video').value.trim() || null,
         docente_bio: document.getElementById('cfg-docente-bio').value.trim() || null,
@@ -958,6 +975,27 @@
         label.className = 'text-xs text-gray-400';
       }
     }
+
+    // --- Modo del curso: ocultar tabs irrelevantes ---
+    function applyModoVisibility(modo) {
+      const isAuto = modo === 'autoinstruccional';
+      // Tabs that are not relevant for autoinstruccional courses
+      const hiddenForAuto = ['foros', 'objetivos'];
+      document.querySelectorAll('.config-tab[data-tab]').forEach(tab => {
+        const tabName = tab.getAttribute('data-tab');
+        if (hiddenForAuto.includes(tabName)) {
+          tab.style.display = isAuto ? 'none' : '';
+          // If currently active tab gets hidden, switch to bienvenida
+          if (isAuto && tab.classList.contains('border-blue-600')) {
+            switchConfigTab('bienvenida');
+          }
+        }
+      });
+    }
+
+    document.getElementById('config-modo')?.addEventListener('change', function() {
+      applyModoVisibility(this.value);
+    });
 
     // Boot
     init();
