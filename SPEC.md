@@ -404,6 +404,16 @@ Cache personalizado por estudiante (completions, grades, submissions) se llena e
 - [ ] **5.5.13 Info enriquecida** — Agregar competencias digitales, politicas del curso (defaults institucionales) para que la seccion no quede vacia
 - [ ] **5.5.14 Identidad visual UMCE** — Reforzar colores por nucleo (borde lateral mas grueso en cards de semana), acento azul UMCE en headings, cards con sombra sutil
 
+### Accesibilidad (WCAG 2.1 AA)
+
+- [ ] **5.5.15 Contraste insuficiente** — Labels grises (#94a3b8) sobre fondo arena (#f5f0e8) no pasan 4.5:1. Oscurecer labels o fondo
+- [ ] **5.5.16 Focus visible** — Sidebar items, quick access buttons y book tabs necesitan outline visible al navegar con Tab (no solo hover)
+- [ ] **5.5.17 Roles ARIA en sidebar** — Los items usan role="link" con onclick pero no son <a>. Cambiar a <button> o <a> semanticos con role correcto
+- [ ] **5.5.18 Alt text en iconos** — Los SVG inline de la barra superior y sidebar necesitan aria-label o aria-hidden segun corresponda
+- [ ] **5.5.19 Book inline accesible** — Tabs de capitulos necesitan role="tablist"/role="tab"/role="tabpanel" + aria-selected + navegacion con flechas
+- [ ] **5.5.20 Touch targets mobile** — Algunos botones de la top bar son menores a 44x44px. Asegurar minimo en mobile
+- [ ] **5.5.21 Headings jerarquia** — Verificar que no hay saltos (h1 > h2 > h3 sin h2 > h4). El book inline puede romper la jerarquia al inyectar h3 dentro del contenido
+
 ### Anti-patrones de esta fase
 - NO reescribir todo el HTML — editar incrementalmente
 - NO cambiar la estructura de la API — solo ajustes en el merge de nucleos y el frontend
