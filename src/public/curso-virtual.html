@@ -100,6 +100,15 @@
     .book-html tr:nth-child(even) td { background: #f9fafb; }
     .book-html .no-overflow { overflow: hidden; }
 
+    /* 5.5.15: Contraste — oscurecer labels */
+    .info-label { color: #64748b; }
+    .week-phase { color: #64748b; }
+
+    /* 5.5.16: Focus visible */
+    .sidebar-item:focus-visible, .qa-btn:focus-visible, .activity-item:focus-visible, .book-ch-tab:focus-visible, button:focus-visible, a:focus-visible {
+      outline: 2px solid var(--umce-700); outline-offset: 2px; border-radius: 4px;
+    }
+
     /* Quick access scrollbar hide */
     #quick-access { -webkit-overflow-scrolling: touch; scrollbar-width: none; }
     #quick-access::-webkit-scrollbar { display: none; }
@@ -338,8 +347,8 @@
 
       let html = '';
       // Inicio
-      html += `<div class="sidebar-item active" data-section="inicio" onclick="navigate('inicio')" role="link" tabindex="0">
-        <div class="w-5 h-5 text-gray-400">${icon('home')}</div>
+      html += `<div class="sidebar-item active" data-section="inicio" onclick="navigate('inicio')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+        <div class="w-5 h-5 text-gray-400" aria-hidden="true">${icon('home')}</div>
         <span>Inicio</span>
       </div>`;
 
@@ -355,7 +364,7 @@
         const pct = total > 0 ? Math.round(completed / total * 100) : 0;
         const hasCompletion = data.personal?.resolved && total > 0;
 
-        html += `<div class="sidebar-item sidebar-nucleo ${locked ? 'opacity-50' : ''}" data-section="nucleo-${n.numero}" onclick="navigate('nucleo-${n.numero}')" style="border-left-color: ${color};" role="link" tabindex="0" ${locked ? 'aria-disabled="true"' : ''}>
+        html += `<div class="sidebar-item sidebar-nucleo ${locked ? 'opacity-50' : ''}" data-section="nucleo-${n.numero}" onclick="navigate('nucleo-${n.numero}')" style="border-left-color: ${color};" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}" ${locked ? 'aria-disabled="true"' : ''}>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2">
               <span class="text-xs font-semibold" style="color: ${color};">Nucleo ${n.numero}</span>
@@ -370,29 +379,29 @@
 
       // Recursos del curso (S0)
       if (data.recursos_compartidos && data.recursos_compartidos.length > 0) {
-        html += `<div class="sidebar-item" data-section="recursos" onclick="navigate('recursos')" role="link" tabindex="0">
-          <div class="w-5 h-5 text-gray-400">${icon('folder')}</div>
+        html += `<div class="sidebar-item" data-section="recursos" onclick="navigate('recursos')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+          <div class="w-5 h-5 text-gray-400" aria-hidden="true">${icon('folder')}</div>
           <span>Recursos del curso</span>
         </div>`;
       }
 
       // Evaluaciones
-      html += `<div class="sidebar-item" data-section="evaluaciones" onclick="navigate('evaluaciones')" role="link" tabindex="0">
-        <div class="w-5 h-5 text-gray-400">${icon('star')}</div>
+      html += `<div class="sidebar-item" data-section="evaluaciones" onclick="navigate('evaluaciones')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+        <div class="w-5 h-5 text-gray-400" aria-hidden="true">${icon('star')}</div>
         <span>Evaluaciones</span>
       </div>`;
 
       // Bibliografia
       if (data.curso.bibliografia && data.curso.bibliografia.length > 0) {
-        html += `<div class="sidebar-item" data-section="bibliografia" onclick="navigate('bibliografia')" role="link" tabindex="0">
-          <div class="w-5 h-5 text-gray-400">${icon('book')}</div>
+        html += `<div class="sidebar-item" data-section="bibliografia" onclick="navigate('bibliografia')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+          <div class="w-5 h-5 text-gray-400" aria-hidden="true">${icon('book')}</div>
           <span>Bibliografia</span>
         </div>`;
       }
 
       // Info
-      html += `<div class="sidebar-item" data-section="info" onclick="navigate('info')" role="link" tabindex="0">
-        <div class="w-5 h-5 text-gray-400">${icon('info')}</div>
+      html += `<div class="sidebar-item" data-section="info" onclick="navigate('info')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+        <div class="w-5 h-5 text-gray-400" aria-hidden="true">${icon('info')}</div>
         <span>Informacion</span>
       </div>`;
 
@@ -959,13 +968,13 @@
       // Render chapters with tabs if multiple
       let html = '';
       if (data.chapters.length > 1) {
-        html += `<div class="flex gap-1 p-2 bg-gray-50 border-b border-gray-200 overflow-x-auto">
-          ${data.chapters.map((ch, i) => `<button class="book-ch-tab text-xs px-3 py-1.5 rounded-md whitespace-nowrap ${i === 0 ? 'bg-white shadow-sm text-blue-700 font-medium' : 'text-gray-500 hover:bg-white/60'}" onclick="showChapter(${cmid}, ${i})">${ch.title || 'Cap ' + (i + 1)}</button>`).join('')}
+        html += `<div class="flex gap-1 p-2 bg-gray-50 border-b border-gray-200 overflow-x-auto" role="tablist" aria-label="Capitulos del libro">
+          ${data.chapters.map((ch, i) => `<button class="book-ch-tab text-xs px-3 py-1.5 rounded-md whitespace-nowrap ${i === 0 ? 'bg-white shadow-sm text-blue-700 font-medium' : 'text-gray-500 hover:bg-white/60'}" role="tab" aria-selected="${i === 0}" aria-controls="book-ch-panel-${cmid}-${i}" onclick="showChapter(${cmid}, ${i})">${ch.title || 'Cap ' + (i + 1)}</button>`).join('')}
         </div>`;
       }
 
       data.chapters.forEach((ch, i) => {
-        html += `<div class="book-chapter book-chapter-${cmid} ${i > 0 ? 'hidden' : ''}" data-chapter="${i}">
+        html += `<div class="book-chapter book-chapter-${cmid} ${i > 0 ? 'hidden' : ''}" data-chapter="${i}" id="book-ch-panel-${cmid}-${i}" role="tabpanel" aria-label="${ch.title || 'Capitulo ' + (i + 1)}">
           <div class="p-5 prose prose-sm max-w-none book-html">${processBookHtml(ch.html)}</div>
         </div>`;
       });
@@ -986,6 +995,7 @@
       const container = document.getElementById(`book-content-${cmid}`);
       container.querySelectorAll('.book-ch-tab').forEach((tab, i) => {
         tab.className = `book-ch-tab text-xs px-3 py-1.5 rounded-md whitespace-nowrap ${i === idx ? 'bg-white shadow-sm text-blue-700 font-medium' : 'text-gray-500 hover:bg-white/60'}`;
+        tab.setAttribute('aria-selected', i === idx);
       });
     }
 

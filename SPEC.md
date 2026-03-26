@@ -383,36 +383,36 @@ Cache personalizado por estudiante (completions, grades, submissions) se llena e
 
 ### Bugs criticos (rompen la experiencia)
 
-- [ ] **5.5.1 Books por sesion** — Cada semana debe mostrar su book correspondiente (Session N), no todos en Semana 1. Mapear book por numero de sesion en el nombre
-- [ ] **5.5.2 Foros faltantes** — El matching de foros por sesion falla con tildes ("sessión" vs "session"). Normalizar acentos al buscar. Sessions 2 y 3 no aparecen
-- [ ] **5.5.3 Sidebar no scrolleable** — Items inferiores (Evaluaciones, Bibliografia, Info) inaccesibles en viewports cortos. Agregar overflow-y:auto al sidebar nav
-- [ ] **5.5.4 Top bar overflow mobile** — Botones se salen del viewport. Hacer scrollable horizontal con fade o colapsar a dropdown
+- [x] **5.5.1 Books por sesion** — Cada semana debe mostrar su book correspondiente (Session N), no todos en Semana 1. Mapear book por numero de sesion en el nombre
+- [x] **5.5.2 Foros faltantes** — El matching de foros por sesion falla con tildes ("sessión" vs "session"). Normalizar acentos al buscar. Sessions 2 y 3 no aparecen
+- [x] **5.5.3 Sidebar no scrolleable** — Items inferiores (Evaluaciones, Bibliografia, Info) inaccesibles en viewports cortos. Agregar overflow-y:auto al sidebar nav
+- [x] **5.5.4 Top bar overflow mobile** — Botones se salen del viewport. Hacer scrollable horizontal con fade o colapsar a dropdown
 
 ### Contenido faltante
 
-- [ ] **5.5.5 Seccion Recursos del curso** — Nueva seccion en sidebar para S0: Calendar PDF, Bibliografia page, Tasks/Rubrics folder, Diary. No solo botones en top bar
-- [ ] **5.5.6 Grabacion inline por sesion** — Mostrar la grabacion YouTube de cada session en su semana correspondiente (tag "nucleo N" del mod_data entry)
-- [ ] **5.5.7 Progresion general en Inicio** — Barra de progreso total del curso ("X de Y actividades completadas") en seccion Inicio
+- [x] **5.5.5 Seccion Recursos del curso** — Nueva seccion en sidebar para S0: Calendar PDF, Bibliografia page, Tasks/Rubrics folder, Diary. No solo botones en top bar
+- [x] **5.5.6 Grabacion inline por sesion** — Mostrar la grabacion YouTube de cada session en su semana correspondiente (tag "nucleo N" del mod_data entry)
+- [x] **5.5.7 Progresion general en Inicio** — Barra de progreso total del curso ("X de Y actividades completadas") en seccion Inicio
 
 ### Mejoras de diseno
 
-- [ ] **5.5.8 Info grid compacta** — Reducir 7 cards a 1-2 cards con layout grid interno (Modalidad + Duracion + SCT en una fila, horas en otra)
-- [ ] **5.5.9 Metodologia colapsable** — El bloque azul de metodologia es un muro de texto. Mostrar primeras 2 lineas con "Ver mas"
-- [ ] **5.5.10 Semanas con contenido real** — Cada semana muestra su book + tema + foro + grabacion. Sin book = mostrar "Material de esta sesion en Moodle" con link
-- [ ] **5.5.11 Zoom prominente** — Boton "Entrar a clase" mas grande y destacado en la barra superior, estilo CTA (fondo azul UMCE, no outline)
-- [ ] **5.5.12 Evaluaciones con datos** — Si no hay ponderacion, mostrar solo nombre + nucleo sin columnas vacias. Agregar mensaje explicativo si faltan datos
-- [ ] **5.5.13 Info enriquecida** — Agregar competencias digitales, politicas del curso (defaults institucionales) para que la seccion no quede vacia
-- [ ] **5.5.14 Identidad visual UMCE** — Reforzar colores por nucleo (borde lateral mas grueso en cards de semana), acento azul UMCE en headings, cards con sombra sutil
+- [x] **5.5.8 Info grid compacta** — Reducir 7 cards a 1-2 cards con layout grid interno (Modalidad + Duracion + SCT en una fila, horas en otra)
+- [x] **5.5.9 Metodologia colapsable** — El bloque azul de metodologia es un muro de texto. Mostrar primeras 2 lineas con "Ver mas"
+- [x] **5.5.10 Semanas con contenido real** — Cada semana muestra su book + tema + foro + grabacion. Sin book = mostrar "Material de esta sesion en Moodle" con link
+- [x] **5.5.11 Zoom prominente** — Boton "Entrar a clase" mas grande y destacado en la barra superior, estilo CTA (fondo azul UMCE, no outline)
+- [x] **5.5.12 Evaluaciones con datos** — Si no hay ponderacion, mostrar solo nombre + nucleo sin columnas vacias. Agregar mensaje explicativo si faltan datos
+- [x] **5.5.13 Info enriquecida** — Agregar competencias digitales, politicas del curso (defaults institucionales) para que la seccion no quede vacia
+- [x] **5.5.14 Identidad visual UMCE** — Reforzar colores por nucleo (borde lateral mas grueso en cards de semana), acento azul UMCE en headings, cards con sombra sutil
 
 ### Accesibilidad (WCAG 2.1 AA)
 
-- [ ] **5.5.15 Contraste insuficiente** — Labels grises (#94a3b8) sobre fondo arena (#f5f0e8) no pasan 4.5:1. Oscurecer labels o fondo
-- [ ] **5.5.16 Focus visible** — Sidebar items, quick access buttons y book tabs necesitan outline visible al navegar con Tab (no solo hover)
-- [ ] **5.5.17 Roles ARIA en sidebar** — Los items usan role="link" con onclick pero no son <a>. Cambiar a <button> o <a> semanticos con role correcto
-- [ ] **5.5.18 Alt text en iconos** — Los SVG inline de la barra superior y sidebar necesitan aria-label o aria-hidden segun corresponda
-- [ ] **5.5.19 Book inline accesible** — Tabs de capitulos necesitan role="tablist"/role="tab"/role="tabpanel" + aria-selected + navegacion con flechas
-- [ ] **5.5.20 Touch targets mobile** — Algunos botones de la top bar son menores a 44x44px. Asegurar minimo en mobile
-- [ ] **5.5.21 Headings jerarquia** — Verificar que no hay saltos (h1 > h2 > h3 sin h2 > h4). El book inline puede romper la jerarquia al inyectar h3 dentro del contenido
+- [x] **5.5.15 Contraste insuficiente** — Labels grises (#94a3b8) sobre fondo arena (#f5f0e8) no pasan 4.5:1. Oscurecer labels o fondo
+- [x] **5.5.16 Focus visible** — Sidebar items, quick access buttons y book tabs necesitan outline visible al navegar con Tab (no solo hover)
+- [x] **5.5.17 Roles ARIA en sidebar** — Los items usan role="link" con onclick pero no son <a>. Cambiar a <button> o <a> semanticos con role correcto
+- [x] **5.5.18 Alt text en iconos** — Los SVG inline de la barra superior y sidebar necesitan aria-label o aria-hidden segun corresponda
+- [x] **5.5.19 Book inline accesible** — Tabs de capitulos necesitan role="tablist"/role="tab"/role="tabpanel" + aria-selected + navegacion con flechas
+- [x] **5.5.20 Touch targets mobile** — Algunos botones de la top bar son menores a 44x44px. Asegurar minimo en mobile
+- [x] **5.5.21 Headings jerarquia** — Verificar que no hay saltos (h1 > h2 > h3 sin h2 > h4). El book inline puede romper la jerarquia al inyectar h3 dentro del contenido
 
 ### Anti-patrones de esta fase
 - NO reescribir todo el HTML — editar incrementalmente
