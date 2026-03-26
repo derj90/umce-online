@@ -718,6 +718,7 @@
       h += '</div></div>';
       panel.innerHTML = h;
       panel.classList.remove('hidden');
+      setTimeout(function() { panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 100);
     }
 
     function rpActivityChanged(discId) {
@@ -815,6 +816,7 @@
       panel.classList.toggle('hidden');
       if (isHidden && currentLinkId) {
         loadConfig();
+        setTimeout(function() { panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
       }
     }
 
