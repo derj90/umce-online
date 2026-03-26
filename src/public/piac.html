@@ -23,6 +23,8 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
     .panel-card { background: white; border: 1px solid #E5E7EB; border-radius: 0.75rem; }
     .section-header { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #6B7280; margin-bottom: 0.5rem; }
+    .config-tab { cursor: pointer; background: none; border-left: 0; border-right: 0; border-top: 0; }
+    .config-tab:focus { outline: 2px solid #3B82F6; outline-offset: -2px; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -135,6 +137,10 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
           Ver curso virtual
         </a>
+        <button id="btn-config-curso" onclick="toggleConfigPanel()" class="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-green-300 text-green-700 bg-green-50 hover:bg-green-100 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          Configurar curso virtual
+        </button>
         <span id="analyze-status" class="text-sm text-gray-400"></span>
       </div>
 
@@ -181,6 +187,144 @@
         <div class="section-header">Discrepancias</div>
         <div id="discrepancies-list" class="text-sm text-gray-500">Sin datos</div>
       </div>
+
+      <!-- Curso Virtual Config Panel (hidden until toggled) -->
+      <div id="config-panel" class="hidden fade-in mt-6">
+        <div class="panel-card overflow-hidden">
+          <!-- Config header with publish toggle -->
+          <div class="bg-gray-50 border-b border-gray-200 px-5 py-4 flex items-center justify-between">
+            <div>
+              <h3 class="font-heading font-bold text-gray-800">Configurar curso virtual</h3>
+              <p class="text-xs text-gray-500 mt-0.5">Campos opcionales — los defaults institucionales se usan si no configuras nada</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <span id="config-publish-label" class="text-xs text-gray-400">No publicado</span>
+              <button id="btn-toggle-publish" onclick="togglePublish()" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-gray-300" role="switch" aria-checked="false">
+                <span id="publish-dot" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1"></span>
+              </button>
+              <a id="btn-preview-curso" href="#" target="_blank" class="text-xs text-blue-600 hover:underline">Preview</a>
+            </div>
+          </div>
+
+          <!-- Tabs -->
+          <div class="border-b border-gray-200 px-5">
+            <nav class="flex gap-6 -mb-px" role="tablist">
+              <button class="config-tab active py-3 text-sm font-medium border-b-2 border-blue-600 text-blue-600" data-tab="bienvenida" onclick="switchConfigTab('bienvenida')">Bienvenida</button>
+              <button class="config-tab py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="politicas" onclick="switchConfigTab('politicas')">Politicas</button>
+              <button class="config-tab py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="objetivos" onclick="switchConfigTab('objetivos')">Objetivos semanales</button>
+              <button class="config-tab py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="foros" onclick="switchConfigTab('foros')">Foros</button>
+            </nav>
+          </div>
+
+          <!-- Tab: Bienvenida -->
+          <div id="tab-bienvenida" class="config-tab-content p-5 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Foto docente (URL)</label>
+                <input id="cfg-docente-foto" type="url" placeholder="https://..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <p class="text-xs text-gray-400 mt-1">Sin foto se muestra avatar con inicial</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Video de bienvenida (URL YouTube)</label>
+                <input id="cfg-docente-video" type="url" placeholder="https://youtube.com/watch?v=..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Bio profesional docente</label>
+              <textarea id="cfg-docente-bio" rows="2" placeholder="Breve descripcion profesional de la docente..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Mensaje de bienvenida</label>
+              <textarea id="cfg-docente-mensaje" rows="3" placeholder="Mensaje motivacional para los estudiantes..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+              <p class="text-xs text-gray-400 mt-1">Si se deja vacio, se usa la metodologia del PIAC</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Descripcion motivacional del curso</label>
+              <textarea id="cfg-descripcion" rows="2" placeholder="Que van a lograr los estudiantes en este curso..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Horario atencion docente</label>
+                <input id="cfg-horario" type="text" placeholder="Lunes y miercoles 14:00-16:00" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Conocimientos previos</label>
+                <input id="cfg-conocimientos" type="text" placeholder="Sin requisitos previos especificos" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Politicas -->
+          <div id="tab-politicas" class="config-tab-content hidden p-5 space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Politicas del curso <span class="text-xs text-gray-400">(asistencia, entregas, netiqueta)</span></label>
+              <textarea id="cfg-politicas" rows="4" placeholder="La asistencia a sesiones sincronicas es obligatoria..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+              <p class="text-xs text-gray-400 mt-1">Default institucional se usa si se deja vacio</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Politica de integridad academica</label>
+              <textarea id="cfg-integridad" rows="3" placeholder="La UMCE promueve la integridad academica..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Requisitos de participacion en foros</label>
+              <textarea id="cfg-participacion" rows="2" placeholder="Se espera al menos 1 participacion por sesion..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Competencias digitales esperadas</label>
+              <input id="cfg-competencias" type="text" placeholder="Manejo basico de navegador web, email y Zoom" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tiempo respuesta email</label>
+                <input id="cfg-resp-email" type="text" placeholder="48h habiles" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tiempo respuesta foro</label>
+                <input id="cfg-resp-foro" type="text" placeholder="48h habiles" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tiempo correccion tareas</label>
+                <input id="cfg-resp-tareas" type="text" placeholder="7 dias habiles" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Objetivos semanales -->
+          <div id="tab-objetivos" class="config-tab-content hidden p-5">
+            <p class="text-sm text-gray-500 mb-4">Objetivo de aprendizaje por semana. Se muestra en la vista del estudiante junto al contenido de cada semana.</p>
+            <div id="objetivos-fields" class="space-y-3">
+              <!-- Populated by JS based on PIAC nucleos/semanas -->
+            </div>
+          </div>
+
+          <!-- Tab: Foros -->
+          <div id="tab-foros" class="config-tab-content hidden p-5 space-y-4">
+            <p class="text-sm text-gray-500 mb-2">Indica los IDs de actividad (cmid) de Moodle para foros especiales del curso.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Foro de presentacion (cmid)</label>
+                <input id="cfg-foro-presentacion" type="number" placeholder="Ej: 45231" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <p class="text-xs text-gray-400 mt-1">QM 1.1 — donde los estudiantes se presentan al inicio</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Foro de consultas generales (cmid)</label>
+                <input id="cfg-foro-consultas" type="number" placeholder="Ej: 45232" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <p class="text-xs text-gray-400 mt-1">QM 5.3 — espacio para dudas generales del curso</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Save bar -->
+          <div class="bg-gray-50 border-t border-gray-200 px-5 py-3 flex items-center justify-between">
+            <span id="config-save-status" class="text-sm text-gray-400"></span>
+            <div class="flex items-center gap-3">
+              <button onclick="toggleConfigPanel()" class="text-sm text-gray-500 hover:text-gray-700">Cerrar</button>
+              <button id="btn-save-config" onclick="saveConfig()" class="bg-blue-600 text-white text-sm font-medium px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors">Guardar cambios</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
   </main>
@@ -480,6 +624,202 @@
         openDetail(currentLinkId);
       } catch (e) {
         alert('Error resolviendo: ' + e.message);
+      }
+    }
+
+    // --- Curso Virtual Config ---
+    let currentConfig = null;
+    let isPublished = false;
+
+    function toggleConfigPanel() {
+      const panel = document.getElementById('config-panel');
+      const isHidden = panel.classList.contains('hidden');
+      panel.classList.toggle('hidden');
+      if (isHidden && currentLinkId) {
+        loadConfig();
+      }
+    }
+
+    function switchConfigTab(tab) {
+      document.querySelectorAll('.config-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === tab);
+        t.classList.toggle('border-blue-600', t.dataset.tab === tab);
+        t.classList.toggle('text-blue-600', t.dataset.tab === tab);
+        t.classList.toggle('border-transparent', t.dataset.tab !== tab);
+        t.classList.toggle('text-gray-500', t.dataset.tab !== tab);
+      });
+      document.querySelectorAll('.config-tab-content').forEach(c => c.classList.add('hidden'));
+      document.getElementById('tab-' + tab).classList.remove('hidden');
+    }
+
+    async function loadConfig() {
+      const status = document.getElementById('config-save-status');
+      status.innerHTML = '<span class="spinner"></span> Cargando...';
+      try {
+        const res = await fetch(`/api/piac/${currentLinkId}/config`);
+        if (!res.ok) throw new Error('Error cargando config');
+        const data = await res.json();
+        currentConfig = data.config || {};
+        const defaults = data.defaults || {};
+
+        // Fill form fields
+        document.getElementById('cfg-docente-foto').value = currentConfig.docente_foto_url || '';
+        document.getElementById('cfg-docente-video').value = currentConfig.docente_video_bienvenida || '';
+        document.getElementById('cfg-docente-bio').value = currentConfig.docente_bio || '';
+        document.getElementById('cfg-docente-mensaje').value = currentConfig.docente_mensaje_bienvenida || '';
+        document.getElementById('cfg-descripcion').value = currentConfig.descripcion_motivacional || '';
+        document.getElementById('cfg-horario').value = currentConfig.docente_horario_atencion || '';
+        document.getElementById('cfg-conocimientos').value = currentConfig.conocimientos_previos || '';
+        document.getElementById('cfg-politicas').value = currentConfig.politicas_curso || '';
+        document.getElementById('cfg-integridad').value = currentConfig.politica_integridad || '';
+        document.getElementById('cfg-participacion').value = currentConfig.requisitos_participacion || '';
+        document.getElementById('cfg-competencias').value = currentConfig.competencias_digitales || '';
+        document.getElementById('cfg-foro-presentacion').value = currentConfig.foro_presentacion_cmid || '';
+        document.getElementById('cfg-foro-consultas').value = currentConfig.foro_consultas_cmid || '';
+
+        // Tiempos respuesta
+        const tr = currentConfig.docente_tiempos_respuesta || {};
+        document.getElementById('cfg-resp-email').value = tr.email || '';
+        document.getElementById('cfg-resp-foro').value = tr.foro || '';
+        document.getElementById('cfg-resp-tareas').value = tr.tareas || '';
+
+        // Objetivos semanales
+        const objetivos = currentConfig.objetivos_semanales || {};
+        renderObjetivosFields(objetivos);
+
+        // Publish state
+        isPublished = currentConfig.publicado || false;
+        updatePublishUI();
+
+        // Preview link
+        document.getElementById('btn-preview-curso').href = `/curso-virtual/${currentLinkId}`;
+
+        status.textContent = data.exists ? 'Config cargada' : 'Sin config previa — usando defaults';
+        status.className = 'text-sm text-gray-400';
+      } catch (e) {
+        status.textContent = e.message;
+        status.className = 'text-sm text-red-500';
+      }
+    }
+
+    function renderObjetivosFields(objetivos) {
+      const container = document.getElementById('objetivos-fields');
+      // Get week range from current PIAC data
+      let weeks = [];
+      if (currentDetail && currentDetail.parsed && currentDetail.parsed.parsed_json) {
+        const nucleos = currentDetail.parsed.parsed_json.nucleos || [];
+        nucleos.forEach(n => {
+          const start = n.semanas?.inicio || 1;
+          const end = n.semanas?.fin || start;
+          for (let w = start; w <= end; w++) {
+            if (!weeks.includes(w)) weeks.push(w);
+          }
+        });
+      }
+      if (weeks.length === 0) weeks = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
+      weeks.sort((a,b) => a - b);
+
+      container.innerHTML = weeks.map(w => `
+        <div class="flex items-center gap-3">
+          <span class="text-sm font-medium text-gray-500 w-24 flex-shrink-0">Semana ${w}</span>
+          <input type="text" data-week="${w}" value="${objetivos[String(w)] || ''}" placeholder="Objetivo de aprendizaje de esta semana..." class="obj-week-input flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+      `).join('');
+    }
+
+    async function saveConfig() {
+      const status = document.getElementById('config-save-status');
+      status.innerHTML = '<span class="spinner"></span> Guardando...';
+
+      // Collect tiempos respuesta
+      const tiempos = {};
+      const re = document.getElementById('cfg-resp-email').value.trim();
+      const rf = document.getElementById('cfg-resp-foro').value.trim();
+      const rt = document.getElementById('cfg-resp-tareas').value.trim();
+      if (re) tiempos.email = re;
+      if (rf) tiempos.foro = rf;
+      if (rt) tiempos.tareas = rt;
+
+      // Collect objetivos semanales
+      const objetivos = {};
+      document.querySelectorAll('.obj-week-input').forEach(input => {
+        const v = input.value.trim();
+        if (v) objetivos[input.dataset.week] = v;
+      });
+
+      const payload = {
+        docente_foto_url: document.getElementById('cfg-docente-foto').value.trim() || null,
+        docente_video_bienvenida: document.getElementById('cfg-docente-video').value.trim() || null,
+        docente_bio: document.getElementById('cfg-docente-bio').value.trim() || null,
+        docente_mensaje_bienvenida: document.getElementById('cfg-docente-mensaje').value.trim() || null,
+        descripcion_motivacional: document.getElementById('cfg-descripcion').value.trim() || null,
+        docente_horario_atencion: document.getElementById('cfg-horario').value.trim() || null,
+        conocimientos_previos: document.getElementById('cfg-conocimientos').value.trim() || null,
+        politicas_curso: document.getElementById('cfg-politicas').value.trim() || null,
+        politica_integridad: document.getElementById('cfg-integridad').value.trim() || null,
+        requisitos_participacion: document.getElementById('cfg-participacion').value.trim() || null,
+        competencias_digitales: document.getElementById('cfg-competencias').value.trim() || null,
+        foro_presentacion_cmid: parseInt(document.getElementById('cfg-foro-presentacion').value) || null,
+        foro_consultas_cmid: parseInt(document.getElementById('cfg-foro-consultas').value) || null,
+        docente_tiempos_respuesta: Object.keys(tiempos).length > 0 ? tiempos : null,
+        objetivos_semanales: Object.keys(objetivos).length > 0 ? objetivos : {},
+      };
+
+      try {
+        const res = await fetch(`/api/piac/${currentLinkId}/config`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) { const e = await res.json(); throw new Error(e.error); }
+        status.textContent = 'Guardado';
+        status.className = 'text-sm text-green-600';
+        setTimeout(() => { status.textContent = ''; }, 3000);
+      } catch (e) {
+        status.textContent = e.message;
+        status.className = 'text-sm text-red-500';
+      }
+    }
+
+    async function togglePublish() {
+      const action = isPublished ? 'unpublish' : 'publish';
+      const status = document.getElementById('config-save-status');
+      status.innerHTML = '<span class="spinner"></span> ' + (isPublished ? 'Despublicando...' : 'Publicando...');
+
+      try {
+        const res = await fetch(`/api/piac/${currentLinkId}/config/${action}`, { method: 'POST' });
+        if (!res.ok) { const e = await res.json(); throw new Error(e.error); }
+        isPublished = !isPublished;
+        updatePublishUI();
+        status.textContent = isPublished ? 'Publicado — visible para estudiantes' : 'Despublicado';
+        status.className = 'text-sm text-green-600';
+        setTimeout(() => { status.textContent = ''; }, 3000);
+      } catch (e) {
+        status.textContent = e.message;
+        status.className = 'text-sm text-red-500';
+      }
+    }
+
+    function updatePublishUI() {
+      const btn = document.getElementById('btn-toggle-publish');
+      const dot = document.getElementById('publish-dot');
+      const label = document.getElementById('config-publish-label');
+      if (isPublished) {
+        btn.classList.remove('bg-gray-300');
+        btn.classList.add('bg-green-500');
+        btn.setAttribute('aria-checked', 'true');
+        dot.classList.remove('translate-x-1');
+        dot.classList.add('translate-x-6');
+        label.textContent = 'Publicado';
+        label.className = 'text-xs text-green-600 font-medium';
+      } else {
+        btn.classList.remove('bg-green-500');
+        btn.classList.add('bg-gray-300');
+        btn.setAttribute('aria-checked', 'false');
+        dot.classList.remove('translate-x-6');
+        dot.classList.add('translate-x-1');
+        label.textContent = 'No publicado';
+        label.className = 'text-xs text-gray-400';
       }
     }
 
