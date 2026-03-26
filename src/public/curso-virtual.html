@@ -178,10 +178,15 @@
       <!-- Sidebar -->
       <aside id="sidebar" class="cv-sidebar" role="navigation" aria-label="Navegacion del curso">
         <div class="p-4 border-b border-gray-100">
-          <a href="/mis-cursos" class="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-600 mb-3">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            Mis cursos
-          </a>
+          <div class="flex items-center justify-between mb-3">
+            <a href="/mis-cursos" class="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-600">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+              Mis cursos
+            </a>
+            <button class="md:hidden p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600" onclick="toggleSidebar(false)" aria-label="Cerrar menu">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
           <h2 id="sidebar-course-name" class="font-heading font-bold text-sm text-gray-900 leading-tight"></h2>
           <p id="sidebar-program" class="text-xs text-gray-400 mt-1"></p>
         </div>
