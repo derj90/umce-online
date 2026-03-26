@@ -11,6 +11,7 @@
     body { font-family: 'Inter', system-ui, sans-serif; }
     .font-heading { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
     .spinner { width: 20px; height: 20px; border: 2px solid #E5E7EB; border-top-color: #0033A1; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+    .spinner-sm { width: 12px; height: 12px; border: 2px solid #BFDBFE; border-top-color: #2563EB; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .badge-critical { background: #FEE2E2; color: #991B1B; }
     .badge-warning { background: #FEF3C7; color: #92400E; }
@@ -751,33 +752,118 @@
     document.getElementById('btn-parse-only').addEventListener('click', () => runAction('parse'));
     document.getElementById('btn-snapshot-only').addEventListener('click', () => runAction('snapshot'));
 
+    async function safeFetch(url, opts) {
+      const res = await fetch(url, opts);
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch { throw new Error(res.ok ? 'Respuesta invalida del servidor' : `Error ${res.status} — ${text.substring(0, 80)}`); }
+      if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+      return data;
+    }
+
+    function updateProgress(step, state, pct) {
+      const bar = document.getElementById('progress-bar-fill');
+      const pctLabel = document.getElementById('progress-bar-pct');
+      const steps = document.querySelectorAll('.progress-step');
+      bar.style.width = pct + '%';
+      pctLabel.textContent = Math.round(pct) + '%';
+      steps.forEach(el => {
+        const s = el.dataset.step;
+        const icon = el.querySelector('.step-icon');
+        if (s === step && state === 'active') {
+          el.className = 'progress-step flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-blue-100 text-blue-700 font-medium';
+          icon.innerHTML = '<span class="spinner-sm"></span>';
+        } else if (s === step && state === 'done') {
+          el.className = 'progress-step flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-green-100 text-green-700';
+          icon.textContent = '✓';
+        } else if (s === step && state === 'error') {
+          el.className = 'progress-step flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-red-100 text-red-700';
+          icon.textContent = '✗';
+        }
+      });
+    }
+
+    function resetProgress() {
+      document.getElementById('progress-bar-fill').style.width = '0%';
+      document.getElementById('progress-bar-pct').textContent = '0%';
+      document.querySelectorAll('.progress-step').forEach(el => {
+        el.className = 'progress-step flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-gray-100 text-gray-400';
+        el.querySelector('.step-icon').textContent = '○';
+      });
+    }
+
     async function runAction(action) {
       if (!currentLinkId) return;
       const status = document.getElementById('analyze-status');
-      const labels = { analyze: 'Analizando — puede tomar hasta 3 minutos...', parse: 'Parseando PIAC (hasta 3 min)...', snapshot: 'Tomando snapshot Moodle...' };
-      status.innerHTML = `<span class="spinner"></span> ${labels[action] || 'Procesando...'}`;
+      const progressContainer = document.getElementById('progress-bar-container');
+      const btns = [document.getElementById('btn-analyze'), document.getElementById('btn-parse-only'), document.getElementById('btn-snapshot-only')];
+      btns.forEach(b => b.disabled = true);
 
-      // Start a timer to show elapsed time
-      const startTime = Date.now();
-      const timer = setInterval(() => {
-        const elapsed = Math.round((Date.now() - startTime) / 1000);
-        status.innerHTML = `<span class="spinner"></span> ${labels[action]} (${elapsed}s)`;
-      }, 5000);
+      if (action === 'analyze') {
+        // Multi-step with progress bar
+        progressContainer.classList.remove('hidden');
+        resetProgress();
+        status.innerHTML = '';
+        const startTime = Date.now();
+        const elapsed = () => Math.round((Date.now() - startTime) / 1000);
+        let failedStep = null;
 
-      try {
-        const res = await fetch(`/api/piac/${currentLinkId}/${action}`, { method: 'POST' });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-        clearInterval(timer);
-        status.textContent = 'Listo';
-        status.className = 'text-sm text-green-600';
-        // Reload detail
-        openDetail(currentLinkId);
-      } catch (e) {
-        clearInterval(timer);
-        const msg = e.name === 'AbortError' ? 'Timeout — recarga la pagina y revisa si el analisis se guardo' : e.message;
-        status.textContent = msg;
-        status.className = 'text-sm text-red-500';
+        try {
+          // Step 1: Parse PIAC
+          updateProgress('parse', 'active', 5);
+          status.innerHTML = `<span class="spinner"></span> Parseando PIAC...`;
+          await safeFetch(`/api/piac/${currentLinkId}/parse`, { method: 'POST' });
+          updateProgress('parse', 'done', 33);
+
+          // Step 2: Snapshot Moodle
+          updateProgress('snapshot', 'active', 38);
+          status.innerHTML = `<span class="spinner"></span> Snapshot Moodle... (${elapsed()}s)`;
+          await safeFetch(`/api/piac/${currentLinkId}/snapshot`, { method: 'POST' });
+          updateProgress('snapshot', 'done', 66);
+
+          // Step 3: Matching
+          updateProgress('match', 'active', 70);
+          status.innerHTML = `<span class="spinner"></span> Matching... (${elapsed()}s)`;
+          await safeFetch(`/api/piac/${currentLinkId}/match`, { method: 'POST' });
+          updateProgress('match', 'done', 100);
+
+          status.textContent = `Listo (${elapsed()}s)`;
+          status.className = 'text-sm text-green-600';
+          openDetail(currentLinkId);
+        } catch (e) {
+          const activeStep = document.querySelector('.progress-step .spinner-sm');
+          if (activeStep) {
+            const stepEl = activeStep.closest('.progress-step');
+            updateProgress(stepEl.dataset.step, 'error', parseFloat(document.getElementById('progress-bar-fill').style.width));
+          }
+          status.textContent = e.message;
+          status.className = 'text-sm text-red-500';
+        } finally {
+          btns.forEach(b => b.disabled = false);
+        }
+      } else {
+        // Single action (parse or snapshot)
+        progressContainer.classList.add('hidden');
+        const labels = { parse: 'Parseando PIAC...', snapshot: 'Snapshot Moodle...' };
+        status.innerHTML = `<span class="spinner"></span> ${labels[action] || 'Procesando...'}`;
+        const startTime = Date.now();
+        const timer = setInterval(() => {
+          const s = Math.round((Date.now() - startTime) / 1000);
+          status.innerHTML = `<span class="spinner"></span> ${labels[action]} (${s}s)`;
+        }, 5000);
+        try {
+          await safeFetch(`/api/piac/${currentLinkId}/${action}`, { method: 'POST' });
+          clearInterval(timer);
+          status.textContent = 'Listo';
+          status.className = 'text-sm text-green-600';
+          openDetail(currentLinkId);
+        } catch (e) {
+          clearInterval(timer);
+          status.textContent = e.message;
+          status.className = 'text-sm text-red-500';
+        } finally {
+          btns.forEach(b => b.disabled = false);
+        }
       }
     }
 
