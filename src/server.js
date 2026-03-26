@@ -1411,6 +1411,46 @@ app.post('/api/chat/message', async (req, res) => {
 
     const fullPrompt = history ? `Conversación previa:\n${history}\n\nUsuario: ${message}` : message;
 
+    // Build system prompt — extend with course context if linkId provided
+    let systemPrompt = chatSystemPrompt;
+    const contextLinkId = req.body.context_link_id;
+    if (contextLinkId) {
+      try {
+        const ctxLinks = await portalQuery('piac_links', `id=eq.${parseInt(contextLinkId)}&status=eq.active&limit=1`);
+        if (ctxLinks.length > 0) {
+          const ctxLink = ctxLinks[0];
+          const [ctxParsed, ctxConfig] = await Promise.all([
+            portalQuery('piac_parsed', `piac_link_id=eq.${ctxLink.id}&order=parsed_at.desc&limit=1`),
+            portalQuery('curso_virtual_config', `piac_link_id=eq.${ctxLink.id}&limit=1`)
+          ]);
+          const piac = ctxParsed[0]?.parsed_json;
+          const cfg = ctxConfig[0] || {};
+          if (piac) {
+            const courseCtx = [
+              `\n\n--- CONTEXTO DEL CURSO (${piac.identificacion?.nombre || ctxLink.course_name}) ---`,
+              `Programa: ${piac.identificacion?.programa || 'No especificado'}`,
+              `Docente: ${piac.identificacion?.docente || 'No especificado'} (${piac.identificacion?.email_docente || ''})`,
+              `Modalidad: ${piac.identificacion?.modalidad || 'Virtual'}, ${piac.identificacion?.semanas || '?'} semanas, ${piac.identificacion?.creditos_sct || '?'} SCT`,
+              `Horario atencion: ${cfg.docente_horario_atencion || 'Consultar por email'}`,
+            ];
+            if (piac.nucleos) {
+              courseCtx.push('Nucleos:');
+              piac.nucleos.forEach(n => {
+                courseCtx.push(`  N${n.numero} (Sem ${n.semanas?.inicio}-${n.semanas?.fin}): ${n.nombre} — RF: ${(n.resultado_formativo || '').substring(0, 100)}`);
+              });
+            }
+            if (piac.evaluaciones_sumativas) {
+              courseCtx.push('Evaluaciones: ' + piac.evaluaciones_sumativas.map(e => `${e.nombre} (${e.ponderacion || '?'}%)`).join(', '));
+            }
+            courseCtx.push('Responde como asistente de ESTE curso especifico. Si te preguntan sobre fechas, evaluaciones, contenido o docente, usa la informacion de arriba.');
+            systemPrompt = chatSystemPrompt + courseCtx.join('\n');
+          }
+        }
+      } catch (ctxErr) {
+        console.error('Chat context error:', ctxErr.message);
+      }
+    }
+
     // Call Claude proxy
     let proxyUrl = CLAUDE_PROXY_URL;
     let response;
@@ -1418,7 +1458,7 @@ app.post('/api/chat/message', async (req, res) => {
       const proxyRes = await fetch(proxyUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: fullPrompt, system_prompt: chatSystemPrompt }),
+        body: JSON.stringify({ prompt: fullPrompt, system_prompt: systemPrompt }),
         signal: AbortSignal.timeout(55000)
       });
       response = await proxyRes.json();
@@ -1428,7 +1468,7 @@ app.post('/api/chat/message', async (req, res) => {
       const proxyRes = await fetch(proxyUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: fullPrompt, system_prompt: chatSystemPrompt }),
+        body: JSON.stringify({ prompt: fullPrompt, system_prompt: systemPrompt }),
         signal: AbortSignal.timeout(55000)
       });
       response = await proxyRes.json();

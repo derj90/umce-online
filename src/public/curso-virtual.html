@@ -201,7 +201,8 @@
     </div>
   </div>
 
-  <!-- Chatbot -->
+  <!-- Chatbot contextual — set linkId for course-aware responses -->
+  <script>window.CHATBOT_CONTEXT_LINK_ID = window.location.pathname.split('/').pop();</script>
   <script src="/shared/chatbot.js" defer></script>
 
   <script>

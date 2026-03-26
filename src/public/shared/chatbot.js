@@ -171,7 +171,8 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           session_token: sessionToken,
-          message: text.trim()
+          message: text.trim(),
+          ...(window.CHATBOT_CONTEXT_LINK_ID ? { context_link_id: window.CHATBOT_CONTEXT_LINK_ID } : {})
         })
       });
 
