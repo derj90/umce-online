@@ -806,31 +806,54 @@
         status.innerHTML = '';
         const startTime = Date.now();
         const elapsed = () => Math.round((Date.now() - startTime) / 1000);
-        let failedStep = null;
+
+        // Smooth progress: gradually fills within a range while waiting
+        let smoothTimer = null;
+        function smoothFill(from, to, durationSec) {
+          let cur = from;
+          const step = (to - from) / (durationSec * 4); // tick every 250ms
+          clearInterval(smoothTimer);
+          smoothTimer = setInterval(() => {
+            cur = Math.min(cur + step, to);
+            const bar = document.getElementById('progress-bar-fill');
+            const pctLabel = document.getElementById('progress-bar-pct');
+            bar.style.width = cur + '%';
+            pctLabel.textContent = Math.round(cur) + '%';
+            status.innerHTML = `<span class="spinner"></span> ${statusLabel} (${elapsed()}s)`;
+          }, 250);
+        }
+        let statusLabel = '';
 
         try {
-          // Step 1: Parse PIAC
-          updateProgress('parse', 'active', 5);
-          status.innerHTML = `<span class="spinner"></span> Parseando PIAC...`;
+          // Step 1: Parse PIAC (heaviest — LLM call, ~60-120s)
+          statusLabel = 'Parseando PIAC con IA...';
+          updateProgress('parse', 'active', 2);
+          smoothFill(2, 30, 120);
           await safeFetch(`/api/piac/${currentLinkId}/parse`, { method: 'POST' });
+          clearInterval(smoothTimer);
           updateProgress('parse', 'done', 33);
 
-          // Step 2: Snapshot Moodle
-          updateProgress('snapshot', 'active', 38);
-          status.innerHTML = `<span class="spinner"></span> Snapshot Moodle... (${elapsed()}s)`;
+          // Step 2: Snapshot Moodle (~5-15s)
+          statusLabel = 'Leyendo curso Moodle...';
+          updateProgress('snapshot', 'active', 36);
+          smoothFill(36, 63, 20);
           await safeFetch(`/api/piac/${currentLinkId}/snapshot`, { method: 'POST' });
+          clearInterval(smoothTimer);
           updateProgress('snapshot', 'done', 66);
 
-          // Step 3: Matching
+          // Step 3: Matching (~2-5s)
+          statusLabel = 'Comparando PIAC vs Moodle...';
           updateProgress('match', 'active', 70);
-          status.innerHTML = `<span class="spinner"></span> Matching... (${elapsed()}s)`;
+          smoothFill(70, 95, 10);
           await safeFetch(`/api/piac/${currentLinkId}/match`, { method: 'POST' });
+          clearInterval(smoothTimer);
           updateProgress('match', 'done', 100);
 
           status.textContent = `Listo (${elapsed()}s)`;
           status.className = 'text-sm text-green-600';
           openDetail(currentLinkId);
         } catch (e) {
+          clearInterval(smoothTimer);
           const activeStep = document.querySelector('.progress-step .spinner-sm');
           if (activeStep) {
             const stepEl = activeStep.closest('.progress-step');
@@ -839,6 +862,7 @@
           status.textContent = e.message;
           status.className = 'text-sm text-red-500';
         } finally {
+          clearInterval(smoothTimer);
           btns.forEach(b => b.disabled = false);
         }
       } else {
