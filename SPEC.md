@@ -262,22 +262,22 @@ Las fases futuras son esqueleto — se completan con David antes de empezar.
 
 ### Fase 3-A: Estructura y bienvenida (MVP visor)
 
-- [ ] **3.1 Schema SQL** — Tablas `curso_virtual_config` + `institutional_defaults` en schema portal
-- [ ] **3.2 Endpoints config** — GET/PUT /api/piac/:linkId/config, publish/unpublish, preview, institutional-defaults (6 endpoints)
-- [ ] **3.3 Reescribir curso-virtual.html** — Layout sidebar + area principal, mobile-first. Paleta UMCE. Iconos Lucide SVG
-- [ ] **3.4 Seccion Inicio** — Bienvenida, docente, objetivos, modalidad, horas, como funciona, soporte
-- [ ] **3.5 Nucleos con contenido** — Vista semanal Antes/Durante/Despues. Contenido desde API existente. Sin completion. Click → Moodle
-- [ ] **3.6 Barra superior** — Entrar a clase (Zoom LTI), Grabaciones, Calendario (placeholder), Tareas, Ayuda
-- [ ] **3.7 Chatbot generico** — Incluir shared/chatbot.js (ya funcional)
-- [ ] **3.8 Accesibilidad base** — Landmarks ARIA, headings, skip links, contraste AA, focus visible, alt text, 44px touch targets
+- [x] **3.1 Schema SQL** — Tablas `curso_virtual_config` + `institutional_defaults` en schema portal
+- [x] **3.2 Endpoints config** — GET/PUT /api/piac/:linkId/config, publish/unpublish, preview, institutional-defaults (7 endpoints)
+- [x] **3.3 Reescribir curso-virtual.html** — Layout sidebar + area principal, mobile-first. Paleta UMCE. Iconos Lucide SVG
+- [x] **3.4 Seccion Inicio** — Bienvenida, docente, objetivos, modalidad, horas, como funciona, soporte
+- [x] **3.5 Nucleos con contenido** — Vista semanal Antes/Durante/Despues. Contenido desde API existente. Sin completion. Click → Moodle
+- [x] **3.6 Barra superior** — Entrar a clase (Zoom LTI), Grabaciones, Calendario (placeholder), Tareas, Ayuda
+- [x] **3.7 Chatbot generico** — Incluir shared/chatbot.js (ya funcional)
+- [x] **3.8 Accesibilidad base** — Landmarks ARIA, headings, skip links, contraste AA, focus visible, alt text, 44px touch targets
 
 ### Fase 3-B: Visado y configuracion DI
 
-- [ ] **3.9 Toggle visado** — En panel PIAC, toggle por elemento visible/oculto para estudiante
-- [ ] **3.10 UI configuracion DI** — Pestanas: Bienvenida, Politicas, Contenido, Objetivos semanales, Foros
-- [ ] **3.11 Preview** — Boton que abre vista estudiante con datos del DI actual (ignora publicado)
-- [ ] **3.12 Publicar/despublicar** — Toggle que controla visibilidad para estudiantes
-- [ ] **3.13 Fallbacks** — Sin PIAC → link Moodle. No publicado → link Moodle. Sin analisis → error
+- [ ] **3.9 Toggle visado** — En panel PIAC, toggle por elemento visible/oculto para estudiante (pendiente: requiere UI individual por actividad)
+- [x] **3.10 UI configuracion DI** — Pestanas: Bienvenida, Politicas, Objetivos semanales, Foros + guardar/cargar
+- [x] **3.11 Preview** — Boton Preview en config abre /curso-virtual/:linkId en nueva pestana
+- [x] **3.12 Publicar/despublicar** — Toggle switch en header del panel config, llama publish/unpublish API
+- [x] **3.13 Fallbacks** — Sin PIAC → link Moodle. No publicado → link Moodle. Sin analisis → error (implementado en curso-virtual.html)
 
 ### Anti-patrones de esta fase
 - NO datos personalizados (sin completion, sin notas) — eso es Fase 5
