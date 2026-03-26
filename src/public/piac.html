@@ -780,7 +780,8 @@
         html += `<span title="LTI/Zoom"><span class="elem-icon inline-flex" style="background:#CFFAFE;width:18px;height:18px;font-size:10px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center">Z</span> Zoom/LTI</span>`;
         html += `<span><span class="badge badge-critical" style="font-size:9px">oculto</span> No visible para estudiantes</span>`;
         html += `<span>(S#) = Sección en Moodle</span>`;
-        html += `<span style="color:#059669">&#10003; Vinculado</span>`;
+        html += `<span style="color:#059669">&#10003; Match completo (verificado)</span>`;
+        html += `<span style="color:#D97706">&#9679; Match parcial (sin verificar contenido)</span>`;
         html += `<span style="color:#DC2626">&#9888; Sin match</span>`;
         html += `</div>`;
         if (courseUrl) {
@@ -798,7 +799,8 @@
           html += `<div class="flex-1">`;
           html += `<div class="font-medium text-gray-800">Núcleo ${nuc.numero || idx+1}: ${nuc.nombre || 'Sin nombre'}</div>`;
           if (sec) {
-            html += `<div class="text-xs text-gray-500 mt-0.5">→ Sección ${sec.number}: ${sec.name}${sec.visible === false ? ' <span class="badge badge-critical" style="font-size:9px">oculta</span>' : ''}</div>`;
+            const reasonLabel = m.sectionMatchReason === 'number_match' ? 'por número' : m.sectionMatchReason === 'name_similarity' ? 'por nombre similar' : '';
+            html += `<div class="text-xs text-gray-500 mt-0.5">→ Sección ${sec.number}: ${sec.name}${sec.visible === false ? ' <span class="badge badge-critical" style="font-size:9px">oculta</span>' : ''}${reasonLabel ? ` <span class="text-gray-400">(vinculado ${reasonLabel})</span>` : ''}</div>`;
           } else {
             html += `<div class="text-xs text-red-500 mt-0.5">Sin sección correspondiente en Moodle</div>`;
           }
@@ -816,7 +818,10 @@
           (m.elements || []).forEach((el, elIdx) => {
             const piac = el.piac || {};
             const typeLabel = piac.type === 'sesion' ? 'Sesión' : piac.type === 'evaluacion' ? 'Evaluación' : piac.type === 'foros' ? 'Foros' : piac.type === 'herramienta' ? 'Herramienta' : piac.type === 'base_datos' ? 'BD' : piac.type === 'contenido' ? 'Contenido' : piac.type === 'contenido_extra' ? 'Extra' : piac.type || '?';
-            const statusIcon = el.matched ? '<span style="color:#059669" title="Vinculado en Moodle">&#10003;</span>' : '<span style="color:#DC2626" title="Sin match en Moodle">&#9888;</span>';
+            const conf = el.matchConfidence || (el.matched ? 'partial' : 'none');
+            const confIcon = conf === 'full' ? '<span style="color:#059669" title="Match completo: nombre coincide y contenido verificado">&#10003;</span>'
+              : conf === 'partial' ? '<span style="color:#D97706" title="Match parcial: vinculado por nombre/posición, contenido no verificado completamente">&#9679;</span>'
+              : '<span style="color:#DC2626" title="Sin match en Moodle">&#9888;</span>';
             const moodleName = el.matched && el.moodle ? (Array.isArray(el.moodle) ? el.moodle.map(mod => mod.name).join(', ') : el.moodle.name || '') : '';
             const elemId = `elem-${idx}-${elIdx}`;
 
@@ -824,13 +829,23 @@
             html += `<div class="elem-row" style="cursor:pointer;padding:0.5rem 1rem;border-bottom:1px solid #F3F4F6" onclick="document.getElementById('${elemId}').classList.toggle('hidden');this.querySelector('.elem-chevron').classList.toggle('rotate-180')">`;
             html += `<span class="text-xs text-gray-400 w-16 flex-shrink-0">${typeLabel}</span>`;
             html += `<span class="flex-1 text-gray-700 truncate text-sm" title="${(piac.name||'').replace(/"/g,'&quot;')}">${piac.name || '—'}</span>`;
-            html += `<span class="mx-2">${statusIcon}</span>`;
+            html += `<span class="mx-2">${confIcon}</span>`;
             html += `<span class="flex-1 text-gray-500 truncate text-xs">${moodleName || '<em class="text-red-400">Sin match</em>'}</span>`;
             html += `<svg class="w-3.5 h-3.5 text-gray-400 transition-transform elem-chevron flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>`;
             html += `</div>`;
 
             // Expanded detail (hidden by default)
             html += `<div id="${elemId}" class="hidden" style="padding:0.5rem 1rem 0.75rem;background:#FAFBFC;border-bottom:1px solid #F3F4F6">`;
+
+            // Match reason badge
+            if (el.matchReason) {
+              const reasonLabels = { number_match: 'Vinculado por coincidencia de número', name_similarity: 'Vinculado por nombre similar', section_position: 'Vinculado por posición en la sección', session_range: 'Vinculado por rango de sesiones' };
+              html += `<div class="text-xs text-gray-400 mb-2 flex items-center gap-2">`;
+              html += `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${conf === 'full' ? '#059669' : conf === 'partial' ? '#D97706' : '#DC2626'}"></span>`;
+              html += `${reasonLabels[el.matchReason] || el.matchReason}`;
+              html += `</div>`;
+            }
+
             html += `<div class="grid gap-3" style="grid-template-columns:1fr auto 1fr">`;
             // PIAC side
             html += `<div class="min-w-0">`;
@@ -867,6 +882,39 @@
             }
             html += `</div>`;
             html += `</div>`; // grid
+
+            // Content verification checklist (for sessions with contentCheck)
+            if (el.contentCheck) {
+              const cc = el.contentCheck;
+              html += `<div class="mt-2 pt-2 border-t border-gray-200">`;
+              html += `<div class="text-xs font-medium text-gray-500 mb-1">Verificación de contenido</div>`;
+              html += `<div class="grid grid-cols-2 gap-1 text-xs">`;
+              // Forum check
+              if (cc.details && cc.details.some(d => d.type === 'forum')) {
+                const forumDetail = cc.details.find(d => d.type === 'forum');
+                const fIcon = forumDetail.status === 'found' ? '<span style="color:#059669">&#10003;</span>' : '<span style="color:#DC2626">&#10007;</span>';
+                html += `<div>${fIcon} Foro asociado${forumDetail.status === 'found' ? ': ' + forumDetail.name : ''}</div>`;
+              } else if (piac.asincronico && /foro|forum|discusi/i.test(piac.asincronico)) {
+                html += `<div><span style="color:#9CA3AF">?</span> Foro (mencionado en PIAC, no verificado)</div>`;
+              }
+              // Resources check
+              if (cc.resourcesTotal > 0) {
+                const rIcon = cc.resourcesFound === cc.resourcesTotal ? '<span style="color:#059669">&#10003;</span>' : cc.resourcesFound > 0 ? '<span style="color:#D97706">~</span>' : '<span style="color:#DC2626">&#10007;</span>';
+                html += `<div>${rIcon} Recursos: ${cc.resourcesFound}/${cc.resourcesTotal} verificados</div>`;
+              }
+              html += `</div>`;
+              // Resource detail list
+              if (cc.details && cc.details.filter(d => d.type === 'resource').length > 0) {
+                html += `<div class="mt-1 space-y-0.5">`;
+                cc.details.filter(d => d.type === 'resource').forEach(d => {
+                  const icon = d.status === 'found' ? '<span style="color:#059669">&#10003;</span>' : '<span style="color:#9CA3AF">?</span>';
+                  html += `<div class="text-xs text-gray-400 pl-3">${icon} ${d.name}${d.status !== 'found' ? ' <em>(no verificado)</em>' : ''}</div>`;
+                });
+                html += `</div>`;
+              }
+              html += `</div>`;
+            }
+
             html += `</div>`; // detail
           });
           if ((m.elements || []).length === 0) {
@@ -988,6 +1036,11 @@
               if (mUrl) moodleLink = ` <a href="${mUrl}#section-${disc.moodle_element.match(/Sección (\d+)/)?.[1] || 0}" target="_blank" class="elem-link">ver &nearr;</a>`;
             }
           }
+          // Covered-by hint for eval discrepancies
+          let coveredHtml = '';
+          if (disc.coveredBy && disc.coveredBy.length > 0) {
+            coveredHtml = `<div class="text-xs text-green-600 mt-1">Probablemente cubierta por: ${disc.coveredBy.join(', ')}${disc.coveredByCount > 5 ? ` y ${disc.coveredByCount - 5} más` : ''}</div>`;
+          }
           return `<div class="disc-row py-2 px-2 rounded ${resolvedClass}" id="disc-${disc.id}">
             <div class="flex items-start gap-3">
               <span class="badge ${badgeClass} mt-0.5">${disc.severity}</span>
@@ -997,6 +1050,7 @@
                   ${disc.piac_element ? `PIAC: ${disc.piac_element}` : ''}
                   ${disc.moodle_element ? ` | Moodle: ${disc.moodle_element}${moodleLink}` : ''}
                 </div>
+                ${coveredHtml}
                 ${disc.resolved ? `<div class="mt-1">${actionHtml}</div>` : ''}
               </div>
               ${!disc.resolved ? actionHtml : ''}
@@ -1005,28 +1059,70 @@
           </div>`;
         }
 
-        let html = `<div class="text-xs text-gray-400 mb-2">${sorted.length} discrepancia${sorted.length > 1 ? 's' : ''}${groups.length ? ` (${groups.length} grupo${groups.length > 1 ? 's' : ''} similares)` : ''}</div>`;
+        // Separate discrepancies by category
+        const configDiscs = sorted.filter(d => !d.category || d.category !== 'evaluacion_declarativa');
+        const evalDiscs = sorted.filter(d => d.category === 'evaluacion_declarativa');
 
-        // Render grouped discrepancies
-        groups.forEach((g, gi) => {
-          const badgeClass = g.severity === 'critical' ? 'badge-critical' : g.severity === 'warning' ? 'badge-warning' : 'badge-info';
-          const groupId = `disc-group-${gi}`;
-          html += `<div class="disc-row py-2 px-2 rounded mb-1 border border-gray-100">
-            <div class="flex items-start gap-3 cursor-pointer" onclick="document.getElementById('${groupId}').classList.toggle('hidden');this.querySelector('.group-chevron').classList.toggle('rotate-180')">
-              <span class="badge ${badgeClass} mt-0.5">${g.severity}</span>
-              <div class="flex-1">
-                <div class="text-sm text-gray-800 font-medium">${g.items.length} ${g.description.toLowerCase().includes('evaluaci') ? 'evaluaciones' : 'elementos'}: ${g.description}</div>
+        let html = `<div class="text-xs text-gray-400 mb-2">${sorted.length} discrepancia${sorted.length > 1 ? 's' : ''}</div>`;
+
+        // --- Config issues section ---
+        if (configDiscs.length > 0) {
+          html += `<div class="mb-4">`;
+          html += `<div class="text-xs font-semibold text-gray-600 mb-2 flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Problemas de configuración (${configDiscs.length})</div>`;
+
+          // Group similar config discrepancies
+          const cGroups = [];
+          const cUngrouped = [];
+          const cGrouped = new Set();
+          configDiscs.forEach((disc, i) => {
+            if (cGrouped.has(i) || disc.resolved) { if (!cGrouped.has(i)) cUngrouped.push(disc); return; }
+            const similar = configDiscs.filter((d2, j) => j > i && !cGrouped.has(j) && !d2.resolved && d2.severity === disc.severity && d2.description === disc.description);
+            if (similar.length >= 2) {
+              const items = [disc, ...similar];
+              items.forEach(it => cGrouped.add(configDiscs.indexOf(it)));
+              cGroups.push({ description: disc.description, severity: disc.severity, items });
+            } else {
+              cUngrouped.push(disc);
+            }
+          });
+
+          cGroups.forEach((g, gi) => {
+            const badgeClass = g.severity === 'critical' ? 'badge-critical' : g.severity === 'warning' ? 'badge-warning' : 'badge-info';
+            const groupId = `disc-config-group-${gi}`;
+            html += `<div class="disc-row py-2 px-2 rounded mb-1 border border-gray-100">
+              <div class="flex items-start gap-3 cursor-pointer" onclick="document.getElementById('${groupId}').classList.toggle('hidden');this.querySelector('.group-chevron').classList.toggle('rotate-180')">
+                <span class="badge ${badgeClass} mt-0.5">${g.severity}</span>
+                <div class="flex-1">
+                  <div class="text-sm text-gray-800 font-medium">${g.items.length} elementos: ${g.description}</div>
+                </div>
+                <svg class="w-4 h-4 text-gray-400 transition-transform group-chevron flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
               </div>
-              <svg class="w-4 h-4 text-gray-400 transition-transform group-chevron flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-            </div>
-            <div id="${groupId}" class="hidden mt-2 ml-6 space-y-1 border-l-2 border-gray-200 pl-3">
-              ${g.items.map(disc => renderSingleDisc(disc)).join('')}
-            </div>
-          </div>`;
-        });
+              <div id="${groupId}" class="hidden mt-2 ml-6 space-y-1 border-l-2 border-gray-200 pl-3">
+                ${g.items.map(disc => renderSingleDisc(disc)).join('')}
+              </div>
+            </div>`;
+          });
+          cUngrouped.forEach(disc => { html += renderSingleDisc(disc); });
+          html += `</div>`;
+        }
 
-        // Render ungrouped discrepancies
-        ungrouped.forEach(disc => { html += renderSingleDisc(disc); });
+        // --- Evaluaciones declarativas section ---
+        if (evalDiscs.length > 0) {
+          const evalGroupId = 'disc-eval-group';
+          html += `<div class="mt-3 pt-3 border-t border-gray-100">`;
+          html += `<div class="flex items-start gap-3 cursor-pointer mb-2" onclick="document.getElementById('${evalGroupId}').classList.toggle('hidden');this.querySelector('.group-chevron').classList.toggle('rotate-180')">`;
+          html += `<span class="badge badge-info mt-0.5">nota</span>`;
+          html += `<div class="flex-1">`;
+          html += `<div class="text-sm text-gray-600 font-medium">${evalDiscs.length} evaluación${evalDiscs.length > 1 ? 'es' : ''} del PIAC sin actividad dedicada</div>`;
+          html += `<div class="text-xs text-gray-400">Estas evaluaciones son declarativas y probablemente ya están cubiertas por las actividades del curso (foros, tareas, etc.)</div>`;
+          html += `</div>`;
+          html += `<svg class="w-4 h-4 text-gray-400 transition-transform group-chevron flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>`;
+          html += `</div>`;
+          html += `<div id="${evalGroupId}" class="hidden ml-6 space-y-1 border-l-2 border-blue-100 pl-3">`;
+          evalDiscs.forEach(disc => { html += renderSingleDisc(disc); });
+          html += `</div>`;
+          html += `</div>`;
+        }
 
         discEl.innerHTML = html;
       } else if (d.matching) {

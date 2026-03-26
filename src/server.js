@@ -2980,25 +2980,82 @@ function runMatching(piacJson, snapshotJson) {
   const sectionRoles = {};
   allSections.forEach(s => { sectionRoles[s.id] = classifySection(s); });
 
+  // Normalize text for comparison
+  function norm(text) { return (text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+
   // Smart section matching: by name/number, skipping support sections
   function findBestSection(nucleo) {
     const nucleoNum = nucleo.numero;
-    const nucleoName = (nucleo.nombre || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const nucleoName = norm(nucleo.nombre);
 
     // Try matching by number in section name (e.g., "Learning Core 1" → nucleo 1)
     for (const s of allSections) {
       if (sectionRoles[s.id] === 'general') continue;
-      const sName = (s.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const sName = norm(s.name);
       const sNum = sName.match(/(\d+)/);
-      if (sNum && parseInt(sNum[1]) === nucleoNum && contentPatterns.test(s.name)) return s;
+      if (sNum && parseInt(sNum[1]) === nucleoNum && contentPatterns.test(s.name)) return { section: s, reason: 'number_match' };
     }
     // Try name similarity
     for (const s of allSections) {
       if (sectionRoles[s.id] !== 'content' && sectionRoles[s.id] !== 'unknown') continue;
-      const sName = (s.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      if (nucleoName.length > 5 && (sName.includes(nucleoName.substring(0, 12)) || nucleoName.includes(sName.substring(0, 12)))) return s;
+      const sName = norm(s.name);
+      if (nucleoName.length > 5 && (sName.includes(nucleoName.substring(0, 12)) || nucleoName.includes(sName.substring(0, 12)))) return { section: s, reason: 'name_similarity' };
     }
     return null;
+  }
+
+  // Content verification: check if PIAC recursos appear in Moodle module descriptions/content
+  function verifyContent(piacSesion, moodleMod, nucleoForums) {
+    const check = { hasForumMatch: false, resourcesFound: 0, resourcesTotal: 0, syncActivity: null, asyncActivity: null, details: [] };
+    const recursos = piacSesion.recursos || [];
+    check.resourcesTotal = recursos.length;
+
+    // Check if session has associated forum
+    if (nucleoForums && nucleoForums.length > 0) {
+      const sesNum = piacSesion.numero;
+      const matchedForum = nucleoForums.find(f => {
+        const m = f.name.match(/(?:session|sesión|sesion)\s*(\d+)/i);
+        return m && parseInt(m[1]) === sesNum;
+      });
+      check.hasForumMatch = !!matchedForum;
+      if (matchedForum) check.details.push({ type: 'forum', status: 'found', name: matchedForum.name });
+      else if (piacSesion.asincronico && /foro|forum|discusi/i.test(piacSesion.asincronico)) check.details.push({ type: 'forum', status: 'missing', note: 'PIAC menciona foro pero no hay foro asociado' });
+    }
+
+    // Check recursos in module description/content
+    if (moodleMod && recursos.length > 0) {
+      const modDesc = norm(moodleMod.description || '');
+      const modName = norm(moodleMod.name || '');
+      const modContent = modDesc + ' ' + modName;
+      recursos.forEach(r => {
+        const rName = norm(r.titulo || r.nombre || '');
+        // Check by URL match or by title keyword overlap (at least 8 chars)
+        const urlMatch = r.url && modContent.includes(norm(r.url));
+        const nameMatch = rName.length >= 8 && modContent.includes(rName.substring(0, Math.min(rName.length, 20)));
+        if (urlMatch || nameMatch) {
+          check.resourcesFound++;
+          check.details.push({ type: 'resource', status: 'found', name: r.titulo || r.nombre });
+        } else {
+          check.details.push({ type: 'resource', status: 'not_verified', name: r.titulo || r.nombre, note: 'No se pudo verificar en el contenido de Moodle' });
+        }
+      });
+    }
+
+    // Sync/async activity indicators
+    if (piacSesion.sincronico) check.syncActivity = piacSesion.sincronico;
+    if (piacSesion.asincronico) check.asyncActivity = piacSesion.asincronico;
+
+    return check;
+  }
+
+  // Calculate match confidence: full (content verified), partial (name/number only), none
+  function calcConfidence(matched, matchReason, contentCheck) {
+    if (!matched) return 'none';
+    if (contentCheck && contentCheck.resourcesTotal > 0 && contentCheck.resourcesFound === contentCheck.resourcesTotal && contentCheck.hasForumMatch !== false) return 'full';
+    if (contentCheck && contentCheck.resourcesTotal > 0 && contentCheck.resourcesFound > 0) return 'partial';
+    if (matchReason === 'number_match') return 'partial';
+    if (matchReason === 'name_similarity') return 'partial';
+    return 'partial'; // matched but no content to verify
   }
 
   // Collect all forums across all sections (some courses put forums in utility sections)
@@ -3012,13 +3069,16 @@ function runMatching(piacJson, snapshotJson) {
   const matchedModuleIds = new Set();
 
   nucleos.forEach((nucleo) => {
-    const section = findBestSection(nucleo);
+    const sectionResult = findBestSection(nucleo);
+    const section = sectionResult ? sectionResult.section : null;
+    const sectionMatchReason = sectionResult ? sectionResult.reason : null;
     if (section) matchedSectionIds.add(section.id);
 
     const nucleoMatch = {
       nucleo: { numero: nucleo.numero, nombre: nucleo.nombre, rf: nucleo.resultado_formativo },
       section: section ? { number: section.number, name: section.name, visible: section.visible } : null,
       sectionMatched: !!section,
+      sectionMatchReason,
       elements: []
     };
 
@@ -3053,28 +3113,44 @@ function runMatching(piacJson, snapshotJson) {
     const contentMods = modules.filter(m => ['book', 'page', 'resource', 'url', 'scorm', 'h5pactivity', 'lesson'].includes(m.modname));
     const piacSesiones = nucleo.sesiones || [];
 
+    // Collect forums for this nucleo (needed for content verification)
+    const nucleoForumsForCheck = (weekStart && weekEnd) ? allForums.filter(f => {
+      const m = f.name.match(/(?:session|sesión|sesion)\s*(\d+)/i);
+      if (!m) return false;
+      const sn = parseInt(m[1]);
+      return sn >= weekStart && sn <= weekEnd;
+    }) : [];
+
     if (piacSesiones.length > 0 && contentMods.length > 0) {
       // Try to match each PIAC session to a Moodle module by name
       piacSesiones.forEach(sesion => {
-        const sesionTitle = (sesion.titulo || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const sesionTitle = norm(sesion.titulo);
         const sesionNum = sesion.numero;
 
         // Find Moodle module by session number or title similarity
         let bestMatch = null;
+        let matchReason = null;
         for (const mod of contentMods) {
-          const modName = (mod.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+          const modName = norm(mod.name);
           // Match by session number: "Session 3: ..." matches sesion.numero=3
           const modNum = modName.match(/session\s*(\d+)/i);
-          if (modNum && parseInt(modNum[1]) === sesionNum) { bestMatch = mod; break; }
+          if (modNum && parseInt(modNum[1]) === sesionNum) { bestMatch = mod; matchReason = 'number_match'; break; }
           // Match by title keywords (at least 12 chars overlap)
-          if (sesionTitle.length > 12 && modName.includes(sesionTitle.substring(0, 15))) { bestMatch = mod; break; }
-          if (modName.length > 12 && sesionTitle.includes(modName.substring(modName.indexOf(':') + 1).trim().substring(0, 15))) { bestMatch = mod; break; }
+          if (sesionTitle.length > 12 && modName.includes(sesionTitle.substring(0, 15))) { bestMatch = mod; matchReason = 'name_similarity'; break; }
+          if (modName.length > 12 && sesionTitle.includes(modName.substring(modName.indexOf(':') + 1).trim().substring(0, 15))) { bestMatch = mod; matchReason = 'name_similarity'; break; }
         }
+
+        // Content verification for matched sessions
+        const contentCheck = bestMatch ? verifyContent(sesion, bestMatch, nucleoForumsForCheck) : null;
+        const confidence = calcConfidence(!!bestMatch, matchReason, contentCheck);
 
         nucleoMatch.elements.push({
           piac: { type: 'sesion', name: `Sesión ${sesionNum}: ${sesion.titulo}`, sincronico: sesion.sincronico, asincronico: sesion.asincronico, recursos: sesion.recursos },
           moodle: bestMatch ? { id: bestMatch.id, name: bestMatch.name, modname: bestMatch.modname, visible: bestMatch.visible } : null,
-          matched: !!bestMatch
+          matched: !!bestMatch,
+          matchReason,
+          matchConfidence: confidence,
+          contentCheck
         });
 
         if (bestMatch) {
@@ -3095,7 +3171,9 @@ function runMatching(piacJson, snapshotJson) {
         nucleoMatch.elements.push({
           piac: { type: 'contenido_extra', name: m.name },
           moodle: { id: m.id, name: m.name, modname: m.modname, visible: m.visible },
-          matched: true
+          matched: true,
+          matchReason: 'section_position',
+          matchConfidence: 'partial'
         });
         matchedModuleIds.add(m.id);
       });
@@ -3104,7 +3182,9 @@ function runMatching(piacJson, snapshotJson) {
       nucleoMatch.elements.push({
         piac: { type: 'contenido', name: `${contentMods.length} recurso(s) de contenido` },
         moodle: contentMods.map(m => ({ id: m.id, name: m.name, modname: m.modname, visible: m.visible })),
-        matched: true
+        matched: true,
+        matchReason: 'section_position',
+        matchConfidence: 'partial'
       });
       contentMods.forEach(m => matchedModuleIds.add(m.id));
     } else if (section.visible) {
@@ -3130,7 +3210,9 @@ function runMatching(piacJson, snapshotJson) {
         nucleoMatch.elements.push({
           piac: { type: 'foros', name: `${nucleoForums.length} foro(s) de sesiones ${weekStart}-${weekEnd}` },
           moodle: nucleoForums.map(f => ({ id: f.id, name: f.name, modname: 'forum', visible: f.visible, sectionName: f.sectionName })),
-          matched: true
+          matched: true,
+          matchReason: 'session_range',
+          matchConfidence: 'full'
         });
         nucleoForums.forEach(f => matchedModuleIds.add(f.id));
       }
@@ -3142,7 +3224,9 @@ function runMatching(piacJson, snapshotJson) {
       nucleoMatch.elements.push({
         piac: { type: 'evaluacion', name: a.name },
         moodle: { id: a.id, name: a.name, modname: 'assign', visible: a.visible },
-        matched: true
+        matched: true,
+        matchReason: 'section_position',
+        matchConfidence: 'partial'
       });
       matchedModuleIds.add(a.id);
     });
@@ -3153,7 +3237,9 @@ function runMatching(piacJson, snapshotJson) {
       nucleoMatch.elements.push({
         piac: { type: 'herramienta', name: m.name },
         moodle: { id: m.id, name: m.name, modname: 'lti', visible: m.visible },
-        matched: true
+        matched: true,
+        matchReason: 'section_position',
+        matchConfidence: 'partial'
       });
       matchedModuleIds.add(m.id);
     });
@@ -3164,7 +3250,9 @@ function runMatching(piacJson, snapshotJson) {
       nucleoMatch.elements.push({
         piac: { type: 'base_datos', name: m.name },
         moodle: { id: m.id, name: m.name, modname: 'data', visible: m.visible },
-        matched: true
+        matched: true,
+        matchReason: 'section_position',
+        matchConfidence: 'partial'
       });
       matchedModuleIds.add(m.id);
     });
@@ -3175,7 +3263,9 @@ function runMatching(piacJson, snapshotJson) {
       nucleoMatch.elements.push({
         piac: { type: 'evaluacion', name: q.name },
         moodle: { id: q.id, name: q.name, modname: 'quiz', visible: q.visible },
-        matched: true
+        matched: true,
+        matchReason: 'section_position',
+        matchConfidence: 'partial'
       });
       matchedModuleIds.add(q.id);
     });
@@ -3183,12 +3273,18 @@ function runMatching(piacJson, snapshotJson) {
     matches.push(nucleoMatch);
   });
 
-  // --- Evaluaciones sumativas: check across whole course ---
+  // --- Evaluaciones sumativas: check across whole course with semantic inference ---
   const evals = piacJson.evaluaciones_sumativas || [];
-  evals.forEach(ev => {
-    const evName = (ev.nombre || '').toLowerCase();
+  // Collect ALL course activities for semantic coverage check (not just unmatched)
+  const allCourseForums = allModules.filter(m => m.modname === 'forum');
+  const allCourseAssigns = allModules.filter(m => m.modname === 'assign');
+  const allCourseQuizzes = allModules.filter(m => m.modname === 'quiz');
 
-    // Try to find matching activity anywhere in course
+  evals.forEach(ev => {
+    const evName = norm(ev.nombre);
+    const ponderacion = ev.ponderacion != null ? `${ev.ponderacion}%` : 'no especificada en PIAC';
+
+    // Try direct match with unmatched activities first
     let found = null;
     if (evName.includes('foro') || evName.includes('discusi') || evName.includes('participaci')) {
       const unmatched = allForums.filter(f => !matchedModuleIds.has(f.id));
@@ -3199,20 +3295,47 @@ function runMatching(piacJson, snapshotJson) {
     } else if (evName.includes('prueba') || evName.includes('quiz') || evName.includes('examen') || evName.includes('test')) {
       const match = allQuizzes.find(q => !matchedModuleIds.has(q.id));
       if (match) { found = { type: 'quiz', item: match }; matchedModuleIds.add(match.id); }
-    } else if (evName.includes('tarea') || evName.includes('trabajo') || evName.includes('ensayo') || evName.includes('producción') || evName.includes('escrit')) {
+    } else if (evName.includes('tarea') || evName.includes('trabajo') || evName.includes('ensayo') || evName.includes('producción') || evName.includes('produccion') || evName.includes('escrit')) {
       const match = allAssigns.find(a => !matchedModuleIds.has(a.id));
       if (match) { found = { type: 'assign', item: match }; matchedModuleIds.add(match.id); }
     }
 
     if (!found) {
-      // Not a critical issue — evaluaciones often use Moodle's gradebook or folders, not dedicated activities
-      allDiscrepancies.push({
-        type: 'missing_in_moodle',
-        severity: 'warning',
-        piac_element: `Evaluación: "${ev.nombre}" (${ev.ponderacion || '?'}%)`,
-        moodle_element: null,
-        description: `Evaluación "${ev.nombre}" del PIAC sin actividad evaluativa dedicada en Moodle`
-      });
+      // Semantic inference: check if existing activities likely COVER this evaluation
+      let coveredBy = [];
+      if (evName.includes('foro') || evName.includes('discusi') || evName.includes('participaci')) {
+        coveredBy = allCourseForums.map(f => f.name);
+      } else if (evName.includes('individual') || evName.includes('trabajo') || evName.includes('tarea') || evName.includes('ensayo') || evName.includes('producción') || evName.includes('produccion') || evName.includes('escrit') || evName.includes('poster') || evName.includes('texto')) {
+        coveredBy = allCourseAssigns.map(a => a.name);
+      } else if (evName.includes('grupal') || evName.includes('grupo') || evName.includes('seminario') || evName.includes('colaborativ')) {
+        coveredBy = [...allCourseAssigns.map(a => a.name), ...allCourseForums.map(f => f.name)];
+      } else if (evName.includes('prueba') || evName.includes('quiz') || evName.includes('examen') || evName.includes('test')) {
+        coveredBy = allCourseQuizzes.map(q => q.name);
+      }
+
+      if (coveredBy.length > 0) {
+        // Likely covered by existing activities — informational, not warning
+        allDiscrepancies.push({
+          type: 'eval_no_dedicated_activity',
+          severity: 'info',
+          category: 'evaluacion_declarativa',
+          piac_element: `Evaluación: "${ev.nombre}" (Ponderación: ${ponderacion})`,
+          moodle_element: null,
+          description: `Evaluación declarativa del PIAC probablemente cubierta por actividades existentes`,
+          coveredBy: coveredBy.slice(0, 5),
+          coveredByCount: coveredBy.length
+        });
+      } else {
+        // No activities that could plausibly cover this — actual warning
+        allDiscrepancies.push({
+          type: 'missing_in_moodle',
+          severity: 'warning',
+          category: 'evaluacion_sin_cobertura',
+          piac_element: `Evaluación: "${ev.nombre}" (Ponderación: ${ponderacion})`,
+          moodle_element: null,
+          description: `Evaluación del PIAC sin actividad evaluativa en Moodle que la cubra`
+        });
+      }
     }
   });
 
@@ -3248,9 +3371,12 @@ function runMatching(piacJson, snapshotJson) {
   });
 
   // Build summary
+  const totalElements = matches.reduce((sum, m) => sum + m.elements.length, 0);
+  const matchedCount = matches.reduce((sum, m) => sum + m.elements.filter(e => e.matched).length, 0);
+  const fullConfCount = matches.reduce((sum, m) => sum + m.elements.filter(e => e.matchConfidence === 'full').length, 0);
+  const partialConfCount = matches.reduce((sum, m) => sum + m.elements.filter(e => e.matchConfidence === 'partial').length, 0);
   const totalPiacElements = nucleos.length + evals.length + nucleos.reduce((s, n) => s + (n.repertorio_evaluativo || []).length, 0);
   const totalMoodleActivities = allSections.reduce((sum, s) => sum + (s.modules || []).length, 0);
-  const matchedCount = matches.reduce((sum, m) => sum + m.elements.filter(e => e.matched).length, 0);
   const criticalCount = allDiscrepancies.filter(d => d.severity === 'critical').length;
   const warningCount = allDiscrepancies.filter(d => d.severity === 'warning').length;
   const infoCount = allDiscrepancies.filter(d => d.severity === 'info').length;
@@ -3261,7 +3387,9 @@ function runMatching(piacJson, snapshotJson) {
     nucleos_matched: matches.filter(m => m.sectionMatched).length,
     total_piac_elements: totalPiacElements,
     total_moodle_activities: totalMoodleActivities,
+    total_elements: totalElements,
     matched_elements: matchedCount,
+    match_confidence: { full: fullConfCount, partial: partialConfCount, none: totalElements - matchedCount },
     discrepancies: { critical: criticalCount, warning: warningCount, info: infoCount, total: allDiscrepancies.length }
   };
 
