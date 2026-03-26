@@ -1242,6 +1242,59 @@ app.get('/api/catalog/programs/:slug/piac', async (req, res) => {
   }
 });
 
+// GET /api/induccion/launch — auto-matricula en virtual.umce.cl y redirige a induccion2026
+app.get('/api/induccion/launch', authMiddleware, async (req, res) => {
+  try {
+    const email = req.userEmail;
+    if (!email) return res.status(401).json({ error: 'No autenticado' });
+
+    const virtualPlatform = PLATFORMS.find(p => p.id === 'virtual');
+
+    // 1. Buscar usuario en virtual.umce.cl por email
+    const users = await moodleCall(virtualPlatform, 'core_user_get_users_by_field', {
+      field: 'email', values: [email]
+    });
+
+    let moodleUserId = null;
+    if (users && users.length > 0) {
+      moodleUserId = users[0].id;
+
+      // 2. Verificar si ya está matriculado
+      try {
+        const enrolled = await moodleCall(virtualPlatform, 'core_enrol_get_enrolled_users', {
+          courseid: 252
+        });
+        const isEnrolled = enrolled.some(u => u.id === moodleUserId);
+
+        if (!isEnrolled) {
+          // 3. Auto-matricular
+          await moodleCall(virtualPlatform, 'enrol_manual_enrol_users', {
+            enrolments: [{ roleid: 5, userid: moodleUserId, courseid: 252 }]
+          });
+          console.log(`[Induccion] Auto-enrolled ${email} (userId ${moodleUserId}) in course 252`);
+        }
+      } catch (enrollErr) {
+        // Si falla la verificación, intentar matricular directamente
+        try {
+          await moodleCall(virtualPlatform, 'enrol_manual_enrol_users', {
+            enrolments: [{ roleid: 5, userid: moodleUserId, courseid: 252 }]
+          });
+        } catch (e) {
+          console.log(`[Induccion] Enrol attempt for ${email}: ${e.message}`);
+        }
+      }
+    }
+
+    // 4. Redirigir a induccion2026 con email
+    const redirectUrl = `https://induccion2026.udfv.cloud?email=${encodeURIComponent(email)}`;
+    res.redirect(redirectUrl);
+  } catch (err) {
+    console.error('[Induccion] Launch error:', err.message);
+    // Fallback: redirigir sin matrícula
+    res.redirect(`https://induccion2026.udfv.cloud?email=${encodeURIComponent(req.userEmail || '')}`);
+  }
+});
+
 // GET /api/news
 app.get('/api/news', async (req, res) => {
   try {
@@ -1325,13 +1378,22 @@ app.get('/api/testimonials', async (req, res) => {
 });
 
 // ============================================================================
-// BADGES API — Insignias SDPA
+// BADGES + MICROCREDENCIALES API — Insignias y credenciales apilables
 // ============================================================================
+
+// Helper: generate verificacion hash for badges/microcredenciales
+function generateVerificacionHash() {
+  const bytes = require('crypto').randomBytes(16);
+  return bytes.toString('hex');
+}
+
+// --- Badges: catalogo y consulta ---
 
 // GET /api/badges/definitions — catálogo público de badges disponibles
 app.get('/api/badges/definitions', async (req, res) => {
   try {
-    const defs = await portalQuery('badge_definitions', 'active=eq.true&order=display_order.asc');
+    const params = 'active=eq.true&order=display_order.asc';
+    const defs = await portalQuery('badge_definitions', params);
     res.json(defs);
   } catch (err) {
     console.error('Badge definitions error:', err.message);
@@ -1339,11 +1401,11 @@ app.get('/api/badges/definitions', async (req, res) => {
   }
 });
 
-// GET /api/badges/user/:email — badges de un usuario (requiere auth)
-app.get('/api/badges/user/:email', authMiddleware, async (req, res) => {
+// GET /api/user/badges — badges del usuario logueado
+app.get('/api/user/badges', authMiddleware, async (req, res) => {
   try {
-    const email = decodeURIComponent(req.params.email);
-    const badges = await portalQuery('user_badges', `user_email=eq.${encodeURIComponent(email)}&order=earned_at.desc`);
+    const { email } = resolveTargetEmail(req);
+    const badges = await portalQuery('user_badges', `user_email=eq.${encodeURIComponent(email)}&order=granted_at.desc,earned_at.desc`);
     res.json(badges);
   } catch (err) {
     console.error('User badges error:', err.message);
@@ -1351,7 +1413,191 @@ app.get('/api/badges/user/:email', authMiddleware, async (req, res) => {
   }
 });
 
-// POST /api/badges/award — otorgar badge (admin only)
+// GET /api/badges/user/:email — (compatibilidad) badges de un usuario
+app.get('/api/badges/user/:email', authMiddleware, async (req, res) => {
+  try {
+    const email = decodeURIComponent(req.params.email);
+    const badges = await portalQuery('user_badges', `user_email=eq.${encodeURIComponent(email)}&order=granted_at.desc,earned_at.desc`);
+    res.json(badges);
+  } catch (err) {
+    console.error('User badges error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/piac/:linkId/badges — badges del usuario en un curso especifico
+app.get('/api/piac/:linkId/badges', authMiddleware, async (req, res) => {
+  try {
+    const { email } = resolveTargetEmail(req);
+    const linkId = parseInt(req.params.linkId);
+    if (!linkId) return res.status(400).json({ error: 'linkId invalido' });
+    const badges = await portalQuery('user_badges',
+      `user_email=eq.${encodeURIComponent(email)}&piac_link_id=eq.${linkId}&order=granted_at.desc,earned_at.desc`);
+    res.json(badges);
+  } catch (err) {
+    console.error('PIAC badges error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/user/badges/sdpa — progreso SDPA del docente logueado
+app.get('/api/user/badges/sdpa', authMiddleware, async (req, res) => {
+  try {
+    const { email } = resolveTargetEmail(req);
+    const progreso = await portalQuery('mv_progreso_sdpa', `user_email=eq.${encodeURIComponent(email)}`);
+    // Also fetch the individual SDPA badges for detail
+    const badges = await portalQuery('user_badges',
+      `user_email=eq.${encodeURIComponent(email)}&programa_sdpa=not.is.null&order=granted_at.desc,earned_at.desc`);
+    res.json({ progreso, badges });
+  } catch (err) {
+    console.error('SDPA progress error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/user/trayectoria — vista completa: badges + microcredenciales + progreso
+app.get('/api/user/trayectoria', authMiddleware, async (req, res) => {
+  try {
+    const { email } = resolveTargetEmail(req);
+    const enc = encodeURIComponent(email);
+    const [badges, microcredenciales, progresoMicro, progresoSdpa] = await Promise.all([
+      portalQuery('user_badges', `user_email=eq.${enc}&order=granted_at.desc,earned_at.desc`),
+      portalQuery('user_microcredenciales', `user_email=eq.${enc}&order=granted_at.desc`),
+      portalQuery('v_progreso_microcredenciales', `user_email=eq.${enc}`),
+      portalQuery('mv_progreso_sdpa', `user_email=eq.${enc}`)
+    ]);
+    res.json({ badges, microcredenciales, progreso_microcredenciales: progresoMicro, progreso_sdpa: progresoSdpa });
+  } catch (err) {
+    console.error('Trayectoria error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/user/badges/export — export de logros (JSON, PDF en futuro)
+app.get('/api/user/badges/export', authMiddleware, async (req, res) => {
+  try {
+    const { email } = resolveTargetEmail(req);
+    const enc = encodeURIComponent(email);
+    const [badges, microcredenciales, progresoSdpa] = await Promise.all([
+      portalQuery('user_badges', `user_email=eq.${enc}&order=granted_at.desc,earned_at.desc`),
+      portalQuery('user_microcredenciales', `user_email=eq.${enc}&order=granted_at.desc`),
+      portalQuery('mv_progreso_sdpa', `user_email=eq.${enc}`)
+    ]);
+    // v1: JSON export (PDF generation in future iteration)
+    res.json({
+      user_email: email,
+      exported_at: new Date().toISOString(),
+      total_badges: badges.length,
+      total_microcredenciales: microcredenciales.length,
+      badges,
+      microcredenciales,
+      progreso_sdpa: progresoSdpa
+    });
+  } catch (err) {
+    console.error('Export badges error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- Badges: verificacion publica (sin auth) ---
+
+// GET /api/badge/:hash — verificacion publica de insignia
+app.get('/api/badge/:hash', async (req, res) => {
+  try {
+    const hash = req.params.hash;
+    if (!hash || hash.length < 8) return res.status(400).json({ error: 'Hash invalido' });
+    const results = await portalQuery('user_badges', `verificacion_hash=eq.${encodeURIComponent(hash)}`);
+    if (!results.length) return res.status(404).json({ error: 'Insignia no encontrada' });
+    const badge = results[0];
+    // Enrich with definition data
+    if (badge.badge_definition_id) {
+      const defs = await portalQuery('badge_definitions', `id=eq.${badge.badge_definition_id}`);
+      if (defs.length) badge.definition = defs[0];
+    }
+    res.json({ verified: true, badge });
+  } catch (err) {
+    console.error('Badge verify error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/microcredencial/:hash — verificacion publica de microcredencial
+app.get('/api/microcredencial/:hash', async (req, res) => {
+  try {
+    const hash = req.params.hash;
+    if (!hash || hash.length < 8) return res.status(400).json({ error: 'Hash invalido' });
+    const results = await portalQuery('user_microcredenciales', `verificacion_hash=eq.${encodeURIComponent(hash)}`);
+    if (!results.length) return res.status(404).json({ error: 'Microcredencial no encontrada' });
+    const mc = results[0];
+    // Enrich with definition data
+    const defs = await portalQuery('microcredencial_definitions', `id=eq.${mc.microcredencial_id}`);
+    if (defs.length) mc.definition = defs[0];
+    res.json({ verified: true, microcredencial: mc });
+  } catch (err) {
+    console.error('Microcredencial verify error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- Badges: admin ---
+
+// POST /api/admin/badges/grant — otorgar badge (admin/editor)
+app.post('/api/admin/badges/grant', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const { user_email, badge_definition_id, badge_type, badge_level, title, description,
+            piac_link_id, nucleo_numero, moodle_course_id, moodle_platform,
+            horas_cronologicas, programa_sdpa, nota, course_id, program_id, metadata } = req.body;
+    if (!user_email) return res.status(400).json({ error: 'user_email es requerido' });
+    // Require either badge_definition_id (new flow) or badge_type+title (legacy flow)
+    if (!badge_definition_id && (!badge_type || !title)) {
+      return res.status(400).json({ error: 'badge_definition_id o (badge_type + title) son requeridos' });
+    }
+
+    const badgeData = {
+      user_email,
+      badge_definition_id: badge_definition_id || null,
+      badge_type: badge_type || 'manual',
+      badge_level: badge_level || null,
+      title: title || '',
+      description: description || '',
+      piac_link_id: piac_link_id || null,
+      nucleo_numero: nucleo_numero || null,
+      moodle_course_id: moodle_course_id || null,
+      moodle_platform: moodle_platform || null,
+      horas_cronologicas: horas_cronologicas || null,
+      programa_sdpa: programa_sdpa || null,
+      nota: nota || null,
+      granted_by: req.userEmail,
+      granted_at: new Date().toISOString(),
+      verified_by: req.userEmail,
+      verificacion_hash: generateVerificacionHash(),
+      course_id: course_id || null,
+      program_id: program_id || null,
+      metadata: metadata || {}
+    };
+
+    // If badge_definition_id given, fill title/description/badge_type from definition
+    if (badge_definition_id && !title) {
+      const defs = await portalQuery('badge_definitions', `id=eq.${badge_definition_id}`);
+      if (defs.length) {
+        badgeData.title = defs[0].title;
+        badgeData.description = defs[0].description || '';
+        badgeData.badge_type = defs[0].badge_type;
+        badgeData.badge_level = defs[0].badge_level || badgeData.badge_level;
+        badgeData.icon_name = defs[0].icon_name;
+        badgeData.color = defs[0].color;
+      }
+    }
+
+    const badge = await portalMutate('user_badges', 'POST', badgeData);
+    res.json(badge);
+  } catch (err) {
+    console.error('Grant badge error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/badges/award — (compatibilidad) alias de /api/admin/badges/grant
 app.post('/api/badges/award', adminOrEditorMiddleware, async (req, res) => {
   try {
     const { user_email, badge_type, badge_level, title, description, course_id, program_id, moodle_course_id, moodle_platform, metadata } = req.body;
@@ -1363,12 +1609,193 @@ app.post('/api/badges/award', adminOrEditorMiddleware, async (req, res) => {
       title, description: description || '',
       course_id: course_id || null, program_id: program_id || null,
       moodle_course_id: moodle_course_id || null, moodle_platform: moodle_platform || null,
-      verified_by: req.userEmail,
+      verified_by: req.userEmail, granted_by: req.userEmail,
+      granted_at: new Date().toISOString(),
+      verificacion_hash: generateVerificacionHash(),
       metadata: metadata || {}
     });
     res.json(badge);
   } catch (err) {
     console.error('Award badge error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/admin/badges/revoke/:id — revocar badge
+app.post('/api/admin/badges/revoke/:id', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (!id) return res.status(400).json({ error: 'ID invalido' });
+    await portalMutate('user_badges', 'DELETE', null, `id=eq.${id}`);
+    res.json({ success: true, revoked_id: id });
+  } catch (err) {
+    console.error('Revoke badge error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/admin/badges/stats — estadisticas de insignias
+app.get('/api/admin/badges/stats', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const allBadges = await portalQuery('user_badges', 'order=granted_at.desc,earned_at.desc');
+    const definitions = await portalQuery('badge_definitions', 'active=eq.true&order=display_order.asc');
+    // Group by badge_type
+    const byType = {};
+    for (const b of allBadges) {
+      const key = b.badge_type || 'unknown';
+      if (!byType[key]) byType[key] = { count: 0, users: new Set() };
+      byType[key].count++;
+      byType[key].users.add(b.user_email);
+    }
+    const stats = Object.entries(byType).map(([type, data]) => ({
+      badge_type: type, total_awarded: data.count, unique_users: data.users.size
+    }));
+    res.json({ total_badges: allBadges.length, by_type: stats, definitions_count: definitions.length });
+  } catch (err) {
+    console.error('Badge stats error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- Microcredenciales: usuario ---
+
+// GET /api/user/microcredenciales — microcredenciales del usuario + progreso
+app.get('/api/user/microcredenciales', authMiddleware, async (req, res) => {
+  try {
+    const { email } = resolveTargetEmail(req);
+    const enc = encodeURIComponent(email);
+    const [earned, progreso] = await Promise.all([
+      portalQuery('user_microcredenciales', `user_email=eq.${enc}&order=granted_at.desc`),
+      portalQuery('v_progreso_microcredenciales', `user_email=eq.${enc}`)
+    ]);
+    res.json({ earned, progreso });
+  } catch (err) {
+    console.error('User microcredenciales error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/user/microcredenciales/:id — detalle de una microcredencial
+app.get('/api/user/microcredenciales/:id', authMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (!id) return res.status(400).json({ error: 'ID invalido' });
+    const defs = await portalQuery('microcredencial_definitions', `id=eq.${id}`);
+    if (!defs.length) return res.status(404).json({ error: 'Microcredencial no encontrada' });
+    const requisitos = await portalQuery('microcredencial_requisitos', `microcredencial_id=eq.${id}&order=orden.asc`);
+    // Enrich requisitos with badge definition names
+    const badgeIds = requisitos.map(r => r.badge_definition_id).filter(Boolean);
+    let badgeDefs = [];
+    if (badgeIds.length) {
+      badgeDefs = await portalQuery('badge_definitions', `id=in.(${badgeIds.join(',')})`);
+    }
+    const badgeMap = Object.fromEntries(badgeDefs.map(d => [d.id, d]));
+    const enrichedRequisitos = requisitos.map(r => ({
+      ...r,
+      badge_definition: badgeMap[r.badge_definition_id] || null
+    }));
+    // User's progress toward this microcredencial
+    const { email } = resolveTargetEmail(req);
+    const progreso = await portalQuery('v_progreso_microcredenciales',
+      `user_email=eq.${encodeURIComponent(email)}&microcredencial_id=eq.${id}`);
+    res.json({ definition: defs[0], requisitos: enrichedRequisitos, progreso: progreso[0] || null });
+  } catch (err) {
+    console.error('Microcredencial detail error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- Microcredenciales: admin ---
+
+// GET /api/admin/microcredenciales — lista definiciones
+app.get('/api/admin/microcredenciales', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const defs = await portalQuery('microcredencial_definitions', 'order=created_at.desc');
+    res.json(defs);
+  } catch (err) {
+    console.error('Admin microcredenciales list error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/admin/microcredenciales — crear nueva microcredencial con requisitos
+app.post('/api/admin/microcredenciales', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const { slug, nombre, descripcion, tipo, programa_origen, total_sct, total_horas, icono, color, reglas_electivos, requisitos } = req.body;
+    if (!slug || !nombre || !descripcion || !tipo || !icono) {
+      return res.status(400).json({ error: 'slug, nombre, descripcion, tipo e icono son requeridos' });
+    }
+    // Create definition
+    const [def] = await portalMutate('microcredencial_definitions', 'POST', {
+      slug, nombre, descripcion, tipo,
+      programa_origen: programa_origen || null,
+      total_sct: total_sct || null,
+      total_horas: total_horas || null,
+      icono, color: color || '#2563eb',
+      reglas_electivos: reglas_electivos || { minimo_electivos: 0 },
+      activo: true
+    });
+    // Create requisitos if provided
+    if (requisitos && Array.isArray(requisitos) && requisitos.length > 0) {
+      const reqData = requisitos.map((r, i) => ({
+        microcredencial_id: def.id,
+        badge_definition_id: r.badge_definition_id,
+        obligatorio: r.obligatorio !== false,
+        orden: r.orden || i
+      }));
+      await portalMutate('microcredencial_requisitos', 'POST', reqData);
+    }
+    res.json(def);
+  } catch (err) {
+    console.error('Create microcredencial error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT /api/admin/microcredenciales/:id — editar microcredencial
+app.put('/api/admin/microcredenciales/:id', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (!id) return res.status(400).json({ error: 'ID invalido' });
+    const { nombre, descripcion, tipo, programa_origen, total_sct, total_horas, icono, color, activo, reglas_electivos } = req.body;
+    const updateData = { updated_at: new Date().toISOString() };
+    if (nombre !== undefined) updateData.nombre = nombre;
+    if (descripcion !== undefined) updateData.descripcion = descripcion;
+    if (tipo !== undefined) updateData.tipo = tipo;
+    if (programa_origen !== undefined) updateData.programa_origen = programa_origen;
+    if (total_sct !== undefined) updateData.total_sct = total_sct;
+    if (total_horas !== undefined) updateData.total_horas = total_horas;
+    if (icono !== undefined) updateData.icono = icono;
+    if (color !== undefined) updateData.color = color;
+    if (activo !== undefined) updateData.activo = activo;
+    if (reglas_electivos !== undefined) updateData.reglas_electivos = reglas_electivos;
+    const result = await portalMutate('microcredencial_definitions', 'PATCH', updateData, `id=eq.${id}`);
+    res.json(result[0] || { id, ...updateData });
+  } catch (err) {
+    console.error('Update microcredencial error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/admin/microcredenciales/:id/stats — estadisticas de una microcredencial
+app.get('/api/admin/microcredenciales/:id/stats', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (!id) return res.status(400).json({ error: 'ID invalido' });
+    const [earned, progreso] = await Promise.all([
+      portalQuery('user_microcredenciales', `microcredencial_id=eq.${id}`),
+      portalQuery('v_progreso_microcredenciales', `microcredencial_id=eq.${id}`)
+    ]);
+    const enProgreso = progreso.filter(p => !p.elegible_para_otorgamiento && p.modulos_completados > 0);
+    res.json({
+      microcredencial_id: id,
+      total_otorgadas: earned.length,
+      en_progreso: enProgreso.length,
+      users_earned: earned.map(e => ({ user_email: e.user_email, granted_at: e.granted_at })),
+      users_en_progreso: enProgreso.map(p => ({ user_email: p.user_email, pct_avance: p.pct_avance }))
+    });
+  } catch (err) {
+    console.error('Microcredencial stats error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });

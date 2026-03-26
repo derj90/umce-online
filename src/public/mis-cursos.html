@@ -161,6 +161,24 @@
         </button>
       </div>
 
+      <!-- Curso abierto: Inducción -->
+      <div id="induccion-card" class="mb-8">
+        <div class="bg-gradient-to-r from-blue-50 to-amber-50 border border-blue-100 rounded-2xl p-6 flex items-center gap-6">
+          <div class="w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0" style="background: var(--palette-primary, #0033A1);">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-xs font-semibold uppercase tracking-wider text-blue-600 mb-1">Curso abierto</div>
+            <h3 class="font-heading font-bold text-lg text-gray-900">Inducci&oacute;n a la Universidad UMCE 2026</h3>
+            <p class="text-sm text-gray-500 mt-1">Conoce el modelo educativo, acompa&ntilde;amientos y servicios de la UMCE. Curso interactivo a tu ritmo.</p>
+          </div>
+          <a href="/api/induccion/launch" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-heading font-bold text-sm text-white flex-shrink-0 transition-colors" style="background: var(--palette-primary, #0033A1);">
+            Comenzar
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </a>
+        </div>
+      </div>
+
       <!-- Platform filter tabs -->
       <div id="platform-tabs" class="flex flex-wrap gap-2 mb-6 hidden">
         <button onclick="filterPlatform('all')" class="filter-tab px-4 py-2 rounded-lg text-xs font-semibold transition-colors bg-umce-azul text-white" data-platform="all">Todas</button>
