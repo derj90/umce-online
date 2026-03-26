@@ -28,7 +28,7 @@
     .cv-sidebar { width: 280px; background: white; border-right: 1px solid #e5e7eb; position: fixed; top: 0; left: 0; bottom: 0; z-index: 30; overflow-y: auto; overflow-x: hidden; transition: transform 0.3s ease; display: flex; flex-direction: column; }
     .cv-main { flex: 1; margin-left: 280px; min-height: 100vh; }
     .cv-topbar { position: sticky; top: 0; z-index: 20; background: white; border-bottom: 1px solid #e5e7eb; }
-    .cv-content { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .cv-content { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; width: 100%; box-sizing: border-box; }
 
     /* Sidebar items */
     .sidebar-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 1rem; margin: 0 0.5rem; border-radius: 0.5rem; font-size: 0.875rem; color: #475569; cursor: pointer; transition: all 0.15s; text-decoration: none; }
@@ -99,6 +99,9 @@
     .book-html td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #e5e7eb; }
     .book-html tr:nth-child(even) td { background: #f9fafb; }
     .book-html .no-overflow { overflow: hidden; }
+    .book-html iframe { width: 100% !important; max-width: 100% !important; border: 0 !important; }
+    .book-html .padlet-embed { width: 100% !important; border: none !important; box-sizing: border-box; }
+    .book-html .padlet-embed p { margin: 0; padding: 0; }
 
     /* 5.5.15: Contraste — oscurecer labels */
     .info-label { color: #64748b; }
@@ -123,7 +126,11 @@
       .cv-sidebar.open { transform: translateX(0); }
       .sidebar-overlay.open { display: block; }
       .cv-main { margin-left: 0; }
-      .cv-content { padding: 1.25rem 1rem; }
+      .cv-content { padding: 1rem 0.75rem; }
+      .cv-card { border-radius: 0.75rem; }
+      .week-block { padding: 1rem; border-radius: 0 0.5rem 0.5rem 0; }
+      .book-html { font-size: 0.875rem; }
+      .book-html iframe { max-width: 100% !important; }
       .info-grid { grid-template-columns: 1fr; }
     }
   </style>
@@ -326,7 +333,7 @@
             </div>
             ${statusIcon}
           </div>
-          <div id="book-content-${el.id}" class="hidden mt-2 mb-4 ml-11 border border-gray-200 rounded-xl overflow-hidden bg-white"></div>
+          <div id="book-content-${el.id}" class="hidden mt-2 mb-4 md:ml-11 border border-gray-200 rounded-xl overflow-hidden bg-white"></div>
         </div>`;
       }
 
@@ -1014,9 +1021,12 @@
       html = html.replace(/<iframe([^>]*src="[^"]*genial\.ly[^"]*"[^>]*)>/gi, (match, attrs) => {
         return `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:0.5rem;margin:1rem 0;"><iframe${attrs} style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen loading="lazy">`;
       });
-      // Make Padlet embeds responsive
+      // Make Padlet embeds responsive — remove original wrapper styles and force full width
+      html = html.replace(/class="padlet-embed"[^>]*style="[^"]*"/gi, 'class="padlet-embed" style="width:100%;overflow:hidden;border-radius:0.5rem;margin:1rem 0;border:none;"');
       html = html.replace(/<iframe([^>]*src="[^"]*padlet\.com[^"]*"[^>]*)>/gi, (match, attrs) => {
-        return `<div style="border-radius:0.5rem;overflow:hidden;margin:1rem 0;"><iframe${attrs} style="width:100%;min-height:500px;border:0;" loading="lazy">`;
+        // Remove original style and force responsive
+        const cleanAttrs = attrs.replace(/style="[^"]*"/gi, '');
+        return `<iframe${cleanAttrs} style="width:100%;min-height:480px;border:0;display:block;" loading="lazy">`;
       });
       // Make Canva embeds responsive
       html = html.replace(/<iframe([^>]*src="[^"]*canva\.com[^"]*"[^>]*)>/gi, (match, attrs) => {
