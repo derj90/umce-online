@@ -3845,6 +3845,23 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
       };
     });
 
+    // Fetch course image from Moodle
+    let courseImage = null;
+    try {
+      const courseInfo = await moodleCall(platformObj, 'core_course_get_courses_by_field', { field: 'id', value: link.moodle_course_id });
+      const ci = courseInfo.courses?.[0];
+      if (ci) {
+        const imgUrl = ci.courseimage || ci.overviewfiles?.[0]?.fileurl;
+        if (imgUrl) courseImage = imgUrl + (imgUrl.includes('?') ? '&' : '?') + `token=${platformObj.token}`;
+      }
+    } catch {}
+
+    // Section summaries for nucleo descriptions
+    const sectionSummaries = {};
+    sections.forEach(s => {
+      if (s.summary) sectionSummaries[s.number] = s.summary;
+    });
+
     res.json({
       curso: {
         nombre: piac.identificacion?.nombre || link.course_name,
@@ -3856,7 +3873,8 @@ app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
         creditos_sct: piac.identificacion?.creditos_sct,
         horas: piac.identificacion?.horas,
         metodologia: piac.metodologia,
-        bibliografia: piac.bibliografia
+        bibliografia: piac.bibliografia,
+        courseImage
       },
       nucleos: mergedNucleos,
       recursos_compartidos: sharedResources,

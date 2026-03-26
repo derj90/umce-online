@@ -752,6 +752,11 @@
       const metodoShort = metodoText.length > 200;
 
       let html = `
+        <!-- Course banner -->
+        ${c.courseImage ? `<div class="cv-card mb-4" style="overflow:hidden;">
+          <img src="${c.courseImage}" alt="${c.nombre}" style="width:100%;height:auto;display:block;max-height:220px;object-fit:cover;">
+        </div>` : ''}
+
         <!-- Welcome header -->
         <div class="cv-card p-5 mb-4" style="border-left: 4px solid var(--umce-800);">
           <div class="flex items-start gap-4 mb-3">
