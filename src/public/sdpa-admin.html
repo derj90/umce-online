@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel SDPA &mdash; UMCE Virtual</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .font-heading { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    .spinner { width: 20px; height: 20px; border: 2px solid #E5E7EB; border-top-color: #0033A1; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+    .badge-ok { background: #D1FAE5; color: #065F46; }
+    .badge-info { background: #DBEAFE; color: #1E40AF; }
+    .badge-warning { background: #FEF3C7; color: #92400E; }
+    .badge-gray { background: #F3F4F6; color: #6B7280; }
+    .panel-card { background: white; border: 1px solid #E5E7EB; border-radius: 0.75rem; }
+    .piac-tab { border-color: transparent; color: #9CA3AF; cursor: pointer; }
+    .piac-tab:hover { color: #374151; }
+    .piac-tab.active { border-color: #2563EB; color: #2563EB; font-weight: 600; }
+    .tab-content { animation: fadeIn 0.15s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .doc-row { transition: background 0.15s; cursor: pointer; }
+    .doc-row:hover { background: #F9FAFB; }
+    .fade-in { animation: fadeIn 0.3s ease; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #0033A1; box-shadow: 0 0 0 2px rgba(0,51,161,0.1); }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between sticky top-0 z-40">
+    <div class="flex items-center gap-3">
+      <a href="/" class="flex items-center gap-2 text-gray-400 hover:text-gray-600 transition-colors">
+        <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+          <span class="font-heading font-extrabold text-sm text-gray-600">U</span>
+        </div>
+      </a>
+      <span class="text-gray-300">/</span>
+      <h1 class="font-heading font-bold text-gray-800">Panel SDPA</h1>
+      <span class="badge badge-info">Formaci&oacute;n Docente</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="/formacion-docente" class="text-sm text-gray-500 hover:text-gray-700">P&aacute;gina p&uacute;blica</a>
+      <a href="/admin" class="text-sm text-gray-500 hover:text-gray-700">Admin</a>
+      <span id="user-email" class="text-xs text-gray-400"></span>
+      <span id="role-badge" class="badge badge-gray hidden"></span>
+    </div>
+  </header>
+
+  <!-- Auth gate -->
+  <div id="auth-gate" class="flex-1 flex items-center justify-center py-20">
+    <div class="text-center">
+      <div class="spinner mx-auto mb-3"></div>
+      <p class="text-gray-400 text-sm">Verificando acceso...</p>
+    </div>
+  </div>
+
+  <!-- Unauthorized -->
+  <div id="unauthorized" class="hidden flex-1 flex items-center justify-center py-20">
+    <div class="text-center max-w-sm">
+      <p class="text-red-500 font-medium mb-2">Sin permisos</p>
+      <p class="text-gray-500 text-sm">Necesitas ser admin o editor para acceder al Panel SDPA.</p>
+      <a href="/" class="mt-4 inline-block text-sm text-blue-600 hover:underline">Volver al inicio</a>
+    </div>
+  </div>
+
+  <!-- Main panel -->
+  <main id="sdpa-panel" class="hidden max-w-7xl mx-auto px-6 py-6">
+
+    <!-- ========== VIEW: LIST ========== -->
+    <div id="view-list">
+
+      <!-- Stats bar -->
+      <div id="stats-bar" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="panel-card p-4 text-center">
+          <div id="stat-docentes" class="text-2xl font-extrabold font-heading text-gray-800">--</div>
+          <div class="text-xs text-gray-500 mt-1">Docentes</div>
+        </div>
+        <div class="panel-card p-4 text-center">
+          <div id="stat-horas" class="text-2xl font-extrabold font-heading text-gray-800">--</div>
+          <div class="text-xs text-gray-500 mt-1">Horas totales</div>
+        </div>
+        <div class="panel-card p-4 text-center">
+          <div id="stat-certificados" class="text-2xl font-extrabold font-heading text-gray-800">--</div>
+          <div class="text-xs text-gray-500 mt-1">Certificaciones emitidas</div>
+        </div>
+        <div class="panel-card p-4 text-center">
+          <div id="stat-actividades" class="text-2xl font-extrabold font-heading text-gray-800">--</div>
+          <div class="text-xs text-gray-500 mt-1">Actividades registradas</div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="panel-card p-4 mb-4">
+        <div class="flex flex-wrap items-center gap-3">
+          <input id="filter-search" type="text" placeholder="Buscar por nombre o email..." class="flex-1 min-w-[200px] border border-gray-200 rounded-lg px-3 py-2 text-sm">
+          <select id="filter-facultad" class="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700">
+            <option value="">Todas las facultades</option>
+          </select>
+          <select id="filter-cert" class="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700">
+            <option value="">Todas las certificaciones</option>
+          </select>
+          <select id="filter-estado" class="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700">
+            <option value="">Todos los estados</option>
+            <option value="en_progreso">En progreso</option>
+            <option value="requisitos_cumplidos">Requisitos cumplidos</option>
+            <option value="certificado">Certificado</option>
+          </select>
+          <button onclick="clearFilters()" class="text-sm text-gray-500 hover:text-gray-700 px-2">Limpiar</button>
+          <button onclick="exportCSV()" class="flex items-center gap-1.5 bg-gray-100 text-gray-700 text-sm font-medium px-3 py-2 rounded-lg hover:bg-gray-200 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Docentes table -->
+      <div class="panel-card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-gray-200 bg-gray-50">
+                <th class="text-left px-4 py-3 font-medium text-gray-500 text-xs uppercase tracking-wider">Docente</th>
+                <th class="text-left px-4 py-3 font-medium text-gray-500 text-xs uppercase tracking-wider">Facultad</th>
+                <th class="text-right px-4 py-3 font-medium text-gray-500 text-xs uppercase tracking-wider">Horas</th>
+                <th class="text-right px-4 py-3 font-medium text-gray-500 text-xs uppercase tracking-wider">TIC</th>
+                <th class="text-center px-4 py-3 font-medium text-gray-500 text-xs uppercase tracking-wider">Certs</th>
+                <th class="text-center px-4 py-3 font-medium text-gray-500 text-xs uppercase tracking-wider w-20"></th>
+              </tr>
+            </thead>
+            <tbody id="docentes-tbody">
+              <tr><td colspan="6" class="text-center py-8 text-gray-400">Cargando docentes...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="table-footer" class="px-4 py-3 border-t border-gray-100 text-xs text-gray-400"></div>
+      </div>
+    </div>
+
+    <!-- ========== VIEW: DETAIL ========== -->
+    <div id="view-detail" class="hidden fade-in">
+
+      <!-- Back + header -->
+      <button onclick="showList()" class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-4 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Volver a la lista
+      </button>
+
+      <div class="panel-card p-5 mb-4">
+        <div class="flex flex-wrap items-center gap-4">
+          <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-heading font-bold text-lg" id="detail-avatar">?</div>
+          <div class="flex-1 min-w-0">
+            <h2 id="detail-nombre" class="font-heading font-bold text-lg text-gray-800 truncate">--</h2>
+            <p id="detail-email" class="text-sm text-gray-500">--</p>
+          </div>
+          <div class="flex items-center gap-4 text-sm">
+            <div class="text-center">
+              <div id="detail-horas" class="font-bold text-gray-800">--</div>
+              <div class="text-xs text-gray-400">Horas</div>
+            </div>
+            <div class="text-center">
+              <div id="detail-actividades" class="font-bold text-gray-800">--</div>
+              <div class="text-xs text-gray-400">Actividades</div>
+            </div>
+            <div id="detail-facultad-badge" class="badge badge-info hidden">--</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex border-b border-gray-200 mb-0">
+        <button onclick="switchDetailTab('actividades')" class="piac-tab px-4 py-2.5 text-sm font-medium border-b-2 transition-colors" data-dtab="actividades">
+          Actividades
+        </button>
+        <button onclick="switchDetailTab('certificaciones')" class="piac-tab px-4 py-2.5 text-sm font-medium border-b-2 transition-colors" data-dtab="certificaciones">
+          Certificaciones
+        </button>
+        <button onclick="switchDetailTab('registrar')" class="piac-tab px-4 py-2.5 text-sm font-medium border-b-2 transition-colors" data-dtab="registrar">
+          Registrar actividad
+        </button>
+      </div>
+
+      <!-- Tab: Actividades -->
+      <div id="dtab-actividades" class="tab-content hidden">
+        <div class="panel-card overflow-hidden mt-0" style="border-top-left-radius:0;border-top-right-radius:0;">
+          <div id="actividades-list" class="divide-y divide-gray-100 p-4">
+            <p class="text-gray-400 text-sm py-4 text-center">Cargando actividades...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Certificaciones -->
+      <div id="dtab-certificaciones" class="tab-content hidden">
+        <div id="certs-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <p class="text-gray-400 text-sm py-4 text-center col-span-2">Cargando certificaciones...</p>
+        </div>
+      </div>
+
+      <!-- Tab: Registrar actividad -->
+      <div id="dtab-registrar" class="tab-content hidden">
+        <div class="panel-card p-5 mt-0" style="border-top-left-radius:0;border-top-right-radius:0;">
+          <h3 class="font-heading font-bold text-gray-800 mb-4">Registrar actividad formativa</h3>
+          <div id="form-msg" class="hidden mb-4 px-4 py-3 rounded-lg text-sm"></div>
+
+          <!-- Extra fields for new docente -->
+          <div id="new-docente-fields" class="hidden mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <p class="text-sm text-amber-800 font-medium mb-3">Docente sin registros previos &mdash; completa los datos:</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Nombre completo</label>
+                <input id="f-nombre" type="text" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="Nombre Apellido">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Facultad</label>
+                <input id="f-facultad" type="text" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="Ej: Filosofia y Educacion">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Departamento</label>
+                <input id="f-departamento" type="text" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="Ej: Educacion Diferencial">
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Email docente</label>
+              <input id="f-email" type="email" readonly class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-500">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Nombre de la actividad *</label>
+              <input id="f-actividad" type="text" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="Ej: Taller Herramientas IA para Docencia">
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">L&iacute;nea formativa *</label>
+              <select id="f-linea" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                <option value="">Seleccionar...</option>
+                <option value="integracion_tic">Integraci&oacute;n TIC</option>
+                <option value="docencia">Docencia</option>
+                <option value="investigacion">Investigaci&oacute;n</option>
+                <option value="gestion_academica">Gesti&oacute;n acad&eacute;mica</option>
+                <option value="vinculacion_medio">Vinculaci&oacute;n con el medio</option>
+                <option value="tematicas_transversales">Tem&aacute;ticas transversales</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Horas cronol&oacute;gicas *</label>
+              <input id="f-horas" type="number" min="0.5" step="0.5" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="Ej: 12">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Tipo</label>
+              <select id="f-tipo" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                <option value="curso">Curso</option>
+                <option value="taller">Taller</option>
+                <option value="seminario">Seminario</option>
+                <option value="diplomado">Diplomado</option>
+                <option value="capacitacion">Capacitaci&oacute;n</option>
+                <option value="autoformacion">Autoformaci&oacute;n</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Plataforma</label>
+              <input id="f-plataforma" type="text" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="Ej: virtual.umce.cl">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Fecha inicio</label>
+              <input id="f-fecha-inicio" type="date" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Fecha t&eacute;rmino</label>
+              <input id="f-fecha-termino" type="date" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="block text-xs font-medium text-gray-600 mb-1">Descripci&oacute;n (opcional)</label>
+            <textarea id="f-descripcion" rows="2" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="Breve descripci&oacute;n de la actividad..."></textarea>
+          </div>
+          <button id="btn-registrar" onclick="registrarActividad()" class="bg-[#0033A1] text-white text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-[#002480] transition-colors">
+            Registrar actividad
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /view-detail -->
+  </main>
+
+<script>
+// ===== STATE =====
+let allDocentes = [];
+let filteredDocentes = [];
+let allCerts = [];
+let currentDocente = null;
+
+// ===== HELPERS =====
+function escapeHtml(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+const lineaLabels = {
+  'integracion_tic': 'TIC',
+  'docencia': 'Docencia',
+  'investigacion': 'Investigaci\u00f3n',
+  'gestion_academica': 'Gesti\u00f3n',
+  'vinculacion_medio': 'Vinculaci\u00f3n',
+  'tematicas_transversales': 'Transversal'
+};
+const lineaColors = {
+  'integracion_tic': 'bg-blue-100 text-blue-700',
+  'docencia': 'bg-green-100 text-green-700',
+  'investigacion': 'bg-purple-100 text-purple-700',
+  'gestion_academica': 'bg-gray-100 text-gray-700',
+  'vinculacion_medio': 'bg-amber-100 text-amber-700',
+  'tematicas_transversales': 'bg-teal-100 text-teal-700'
+};
+const estadoLabels = {
+  'no_iniciado': 'No iniciado',
+  'en_progreso': 'En progreso',
+  'requisitos_cumplidos': 'Requisitos cumplidos',
+  'certificado': 'Certificado'
+};
+const estadoColors = {
+  'no_iniciado': 'badge-gray',
+  'en_progreso': 'badge-info',
+  'requisitos_cumplidos': 'badge-warning',
+  'certificado': 'badge-ok'
+};
+
+function fmtNum(n) { return new Intl.NumberFormat('es-CL').format(Math.round(n || 0)); }
+
+// ===== AUTH =====
+async function init() {
+  try {
+    const roleRes = await fetch('/api/admin/role');
+    if (!roleRes.ok) throw new Error('not auth');
+    const roleData = await roleRes.json();
+    if (!roleData.role) throw new Error('no role');
+
+    document.getElementById('user-email').textContent = roleData.email || '';
+    const rb = document.getElementById('role-badge');
+    rb.textContent = roleData.role === 'admin' ? 'Admin' : 'Editor';
+    rb.classList.remove('hidden');
+    rb.classList.add(roleData.role === 'admin' ? 'badge-ok' : 'badge-info');
+
+    document.getElementById('auth-gate').classList.add('hidden');
+    document.getElementById('sdpa-panel').classList.remove('hidden');
+
+    loadData();
+  } catch {
+    document.getElementById('auth-gate').classList.add('hidden');
+    document.getElementById('unauthorized').classList.remove('hidden');
+  }
+}
+
+// ===== DATA LOADING =====
+async function loadData() {
+  try {
+    const [statsRes, docentesRes, certsRes] = await Promise.all([
+      fetch('/api/sdpa/estadisticas'),
+      fetch('/api/admin/sdpa/docentes'),
+      fetch('/api/sdpa/certificaciones')
+    ]);
+    if (!statsRes.ok || !docentesRes.ok || !certsRes.ok) throw new Error('Error cargando datos');
+
+    const stats = await statsRes.json();
+    allDocentes = await docentesRes.json();
+    allCerts = await certsRes.json();
+
+    // Stats
+    document.getElementById('stat-docentes').textContent = fmtNum(stats.total_docentes);
+    document.getElementById('stat-horas').textContent = fmtNum(stats.total_horas);
+    document.getElementById('stat-certificados').textContent = fmtNum(stats.total_certificados);
+    document.getElementById('stat-actividades').textContent = fmtNum(stats.total_actividades);
+
+    // Populate facultad dropdown
+    const facultades = [...new Set(allDocentes.map(d => d.facultad).filter(Boolean))].sort();
+    const sel = document.getElementById('filter-facultad');
+    facultades.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f; opt.textContent = f;
+      sel.appendChild(opt);
+    });
+
+    // Populate cert dropdown
+    const certSel = document.getElementById('filter-cert');
+    allCerts.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.slug; opt.textContent = c.nombre;
+      certSel.appendChild(opt);
+    });
+
+    applyFilters();
+  } catch (err) {
+    document.getElementById('docentes-tbody').innerHTML =
+      '<tr><td colspan="6" class="text-center py-8 text-red-500">Error cargando datos: ' + escapeHtml(err.message) + '</td></tr>';
+  }
+}
+
+// ===== FILTERS =====
+function applyFilters() {
+  const search = document.getElementById('filter-search').value.toLowerCase().trim();
+  const fac = document.getElementById('filter-facultad').value;
+  const cert = document.getElementById('filter-cert').value;
+  const estado = document.getElementById('filter-estado').value;
+
+  filteredDocentes = allDocentes.filter(d => {
+    if (search) {
+      const haystack = ((d.nombre || '') + ' ' + d.docente_email + ' ' + (d.facultad || '')).toLowerCase();
+      if (!haystack.includes(search)) return false;
+    }
+    if (fac && d.facultad !== fac) return false;
+    if (cert) {
+      const has = (d.progreso_certificaciones || []).some(p => p.certificacion_slug === cert);
+      if (!has) return false;
+    }
+    if (estado) {
+      const has = (d.progreso_certificaciones || []).some(p => p.estado === estado);
+      if (!has) return false;
+    }
+    return true;
+  });
+
+  renderTable();
+}
+
+function clearFilters() {
+  document.getElementById('filter-search').value = '';
+  document.getElementById('filter-facultad').value = '';
+  document.getElementById('filter-cert').value = '';
+  document.getElementById('filter-estado').value = '';
+  applyFilters();
+}
+
+// Attach filter listeners
+['filter-search', 'filter-facultad', 'filter-cert', 'filter-estado'].forEach(id => {
+  document.getElementById(id).addEventListener(id === 'filter-search' ? 'input' : 'change', applyFilters);
+});
+
+// ===== TABLE =====
+function renderTable() {
+  const tbody = document.getElementById('docentes-tbody');
+
+  if (!filteredDocentes.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-400">No se encontraron docentes con estos filtros.</td></tr>';
+    document.getElementById('table-footer').textContent = '';
+    return;
+  }
+
+  tbody.innerHTML = filteredDocentes.map(d => {
+    const name = escapeHtml(d.nombre || d.docente_email.split('@')[0]);
+    const email = escapeHtml(d.docente_email);
+    const fac = escapeHtml(d.facultad || '-');
+    const horas = Math.round(d.total_horas || 0);
+    const tic = Math.round(d.horas_tic || 0);
+    const prog = d.progreso_certificaciones || [];
+    const certsCount = prog.filter(p => ['requisitos_cumplidos', 'certificado'].includes(p.estado)).length;
+    const certsBadge = certsCount > 0
+      ? `<span class="badge ${prog.some(p => p.estado === 'certificado') ? 'badge-ok' : 'badge-warning'}">${certsCount}</span>`
+      : '<span class="text-gray-300">0</span>';
+
+    return `
+      <tr class="doc-row border-b border-gray-100" onclick="showDetail('${escapeHtml(d.docente_email)}')">
+        <td class="px-4 py-3">
+          <div class="font-medium text-gray-800">${name}</div>
+          <div class="text-xs text-gray-400">${email}</div>
+        </td>
+        <td class="px-4 py-3 text-gray-600 text-xs">${fac}</td>
+        <td class="px-4 py-3 text-right font-medium text-gray-800">${horas}</td>
+        <td class="px-4 py-3 text-right text-gray-600">${tic}</td>
+        <td class="px-4 py-3 text-center">${certsBadge}</td>
+        <td class="px-4 py-3 text-center">
+          <span class="text-blue-600 text-xs font-medium hover:underline">Ver</span>
+        </td>
+      </tr>`;
+  }).join('');
+
+  document.getElementById('table-footer').textContent =
+    `Mostrando ${filteredDocentes.length} de ${allDocentes.length} docentes`;
+}
+
+// ===== CSV EXPORT =====
+function exportCSV() {
+  const data = filteredDocentes.length ? filteredDocentes : allDocentes;
+  const headers = ['Email', 'Nombre', 'Facultad', 'Departamento', 'Horas Total', 'Horas TIC', 'Actividades', 'Certs Cumplidas'];
+  const rows = data.map(d => [
+    d.docente_email, d.nombre || '', d.facultad || '', d.departamento || '',
+    d.total_horas || 0, d.horas_tic || 0, d.total_actividades || 0,
+    (d.progreso_certificaciones || []).filter(p => ['requisitos_cumplidos', 'certificado'].includes(p.estado)).length
+  ]);
+  const csv = [headers, ...rows].map(r => r.map(c => '"' + String(c == null ? '' : c).replace(/"/g, '""') + '"').join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'sdpa-docentes-' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.click();
+}
+
+// ===== VIEWS =====
+function showList() {
+  document.getElementById('view-list').classList.remove('hidden');
+  document.getElementById('view-detail').classList.add('hidden');
+  currentDocente = null;
+}
+
+async function showDetail(email) {
+  const doc = allDocentes.find(d => d.docente_email === email);
+  if (!doc) return;
+  currentDocente = doc;
+
+  // Header
+  const name = doc.nombre || doc.docente_email.split('@')[0];
+  document.getElementById('detail-avatar').textContent = (name[0] || '?').toUpperCase();
+  document.getElementById('detail-nombre').textContent = name;
+  document.getElementById('detail-email').textContent = doc.docente_email;
+  document.getElementById('detail-horas').textContent = Math.round(doc.total_horas || 0);
+  document.getElementById('detail-actividades').textContent = doc.total_actividades || 0;
+  const facBadge = document.getElementById('detail-facultad-badge');
+  if (doc.facultad) {
+    facBadge.textContent = doc.facultad;
+    facBadge.classList.remove('hidden');
+  } else {
+    facBadge.classList.add('hidden');
+  }
+
+  // Form email prefill
+  document.getElementById('f-email').value = doc.docente_email;
+  // Show new docente fields if no activities
+  document.getElementById('new-docente-fields').classList.toggle('hidden', (doc.total_actividades || 0) > 0);
+
+  // Switch views
+  document.getElementById('view-list').classList.add('hidden');
+  document.getElementById('view-detail').classList.remove('hidden');
+  switchDetailTab('actividades');
+
+  // Load activities
+  loadActividades(email);
+  renderCertificaciones(doc);
+}
+
+// ===== DETAIL TABS =====
+let currentDetailTab = 'actividades';
+function switchDetailTab(tab) {
+  currentDetailTab = tab;
+  document.querySelectorAll('[id^="dtab-"]').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('[data-dtab]').forEach(el => el.classList.remove('active'));
+  const panel = document.getElementById('dtab-' + tab);
+  if (panel) panel.classList.remove('hidden');
+  const btn = document.querySelector('[data-dtab="' + tab + '"]');
+  if (btn) btn.classList.add('active');
+}
+
+// ===== ACTIVIDADES =====
+async function loadActividades(email) {
+  const container = document.getElementById('actividades-list');
+  container.innerHTML = '<p class="text-gray-400 text-sm py-4 text-center">Cargando...</p>';
+  try {
+    const res = await fetch('/api/docente/sdpa/actividades?email=' + encodeURIComponent(email));
+    if (!res.ok) throw new Error('Error');
+    const acts = await res.json();
+    if (!acts.length) {
+      container.innerHTML = '<p class="text-gray-400 text-sm py-8 text-center">Sin actividades registradas.</p>';
+      return;
+    }
+    container.innerHTML = acts.map(a => {
+      const lc = lineaColors[a.linea] || 'bg-gray-100 text-gray-700';
+      const ll = lineaLabels[a.linea] || a.linea;
+      return `
+        <div class="flex items-center justify-between py-3">
+          <div class="flex-1 min-w-0">
+            <div class="font-medium text-sm text-gray-800 truncate">${escapeHtml(a.nombre_actividad)}</div>
+            <div class="text-xs text-gray-400 mt-0.5">${a.fecha_inicio || ''} ${a.plataforma ? '&middot; ' + escapeHtml(a.plataforma) : ''}</div>
+          </div>
+          <div class="flex items-center gap-2 ml-3 shrink-0">
+            <span class="px-2 py-0.5 rounded-full text-xs font-medium ${lc}">${escapeHtml(ll)}</span>
+            <span class="text-sm font-bold text-gray-700">${a.horas_cronologicas}h</span>
+          </div>
+        </div>`;
+    }).join('');
+  } catch {
+    container.innerHTML = '<p class="text-red-500 text-sm py-4 text-center">Error cargando actividades.</p>';
+  }
+}
+
+// ===== CERTIFICACIONES =====
+function renderCertificaciones(doc) {
+  const grid = document.getElementById('certs-grid');
+  const prog = doc.progreso_certificaciones || [];
+
+  // Build cert cards using allCerts as authoritative list
+  grid.innerHTML = allCerts.map(cert => {
+    const p = prog.find(pr => pr.certificacion_id === cert.id) || null;
+    const estado = p ? p.estado : 'no_iniciado';
+    const horas = p ? parseFloat(p.horas_acumuladas || 0) : 0;
+    const pct = cert.horas_requeridas > 0 ? Math.min(100, (horas / cert.horas_requeridas) * 100) : 0;
+    const estadoLabel = estadoLabels[estado] || estado;
+    const estadoBadge = estadoColors[estado] || 'badge-gray';
+
+    // Prerequisite check
+    let prereqNote = '';
+    if (cert.prerequisito_id) {
+      const prereqCert = allCerts.find(c => c.id === cert.prerequisito_id);
+      if (prereqCert) {
+        const prereqProg = prog.find(pr => pr.certificacion_id === cert.prerequisito_id);
+        const prereqOk = prereqProg && prereqProg.estado === 'certificado';
+        if (!prereqOk) {
+          prereqNote = '<div class="text-xs text-amber-600 mt-2">Requiere: ' + escapeHtml(prereqCert.nombre) + '</div>';
+        }
+      }
+    }
+
+    // Action zone
+    let actionHtml = '';
+    if (estado === 'requisitos_cumplidos' && p) {
+      actionHtml = `
+        <div id="cert-action-${p.id}" class="mt-3 pt-3 border-t border-gray-200">
+          <button onclick="confirmCertificar(${p.id}, '${escapeHtml(cert.nombre)}')" class="text-sm font-medium text-amber-700 bg-amber-50 px-3 py-1.5 rounded-lg hover:bg-amber-100 transition-colors">
+            Marcar como certificado
+          </button>
+        </div>`;
+    }
+    if (estado === 'certificado' && p) {
+      const fecha = p.fecha_certificacion ? new Date(p.fecha_certificacion).toLocaleDateString('es-CL') : '';
+      actionHtml = `
+        <div class="mt-3 pt-3 border-t border-gray-200 text-xs text-green-700">
+          Certificado${fecha ? ' el ' + fecha : ''}${p.certificado_por ? ' por ' + escapeHtml(p.certificado_por.split('@')[0]) : ''}
+        </div>`;
+    }
+
+    return `
+      <div class="panel-card p-4" id="cert-card-${cert.id}">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-heading font-bold text-sm text-gray-800">${escapeHtml(cert.nombre)}</span>
+          <span class="badge ${estadoBadge}">${estadoLabel}</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+          <div class="h-2.5 rounded-full transition-all duration-500 ${pct >= 100 ? 'bg-green-500' : 'bg-[#0033A1]'}" style="width: ${pct}%"></div>
+        </div>
+        <div class="flex justify-between text-xs text-gray-400">
+          <span>${Math.round(horas)}h de ${cert.horas_requeridas}h</span>
+          <span>${Math.round(pct)}%</span>
+        </div>
+        ${prereqNote}
+        ${actionHtml}
+      </div>`;
+  }).join('');
+}
+
+// ===== CERTIFICAR =====
+function confirmCertificar(progId, certNombre) {
+  const container = document.getElementById('cert-action-' + progId);
+  if (!container) return;
+  container.innerHTML = `
+    <div class="flex items-center gap-2">
+      <span class="text-sm text-gray-700">&iquest;Confirmar certificaci&oacute;n?</span>
+      <button onclick="ejecutarCertificar(${progId})" class="text-sm font-medium text-white bg-green-600 px-3 py-1 rounded-lg hover:bg-green-700 transition-colors">Confirmar</button>
+      <button onclick="cancelarCertificar(${progId}, '${escapeHtml(certNombre)}')" class="text-sm text-gray-500 hover:text-gray-700">Cancelar</button>
+    </div>`;
+}
+
+function cancelarCertificar(progId, certNombre) {
+  const container = document.getElementById('cert-action-' + progId);
+  if (!container) return;
+  container.innerHTML = `
+    <button onclick="confirmCertificar(${progId}, '${certNombre}')" class="text-sm font-medium text-amber-700 bg-amber-50 px-3 py-1.5 rounded-lg hover:bg-amber-100 transition-colors">
+      Marcar como certificado
+    </button>`;
+}
+
+async function ejecutarCertificar(progId) {
+  const container = document.getElementById('cert-action-' + progId);
+  if (container) container.innerHTML = '<div class="spinner mx-auto"></div>';
+
+  try {
+    const res = await fetch('/api/admin/sdpa/certificacion/' + progId, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ estado: 'certificado' })
+    });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Error'); }
+    const updated = await res.json();
+
+    // Update local state
+    if (currentDocente) {
+      const p = (currentDocente.progreso_certificaciones || []).find(pr => pr.id === progId);
+      if (p) {
+        p.estado = 'certificado';
+        p.fecha_certificacion = updated.fecha_certificacion;
+        p.certificado_por = updated.certificado_por;
+      }
+      renderCertificaciones(currentDocente);
+    }
+  } catch (err) {
+    if (container) container.innerHTML = '<span class="text-red-500 text-xs">Error: ' + escapeHtml(err.message) + '</span>';
+  }
+}
+
+// ===== REGISTRAR ACTIVIDAD =====
+async function registrarActividad() {
+  const btn = document.getElementById('btn-registrar');
+  const msg = document.getElementById('form-msg');
+
+  const email = document.getElementById('f-email').value;
+  const nombre_actividad = document.getElementById('f-actividad').value.trim();
+  const linea = document.getElementById('f-linea').value;
+  const horas = document.getElementById('f-horas').value;
+
+  // Validate
+  if (!email || !nombre_actividad || !linea || !horas) {
+    showFormMsg('Completa los campos obligatorios (*).', 'error');
+    return;
+  }
+
+  // Build notas JSON for new docente
+  let notas = null;
+  const isNew = !document.getElementById('new-docente-fields').classList.contains('hidden');
+  if (isNew) {
+    const n = document.getElementById('f-nombre').value.trim();
+    const f = document.getElementById('f-facultad').value.trim();
+    const d = document.getElementById('f-departamento').value.trim();
+    if (n || f || d) {
+      notas = JSON.stringify({ nombre: n, facultad: f, departamento: d });
+    }
+  }
+
+  const body = {
+    docente_email: email,
+    nombre_actividad,
+    linea,
+    horas_cronologicas: parseFloat(horas),
+    tipo: document.getElementById('f-tipo').value || 'curso',
+    plataforma: document.getElementById('f-plataforma').value.trim() || undefined,
+    fecha_inicio: document.getElementById('f-fecha-inicio').value || undefined,
+    fecha_termino: document.getElementById('f-fecha-termino').value || undefined,
+    descripcion: document.getElementById('f-descripcion').value.trim() || undefined,
+    notas: notas || undefined
+  };
+
+  btn.disabled = true;
+  btn.textContent = 'Registrando...';
+
+  try {
+    const res = await fetch('/api/admin/sdpa/actividad', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Error'); }
+
+    showFormMsg('Actividad registrada correctamente.', 'success');
+    clearForm();
+
+    // Refresh activities tab
+    loadActividades(email);
+
+    // Update local docente data
+    if (currentDocente) {
+      currentDocente.total_actividades = (currentDocente.total_actividades || 0) + 1;
+      currentDocente.total_horas = (currentDocente.total_horas || 0) + parseFloat(horas);
+      if (linea === 'integracion_tic') currentDocente.horas_tic = (currentDocente.horas_tic || 0) + parseFloat(horas);
+      document.getElementById('detail-horas').textContent = Math.round(currentDocente.total_horas);
+      document.getElementById('detail-actividades').textContent = currentDocente.total_actividades;
+    }
+
+    // Switch to actividades tab
+    switchDetailTab('actividades');
+  } catch (err) {
+    showFormMsg('Error: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Registrar actividad';
+  }
+}
+
+function showFormMsg(text, type) {
+  const msg = document.getElementById('form-msg');
+  msg.classList.remove('hidden', 'bg-green-50', 'text-green-800', 'bg-red-50', 'text-red-800');
+  msg.classList.add(type === 'success' ? 'bg-green-50' : 'bg-red-50');
+  msg.classList.add(type === 'success' ? 'text-green-800' : 'text-red-800');
+  msg.textContent = text;
+  if (type === 'success') setTimeout(() => msg.classList.add('hidden'), 4000);
+}
+
+function clearForm() {
+  ['f-actividad', 'f-plataforma', 'f-descripcion', 'f-nombre', 'f-facultad', 'f-departamento'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-linea').value = '';
+  document.getElementById('f-horas').value = '';
+  document.getElementById('f-tipo').value = 'curso';
+  document.getElementById('f-fecha-inicio').value = '';
+  document.getElementById('f-fecha-termino').value = '';
+}
+
+// ===== INIT =====
+document.getElementById('f-fecha-inicio').valueAsDate = new Date();
+init();
+</script>
+</body>
+</html>

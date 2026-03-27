@@ -1994,7 +1994,11 @@ app.get('/api/admin/sdpa/docentes', adminOrEditorMiddleware, async (req, res) =>
   try {
     const { facultad, certificacion, estado } = req.query;
     let filter = 'order=total_horas.desc';
-    const resumen = await portalQuery('v_resumen_docente_sdpa', filter);
+    const [resumen, certCatalog] = await Promise.all([
+      portalQuery('v_resumen_docente_sdpa', filter),
+      portalQuery('certificaciones_sdpa', 'activa=eq.true&select=id,slug')
+    ]);
+    const certSlugById = Object.fromEntries(certCatalog.map(c => [c.id, c.slug]));
 
     // Enrich with faculty info + certification progress
     const enriched = [];
@@ -2002,7 +2006,7 @@ app.get('/api/admin/sdpa/docentes', adminOrEditorMiddleware, async (req, res) =>
       const enc = encodeURIComponent(r.docente_email);
       const [acts, prog] = await Promise.all([
         portalQuery('actividades_sdpa', `docente_email=eq.${enc}&limit=1`),
-        portalQuery('v_progreso_certificaciones', `docente_email=eq.${enc}`)
+        portalQuery('progreso_certificaciones', `docente_email=eq.${enc}&select=id,docente_email,certificacion_id,horas_acumuladas,estado,evidencia_estado,proyecto_estado,fecha_certificacion,verificacion_hash,certificado_por`)
       ]);
       let fac = null, dept = null, nombre = null;
       if (acts.length && acts[0].notas) {
@@ -2012,21 +2016,24 @@ app.get('/api/admin/sdpa/docentes', adminOrEditorMiddleware, async (req, res) =>
         } catch {}
       }
 
+      // Enrich progreso with cert slug
+      const progEnriched = prog.map(p => ({ ...p, certificacion_slug: certSlugById[p.certificacion_id] || null }));
+
       // Apply filters
       if (facultad && fac !== facultad) continue;
       if (certificacion) {
-        const hasCert = prog.some(p => p.certificacion_slug === certificacion);
+        const hasCert = progEnriched.some(p => p.certificacion_slug === certificacion);
         if (!hasCert) continue;
       }
       if (estado) {
-        const hasEstado = prog.some(p => p.estado === estado);
+        const hasEstado = progEnriched.some(p => p.estado === estado);
         if (!hasEstado) continue;
       }
 
       enriched.push({
         ...r,
         nombre, facultad: fac, departamento: dept,
-        progreso_certificaciones: prog
+        progreso_certificaciones: progEnriched
       });
     }
 
@@ -5437,6 +5444,7 @@ app.get('/formacion-docente', (req, res) => res.sendFile(path.join(__dirname, 'p
 
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/piac', (req, res) => res.sendFile(path.join(__dirname, 'public', 'piac.html')));
+app.get('/sdpa-admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'sdpa-admin.html')));
 app.get('/curso-virtual/:linkId', (req, res) => res.sendFile(path.join(__dirname, 'public', 'curso-virtual.html')));
 
 // Dynamic slug-based pages
