@@ -176,62 +176,69 @@
         <span id="detail-platform-badge" class="badge"></span>
       </div>
 
-      <!-- Action bar -->
-      <div class="mb-4">
-        <h3 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-          Acciones
-        </h3>
-        <p class="text-xs text-gray-400 mt-0.5">Presiona <strong>Analizar</strong> para comparar el PIAC con Moodle. Los demás botones te permiten ver y editar el curso virtual.</p>
-      </div>
-      <div class="flex flex-wrap items-center gap-3 mb-8">
-        <button id="btn-analyze" class="flex items-center gap-2 bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-          Analizar
+      <!-- Toolbar: compact row with primary + secondary actions -->
+      <div class="flex flex-wrap items-center gap-2 mb-6 pb-4 border-b border-gray-100">
+        <button id="btn-analyze" class="flex items-center gap-2 bg-blue-600 text-white text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Comparar PIAC con Moodle
         </button>
-        <a id="btn-view-curso" href="#" target="_blank" class="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-purple-300 text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-          Ver curso virtual
+        <span id="analyze-status" class="text-sm text-gray-400"></span>
+        <div class="flex-1"></div>
+        <a id="btn-view-curso" href="#" target="_blank" class="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          Curso virtual
         </a>
-        <button id="btn-organizar" onclick="toggleOrganizer()" class="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-amber-300 text-amber-700 bg-amber-50 hover:bg-amber-100 transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
-          Organizar curso
+        <button id="btn-organizar" onclick="toggleOrganizer()" class="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+          Organizar
         </button>
-        <button id="btn-config-curso" onclick="toggleConfigPanel()" class="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-green-300 text-green-700 bg-green-50 hover:bg-green-100 transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-          Configurar curso virtual
+        <button id="btn-config-curso" onclick="toggleConfigPanel()" class="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          Configurar
         </button>
         <div class="relative">
-          <button onclick="document.getElementById('advanced-opts').classList.toggle('hidden')" class="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-            Opciones avanzadas
+          <button onclick="document.getElementById('advanced-opts').classList.toggle('hidden')" class="text-gray-300 hover:text-gray-500 p-2" title="Opciones avanzadas">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"/></svg>
           </button>
-          <div id="advanced-opts" class="hidden absolute left-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-20 min-w-48">
-            <button id="btn-parse-only" class="block w-full text-left text-sm text-gray-600 hover:bg-gray-50 px-3 py-1.5 rounded">Solo parsear PIAC</button>
-            <button id="btn-snapshot-only" class="block w-full text-left text-sm text-gray-600 hover:bg-gray-50 px-3 py-1.5 rounded">Solo snapshot Moodle</button>
-            <button onclick="switchTab('datos');document.getElementById('advanced-opts').classList.add('hidden')" class="block w-full text-left text-sm text-gray-600 hover:bg-gray-50 px-3 py-1.5 rounded">Ver datos crudos</button>
+          <div id="advanced-opts" class="hidden absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-20 min-w-48">
+            <button id="btn-parse-only" class="block w-full text-left text-sm text-gray-600 hover:bg-gray-50 px-3 py-1.5 rounded">Solo leer PIAC</button>
+            <button id="btn-snapshot-only" class="block w-full text-left text-sm text-gray-600 hover:bg-gray-50 px-3 py-1.5 rounded">Solo leer Moodle</button>
+            <button onclick="switchTab('datos');document.getElementById('advanced-opts').classList.add('hidden')" class="block w-full text-left text-sm text-gray-600 hover:bg-gray-50 px-3 py-1.5 rounded">Ver datos técnicos</button>
           </div>
         </div>
-        <span id="analyze-status" class="text-sm text-gray-400"></span>
-        <div id="progress-bar-container" class="hidden w-full mt-3">
+      </div>
+
+      <!-- Progress bar (hidden until analyzing) -->
+      <div id="progress-bar-container" class="hidden mb-6">
+        <div class="panel-card p-4">
           <div class="flex items-center gap-3 mb-2">
             <div class="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
               <div id="progress-bar-fill" class="h-full bg-blue-600 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
             </div>
             <span id="progress-bar-pct" class="text-xs text-gray-500 font-mono w-8 text-right">0%</span>
           </div>
-          <div id="progress-steps" class="flex gap-1">
+          <div id="progress-steps" class="flex gap-2">
             <div class="progress-step flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-gray-100 text-gray-400" data-step="parse">
-              <span class="step-icon">○</span> Parsear PIAC
+              <span class="step-icon">○</span> Leyendo PIAC
             </div>
             <div class="progress-step flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-gray-100 text-gray-400" data-step="snapshot">
-              <span class="step-icon">○</span> Snapshot Moodle
+              <span class="step-icon">○</span> Leyendo Moodle
             </div>
             <div class="progress-step flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-gray-100 text-gray-400" data-step="match">
-              <span class="step-icon">○</span> Matching
+              <span class="step-icon">○</span> Comparando
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Empty state (shown when no analysis has been run) -->
+      <div id="empty-state" class="py-12 text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-50 rounded-2xl mb-4">
+          <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+        </div>
+        <h3 class="text-gray-700 font-medium mb-1">Aún no hay análisis</h3>
+        <p class="text-gray-400 text-sm max-w-sm mx-auto mb-4">Presiona <strong>"Comparar PIAC con Moodle"</strong> para leer la planificación del curso y compararla con lo que está configurado en la plataforma.</p>
+        <p class="text-gray-300 text-xs">El proceso toma entre 10 y 30 segundos</p>
       </div>
 
       <!-- ═══════════════════════════════════════════════════ -->
@@ -270,55 +277,67 @@
         <!-- Tab buttons -->
         <div class="flex border-b border-gray-200 mb-0">
           <button onclick="switchTab('piac')" class="piac-tab px-4 py-2.5 text-sm font-medium border-b-2 transition-colors" data-tab="piac">
-            Vista PIAC
+            Planificación
           </button>
           <button onclick="switchTab('mapa')" class="piac-tab px-4 py-2.5 text-sm font-medium border-b-2 transition-colors" data-tab="mapa">
-            Mapa del Curso
+            Comparación <span id="map-count-badge" class="ml-1 text-xs text-gray-400"></span>
           </button>
           <button onclick="switchTab('discrepancias')" class="piac-tab px-4 py-2.5 text-sm font-medium border-b-2 transition-colors" data-tab="discrepancias">
-            Discrepancias <span id="disc-count-badge" class="hidden ml-1 text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full"></span>
+            Problemas <span id="disc-count-badge" class="hidden ml-1 text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full font-semibold"></span>
           </button>
-          <button onclick="switchTab('datos')" class="piac-tab px-4 py-2.5 text-sm font-medium border-b-2 transition-colors" data-tab="datos">
-            Datos Crudos
+          <button onclick="switchTab('datos')" class="piac-tab px-4 py-2.5 text-sm font-medium border-b-2 transition-colors text-gray-300" data-tab="datos">
+            Datos
           </button>
         </div>
       </div>
 
-      <!-- TAB: Vista PIAC -->
+      <!-- TAB: Planificación (Vista PIAC legible) -->
       <div id="tab-piac" class="tab-content hidden">
         <div class="panel-card p-5">
-          <p class="text-xs text-gray-400 mb-4">Lo que dice la planificación del curso (PIAC) extraída del documento en Google Drive. Si el PIAC se actualiza, presiona "Analizar" nuevamente para refrescar los datos.</p>
-          <div id="piac-readable" class="text-sm text-gray-500">Sin datos — ejecuta "Analizar"</div>
+          <div class="flex items-center justify-between mb-3">
+            <p class="text-xs text-gray-400">Contenido extraído del documento PIAC en Google Drive.</p>
+            <p class="text-xs text-gray-300">¿Cambió el PIAC? Presiona "Comparar" para actualizar.</p>
+          </div>
+          <div id="piac-readable" class="text-sm text-gray-500">
+            <div class="text-center py-8 text-gray-300">
+              <p>Aún no se ha leído el PIAC</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- TAB: Mapa del Curso -->
+      <!-- TAB: Comparación (Mapa PIAC vs Moodle) -->
       <div id="tab-mapa" class="tab-content hidden">
         <div class="panel-card p-5">
-          <p class="text-xs text-gray-400 mb-3">Cada fila compara un elemento del PIAC con su equivalente en Moodle. Haz clic en una fila para expandir el detalle y la verificación de contenido.</p>
-          <div id="matching-map" class="text-sm text-gray-500">Sin datos — ejecuta "Analizar"</div>
+          <p class="text-xs text-gray-400 mb-3">Cada fila compara un elemento de la planificación con lo que está en Moodle. Haz clic para ver el detalle.</p>
+          <div id="matching-map" class="text-sm text-gray-500">
+            <div class="text-center py-8 text-gray-300">
+              <p>Ejecuta la comparación para ver resultados</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- TAB: Discrepancias -->
+      <!-- TAB: Problemas (Discrepancias) -->
       <div id="tab-discrepancias" class="tab-content hidden">
         <div id="discrepancies-section" class="panel-card p-5">
-          <p class="text-xs text-gray-400 mb-3">Las <strong>críticas</strong> afectan la experiencia del estudiante (ej: secciones ocultas). Las <strong>advertencias</strong> son diferencias menores. Las <strong>notas</strong> sobre evaluaciones son informativas.</p>
-          <div id="discrepancies-list" class="text-sm text-gray-500">Sin datos</div>
+          <div id="discrepancies-list" class="text-sm text-gray-500">
+            <div class="text-center py-8 text-gray-300">
+              <p>Ejecuta la comparación para detectar problemas</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- TAB: Datos Crudos -->
+      <!-- TAB: Datos técnicos -->
       <div id="tab-datos" class="tab-content hidden">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div class="panel-card p-5">
-            <div class="section-header">Estructura PIAC (Drive)</div>
-            <p class="text-xs text-gray-400 mb-2">JSON extraído del documento Word del PIAC.</p>
+            <div class="section-header">PIAC (JSON)</div>
             <div id="piac-structure" class="text-sm text-gray-500">Sin datos</div>
           </div>
           <div class="panel-card p-5">
-            <div class="section-header">Estructura Moodle (API)</div>
-            <p class="text-xs text-gray-400 mb-2">Snapshot de secciones y actividades del curso.</p>
+            <div class="section-header">Moodle (Snapshot)</div>
             <div id="moodle-structure" class="text-sm text-gray-500">Sin datos</div>
           </div>
         </div>
@@ -906,7 +925,8 @@
 
       loadAlerts();
 
-      // Show tabs
+      // Hide empty state, show tabs
+      document.getElementById('empty-state').classList.add('hidden');
       document.getElementById('results-tabs').classList.remove('hidden');
 
       // Render PIAC readable view
@@ -914,7 +934,7 @@
         document.getElementById('piac-readable').innerHTML = renderPiacReadable(d.parsed.parsed_json);
       }
 
-      // Summary cards
+      // Summary cards + tab badges
       if (d.matching && d.matching.summary_json) {
         const s = d.matching.summary_json;
         const disc = s.discrepancies || {};
@@ -935,13 +955,14 @@
         document.getElementById('sum-critical').textContent = critCount;
         document.getElementById('sum-warnings').textContent = warnCount;
 
-        // Discrepancy count badge on tab
-        const totalDisc = disc.total || 0;
+        // Tab count badges
+        const totalElems = total || matched;
+        if (totalElems > 0) document.getElementById('map-count-badge').textContent = `(${totalElems})`;
+        const totalDisc = (disc.critical || 0) + (disc.warning || 0);
         const badge = document.getElementById('disc-count-badge');
         if (totalDisc > 0) { badge.textContent = totalDisc; badge.classList.remove('hidden'); }
-        else { badge.classList.add('hidden'); }
+        else { badge.textContent = '0'; badge.classList.remove('hidden'); badge.className = 'ml-1 text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-semibold'; }
 
-        // Auto-switch to Mapa tab if there are results, or PIAC if only parsed
         switchTab('mapa');
       } else if (d.parsed) {
         switchTab('piac');
@@ -1314,7 +1335,13 @@
 
         discEl.innerHTML = html;
       } else if (d.matching) {
-        discEl.innerHTML = '<div class="text-green-600 text-sm py-2">Sin discrepancias detectadas</div>';
+        discEl.innerHTML = `<div class="text-center py-8">
+          <div class="inline-flex items-center justify-center w-12 h-12 bg-green-50 rounded-full mb-3">
+            <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <p class="text-green-700 font-medium text-sm">Todo en orden</p>
+          <p class="text-gray-400 text-xs mt-1">No se detectaron problemas entre el PIAC y Moodle.</p>
+        </div>`;
       } else {
         discEl.innerHTML = '<span class="text-gray-400">Sin datos</span>';
       }
