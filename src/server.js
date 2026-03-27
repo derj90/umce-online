@@ -1881,6 +1881,238 @@ app.get('/api/admin/microcredenciales/:id/stats', adminOrEditorMiddleware, async
   }
 });
 
+// === SDPA — Desarrollo Profesional Docente (endpoints dedicados) ===
+
+// GET /api/docente/sdpa/resumen — resumen del docente logueado
+app.get('/api/docente/sdpa/resumen', authMiddleware, async (req, res) => {
+  try {
+    const { email } = resolveTargetEmail(req);
+    const enc = encodeURIComponent(email);
+    const [actividades, progreso, certificaciones] = await Promise.all([
+      portalQuery('actividades_sdpa', `docente_email=eq.${enc}&estado=eq.completada&order=fecha_inicio.desc`),
+      portalQuery('v_progreso_certificaciones', `docente_email=eq.${enc}`),
+      portalQuery('certificaciones_sdpa', 'activa=eq.true&order=id.asc')
+    ]);
+    const totalHoras = actividades.reduce((sum, a) => sum + parseFloat(a.horas_cronologicas || 0), 0);
+    const horasTIC = actividades.filter(a => a.linea === 'integracion_tic').reduce((sum, a) => sum + parseFloat(a.horas_cronologicas || 0), 0);
+    const horasDocencia = actividades.filter(a => a.linea === 'docencia').reduce((sum, a) => sum + parseFloat(a.horas_cronologicas || 0), 0);
+    res.json({
+      docente_email: email,
+      total_actividades: actividades.length,
+      total_horas: totalHoras,
+      horas_tic: horasTIC,
+      horas_docencia: horasDocencia,
+      actividades,
+      progreso_certificaciones: progreso,
+      certificaciones_disponibles: certificaciones
+    });
+  } catch (err) {
+    console.error('SDPA resumen error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/docente/sdpa/actividades — actividades formativas del docente
+app.get('/api/docente/sdpa/actividades', authMiddleware, async (req, res) => {
+  try {
+    const { email } = resolveTargetEmail(req);
+    const actividades = await portalQuery('actividades_sdpa',
+      `docente_email=eq.${encodeURIComponent(email)}&order=fecha_inicio.desc`);
+    res.json(actividades);
+  } catch (err) {
+    console.error('SDPA actividades error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/sdpa/certificaciones — certificaciones disponibles (público)
+app.get('/api/sdpa/certificaciones', async (req, res) => {
+  try {
+    const certs = await portalQuery('certificaciones_sdpa', 'activa=eq.true&order=id.asc');
+    res.json(certs);
+  } catch (err) {
+    console.error('SDPA certificaciones error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/sdpa/estadisticas — estadísticas públicas agregadas
+app.get('/api/sdpa/estadisticas', async (req, res) => {
+  try {
+    const [resumen, progreso] = await Promise.all([
+      portalQuery('v_resumen_docente_sdpa', 'order=total_horas.desc'),
+      portalQuery('v_progreso_certificaciones', '')
+    ]);
+    const totalDocentes = resumen.length;
+    const totalHoras = resumen.reduce((sum, r) => sum + parseFloat(r.total_horas || 0), 0);
+    const certificados = progreso.filter(p => p.estado === 'certificado').length;
+    const requisitosCumplidos = progreso.filter(p => p.estado === 'requisitos_cumplidos').length;
+    const enProgreso = progreso.filter(p => p.estado === 'en_progreso').length;
+
+    // Distribution by certification
+    const porCertificacion = {};
+    progreso.forEach(p => {
+      if (!porCertificacion[p.certificacion_slug]) {
+        porCertificacion[p.certificacion_slug] = { nombre: p.certificacion_nombre, certificados: 0, requisitos_cumplidos: 0, en_progreso: 0 };
+      }
+      porCertificacion[p.certificacion_slug][p.estado] = (porCertificacion[p.certificacion_slug][p.estado] || 0) + 1;
+    });
+
+    // Distribution by faculty (from notas JSON)
+    const porFacultad = {};
+    for (const r of resumen) {
+      // Need to look up faculty from actividades
+      const acts = await portalQuery('actividades_sdpa',
+        `docente_email=eq.${encodeURIComponent(r.docente_email)}&limit=1`);
+      if (acts.length && acts[0].notas) {
+        try {
+          const notas = JSON.parse(acts[0].notas);
+          const fac = notas.facultad || 'Sin facultad';
+          if (!porFacultad[fac]) porFacultad[fac] = { docentes: 0, horas_total: 0 };
+          porFacultad[fac].docentes++;
+          porFacultad[fac].horas_total += parseFloat(r.total_horas || 0);
+        } catch {}
+      }
+    }
+
+    res.json({
+      total_docentes: totalDocentes,
+      total_horas: totalHoras,
+      total_actividades: resumen.reduce((sum, r) => sum + parseInt(r.total_actividades || 0), 0),
+      certificados, requisitos_cumplidos: requisitosCumplidos, en_progreso: enProgreso,
+      por_certificacion: porCertificacion,
+      por_facultad: porFacultad
+    });
+  } catch (err) {
+    console.error('SDPA estadisticas error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/admin/sdpa/docentes — lista de docentes con resumen (admin)
+app.get('/api/admin/sdpa/docentes', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const { facultad, certificacion, estado } = req.query;
+    let filter = 'order=total_horas.desc';
+    const resumen = await portalQuery('v_resumen_docente_sdpa', filter);
+
+    // Enrich with faculty info + certification progress
+    const enriched = [];
+    for (const r of resumen) {
+      const enc = encodeURIComponent(r.docente_email);
+      const [acts, prog] = await Promise.all([
+        portalQuery('actividades_sdpa', `docente_email=eq.${enc}&limit=1`),
+        portalQuery('v_progreso_certificaciones', `docente_email=eq.${enc}`)
+      ]);
+      let fac = null, dept = null, nombre = null;
+      if (acts.length && acts[0].notas) {
+        try {
+          const notas = JSON.parse(acts[0].notas);
+          fac = notas.facultad; dept = notas.departamento; nombre = notas.nombre;
+        } catch {}
+      }
+
+      // Apply filters
+      if (facultad && fac !== facultad) continue;
+      if (certificacion) {
+        const hasCert = prog.some(p => p.certificacion_slug === certificacion);
+        if (!hasCert) continue;
+      }
+      if (estado) {
+        const hasEstado = prog.some(p => p.estado === estado);
+        if (!hasEstado) continue;
+      }
+
+      enriched.push({
+        ...r,
+        nombre, facultad: fac, departamento: dept,
+        progreso_certificaciones: prog
+      });
+    }
+
+    res.json(enriched);
+  } catch (err) {
+    console.error('Admin SDPA docentes error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/admin/sdpa/actividad — registrar actividad formativa (admin)
+app.post('/api/admin/sdpa/actividad', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const { docente_email, nombre_actividad, linea, tipo, horas_cronologicas,
+            programa, descripcion, plataforma, fecha_inicio, fecha_termino, notas } = req.body;
+    if (!docente_email || !nombre_actividad || !linea || !horas_cronologicas) {
+      return res.status(400).json({ error: 'docente_email, nombre_actividad, linea y horas_cronologicas son requeridos' });
+    }
+    const actividad = await portalMutate('actividades_sdpa', 'POST', {
+      docente_email: docente_email.toLowerCase(),
+      nombre_actividad,
+      descripcion: descripcion || null,
+      linea, programa: programa || null,
+      tipo: tipo || 'curso',
+      horas_cronologicas: parseFloat(horas_cronologicas),
+      estado: 'completada',
+      plataforma: plataforma || null,
+      fecha_inicio: fecha_inicio || new Date().toISOString().split('T')[0],
+      fecha_termino: fecha_termino || null,
+      registrado_por: req.userEmail,
+      notas: notas || null
+    });
+    res.json(actividad);
+  } catch (err) {
+    console.error('Admin SDPA actividad error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT /api/admin/sdpa/certificacion/:id — aprobar/actualizar certificación (admin)
+app.put('/api/admin/sdpa/certificacion/:id', adminOrEditorMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (!id) return res.status(400).json({ error: 'ID invalido' });
+    const { estado, evidencia_estado, evidencia_comentario, proyecto_estado } = req.body;
+    const updates = {};
+    if (estado) updates.estado = estado;
+    if (evidencia_estado) updates.evidencia_estado = evidencia_estado;
+    if (evidencia_comentario !== undefined) updates.evidencia_comentario = evidencia_comentario;
+    if (proyecto_estado) updates.proyecto_estado = proyecto_estado;
+    if (estado === 'certificado') {
+      updates.fecha_certificacion = new Date().toISOString();
+      updates.certificado_por = req.userEmail;
+    }
+    updates.updated_at = new Date().toISOString();
+    const result = await portalMutate('progreso_certificaciones', 'PATCH', updates, `id=eq.${id}`);
+    res.json(result);
+  } catch (err) {
+    console.error('Admin SDPA certificacion error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/credential/:hash — verificación pública de certificación docente (sin auth)
+app.get('/api/credential/:hash', async (req, res) => {
+  try {
+    const hash = req.params.hash;
+    if (!hash || hash.length < 8) return res.status(400).json({ error: 'Hash invalido' });
+    const results = await portalQuery('progreso_certificaciones', `verificacion_hash=eq.${encodeURIComponent(hash)}`);
+    if (!results.length) return res.status(404).json({ error: 'Certificacion no encontrada' });
+    const prog = results[0];
+    const certs = await portalQuery('certificaciones_sdpa', `id=eq.${prog.certificacion_id}`);
+    res.json({
+      verified: prog.estado === 'certificado',
+      certificacion: certs.length ? certs[0] : null,
+      docente_email: prog.docente_email,
+      fecha_certificacion: prog.fecha_certificacion,
+      estado: prog.estado,
+      credential: prog.credential_json
+    });
+  } catch (err) {
+    console.error('Credential verification error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // === Chatbot API ===
 
 const CLAUDE_PROXY_URL = 'http://claude-proxy-container:3099/chat';
@@ -5197,6 +5429,7 @@ app.get('/noticias', (req, res) => res.sendFile(path.join(__dirname, 'public', '
 app.get('/mis-cursos', (req, res) => res.sendFile(path.join(__dirname, 'public', 'mis-cursos.html')));
 app.get('/ayuda', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ayuda.html')));
 app.get('/privacidad', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacidad.html')));
+app.get('/formacion-docente', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente.html')));
 
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/piac', (req, res) => res.sendFile(path.join(__dirname, 'public', 'piac.html')));

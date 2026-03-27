@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Formaci&oacute;n Docente | SDPA &mdash; UMCE Virtual</title>
+  <meta name="description" content="Sistema de Desarrollo Profesional Acad&eacute;mico UMCE. Consulta tu progreso en certificaciones TIC, Ruta IA y formaci&oacute;n docente.">
+  <link rel="canonical" href="https://umce.online/formacion-docente">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://umce.online/formacion-docente">
+  <meta property="og:title" content="Formaci&oacute;n Docente &mdash; UMCE Virtual">
+  <meta property="og:description" content="Desarrollo Profesional Acad&eacute;mico: certificaciones TIC, Ruta IA, formaci&oacute;n continua para docentes UMCE.">
+  <meta property="og:site_name" content="UMCE Virtual">
+  <meta property="og:locale" content="es_CL">
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+  <link rel="stylesheet" href="/shared/shared.css">
+</head>
+<body class="bg-white text-gray-900 antialiased">
+
+  <div id="nav-placeholder"></div>
+
+  <!-- Hero -->
+  <section class="hero-gradient pt-32 pb-16 text-white relative overflow-hidden">
+    <div id="p5-header" data-variant="3"></div>
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+      <nav class="breadcrumb text-sm mb-6">
+        <a href="/" class="text-white/60 hover:text-white">Inicio</a>
+        <span class="separator text-white/30">/</span>
+        <span class="text-white/90">Formaci&oacute;n Docente</span>
+      </nav>
+      <h1 class="fade-up font-heading text-4xl md:text-5xl font-extrabold mb-4">Formaci&oacute;n Docente</h1>
+      <p class="fade-up text-white/80 text-lg max-w-2xl">
+        Sistema de Desarrollo Profesional Acad&eacute;mico de la UMCE. Formaci&oacute;n continua, certificaci&oacute;n TIC, Ruta IA y acompa&ntilde;amiento pedag&oacute;gico.
+      </p>
+    </div>
+  </section>
+
+  <!-- Stats banner (loaded from API) -->
+  <section class="bg-umce-azul-dark text-white py-6 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-6">
+      <div id="stats-banner" class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <div>
+          <div id="stat-docentes" class="text-3xl font-extrabold font-heading">--</div>
+          <div class="text-white/60 text-sm mt-1">Docentes en formaci&oacute;n</div>
+        </div>
+        <div>
+          <div id="stat-horas" class="text-3xl font-extrabold font-heading">--</div>
+          <div class="text-white/60 text-sm mt-1">Horas formativas</div>
+        </div>
+        <div>
+          <div id="stat-certificados" class="text-3xl font-extrabold font-heading">--</div>
+          <div class="text-white/60 text-sm mt-1">Requisitos cumplidos</div>
+        </div>
+        <div>
+          <div id="stat-actividades" class="text-3xl font-extrabold font-heading">--</div>
+          <div class="text-white/60 text-sm mt-1">Actividades registradas</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Certificaciones disponibles -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <p class="fade-up text-sm font-semibold text-umce-azul uppercase tracking-widest mb-3">Certificaciones</p>
+      <h2 class="fade-up font-heading text-3xl font-bold mb-8">Rutas de certificaci&oacute;n</h2>
+      <div id="certs-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="col-span-full text-center text-gray-400 py-8">Cargando certificaciones...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Distribucion por facultad -->
+  <section class="py-16 bg-gray-50 border-t border-gray-100">
+    <div class="max-w-7xl mx-auto px-6">
+      <p class="fade-up text-sm font-semibold text-umce-azul uppercase tracking-widest mb-3">Participaci&oacute;n</p>
+      <h2 class="fade-up font-heading text-3xl font-bold mb-8">Docentes por facultad</h2>
+      <div id="facultad-grid" class="grid md:grid-cols-2 gap-4">
+        <div class="col-span-full text-center text-gray-400 py-8">Cargando...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mi progreso (solo con auth) -->
+  <section id="mi-progreso" class="py-16 bg-white border-t border-gray-100 hidden">
+    <div class="max-w-7xl mx-auto px-6">
+      <p class="text-sm font-semibold text-umce-azul uppercase tracking-widest mb-3">Tu desarrollo profesional</p>
+      <h2 class="font-heading text-3xl font-bold mb-2">Mi progreso</h2>
+      <p id="progreso-email" class="text-gray-500 text-sm mb-8"></p>
+
+      <!-- Resumen personal -->
+      <div id="mi-resumen" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+        <div class="bg-blue-50 rounded-xl p-5 text-center">
+          <div id="mi-total-horas" class="text-2xl font-extrabold text-umce-azul">0</div>
+          <div class="text-gray-500 text-xs mt-1">Horas totales</div>
+        </div>
+        <div class="bg-blue-50 rounded-xl p-5 text-center">
+          <div id="mi-horas-tic" class="text-2xl font-extrabold text-umce-azul">0</div>
+          <div class="text-gray-500 text-xs mt-1">Horas TIC</div>
+        </div>
+        <div class="bg-amber-50 rounded-xl p-5 text-center">
+          <div id="mi-actividades" class="text-2xl font-extrabold text-amber-700">0</div>
+          <div class="text-gray-500 text-xs mt-1">Actividades</div>
+        </div>
+        <div class="bg-green-50 rounded-xl p-5 text-center">
+          <div id="mi-certs" class="text-2xl font-extrabold text-green-700">0</div>
+          <div class="text-gray-500 text-xs mt-1">Cert. cumplidas</div>
+        </div>
+      </div>
+
+      <!-- Progreso certificaciones -->
+      <h3 class="font-heading font-bold text-lg mb-4">Progreso hacia certificaciones</h3>
+      <div id="mi-cert-progress" class="space-y-4 mb-10"></div>
+
+      <!-- Mis actividades -->
+      <h3 class="font-heading font-bold text-lg mb-4">Mis actividades formativas</h3>
+      <div id="mi-actividades-lista" class="space-y-3"></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-16 bg-gray-50 border-t border-gray-100">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <h2 class="fade-up font-heading text-2xl font-bold mb-4">Comienza tu ruta formativa</h2>
+      <p class="fade-up text-gray-500 mb-6">Revisa las rutas de certificaci&oacute;n disponibles o accede a tu progreso con tu cuenta @umce.cl</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="/competencias" class="inline-flex items-center justify-center gap-2 font-heading font-bold text-sm px-6 py-3 rounded-lg bg-umce-azul text-white hover:bg-umce-azul/90 transition-colors">
+          Ver ruta de certificaci&oacute;n
+        </a>
+        <a id="cta-login" href="/auth/login?redirect=/formacion-docente" class="inline-flex items-center justify-center gap-2 font-heading font-bold text-sm px-6 py-3 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
+          Acceder con cuenta UMCE
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+  <div id="chatbot-placeholder"></div>
+
+  <script src="/shared/shared.js"></script>
+  <script src="/shared/generative-header.js" defer></script>
+  <script>
+    const API = '';
+
+    // Check auth
+    async function checkAuth() {
+      try {
+        const r = await fetch('/auth/me');
+        if (!r.ok) return null;
+        return await r.json();
+      } catch { return null; }
+    }
+
+    // Load public stats
+    async function loadStats() {
+      try {
+        const r = await fetch(`${API}/api/sdpa/estadisticas`);
+        if (!r.ok) return;
+        const d = await r.json();
+        document.getElementById('stat-docentes').textContent = d.total_docentes || 0;
+        document.getElementById('stat-horas').textContent = new Intl.NumberFormat('es-CL').format(Math.round(d.total_horas || 0));
+        document.getElementById('stat-certificados').textContent = (d.certificados || 0) + (d.requisitos_cumplidos || 0);
+        document.getElementById('stat-actividades').textContent = d.total_actividades || 0;
+
+        // Faculty grid
+        const facGrid = document.getElementById('facultad-grid');
+        const facs = Object.entries(d.por_facultad || {}).sort((a, b) => b[1].docentes - a[1].docentes);
+        if (facs.length) {
+          facGrid.innerHTML = facs.map(([name, data]) => `
+            <div class="bg-white rounded-xl p-5 border border-gray-100 flex items-center justify-between">
+              <div>
+                <div class="font-heading font-bold text-sm">${escapeHtml(name)}</div>
+                <div class="text-gray-400 text-xs mt-1">${data.docentes} docente${data.docentes !== 1 ? 's' : ''}</div>
+              </div>
+              <div class="text-right">
+                <div class="font-bold text-umce-azul">${Math.round(data.horas_total)}</div>
+                <div class="text-gray-400 text-xs">horas</div>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          facGrid.innerHTML = '<div class="col-span-full text-center text-gray-400 py-4">Sin datos por facultad</div>';
+        }
+
+        // Certification distribution
+        const certDist = d.por_certificacion || {};
+        updateCertCards(certDist);
+      } catch (err) {
+        console.error('Stats error:', err);
+      }
+    }
+
+    // Load certifications
+    async function loadCertificaciones() {
+      try {
+        const r = await fetch(`${API}/api/sdpa/certificaciones`);
+        if (!r.ok) return;
+        const certs = await r.json();
+        const grid = document.getElementById('certs-grid');
+
+        const colors = {
+          'tic_inicial': { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', accent: 'bg-blue-600' },
+          'tic_intermedio': { bg: 'bg-indigo-50', border: 'border-indigo-200', text: 'text-indigo-700', accent: 'bg-indigo-600' },
+          'tic_avanzado': { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-700', accent: 'bg-purple-600' },
+          'ruta_ia_1': { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', accent: 'bg-amber-600' },
+          'ruta_ia_2': { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', accent: 'bg-orange-600' },
+          'ruta_ia_3': { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', accent: 'bg-red-600' },
+          'diplomado_docencia_ia': { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', accent: 'bg-green-600' },
+          'diplomado_docencia_curr': { bg: 'bg-teal-50', border: 'border-teal-200', text: 'text-teal-700', accent: 'bg-teal-600' },
+        };
+
+        grid.innerHTML = certs.map(c => {
+          const cl = colors[c.slug] || { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-700', accent: 'bg-gray-600' };
+          const prereq = c.prerequisito_id ? certs.find(x => x.id === c.prerequisito_id) : null;
+          return `
+            <div class="fade-up ${cl.bg} rounded-xl p-6 border ${cl.border}">
+              <div class="flex items-start justify-between mb-3">
+                <h3 class="font-heading font-bold text-base ${cl.text}">${escapeHtml(c.nombre)}</h3>
+              </div>
+              <p class="text-gray-600 text-sm mb-4">${escapeHtml(c.descripcion || '')}</p>
+              <div class="flex flex-wrap gap-2 text-xs">
+                <span class="px-2 py-1 rounded-full ${cl.bg} ${cl.text} font-medium">${c.horas_requeridas}h requeridas</span>
+                ${c.creditos_sct ? `<span class="px-2 py-1 rounded-full bg-white/80 text-gray-600 font-medium">${c.creditos_sct} SCT</span>` : ''}
+                ${c.requiere_evidencia ? '<span class="px-2 py-1 rounded-full bg-white/80 text-gray-600 font-medium">Requiere evidencia</span>' : ''}
+                ${c.requiere_proyecto ? '<span class="px-2 py-1 rounded-full bg-white/80 text-gray-600 font-medium">Requiere proyecto</span>' : ''}
+                ${prereq ? `<span class="px-2 py-1 rounded-full bg-white/80 text-gray-500 font-medium">Requiere: ${escapeHtml(prereq.nombre)}</span>` : ''}
+              </div>
+              <div id="cert-dist-${c.slug}" class="mt-4 text-xs text-gray-400"></div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error('Certs error:', err);
+      }
+    }
+
+    function updateCertCards(dist) {
+      Object.entries(dist).forEach(([slug, data]) => {
+        const el = document.getElementById(`cert-dist-${slug}`);
+        if (!el) return;
+        const total = (data.certificados || 0) + (data.requisitos_cumplidos || 0) + (data.en_progreso || 0);
+        if (total > 0) {
+          el.textContent = `${data.en_progreso || 0} en progreso, ${(data.requisitos_cumplidos || 0) + (data.certificados || 0)} cumplidos`;
+        }
+      });
+    }
+
+    // Load personal progress
+    async function loadMiProgreso() {
+      try {
+        const r = await fetch(`${API}/api/docente/sdpa/resumen`);
+        if (!r.ok) return;
+        const d = await r.json();
+
+        document.getElementById('mi-progreso').classList.remove('hidden');
+        document.getElementById('progreso-email').textContent = d.docente_email;
+        document.getElementById('mi-total-horas').textContent = Math.round(d.total_horas);
+        document.getElementById('mi-horas-tic').textContent = Math.round(d.horas_tic);
+        document.getElementById('mi-actividades').textContent = d.total_actividades;
+
+        const certsCumplidas = (d.progreso_certificaciones || []).filter(p => p.estado === 'requisitos_cumplidos' || p.estado === 'certificado').length;
+        document.getElementById('mi-certs').textContent = certsCumplidas;
+
+        // Hide CTA login
+        document.getElementById('cta-login').style.display = 'none';
+
+        // Certification progress bars
+        const progContainer = document.getElementById('mi-cert-progress');
+        const allCerts = d.certificaciones_disponibles || [];
+        const myProg = d.progreso_certificaciones || [];
+
+        progContainer.innerHTML = allCerts.map(cert => {
+          const prog = myProg.find(p => p.certificacion_slug === cert.slug);
+          const pct = prog ? Math.min(parseFloat(prog.porcentaje_avance || 0), 100) : 0;
+          const horas = prog ? parseFloat(prog.horas_acumuladas || 0) : 0;
+          const estado = prog ? prog.estado : 'no_iniciado';
+          const estadoLabel = {
+            'no_iniciado': 'No iniciado',
+            'en_progreso': 'En progreso',
+            'requisitos_cumplidos': 'Requisitos cumplidos',
+            'certificado': 'Certificado'
+          }[estado] || estado;
+          const estadoColor = {
+            'no_iniciado': 'text-gray-400',
+            'en_progreso': 'text-blue-600',
+            'requisitos_cumplidos': 'text-amber-600',
+            'certificado': 'text-green-600'
+          }[estado] || 'text-gray-400';
+
+          return `
+            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-heading font-bold text-sm">${escapeHtml(cert.nombre)}</span>
+                <span class="text-xs font-medium ${estadoColor}">${estadoLabel}</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+                <div class="h-2.5 rounded-full transition-all duration-500 ${pct >= 100 ? 'bg-green-500' : 'bg-umce-azul'}" style="width: ${pct}%"></div>
+              </div>
+              <div class="flex justify-between text-xs text-gray-400">
+                <span>${Math.round(horas)}h de ${cert.horas_requeridas}h</span>
+                <span>${Math.round(pct)}%</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Activities list
+        const actContainer = document.getElementById('mi-actividades-lista');
+        const acts = d.actividades || [];
+        if (acts.length) {
+          actContainer.innerHTML = acts.map(a => {
+            const lineaColors = {
+              'integracion_tic': 'bg-blue-100 text-blue-700',
+              'docencia': 'bg-green-100 text-green-700',
+              'investigacion': 'bg-purple-100 text-purple-700',
+            };
+            const lineaCl = lineaColors[a.linea] || 'bg-gray-100 text-gray-700';
+            return `
+              <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                <div class="flex-1 min-w-0">
+                  <div class="font-medium text-sm truncate">${escapeHtml(a.nombre_actividad)}</div>
+                  <div class="text-xs text-gray-400 mt-0.5">${a.fecha_inicio || ''}</div>
+                </div>
+                <div class="flex items-center gap-2 ml-3 shrink-0">
+                  <span class="px-2 py-0.5 rounded-full text-xs font-medium ${lineaCl}">${escapeHtml(a.linea.replace('_', ' '))}</span>
+                  <span class="text-sm font-bold text-gray-700">${a.horas_cronologicas}h</span>
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          actContainer.innerHTML = '<p class="text-gray-400 text-sm py-4">No tienes actividades registradas a&uacute;n.</p>';
+        }
+      } catch (err) {
+        console.error('Mi progreso error:', err);
+      }
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // Init
+    async function init() {
+      loadStats();
+      loadCertificaciones();
+
+      const user = await checkAuth();
+      if (user) {
+        loadMiProgreso();
+      }
+    }
+
+    init();
+  </script>
+  <script src="/accesibilidad-dua.js" defer></script>
+</body>
+</html>
