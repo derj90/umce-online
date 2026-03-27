@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Ruta Formativa | Formaci&oacute;n Docente &mdash; UMCE Virtual</title>
-  <meta name="description" content="Ruta de formaci&oacute;n y certificaci&oacute;n docente UMCE 2026. Dos tracks: Competencia Digital TIC y Ruta IA. 12 cursos, certificaciones progresivas, diplomados.">
+  <meta name="description" content="Ruta de formaci&oacute;n y certificaci&oacute;n en competencias digitales docentes UMCE 2026. Cursos de IA, talleres TIC, capacitaciones en plataformas. Tres niveles de certificaci&oacute;n.">
   <link rel="canonical" href="https://umce.online/formacion-docente/plan">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://umce.online/formacion-docente/plan">
@@ -14,17 +14,9 @@
   <link rel="stylesheet" href="/shared/tailwind.min.css">
   <link rel="stylesheet" href="/shared/shared.css">
   <style>
-    .track-card { border-left: 4px solid; transition: transform 0.15s; }
-    .track-card:hover { transform: translateY(-2px); }
-    .track-tic { border-left-color: #0033A1; }
-    .track-ia { border-left-color: #7C3AED; }
-    .track-diplomado { border-left-color: #B45309; }
-    .step-connector { width: 2px; height: 24px; margin: 0 auto; }
     .curso-card { transition: background 0.15s; }
     .curso-card:hover { background: #F9FAFB; }
-    .phase-bar { position: relative; }
-    .phase-bar::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 3px; background: #E5E7EB; z-index: 0; }
-    .phase-dot { position: relative; z-index: 1; }
+    .step-connector { width: 2px; height: 24px; margin: 0 auto; }
   </style>
 </head>
 <body class="bg-white text-gray-900 antialiased">
@@ -44,7 +36,7 @@
       </nav>
       <h1 class="fade-up font-heading text-4xl md:text-5xl font-extrabold mb-4">Ruta Formativa 2026</h1>
       <p class="fade-up text-white/80 text-lg max-w-2xl">
-        Plan de formaci&oacute;n continua para docentes UMCE. Dos tracks de certificaci&oacute;n progresiva, cursos con dise&ntilde;o instruccional propio y diplomados formales.
+        Cat&aacute;logo de actividades formativas para docentes UMCE. Cada taller, curso o capacitaci&oacute;n suma horas hacia tu <a href="/formacion-docente" class="underline text-white">certificaci&oacute;n en competencias digitales</a>.
       </p>
     </div>
   </section>
@@ -73,99 +65,37 @@
     </div>
   </section>
 
-  <!-- Two tracks overview -->
-  <section class="py-16 bg-white">
+  <!-- Certification levels recap -->
+  <section class="py-12 bg-white border-b border-gray-100">
     <div class="max-w-7xl mx-auto px-6">
-      <p class="fade-up text-sm font-semibold text-umce-azul uppercase tracking-widest mb-3">Estructura</p>
-      <h2 class="fade-up font-heading text-3xl font-bold mb-3">Dos tracks de certificaci&oacute;n</h2>
-      <p class="fade-up text-gray-600 mb-8 max-w-2xl">Cada docente puede avanzar en ambos tracks simult&aacute;neamente. Las horas se acumulan de forma independiente hacia cada certificaci&oacute;n.</p>
-
-      <div class="grid md:grid-cols-2 gap-6 mb-10">
-        <!-- Track TIC -->
-        <div class="track-card track-tic bg-white border border-gray-200 rounded-xl p-6">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-              <svg class="w-5 h-5 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-            </div>
-            <div>
-              <h3 class="font-heading font-bold text-lg">Competencia Digital TIC</h3>
-              <p class="text-xs text-gray-500">Basado en el <a href="/formacion-docente/marco" class="text-blue-600 hover:underline">Marco de Competencias TIC UMCE</a></p>
-            </div>
-          </div>
-          <p class="text-sm text-gray-600 mb-4">Certificaci&oacute;n acumulativa por horas en 12 &aacute;mbitos de competencia digital. Tres niveles progresivos con prerequisitos.</p>
-          <div id="track-tic-steps" class="space-y-2">
-            <!-- Filled by JS -->
-          </div>
-        </div>
-
-        <!-- Track IA -->
-        <div class="track-card track-ia bg-white border border-gray-200 rounded-xl p-6">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center">
-              <svg class="w-5 h-5 text-violet-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-            </div>
-            <div>
-              <h3 class="font-heading font-bold text-lg">Ruta IA</h3>
-              <p class="text-xs text-gray-500">Inteligencia Artificial en Educaci&oacute;n</p>
-            </div>
-          </div>
-          <p class="text-sm text-gray-600 mb-4">12 cursos espec&iacute;ficos organizados en 3 niveles. Cada nivel requiere completar 4 cursos obligatorios.</p>
-          <div id="track-ia-steps" class="space-y-2">
-            <!-- Filled by JS -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Diplomados -->
-      <div class="track-card track-diplomado bg-white border border-gray-200 rounded-xl p-6">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-            <svg class="w-5 h-5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-          </div>
-          <div>
-            <h3 class="font-heading font-bold text-lg">Diplomados en Docencia Universitaria</h3>
-            <p class="text-xs text-gray-500">Programas formales de 216 horas (8 SCT)</p>
-          </div>
-        </div>
-        <div class="grid md:grid-cols-2 gap-4">
-          <div class="bg-amber-50 rounded-lg p-4">
-            <h4 class="font-heading font-bold text-sm mb-1">Menci&oacute;n Investigaci&oacute;n-Acci&oacute;n</h4>
-            <p class="text-xs text-gray-600 mb-2">Formaci&oacute;n en metodolog&iacute;as de investigaci&oacute;n-acci&oacute;n aplicadas a la docencia universitaria. Requiere proyecto final.</p>
-            <div class="flex items-center gap-3 text-xs text-gray-500">
-              <span>216 horas</span><span>&middot;</span><span>8 SCT</span><span>&middot;</span><span>Proyecto requerido</span>
-            </div>
-          </div>
-          <div class="bg-amber-50 rounded-lg p-4">
-            <h4 class="font-heading font-bold text-sm mb-1">Menci&oacute;n Procesos Curriculares</h4>
-            <p class="text-xs text-gray-600 mb-2">Formaci&oacute;n en dise&ntilde;o, implementaci&oacute;n y evaluaci&oacute;n curricular en educaci&oacute;n superior. Requiere proyecto final.</p>
-            <div class="flex items-center gap-3 text-xs text-gray-500">
-              <span>216 horas</span><span>&middot;</span><span>8 SCT</span><span>&middot;</span><span>Proyecto requerido</span>
-            </div>
-          </div>
-        </div>
+      <p class="text-sm font-semibold text-umce-azul uppercase tracking-widest mb-3">Tres niveles de certificaci&oacute;n</p>
+      <p class="text-gray-600 text-sm mb-6 max-w-3xl">Las actividades que aparecen a continuaci&oacute;n suman horas hacia estos niveles. Puedes avanzar a tu ritmo &mdash; no hay plazos fijos.</p>
+      <div id="cert-levels" class="flex flex-col md:flex-row gap-4 max-w-3xl">
+        <!-- Filled by JS -->
       </div>
     </div>
   </section>
 
-  <!-- 12 cursos Ruta IA detail -->
+  <!-- Actividades disponibles: IA en Educación -->
   <section class="py-16 bg-gray-50 border-t border-gray-200">
     <div class="max-w-7xl mx-auto px-6">
-      <p class="fade-up text-sm font-semibold text-violet-600 uppercase tracking-widest mb-3">Ruta IA &mdash; Detalle de cursos</p>
-      <h2 class="fade-up font-heading text-3xl font-bold mb-8">12 cursos de Inteligencia Artificial en Educaci&oacute;n</h2>
+      <p class="fade-up text-sm font-semibold text-umce-azul uppercase tracking-widest mb-3">Cursos disponibles</p>
+      <h2 class="fade-up font-heading text-3xl font-bold mb-3">Inteligencia Artificial en Educaci&oacute;n</h2>
+      <p class="fade-up text-gray-600 mb-8 max-w-3xl">12 cursos dise&ntilde;ados por la UDFV que cubren desde los fundamentos de IA hasta su integraci&oacute;n en la pr&aacute;ctica docente. Cada curso suma horas a tu certificaci&oacute;n.</p>
 
       <!-- Nivel 1 -->
       <div class="mb-10">
         <div class="flex items-center gap-3 mb-4">
-          <span class="w-8 h-8 rounded-lg bg-violet-200 flex items-center justify-center font-heading font-bold text-violet-800 text-sm">1</span>
+          <span class="w-8 h-8 rounded-lg bg-blue-200 flex items-center justify-center font-heading font-bold text-blue-800 text-sm">1</span>
           <div>
-            <h3 class="font-heading font-bold text-lg">Nivel 1 &mdash; Iniciaci&oacute;n</h3>
-            <p class="text-xs text-gray-500">40 horas &middot; 1,5 SCT &middot; 4 cursos</p>
+            <h3 class="font-heading font-bold text-lg">Iniciaci&oacute;n</h3>
+            <p class="text-xs text-gray-500">40 horas &middot; 4 cursos &middot; Sin prerrequisitos</p>
           </div>
         </div>
         <div class="grid md:grid-cols-2 gap-3">
           <div class="curso-card bg-white border border-gray-200 rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">Curso 1.1</span>
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">1.1</span>
               <span class="text-xs text-gray-400">12h &middot; Asincr&oacute;nico</span>
             </div>
             <h4 class="font-heading font-bold text-sm mb-1">Introducci&oacute;n a IA y Alfabetizaci&oacute;n Digital</h4>
@@ -173,7 +103,7 @@
           </div>
           <div class="curso-card bg-white border border-gray-200 rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">Curso 1.2</span>
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">1.2</span>
               <span class="text-xs text-gray-400">8h &middot; Asincr&oacute;nico</span>
             </div>
             <h4 class="font-heading font-bold text-sm mb-1">&Eacute;tica y Uso Responsable de IA</h4>
@@ -181,7 +111,7 @@
           </div>
           <div class="curso-card bg-white border border-gray-200 rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">Curso 1.3</span>
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">1.3</span>
               <span class="text-xs text-gray-400">10h &middot; H&iacute;brido</span>
             </div>
             <h4 class="font-heading font-bold text-sm mb-1">IA Generativa: Primeros Pasos</h4>
@@ -189,7 +119,7 @@
           </div>
           <div class="curso-card bg-white border border-gray-200 rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">Curso 1.4</span>
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">1.4</span>
               <span class="text-xs text-gray-400">10h &middot; Asincr&oacute;nico</span>
             </div>
             <h4 class="font-heading font-bold text-sm mb-1">IA y Ciudadan&iacute;a Digital Docente</h4>
@@ -201,16 +131,16 @@
       <!-- Nivel 2 -->
       <div class="mb-10">
         <div class="flex items-center gap-3 mb-4">
-          <span class="w-8 h-8 rounded-lg bg-violet-300 flex items-center justify-center font-heading font-bold text-violet-900 text-sm">2</span>
+          <span class="w-8 h-8 rounded-lg bg-blue-300 flex items-center justify-center font-heading font-bold text-blue-900 text-sm">2</span>
           <div>
-            <h3 class="font-heading font-bold text-lg">Nivel 2 &mdash; Aplicaci&oacute;n</h3>
-            <p class="text-xs text-gray-500">44 horas &middot; 1,6 SCT &middot; 4 cursos &middot; Requiere Nivel 1</p>
+            <h3 class="font-heading font-bold text-lg">Aplicaci&oacute;n</h3>
+            <p class="text-xs text-gray-500">44 horas &middot; 4 cursos</p>
           </div>
         </div>
         <div class="grid md:grid-cols-2 gap-3">
           <div class="curso-card bg-white border border-gray-200 rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">Curso 2.1</span>
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">2.1</span>
               <span class="text-xs text-gray-400">12h &middot; H&iacute;brido</span>
             </div>
             <h4 class="font-heading font-bold text-sm mb-1">Dise&ntilde;o de Recursos Educativos Digitales con IA</h4>
@@ -218,7 +148,7 @@
           </div>
           <div class="curso-card bg-white border border-gray-200 rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">Curso 2.2</span>
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">2.2</span>
               <span class="text-xs text-gray-400">10h &middot; Virtual</span>
             </div>
             <h4 class="font-heading font-bold text-sm mb-1">Automatizaci&oacute;n y Eficiencia Administrativa con IA</h4>
@@ -226,7 +156,7 @@
           </div>
           <div class="curso-card bg-white border border-gray-200 rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">Curso 2.3</span>
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">2.3</span>
               <span class="text-xs text-gray-400">10h &middot; H&iacute;brido</span>
             </div>
             <h4 class="font-heading font-bold text-sm mb-1">Evaluaci&oacute;n y Retroalimentaci&oacute;n Asistida por IA</h4>
@@ -234,7 +164,7 @@
           </div>
           <div class="curso-card bg-white border border-gray-200 rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">Curso 2.4</span>
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">2.4</span>
               <span class="text-xs text-gray-400">12h &middot; Asincr&oacute;nico</span>
             </div>
             <h4 class="font-heading font-bold text-sm mb-1">IA para la Inclusi&oacute;n Educativa y Diversidad</h4>
@@ -244,18 +174,18 @@
       </div>
 
       <!-- Nivel 3 -->
-      <div class="mb-6">
+      <div>
         <div class="flex items-center gap-3 mb-4">
-          <span class="w-8 h-8 rounded-lg bg-violet-400 flex items-center justify-center font-heading font-bold text-white text-sm">3</span>
+          <span class="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center font-heading font-bold text-white text-sm">3</span>
           <div>
-            <h3 class="font-heading font-bold text-lg">Nivel 3 &mdash; Integraci&oacute;n y Transformaci&oacute;n</h3>
-            <p class="text-xs text-gray-500">48 horas &middot; 1,8 SCT &middot; 4 cursos &middot; Requiere Nivel 2</p>
+            <h3 class="font-heading font-bold text-lg">Integraci&oacute;n y Transformaci&oacute;n</h3>
+            <p class="text-xs text-gray-500">48 horas &middot; 4 cursos</p>
           </div>
         </div>
         <div class="grid md:grid-cols-2 gap-3">
           <div class="curso-card bg-white border border-gray-200 rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">Curso 3.1</span>
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">3.1</span>
               <span class="text-xs text-gray-400">12h &middot; Virtual</span>
             </div>
             <h4 class="font-heading font-bold text-sm mb-1">Personalizaci&oacute;n del Aprendizaje mediante IA</h4>
@@ -263,7 +193,7 @@
           </div>
           <div class="curso-card bg-white border border-gray-200 rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">Curso 3.2</span>
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">3.2</span>
               <span class="text-xs text-gray-400">12h &middot; H&iacute;brido</span>
             </div>
             <h4 class="font-heading font-bold text-sm mb-1">Innovaci&oacute;n Pedag&oacute;gica y Dise&ntilde;o Instruccional con IA</h4>
@@ -271,7 +201,7 @@
           </div>
           <div class="curso-card bg-white border border-gray-200 rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">Curso 3.3</span>
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">3.3</span>
               <span class="text-xs text-gray-400">12h &middot; Virtual</span>
             </div>
             <h4 class="font-heading font-bold text-sm mb-1">Investigaci&oacute;n Aplicada en Educaci&oacute;n e IA</h4>
@@ -279,7 +209,7 @@
           </div>
           <div class="curso-card bg-white border border-gray-200 rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">Curso 3.4</span>
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">3.4</span>
               <span class="text-xs text-gray-400">12h &middot; H&iacute;brido</span>
             </div>
             <h4 class="font-heading font-bold text-sm mb-1">Liderazgo Digital y Comunidades Docentes en IA</h4>
@@ -290,8 +220,50 @@
     </div>
   </section>
 
-  <!-- Timeline 2026 -->
+  <!-- Other activities -->
   <section class="py-16 bg-white border-t border-gray-200">
+    <div class="max-w-7xl mx-auto px-6">
+      <p class="fade-up text-sm font-semibold text-umce-azul uppercase tracking-widest mb-3">Tambi&eacute;n suman horas</p>
+      <h2 class="fade-up font-heading text-3xl font-bold mb-3">Talleres y capacitaciones TIC</h2>
+      <p class="fade-up text-gray-600 mb-8 max-w-3xl">Adem&aacute;s de los cursos de IA, estas actividades formativas tambi&eacute;n contribuyen a tu certificaci&oacute;n. Consulta el <a href="/formacion-docente/marco" class="text-blue-600 hover:underline">Marco de Competencias TIC</a> para ver los 12 &aacute;mbitos que cubren.</p>
+
+      <div class="grid md:grid-cols-3 gap-4 max-w-4xl">
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+          <h4 class="font-heading font-bold text-sm mb-2">Herramientas digitales</h4>
+          <ul class="text-xs text-gray-600 space-y-1">
+            <li>ChatGPT Productividad (3h)</li>
+            <li>C&aacute;psulas CANVA (3h)</li>
+            <li>Recursos CANVA (2h)</li>
+            <li>Audiovisuales (3h)</li>
+            <li>Materiales Did&aacute;cticos Digitales (9h)</li>
+          </ul>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+          <h4 class="font-heading font-bold text-sm mb-2">Plataformas y entornos</h4>
+          <ul class="text-xs text-gray-600 space-y-1">
+            <li>Formaci&oacute;n tutor&iacute;a virtual (15h)</li>
+            <li>Dise&ntilde;o instruccional (54h)</li>
+            <li>Google Workspace colaboraci&oacute;n (27h)</li>
+            <li>Portafolios Google Sites (4h)</li>
+            <li>Zoom y aplicaciones (2h)</li>
+          </ul>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+          <h4 class="font-heading font-bold text-sm mb-2">Evaluaci&oacute;n y ciudadan&iacute;a</h4>
+          <ul class="text-xs text-gray-600 space-y-1">
+            <li>Evaluaci&oacute;n en Ambientes Virtuales (8h)</li>
+            <li>Educaci&oacute;n Ciudadan&iacute;a Digital (15h)</li>
+            <li>TIC Aplicadas Universidad (4h)</li>
+            <li>Herramientas Planificaci&oacute;n Clases (4h)</li>
+            <li>Competencia Gen&eacute;rica TIC (1h)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline 2026 -->
+  <section class="py-16 bg-gray-50 border-t border-gray-200">
     <div class="max-w-7xl mx-auto px-6">
       <p class="fade-up text-sm font-semibold text-umce-azul uppercase tracking-widest mb-3">Hoja de ruta</p>
       <h2 class="fade-up font-heading text-3xl font-bold mb-8">Calendario 2026</h2>
@@ -306,19 +278,15 @@
           <ul class="text-sm text-blue-700 space-y-1.5">
             <li class="flex items-start gap-2">
               <span class="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0"></span>
-              Nivel Inicial TIC abierto (27h) &mdash; 175 docentes activos
+              Nivel Inicial abierto (27h) &mdash; 175 docentes activos
             </li>
             <li class="flex items-start gap-2">
               <span class="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0"></span>
-              Ceremonia certificaci&oacute;n junio (6+ docentes listos)
+              Ceremonia certificaci&oacute;n junio
             </li>
             <li class="flex items-start gap-2">
               <span class="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0"></span>
               Sistematizaci&oacute;n formaci&oacute;n 2023-2025
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0"></span>
-              Panel SDPA en l&iacute;nea para seguimiento
             </li>
           </ul>
         </div>
@@ -328,23 +296,19 @@
             <span class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold">2</span>
             <span class="font-heading font-bold text-indigo-900">Segundo Semestre</span>
           </div>
-          <h3 class="font-bold text-sm text-indigo-800 mb-2">Ampliaci&oacute;n y Ruta IA</h3>
+          <h3 class="font-bold text-sm text-indigo-800 mb-2">Nivel Intermedio y cursos IA</h3>
           <ul class="text-sm text-indigo-700 space-y-1.5">
             <li class="flex items-start gap-2">
               <span class="mt-1 w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0"></span>
-              Acreditaci&oacute;n Nivel Intermedio TIC (54h)
+              Acreditaci&oacute;n Nivel Intermedio (54h)
             </li>
             <li class="flex items-start gap-2">
               <span class="mt-1 w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0"></span>
-              Inicio Ruta IA &mdash; Nivel 1 Iniciaci&oacute;n (4 cursos)
+              Apertura cursos de IA en educaci&oacute;n
             </li>
             <li class="flex items-start gap-2">
               <span class="mt-1 w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0"></span>
               Talleres por facultad seg&uacute;n diagn&oacute;stico
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="mt-1 w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0"></span>
-              Portafolios digitales para certificaci&oacute;n
             </li>
           </ul>
         </div>
@@ -354,23 +318,19 @@
             <span class="w-8 h-8 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-bold">3</span>
             <span class="font-heading font-bold text-violet-900">Proyecci&oacute;n 2027</span>
           </div>
-          <h3 class="font-bold text-sm text-violet-800 mb-2">Nivel Avanzado y Diplomados</h3>
+          <h3 class="font-bold text-sm text-violet-800 mb-2">Nivel Avanzado</h3>
           <ul class="text-sm text-violet-700 space-y-1.5">
             <li class="flex items-start gap-2">
               <span class="mt-1 w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0"></span>
-              Preparaci&oacute;n Nivel Avanzado TIC (81h + evidencia)
+              Preparaci&oacute;n Nivel Avanzado (81h + evidencia)
             </li>
             <li class="flex items-start gap-2">
               <span class="mt-1 w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0"></span>
-              Ruta IA Niveles 2 y 3
+              Cursos IA avanzados
             </li>
             <li class="flex items-start gap-2">
               <span class="mt-1 w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0"></span>
               Proyectos de innovaci&oacute;n pedag&oacute;gica
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="mt-1 w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0"></span>
-              Apertura Diplomados en Docencia Universitaria
             </li>
           </ul>
         </div>
@@ -379,10 +339,10 @@
   </section>
 
   <!-- CTA -->
-  <section class="py-12 bg-gray-50 border-t border-gray-200">
+  <section class="py-12 bg-white border-t border-gray-200">
     <div class="max-w-4xl mx-auto px-6 text-center">
       <h2 class="font-heading text-2xl font-bold mb-3">Consulta tu progreso</h2>
-      <p class="text-gray-600 mb-6">Ingresa con tu cuenta UMCE para ver tu avance personal hacia las certificaciones.</p>
+      <p class="text-gray-600 mb-6">Ingresa con tu cuenta UMCE para ver cu&aacute;ntas horas llevas acumuladas y qu&eacute; tan cerca est&aacute;s de certificarte.</p>
       <div class="flex flex-wrap justify-center gap-3">
         <a href="/formacion-docente" class="bg-umce-azul text-white font-medium px-6 py-3 rounded-xl hover:bg-umce-azul-light transition-colors">Mi progreso</a>
         <a href="/formacion-docente/marco" class="border border-gray-300 text-gray-700 font-medium px-6 py-3 rounded-xl hover:bg-gray-100 transition-colors">Marco de Competencias</a>
@@ -415,39 +375,27 @@
         const listos = (stats.por_certificacion || []).reduce((sum, c) => sum + (c.requisitos_cumplidos || 0), 0);
         document.getElementById('stat-listos').textContent = fmtNum(listos);
 
-        // TIC track steps
+        // Certification levels recap — only TIC
         const ticCerts = certs.filter(c => c.slug && c.slug.startsWith('tic_'));
-        const ticContainer = document.getElementById('track-tic-steps');
-        ticContainer.innerHTML = ticCerts.map((c, i) => {
+        const levelColors = ['bg-blue-100 border-blue-200 text-blue-800', 'bg-indigo-100 border-indigo-200 text-indigo-800', 'bg-violet-100 border-violet-200 text-violet-800'];
+        const levelNames = { 'tic_inicial': 'Inicial', 'tic_intermedio': 'Intermedio', 'tic_avanzado': 'Avanzado' };
+
+        const levelsContainer = document.getElementById('cert-levels');
+        levelsContainer.innerHTML = ticCerts.map((c, i) => {
           const pct = stats.por_certificacion ? (stats.por_certificacion.find(pc => pc.slug === c.slug) || {}) : {};
           const enProg = pct.en_progreso || 0;
-          const cumplidos = pct.requisitos_cumplidos || 0;
+          const cumplidos = (pct.requisitos_cumplidos || 0) + (pct.certificados || 0);
+          const cl = levelColors[i] || levelColors[0];
           return `
-            ${i > 0 ? '<div class="step-connector bg-blue-200"></div>' : ''}
-            <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-              <span class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shrink-0">${i+1}</span>
-              <div class="flex-1 min-w-0">
-                <div class="font-medium text-sm text-gray-800">${c.nombre}</div>
-                <div class="text-xs text-gray-500">${c.horas_requeridas}h &middot; ${c.creditos_sct} SCT${c.requiere_evidencia ? ' &middot; Requiere evidencia' : ''}</div>
-              </div>
-              ${(enProg + cumplidos) > 0 ? '<span class="text-xs text-blue-600 font-medium shrink-0">' + (enProg + cumplidos) + ' docentes</span>' : ''}
-            </div>`;
-        }).join('');
-
-        // IA track steps
-        const iaCerts = certs.filter(c => c.slug && c.slug.startsWith('ruta_ia_'));
-        const iaContainer = document.getElementById('track-ia-steps');
-        iaContainer.innerHTML = iaCerts.map((c, i) => {
-          return `
-            ${i > 0 ? '<div class="step-connector bg-violet-200"></div>' : ''}
-            <div class="flex items-center gap-3 p-3 bg-violet-50 rounded-lg">
-              <span class="w-7 h-7 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-bold shrink-0">${i+1}</span>
-              <div class="flex-1 min-w-0">
-                <div class="font-medium text-sm text-gray-800">${c.nombre}</div>
-                <div class="text-xs text-gray-500">${c.horas_requeridas}h &middot; ${c.creditos_sct} SCT &middot; 4 cursos obligatorios</div>
+            <div class="flex-1 ${cl} border rounded-xl p-4 flex items-center gap-3">
+              <span class="w-9 h-9 rounded-full bg-white/60 flex items-center justify-center font-heading font-bold text-lg">${i+1}</span>
+              <div>
+                <div class="font-heading font-bold text-sm">${levelNames[c.slug] || c.nombre}</div>
+                <div class="text-xs opacity-80">${c.horas_requeridas} horas${c.requiere_evidencia ? ' + evidencia' : ''}</div>
+                ${(enProg + cumplidos) > 0 ? '<div class="text-xs mt-0.5 opacity-60">' + enProg + ' en progreso, ' + cumplidos + ' cumplidos</div>' : ''}
               </div>
             </div>`;
-        }).join('');
+        }).join(ticCerts.length > 1 ? '<div class="hidden md:flex items-center text-gray-300"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>' : '');
       } catch (err) {
         console.error('Error loading data:', err);
       }

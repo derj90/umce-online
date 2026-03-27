@@ -64,7 +64,7 @@
     <div class="max-w-7xl mx-auto px-6">
       <p class="fade-up text-sm font-semibold text-umce-azul uppercase tracking-widest mb-3">&iquest;C&oacute;mo funciona?</p>
       <h2 class="fade-up font-heading text-3xl font-bold mb-3">Tu ruta de certificaci&oacute;n</h2>
-      <p class="fade-up text-gray-600 mb-4 max-w-3xl">La formaci&oacute;n se organiza en dos caminos que puedes recorrer a tu ritmo. Cada actividad formativa suma horas que te acercan a la certificaci&oacute;n. No necesitas inscribirte: las horas se registran autom&aacute;ticamente.</p>
+      <p class="fade-up text-gray-600 mb-4 max-w-3xl">Cada taller, curso o actividad formativa de la UDFV suma horas a tu perfil. Al alcanzar las horas de cada nivel, puedes solicitar tu certificaci&oacute;n. Es una sola ruta progresiva que recorres a tu ritmo.</p>
       <div class="fade-up bg-blue-50 border border-blue-200 rounded-xl p-4 mb-10 flex items-start gap-3 max-w-3xl">
         <svg class="w-5 h-5 text-blue-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         <div class="text-sm text-blue-800">
@@ -201,19 +201,7 @@
       }
     }
 
-    // Human-readable descriptions per cert
-    const certDescriptions = {
-      'tic_inicial': 'Acredita que conoces las herramientas digitales b&aacute;sicas para tu docencia. Se logra participando en talleres y cursos de la UDFV.',
-      'tic_intermedio': 'Acredita que integras tecnolog&iacute;a en tus clases de forma habitual. Requiere haber completado el nivel inicial.',
-      'tic_avanzado': 'Acredita que lideras innovaci&oacute;n digital en tu &aacute;rea. Incluye presentar un portafolio de evidencias.',
-      'ruta_ia_1': 'Conceptos fundamentales de IA en educaci&oacute;n: qu&eacute; es, c&oacute;mo funciona y c&oacute;mo usarla de forma responsable.',
-      'ruta_ia_2': 'Aplicaci&oacute;n pr&aacute;ctica: crear recursos, automatizar tareas y evaluar con herramientas de IA.',
-      'ruta_ia_3': 'Nivel de liderazgo: personalizar aprendizajes, investigar con IA y formar comunidades docentes.',
-      'diplomado_docencia_ia': 'Programa formal de 216 horas en metodolog&iacute;as de investigaci&oacute;n-acci&oacute;n aplicadas a la docencia universitaria.',
-      'diplomado_docencia_curr': 'Programa formal de 216 horas en dise&ntilde;o, implementaci&oacute;n y evaluaci&oacute;n de procesos curriculares.'
-    };
-
-    // Load certifications — grouped by track with explanations
+    // Load certifications — one unified ruta, 3 levels
     async function loadCertificaciones() {
       try {
         const r = await fetch(`${API}/api/sdpa/certificaciones`);
@@ -221,91 +209,71 @@
         const certs = await r.json();
         const grid = document.getElementById('certs-grid');
 
+        // Only TIC certification levels — it's ONE ruta, IA courses are part of it
         const ticCerts = certs.filter(c => c.slug && c.slug.startsWith('tic_'));
-        const iaCerts = certs.filter(c => c.slug && c.slug.startsWith('ruta_ia_'));
-        const dipCerts = certs.filter(c => c.slug && c.slug.startsWith('diplomado_'));
+        if (!ticCerts.length) { grid.innerHTML = ''; return; }
 
-        function renderStep(c, idx, total, color) {
-          const desc = certDescriptions[c.slug] || escapeHtml(c.descripcion || '');
-          const isLast = idx === total - 1;
-          return `
-            <div class="flex gap-4">
-              <div class="flex flex-col items-center">
-                <div class="w-10 h-10 rounded-full ${color.dot} text-white flex items-center justify-center text-sm font-bold shrink-0">${idx + 1}</div>
-                ${!isLast ? '<div class="w-0.5 flex-1 ' + color.line + ' my-1"></div>' : '<div class="flex-1"></div>'}
-              </div>
-              <div class="pb-6 flex-1">
-                <h4 class="font-heading font-bold text-sm text-gray-800 mb-1">${escapeHtml(c.nombre.replace('Certificacion ', '').replace('Ruta IA - ', ''))}</h4>
-                <p class="text-gray-500 text-sm mb-2">${desc}</p>
-                <div class="flex flex-wrap items-center gap-2 text-xs">
-                  <span class="px-2 py-0.5 rounded-full ${color.pill} font-medium">${c.horas_requeridas} horas</span>
-                  ${c.requiere_evidencia ? '<span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">+ portafolio de evidencias</span>' : ''}
-                  ${c.requiere_proyecto ? '<span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">+ proyecto final</span>' : ''}
-                </div>
-                <div id="cert-dist-${c.slug}" class="mt-2 text-xs text-gray-400"></div>
-              </div>
-            </div>`;
-        }
-
-        const ticColor = { dot: 'bg-blue-600', line: 'bg-blue-200', pill: 'bg-blue-100 text-blue-700' };
-        const iaColor = { dot: 'bg-violet-600', line: 'bg-violet-200', pill: 'bg-violet-100 text-violet-700' };
+        const levelInfo = {
+          'tic_inicial': {
+            name: 'Nivel Inicial',
+            verb: 'Conoce e identifica',
+            desc: 'Reconoce que conoces e identificas herramientas digitales y de IA para tu docencia. Se logra acumulando horas de talleres, cursos y capacitaciones de la UDFV.',
+            color: 'bg-blue-500', ring: 'ring-blue-200'
+          },
+          'tic_intermedio': {
+            name: 'Nivel Intermedio',
+            verb: 'Aplica e integra',
+            desc: 'Reconoce que aplicas e integras tecnolog&iacute;a e IA en tus clases de forma habitual. Requiere haber completado el nivel inicial.',
+            color: 'bg-blue-600', ring: 'ring-blue-300'
+          },
+          'tic_avanzado': {
+            name: 'Nivel Avanzado',
+            verb: 'Desarrolla y promueve',
+            desc: 'Reconoce que lideras innovaci&oacute;n digital en tu &aacute;rea y promueves el uso de TIC e IA entre pares. Incluye presentar un portafolio de evidencias pedag&oacute;gicas.',
+            color: 'bg-blue-800', ring: 'ring-blue-400'
+          }
+        };
 
         grid.innerHTML = `
-          <!-- Track TIC -->
-          <div class="mb-12">
+          <div class="max-w-3xl">
             <div class="flex items-center gap-3 mb-2">
               <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                <svg class="w-4 h-4 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                <svg class="w-4 h-4 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
               </div>
-              <h3 class="font-heading font-bold text-xl text-gray-800">Competencia Digital TIC</h3>
+              <h3 class="font-heading font-bold text-xl text-gray-800">Certificaci&oacute;n en Competencias Digitales</h3>
             </div>
-            <p class="text-gray-500 text-sm mb-6 ml-11">Cada taller o curso en que participas suma horas. Al alcanzar las horas de cada nivel, puedes solicitar tu certificaci&oacute;n. <a href="/formacion-docente/marco" class="text-blue-600 hover:underline">Ver los 12 &aacute;mbitos del Marco TIC</a></p>
-            <div class="ml-11 max-w-2xl">
-              ${ticCerts.map((c, i) => renderStep(c, i, ticCerts.length, ticColor)).join('')}
-            </div>
-          </div>
+            <p class="text-gray-500 text-sm mb-6 ml-11">Tres niveles progresivos basados en el <a href="/formacion-docente/marco" class="text-blue-600 hover:underline">Marco de Competencias TIC UMCE</a>. Talleres de herramientas digitales, cursos de IA en educaci&oacute;n, capacitaciones en plataformas &mdash; todas las actividades formativas suman horas hacia tu certificaci&oacute;n.</p>
 
-          <!-- Track Ruta IA -->
-          <div class="mb-12">
-            <div class="flex items-center gap-3 mb-2">
-              <div class="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center">
-                <svg class="w-4 h-4 text-violet-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-              </div>
-              <h3 class="font-heading font-bold text-xl text-gray-800">Ruta IA en Educaci&oacute;n</h3>
-            </div>
-            <p class="text-gray-500 text-sm mb-6 ml-11">12 cursos espec&iacute;ficos sobre inteligencia artificial aplicada a la docencia. Cada nivel tiene 4 cursos obligatorios. <a href="/formacion-docente/plan" class="text-violet-600 hover:underline">Ver detalle de los 12 cursos</a></p>
-            <div class="ml-11 max-w-2xl">
-              ${iaCerts.map((c, i) => renderStep(c, i, iaCerts.length, iaColor)).join('')}
-            </div>
-          </div>
-
-          <!-- Diplomados -->
-          ${dipCerts.length ? `
-          <div>
-            <div class="flex items-center gap-3 mb-2">
-              <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
-                <svg class="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-              </div>
-              <h3 class="font-heading font-bold text-xl text-gray-800">Diplomados</h3>
-            </div>
-            <p class="text-gray-500 text-sm mb-6 ml-11">Programas formales de la UMCE con certificaci&oacute;n acad&eacute;mica. Requieren completar un proyecto de investigaci&oacute;n o innovaci&oacute;n.</p>
-            <div class="ml-11 grid md:grid-cols-2 gap-4 max-w-3xl">
-              ${dipCerts.map(c => {
-                const desc = certDescriptions[c.slug] || escapeHtml(c.descripcion || '');
+            <div class="ml-11 space-y-0">
+              ${ticCerts.map((c, i) => {
+                const isLast = i === ticCerts.length - 1;
+                const info = levelInfo[c.slug] || { name: c.nombre, verb: '', desc: '', color: 'bg-blue-600', ring: 'ring-blue-200' };
                 return `
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-5">
-                  <h4 class="font-heading font-bold text-sm text-amber-800 mb-2">${escapeHtml(c.nombre.replace('Diplomado en Docencia Universitaria - ', ''))}</h4>
-                  <p class="text-gray-600 text-sm mb-3">${desc}</p>
-                  <div class="flex items-center gap-2 text-xs text-gray-500">
-                    <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium">${c.horas_requeridas} horas</span>
-                    <span>${c.creditos_sct} SCT</span>
-                    <span>&middot; Proyecto final</span>
+                <div class="flex gap-4">
+                  <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full ${info.color} ring-4 ${info.ring} text-white flex items-center justify-center text-sm font-bold shrink-0">${i + 1}</div>
+                    ${!isLast ? '<div class="w-0.5 flex-1 bg-blue-200 my-1"></div>' : '<div class="flex-1"></div>'}
                   </div>
-                  <div id="cert-dist-${c.slug}" class="mt-2 text-xs text-gray-400"></div>
+                  <div class="pb-8 flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                      <h4 class="font-heading font-bold text-base text-gray-800">${escapeHtml(info.name)}</h4>
+                      <span class="text-xs text-gray-400">&mdash; ${info.verb}</span>
+                    </div>
+                    <p class="text-gray-500 text-sm mb-3">${info.desc}</p>
+                    <div class="flex flex-wrap items-center gap-2 text-xs">
+                      <span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">${c.horas_requeridas} horas acumuladas</span>
+                      ${c.requiere_evidencia ? '<span class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">+ portafolio de evidencias</span>' : ''}
+                    </div>
+                    <div id="cert-dist-${c.slug}" class="mt-2 text-xs text-gray-400"></div>
+                  </div>
                 </div>`;
               }).join('')}
             </div>
-          </div>` : ''}
+
+            <div class="ml-11 mt-2 bg-gray-50 border border-gray-200 rounded-xl p-4">
+              <p class="text-sm text-gray-600"><strong>&iquest;Qu&eacute; actividades suman horas?</strong> Talleres de herramientas digitales (Canva, Genially, Zoom), cursos de IA en educaci&oacute;n (ChatGPT, evaluaci&oacute;n asistida, dise&ntilde;o instruccional), capacitaciones en plataformas Moodle, jornadas de competencias digitales y m&aacute;s. Consulta la <a href="/formacion-docente/plan" class="text-blue-600 hover:underline font-medium">Ruta Formativa 2026</a> para ver las actividades disponibles.</p>
+            </div>
+          </div>
         `;
       } catch (err) {
         console.error('Certs error:', err);
