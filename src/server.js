@@ -1925,6 +1925,29 @@ app.get('/api/docente/sdpa/actividades', authMiddleware, async (req, res) => {
   }
 });
 
+// GET /api/marco-tic — Marco de Competencias TIC completo (público)
+app.get('/api/marco-tic', async (req, res) => {
+  try {
+    const [dominios, ambitos, descriptores] = await Promise.all([
+      portalQuery('tic_dominios', 'order=orden.asc'),
+      portalQuery('tic_ambitos', 'order=orden.asc'),
+      portalQuery('tic_descriptores', '')
+    ]);
+    const result = dominios.map(dom => ({
+      ...dom,
+      ambitos: ambitos.filter(a => a.dominio_id === dom.id).map(amb => ({
+        ...amb,
+        descriptores: descriptores.filter(d => d.ambito_id === amb.id)
+          .sort((a, b) => ['inicial','intermedio','avanzado'].indexOf(a.nivel) - ['inicial','intermedio','avanzado'].indexOf(b.nivel))
+      }))
+    }));
+    res.json(result);
+  } catch (err) {
+    console.error('Marco TIC error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET /api/sdpa/certificaciones — certificaciones disponibles (público)
 app.get('/api/sdpa/certificaciones', async (req, res) => {
   try {
@@ -5441,6 +5464,7 @@ app.get('/mis-cursos', (req, res) => res.sendFile(path.join(__dirname, 'public',
 app.get('/ayuda', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ayuda.html')));
 app.get('/privacidad', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacidad.html')));
 app.get('/formacion-docente', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente.html')));
+app.get('/formacion-docente/marco', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente-marco.html')));
 
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/piac', (req, res) => res.sendFile(path.join(__dirname, 'public', 'piac.html')));
