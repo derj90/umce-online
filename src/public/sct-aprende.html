@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Gu&iacute;a SCT &mdash; Todo lo que necesitas saber sobre cr&eacute;ditos, carga estudiantil y virtualizaci&oacute;n | UMCE Virtual</title>
+  <meta name="description" content="Gu&iacute;a completa sobre el Sistema de Cr&eacute;ditos Transferibles (SCT Chile), modularizaci&oacute;n, Ucampus, modelo virtual UMCE y c&aacute;lculo de carga estudiantil para cursos virtuales.">
+  <meta name="author" content="Unidad de Desarrollo y Formaci&oacute;n Virtual &mdash; UMCE">
+  <link rel="canonical" href="https://umce.online/sct/aprende">
+  <meta property="og:title" content="Gu&iacute;a SCT &mdash; UMCE Virtual">
+  <meta property="og:description" content="Todo lo que necesitas saber sobre cr&eacute;ditos SCT, modularizaci&oacute;n y dise&ntilde;o de cursos virtuales.">
+  <meta property="og:image" content="https://umce.online/assets/og-default.png">
+  <meta property="og:site_name" content="UMCE Virtual">
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+  <link rel="stylesheet" href="/shared/shared.css">
+  <style>
+    .module-nav a { border-left: 3px solid transparent; transition: all 0.15s; }
+    .module-nav a:hover { background: #EFF3FB; border-color: #93BBFD; }
+    .module-nav a.active { background: #EFF3FB; border-color: var(--palette-primary); color: var(--palette-primary); font-weight: 700; }
+    .example-box { background: #F0FDF4; border-left: 4px solid #059669; padding: 1rem 1.25rem; border-radius: 0 0.5rem 0.5rem 0; }
+    .warning-box { background: #FFFBEB; border-left: 4px solid #D97706; padding: 1rem 1.25rem; border-radius: 0 0.5rem 0.5rem 0; }
+    .reference-box { background: #F8FAFC; border: 1px solid #E2E8F0; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.8125rem; color: #64748B; }
+    .formula-box { background: #EFF6FF; border: 2px solid #BFDBFE; padding: 1.5rem; border-radius: 0.75rem; font-family: 'Courier New', monospace; }
+    .anchor-offset { scroll-margin-top: 6rem; }
+    .flow-step { position: relative; padding-left: 2.5rem; }
+    .flow-step::before { content: ''; position: absolute; left: 0.75rem; top: 2rem; bottom: -1rem; width: 2px; background: #E5E7EB; }
+    .flow-step:last-child::before { display: none; }
+    .flow-step .step-dot { position: absolute; left: 0; top: 0.25rem; width: 1.5rem; height: 1.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.625rem; font-weight: 800; color: #fff; }
+  </style>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+  <div id="nav-placeholder"></div>
+
+  <!-- Hero -->
+  <section class="hero-gradient pt-32 pb-16 text-white relative overflow-hidden">
+    <div id="p5-header" data-variant="5"></div>
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+      <nav class="breadcrumb text-sm mb-6">
+        <a href="/" class="text-white/60 hover:text-white">Inicio</a>
+        <span class="text-white/30 mx-1">/</span>
+        <a href="/sct" class="text-white/60 hover:text-white">Calculadora SCT</a>
+        <span class="text-white/30 mx-1">/</span>
+        <span class="text-white/90">Aprende</span>
+      </nav>
+      <h1 class="fade-up font-heading text-4xl md:text-5xl font-extrabold mb-4">Gu&iacute;a SCT</h1>
+      <p class="fade-up text-white/80 text-lg max-w-2xl">Todo lo que necesitas saber sobre cr&eacute;ditos, carga estudiantil, modularizaci&oacute;n y dise&ntilde;o de cursos virtuales en la UMCE.</p>
+      <p class="fade-up text-white/50 text-sm mt-3">Escrita para acad&eacute;micos, dise&ntilde;adores instruccionales y directivos &mdash; sin asumir conocimiento previo.</p>
+    </div>
+  </section>
+
+  <div class="max-w-7xl mx-auto px-6 py-12">
+    <div class="grid lg:grid-cols-[240px_1fr] gap-10">
+
+      <!-- Sidebar Navigation -->
+      <nav class="module-nav hidden lg:block sticky top-24 self-start space-y-0.5 text-sm" id="moduleNav">
+        <a href="#que-es" class="block px-3 py-2 rounded-r-lg text-gray-600">1. &iquest;Qu&eacute; es el SCT?</a>
+        <a href="#modularizacion" class="block px-3 py-2 rounded-r-lg text-gray-600">2. Modularizaci&oacute;n</a>
+        <a href="#ucampus" class="block px-3 py-2 rounded-r-lg text-gray-600">3. Ucampus</a>
+        <a href="#modelo" class="block px-3 py-2 rounded-r-lg text-gray-600">4. Modelo Virtual UMCE</a>
+        <a href="#calculo" class="block px-3 py-2 rounded-r-lg text-gray-600">5. C&aacute;lculo en virtualidad</a>
+        <a href="#flujo" class="block px-3 py-2 rounded-r-lg text-gray-600">6. El flujo completo</a>
+        <a href="#normativa" class="block px-3 py-2 rounded-r-lg text-gray-600">7. Marco normativo</a>
+        <a href="#glosario" class="block px-3 py-2 rounded-r-lg text-gray-600">Glosario</a>
+        <div class="pt-4 px-3">
+          <a href="/sct" class="inline-flex items-center gap-2 bg-umce-azul text-white font-heading font-bold text-xs px-4 py-2.5 rounded-lg hover:bg-blue-800 transition-colors w-full justify-center">
+            Ir a la calculadora &rarr;
+          </a>
+        </div>
+      </nav>
+
+      <!-- Content -->
+      <div class="space-y-20 max-w-3xl">
+
+        <!-- MODULE 1: Qué es el SCT -->
+        <section id="que-es" class="anchor-offset">
+          <div class="fade-up">
+            <p class="text-sm font-semibold text-umce-azul uppercase tracking-widest mb-2">M&oacute;dulo 1</p>
+            <h2 class="font-heading text-3xl font-bold mb-2">&iquest;Qu&eacute; es un cr&eacute;dito SCT?</h2>
+            <p class="text-gray-400 text-sm italic mb-8">Lo que todo acad&eacute;mico UMCE deber&iacute;a saber pero nadie le explic&oacute;</p>
+          </div>
+
+          <div class="fade-up prose prose-gray max-w-none space-y-5">
+            <p>Un <strong>cr&eacute;dito SCT</strong> (Sistema de Cr&eacute;ditos Transferibles) no mide horas de clase. Mide las <strong>horas de trabajo real</strong> que un estudiante necesita para aprender: clases, lecturas, tareas, evaluaciones, estudio aut&oacute;nomo. Todo.</p>
+
+            <div class="formula-box">
+              <div class="text-center mb-3 text-lg font-bold text-umce-azul">1 SCT = 27 horas de trabajo real del estudiante</div>
+              <div class="text-sm text-gray-500 space-y-1">
+                <div>60 cr&eacute;ditos = 1 a&ntilde;o acad&eacute;mico a tiempo completo</div>
+                <div>30 cr&eacute;ditos = 1 semestre</div>
+                <div>45 hrs/semana &times; 18 semanas &divide; 30 cr&eacute;ditos = <strong>27 hrs/cr&eacute;dito</strong></div>
+              </div>
+            </div>
+
+            <div class="example-box">
+              <p class="font-semibold text-sm mb-1">Ejemplo concreto:</p>
+              <p class="text-sm text-gray-600">Un curso de <strong>3 SCT = 81 horas</strong> en el semestre. Si tiene 2 hrs de clase sincr&oacute;nica por semana (36 hrs en 18 semanas), quedan <strong>45 horas de trabajo aut&oacute;nomo</strong> que hay que dise&ntilde;ar con actividades concretas: lecturas, foros, tareas, evaluaciones.</p>
+            </div>
+
+            <h3 class="font-heading font-bold text-xl">El error com&uacute;n</h3>
+            <p>Creer que &ldquo;cr&eacute;ditos&rdquo; son solo horas de clase. Un curso de 3 SCT con solo 2 hrs de clase por semana tiene 45 horas &ldquo;invisibles&rdquo; que el estudiante deber&iacute;a estar usando. Si esas horas no est&aacute;n dise&ntilde;adas con actividades reales, los cr&eacute;ditos no se justifican.</p>
+
+            <h3 class="font-heading font-bold text-xl">Dos m&eacute;todos oficiales</h3>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div class="bg-gray-50 rounded-xl p-4">
+                <h4 class="font-bold text-sm mb-1">Anal&iacute;tico (top-down)</h4>
+                <p class="text-sm text-gray-500">Se fija el total de cr&eacute;ditos y se distribuyen proporcionalmente seg&uacute;n el peso relativo de cada actividad curricular.</p>
+              </div>
+              <div class="bg-gray-50 rounded-xl p-4">
+                <h4 class="font-bold text-sm mb-1">Compositivo (bottom-up)</h4>
+                <p class="text-sm text-gray-500">Se calcula el total de horas reales por actividad y se derivan los cr&eacute;ditos. Es lo que hace la calculadora.</p>
+              </div>
+            </div>
+
+            <h3 class="font-heading font-bold text-xl">&iquest;De d&oacute;nde sale?</h3>
+            <p>El SCT fue creado en 2003 por las 25 universidades del <strong>CRUCH</strong> (Consejo de Rectores), inspirado en el sistema europeo ECTS. La UMCE es parte del CRUCH y usa el est&aacute;ndar de 27 horas por cr&eacute;dito.</p>
+
+            <div class="reference-box">
+              <strong>Documentos oficiales:</strong><br>
+              &bull; Gu&iacute;a Pr&aacute;ctica SCT Chile (2007) &mdash; CRUCH<br>
+              &bull; Manual de Implementaci&oacute;n SCT-Chile, 2&ordf; edici&oacute;n (2013) &mdash; CRUCH<br>
+              &bull; 41 documentos disponibles en sct-chile.consejoderectores.cl
+            </div>
+          </div>
+        </section>
+
+        <!-- MODULE 2: Modularización -->
+        <section id="modularizacion" class="anchor-offset">
+          <div class="fade-up">
+            <p class="text-sm font-semibold text-umce-verde uppercase tracking-widest mb-2">M&oacute;dulo 2</p>
+            <h2 class="font-heading text-3xl font-bold mb-2">&iquest;Qu&eacute; es la modularizaci&oacute;n?</h2>
+            <p class="text-gray-400 text-sm italic mb-8">C&oacute;mo Chile est&aacute; cambiando la estructura de la educaci&oacute;n superior</p>
+          </div>
+
+          <div class="fade-up prose prose-gray max-w-none space-y-5">
+            <p><strong>Modularizar</strong> es pasar de cursar 5-7 asignaturas en paralelo durante un semestre a avanzar por <strong>m&oacute;dulos secuenciales</strong>: uno tras otro, cada uno con su certificaci&oacute;n.</p>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div class="bg-red-50 rounded-xl p-4 border border-red-100">
+                <h4 class="font-bold text-sm mb-2 text-red-700">Estructura tradicional</h4>
+                <p class="text-sm text-gray-600">5-7 cursos simult&aacute;neos por semestre. Malla r&iacute;gida. Evaluaci&oacute;n al final. Si repruebas uno, repites todo un semestre.</p>
+              </div>
+              <div class="bg-green-50 rounded-xl p-4 border border-green-100">
+                <h4 class="font-bold text-sm mb-2 text-green-700">Estructura modular</h4>
+                <p class="text-sm text-gray-600">1-2 m&oacute;dulos a la vez, de 4-8 semanas. Cada m&oacute;dulo tiene certificaci&oacute;n propia. Puedes avanzar a tu ritmo. Se apilan hacia un grado mayor.</p>
+              </div>
+            </div>
+
+            <h3 class="font-heading font-bold text-xl">La decisi&oacute;n ya est&aacute; tomada</h3>
+            <p>La UMCE ya aprob&oacute; el redise&ntilde;o curricular basado en competencias con SCT declarados (Resoluciones Exentas 2019). Lo que falta es definir c&oacute;mo se implementa operativamente en virtualidad.</p>
+
+            <h3 class="font-heading font-bold text-xl">Plan por fases</h3>
+            <div class="space-y-3">
+              <div class="bg-blue-50 rounded-lg p-4 border-l-4 border-umce-azul">
+                <div class="font-bold text-sm text-umce-azul">Fase 1 (2026)</div>
+                <p class="text-sm text-gray-600 mt-1">Mantener estructura semestral + certificaci&oacute;n por cada actividad curricular completada. La calculadora ayuda a validar la carga.</p>
+              </div>
+              <div class="bg-amber-50 rounded-lg p-4 border-l-4 border-amber-500">
+                <div class="font-bold text-sm text-amber-700">Fase 2 (2027-28)</div>
+                <p class="text-sm text-gray-600 mt-1">M&oacute;dulos de 8 semanas apilables. Microcredenciales como salidas intermedias. Electivos compartidos entre programas.</p>
+              </div>
+              <div class="bg-green-50 rounded-lg p-4 border-l-4 border-green-600">
+                <div class="font-bold text-sm text-green-700">Fase 3 (2029+)</div>
+                <p class="text-sm text-gray-600 mt-1">Movilidad interna entre programas. Movilidad CUECH en postgrado. Reconocimiento de aprendizajes previos (RAP).</p>
+              </div>
+            </div>
+
+            <h3 class="font-heading font-bold text-xl">&iquest;Qu&eacute; es una microcredencial?</h3>
+            <p>Una certificaci&oacute;n de competencias espec&iacute;ficas que es <strong>apilable</strong> (varias microcredenciales = un diplomado), <strong>portable</strong> (reconocida entre instituciones) y <strong>verificable</strong>. Chile a&uacute;n no las regula formalmente, pero la Agenda de Modernizaci&oacute;n del MINEDUC (2024) las promueve expl&iacute;citamente.</p>
+
+            <div class="warning-box">
+              <p class="text-sm"><strong>Importante:</strong> Las microcredenciales no est&aacute;n reguladas en Chile a la fecha. Esto es una oportunidad para innovar, pero requiere cuidado en lo que se certifica.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- MODULE 3: Ucampus -->
+        <section id="ucampus" class="anchor-offset">
+          <div class="fade-up">
+            <p class="text-sm font-semibold text-purple-600 uppercase tracking-widest mb-2">M&oacute;dulo 3</p>
+            <h2 class="font-heading text-3xl font-bold mb-2">&iquest;Qu&eacute; es Ucampus?</h2>
+            <p class="text-gray-400 text-sm italic mb-8">El sistema que ya usamos pero pocos entienden</p>
+          </div>
+
+          <div class="fade-up prose prose-gray max-w-none space-y-5">
+            <p><strong>Ucampus</strong> es la plataforma de gesti&oacute;n acad&eacute;mica creada por la U. de Chile. Es un sistema dual: <strong>SIS</strong> (gesti&oacute;n de informaci&oacute;n estudiantil) + <strong>LMS</strong> (gesti&oacute;n del aprendizaje). La UMCE ya lo usa. M&aacute;s de 2 millones de usuarios en 18 universidades estatales.</p>
+
+            <h3 class="font-heading font-bold text-xl">Programa S&uacute;bete (movilidad virtual CUECH)</h3>
+            <div class="bg-purple-50 rounded-xl p-5 border border-purple-100">
+              <div class="grid sm:grid-cols-3 gap-4 text-center">
+                <div><div class="text-2xl font-bold text-purple-700">18</div><div class="text-xs text-gray-500">Universidades estatales</div></div>
+                <div><div class="text-2xl font-bold text-purple-700">+90</div><div class="text-xs text-gray-500">Cursos virtuales</div></div>
+                <div><div class="text-2xl font-bold text-purple-700">2 SCT</div><div class="text-xs text-gray-500">Por curso CFG</div></div>
+              </div>
+              <p class="text-sm text-gray-600 mt-4">Los estudiantes de cualquier universidad estatal pueden tomar cursos virtuales de otras universidades de la red, <strong>gratis</strong>. Los cr&eacute;ditos se reconocen en la universidad de origen.</p>
+            </div>
+
+            <h3 class="font-heading font-bold text-xl">&iquest;Qu&eacute; hace y qu&eacute; NO hace Ucampus?</h3>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div class="bg-green-50 rounded-lg p-3"><p class="text-sm"><strong class="text-green-700">S&iacute; hace:</strong> Muestra cr&eacute;ditos SCT en mallas, monitorea carga real del estudiante, gestiona inscripci&oacute;n y calificaciones, historial curricular</p></div>
+              <div class="bg-red-50 rounded-lg p-3"><p class="text-sm"><strong class="text-red-700">No hace:</strong> No planifica distribuci&oacute;n de horas por actividad, no calcula cr&eacute;ditos desde el dise&ntilde;o, no hace dise&ntilde;o instruccional</p></div>
+            </div>
+
+            <h3 class="font-heading font-bold text-xl">C&oacute;mo se complementan</h3>
+            <div class="bg-gray-50 rounded-xl p-5 text-center">
+              <div class="flex flex-col sm:flex-row items-center justify-center gap-3 text-sm">
+                <div class="bg-umce-azul text-white px-4 py-2 rounded-lg font-bold">Calculadora SCT</div>
+                <div class="text-gray-400">&rarr; planifica</div>
+                <div class="bg-amber-100 text-amber-800 px-4 py-2 rounded-lg font-bold">Moodle</div>
+                <div class="text-gray-400">&rarr; ejecuta</div>
+                <div class="bg-purple-100 text-purple-800 px-4 py-2 rounded-lg font-bold">Ucampus</div>
+                <div class="text-gray-400">&rarr; mide</div>
+              </div>
+              <p class="text-xs text-gray-400 mt-3">La calculadora mira hacia adelante (cu&aacute;nto deber&iacute;an trabajar). Ucampus mira hacia atr&aacute;s (cu&aacute;nto trabajaron realmente).</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- MODULE 4: Modelo Virtual UMCE -->
+        <section id="modelo" class="anchor-offset">
+          <div class="fade-up">
+            <p class="text-sm font-semibold text-amber-600 uppercase tracking-widest mb-2">M&oacute;dulo 4</p>
+            <h2 class="font-heading text-3xl font-bold mb-2">El modelo virtual UMCE</h2>
+            <p class="text-gray-400 text-sm italic mb-8">C&oacute;mo ense&ntilde;amos en virtualidad &mdash; lo que nos hace distintos</p>
+          </div>
+
+          <div class="fade-up prose prose-gray max-w-none space-y-5">
+            <div class="warning-box">
+              <p class="text-sm"><strong>Clave:</strong> Virtualizar no es replicar la clase presencial en Zoom. Es dise&ntilde;ar e-actividades con prop&oacute;sito pedag&oacute;gico, donde el estudiante es protagonista de su aprendizaje.</p>
+            </div>
+
+            <h3 class="font-heading font-bold text-xl">Los 3 pilares</h3>
+            <div class="grid sm:grid-cols-3 gap-4">
+              <div class="rounded-xl p-5 border-2 border-blue-200 bg-blue-50">
+                <div class="text-2xl mb-2">&#128483;</div>
+                <h4 class="font-bold text-sm mb-1 text-umce-azul">Interacci&oacute;n</h4>
+                <p class="text-xs text-gray-600">&ldquo;Sin interacci&oacute;n no hay aprendizaje. El grado de interacci&oacute;n es lo que distingue los buenos modelos de educaci&oacute;n en l&iacute;nea.&rdquo; &mdash; Sangr&agrave;, 2020</p>
+              </div>
+              <div class="rounded-xl p-5 border-2 border-amber-200 bg-amber-50">
+                <div class="text-2xl mb-2">&#129309;</div>
+                <h4 class="font-bold text-sm mb-1 text-amber-700">Colaboraci&oacute;n</h4>
+                <p class="text-xs text-gray-600">Construcci&oacute;n conjunta de conocimiento. No es &ldquo;trabajo en grupo&rdquo; gen&eacute;rico: es un proceso compartido, coordinado e interdependiente.</p>
+              </div>
+              <div class="rounded-xl p-5 border-2 border-green-200 bg-green-50">
+                <div class="text-2xl mb-2">&#9883;</div>
+                <h4 class="font-bold text-sm mb-1 text-green-700">Flexibilidad</h4>
+                <p class="text-xs text-gray-600">Sincr&oacute;nico para retroalimentar y devolver. Asincr&oacute;nico para reflexionar y elaborar. Cada modalidad elegida por el <em>objetivo pedag&oacute;gico</em>, no por la herramienta.</p>
+              </div>
+            </div>
+
+            <h3 class="font-heading font-bold text-xl">5 tipos de e-actividades</h3>
+            <p>Las <strong>e-actividades</strong> (Salmon, 2013) son actividades dise&ntilde;adas espec&iacute;ficamente para virtualidad. La UMCE adopt&oacute; la tipolog&iacute;a de Guardia et al. (2004):</p>
+            <div class="space-y-2">
+              <div class="flex items-start gap-3 bg-gray-50 rounded-lg p-3"><span class="w-2 h-2 rounded-full bg-violet-500 mt-2 flex-shrink-0"></span><div><strong class="text-sm">An&aacute;lisis y s&iacute;ntesis</strong><p class="text-xs text-gray-500">Mapas conceptuales, esquemas, infograf&iacute;as, l&iacute;neas de tiempo</p></div></div>
+              <div class="flex items-start gap-3 bg-gray-50 rounded-lg p-3"><span class="w-2 h-2 rounded-full bg-emerald-500 mt-2 flex-shrink-0"></span><div><strong class="text-sm">Investigaci&oacute;n y resoluci&oacute;n de problemas</strong><p class="text-xs text-gray-500">Estudios de caso, ABP, proyectos de campo</p></div></div>
+              <div class="flex items-start gap-3 bg-gray-50 rounded-lg p-3"><span class="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0"></span><div><strong class="text-sm">Interacci&oacute;n y comunicaci&oacute;n</strong><p class="text-xs text-gray-500">Foros, sesiones sincr&oacute;nicas, tutor&iacute;as, presentaciones</p></div></div>
+              <div class="flex items-start gap-3 bg-gray-50 rounded-lg p-3"><span class="w-2 h-2 rounded-full bg-amber-500 mt-2 flex-shrink-0"></span><div><strong class="text-sm">Construcci&oacute;n colaborativa de conocimiento</strong><p class="text-xs text-gray-500">Wikis, muros colaborativos, proyectos grupales, co-evaluaci&oacute;n</p></div></div>
+              <div class="flex items-start gap-3 bg-gray-50 rounded-lg p-3"><span class="w-2 h-2 rounded-full bg-pink-500 mt-2 flex-shrink-0"></span><div><strong class="text-sm">Reflexi&oacute;n</strong><p class="text-xs text-gray-500">Diarios, blogs, portafolios, ensayos reflexivos &mdash; vincular experiencia previa con nuevo aprendizaje</p></div></div>
+            </div>
+
+            <h3 class="font-heading font-bold text-xl">TPACK: tecnolog&iacute;a + pedagog&iacute;a + contenido</h3>
+            <p>La tecnolog&iacute;a <strong>no va primero</strong>. El marco TPACK (Mishra &amp; Koehler, 2006) dice que la buena ense&ntilde;anza con tecnolog&iacute;a integra tres dimensiones inseparables: el conocimiento del contenido disciplinar, el conocimiento pedag&oacute;gico, y el conocimiento tecnol&oacute;gico. Uno sin los otros no funciona.</p>
+
+            <h3 class="font-heading font-bold text-xl">Evaluar para aprender</h3>
+            <p>El modelo UMCE promueve la evaluaci&oacute;n como <strong>proceso de aprendizaje</strong>, no como calificaci&oacute;n final (Prats et al., 2020). Los &ldquo;productos de aprendizaje&rdquo; (Wiggins &amp; McTighe, 2005) son evidencias concretas de logro de competencias, no solo notas.</p>
+
+            <div class="reference-box">
+              <strong>Fuentes:</strong> Garrido (2024), Sangr&agrave; (2020), Salmon (2013), Guitert (2015), Maina (2020), Mishra &amp; Koehler (2006), Wiggins &amp; McTighe (2005), Guardia et al. (2004), McConnell (2006), Sep&uacute;lveda (2024)
+            </div>
+          </div>
+        </section>
+
+        <!-- MODULE 5: Cálculo en virtualidad -->
+        <section id="calculo" class="anchor-offset">
+          <div class="fade-up">
+            <p class="text-sm font-semibold text-red-600 uppercase tracking-widest mb-2">M&oacute;dulo 5</p>
+            <h2 class="font-heading text-3xl font-bold mb-2">&iquest;C&oacute;mo se calcula la carga en virtualidad?</h2>
+            <p class="text-gray-400 text-sm italic mb-8">El problema que esta calculadora resuelve</p>
+          </div>
+
+          <div class="fade-up prose prose-gray max-w-none space-y-5">
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div class="bg-gray-50 rounded-xl p-4">
+                <h4 class="font-bold text-sm mb-2">En presencial</h4>
+                <p class="text-sm text-gray-500">Regla Carnegie: 1 hora de clase = 2 horas de estudio aut&oacute;nomo. Simple de calcular.</p>
+              </div>
+              <div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                <h4 class="font-bold text-sm mb-2 text-umce-azul">En virtual</h4>
+                <p class="text-sm text-gray-600">No hay &ldquo;hora de clase&rdquo; fija. Hay videos de 15 min, foros de 45 min, lecturas de 5 min/p&aacute;gina, proyectos de 4 hrs/semana. <strong>Cada actividad tiene un tiempo diferente.</strong></p>
+              </div>
+            </div>
+
+            <h3 class="font-heading font-bold text-xl">El problema real</h3>
+            <p>Sin una herramienta que calcule, los cursos quedan:</p>
+            <ul>
+              <li><strong>Sobrecargados</strong> &mdash; el estudiante no alcanza a completar las actividades en las horas que corresponden a los cr&eacute;ditos</li>
+              <li><strong>Subcargados</strong> &mdash; los cr&eacute;ditos declarados no se justifican con las actividades dise&ntilde;adas</li>
+            </ul>
+            <p>Ambos son problemas de <strong>acreditaci&oacute;n</strong>: la CNA exige coherencia entre cr&eacute;ditos declarados y carga real.</p>
+
+            <h3 class="font-heading font-bold text-xl">C&oacute;mo lo resuelve la calculadora</h3>
+            <ol>
+              <li>Defines los SCT y las semanas de tu m&oacute;dulo</li>
+              <li>Seleccionas las e-actividades que vas a usar</li>
+              <li>Indicas cantidad y ajustas el tiempo seg&uacute;n tu disciplina</li>
+              <li>La calculadora suma las horas y las compara con las esperadas</li>
+              <li>Te muestra si hay equilibrio, sobrecarga o subcarga</li>
+              <li>Valida que el dise&ntilde;o cumpla los 3 pilares del modelo UMCE</li>
+            </ol>
+
+            <h3 class="font-heading font-bold text-xl">Instrumentos oficiales del CRUCH</h3>
+            <p>El Manual SCT Chile prescribe tres fuentes para validar la carga:</p>
+            <div class="space-y-2">
+              <div class="flex items-start gap-3"><span class="bg-blue-100 text-umce-azul text-xs font-bold px-2 py-0.5 rounded mt-0.5">1</span><div class="text-sm"><strong>Encuestas a estudiantes</strong> &mdash; cu&aacute;nto tiempo real dedicaron a cada actividad</div></div>
+              <div class="flex items-start gap-3"><span class="bg-blue-100 text-umce-azul text-xs font-bold px-2 py-0.5 rounded mt-0.5">2</span><div class="text-sm"><strong>Encuestas a acad&eacute;micos</strong> &mdash; cu&aacute;nto tiempo estiman necesario</div></div>
+              <div class="flex items-start gap-3"><span class="bg-blue-100 text-umce-azul text-xs font-bold px-2 py-0.5 rounded mt-0.5">3</span><div class="text-sm"><strong>Encuestas a profesionales del campo</strong> &mdash; pertinencia respecto a competencias requeridas</div></div>
+            </div>
+
+            <div class="example-box">
+              <p class="text-sm">El <strong>Tablero de Indicadores</strong> (otro producto de Mesa 1) eventualmente reemplazar&aacute; las encuestas manuales con datos reales de Moodle y xAPI, cerrando el ciclo: dise&ntilde;o &rarr; ejecuci&oacute;n &rarr; medici&oacute;n &rarr; ajuste.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- MODULE 6: El flujo completo -->
+        <section id="flujo" class="anchor-offset">
+          <div class="fade-up">
+            <p class="text-sm font-semibold text-teal-600 uppercase tracking-widest mb-2">M&oacute;dulo 6</p>
+            <h2 class="font-heading text-3xl font-bold mb-2">El flujo completo</h2>
+            <p class="text-gray-400 text-sm italic mb-8">De la idea al curso en Moodle &mdash; d&oacute;nde encaja todo esto</p>
+          </div>
+
+          <div class="fade-up prose prose-gray max-w-none space-y-5">
+            <div class="space-y-6">
+              <div class="flow-step">
+                <div class="step-dot bg-gray-400">1</div>
+                <h4 class="font-bold text-sm mb-1">Identificar necesidad de virtualizar</h4>
+                <p class="text-sm text-gray-500">La unidad acad&eacute;mica eval&uacute;a la pertinencia. <span class="text-xs text-gray-400">(Doc 06 SGIC, paso 1)</span></p>
+              </div>
+              <div class="flow-step">
+                <div class="step-dot bg-gray-400">2</div>
+                <h4 class="font-bold text-sm mb-1">Analizar factibilidad</h4>
+                <p class="text-sm text-gray-500">UDFV + UGCI + Acad&eacute;mico eval&uacute;an si es viable. <strong class="text-umce-azul">Aqu&iacute; se usa la Calculadora SCT</strong> para estimar la carga. <span class="text-xs text-gray-400">(Doc 06, paso 5)</span></p>
+              </div>
+              <div class="flow-step">
+                <div class="step-dot bg-gray-400">3</div>
+                <h4 class="font-bold text-sm mb-1">Aprobar</h4>
+                <p class="text-sm text-gray-500">DIDOC + VRA aprueban. Consejo Universitario emite Resoluci&oacute;n Exenta. <span class="text-xs text-gray-400">(Doc 06, pasos 4-5)</span></p>
+              </div>
+              <div class="flow-step">
+                <div class="step-dot bg-umce-azul">4</div>
+                <h4 class="font-bold text-sm mb-1 text-umce-azul">Co-dise&ntilde;ar el curso</h4>
+                <p class="text-sm text-gray-500">Acad&eacute;mico + DI + UGCI co-dise&ntilde;an usando la <strong class="text-umce-azul">Calculadora SCT</strong>. Eligen metodolog&iacute;a activa, distribuyen e-actividades, validan carga. Se genera el PAC/PIAC. <span class="text-xs text-gray-400">(Doc 09, paso 2)</span></p>
+              </div>
+              <div class="flow-step">
+                <div class="step-dot bg-gray-400">5</div>
+                <h4 class="font-bold text-sm mb-1">Desarrollar y configurar</h4>
+                <p class="text-sm text-gray-500">UDFV construye el curso en Moodle. Se aplica la R&uacute;brica de Calidad. <span class="text-xs text-gray-400">(Doc 09, pasos 3-5)</span></p>
+              </div>
+              <div class="flow-step">
+                <div class="step-dot bg-gray-400">6</div>
+                <h4 class="font-bold text-sm mb-1">Ejecutar y monitorear</h4>
+                <p class="text-sm text-gray-500">El curso se ejecuta. El Tablero de Indicadores compara carga estimada vs. real. <span class="text-xs text-gray-400">(Doc 09, pasos 7-11)</span></p>
+              </div>
+              <div class="flow-step">
+                <div class="step-dot bg-green-500">7</div>
+                <h4 class="font-bold text-sm mb-1">Evaluar y mejorar</h4>
+                <p class="text-sm text-gray-500">Los datos reales retroalimentan la calculadora para el pr&oacute;ximo ciclo. Informe t&eacute;cnico semestral.</p>
+              </div>
+            </div>
+
+            <h3 class="font-heading font-bold text-xl">&iquest;Qui&eacute;nes participan?</h3>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div class="bg-gray-50 rounded-lg p-3">
+                <h4 class="font-bold text-sm mb-1">Acad&eacute;mico</h4>
+                <p class="text-xs text-gray-500">Co-dise&ntilde;ador desde la fase de an&aacute;lisis. Aporta la complejidad disciplinar y el conocimiento de sus estudiantes. <strong>No es solo receptor del curso hecho.</strong></p>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-3">
+                <h4 class="font-bold text-sm mb-1">Dise&ntilde;ador Instruccional (UDFV)</h4>
+                <p class="text-xs text-gray-500">Traduce el contenido disciplinar a e-actividades virtuales con carga horaria validada. Experto en el modelo virtual UMCE.</p>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-3">
+                <h4 class="font-bold text-sm mb-1">UGCI</h4>
+                <p class="text-xs text-gray-500">Verifica coherencia curricular: que los cr&eacute;ditos, competencias y m&oacute;dulos sean consistentes con el plan de estudios.</p>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-3">
+                <h4 class="font-bold text-sm mb-1">Directivo (DIDOC, DIPOS, DEC)</h4>
+                <p class="text-xs text-gray-500">Valida cumplimiento institucional, aprueba factibilidad y supervisa calidad.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- MODULE 7: Marco normativo -->
+        <section id="normativa" class="anchor-offset">
+          <div class="fade-up">
+            <p class="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-2">M&oacute;dulo 7</p>
+            <h2 class="font-heading text-3xl font-bold mb-2">Marco normativo</h2>
+            <p class="text-gray-400 text-sm italic mb-8">Por qu&eacute; todo esto es obligatorio &mdash; no es capricho, es acreditaci&oacute;n</p>
+          </div>
+
+          <div class="fade-up prose prose-gray max-w-none space-y-5">
+            <div class="space-y-3">
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-bold text-sm mb-1">CNA &mdash; Comisi&oacute;n Nacional de Acreditaci&oacute;n</h4>
+                <p class="text-sm text-gray-500">Exige coherencia entre cr&eacute;ditos declarados y carga real del estudiante. Tiene orientaciones espec&iacute;ficas para programas virtuales (Diario Oficial N&deg;41.925, 2017).</p>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-bold text-sm mb-1">Ordinario 06/13.191 &mdash; Subsecretar&iacute;a de Educaci&oacute;n Superior (sept 2024)</h4>
+                <p class="text-sm text-gray-500">Define qu&eacute; se puede y no se puede virtualizar en pregrado. Programas presenciales pueden incorporar hasta un 30% de componentes virtuales.</p>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-bold text-sm mb-1">SCT Chile &mdash; CRUCH</h4>
+                <p class="text-sm text-gray-500">Est&aacute;ndar de 27 horas por cr&eacute;dito. Compromiso entre las 25 universidades del Consejo de Rectores. Compatible con ECTS europeo.</p>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-bold text-sm mb-1">Resoluciones UMCE (2019)</h4>
+                <p class="text-sm text-gray-500">Res. Exentas N&deg; 100062 y 100241: aprueban redise&ntilde;o curricular basado en competencias con SCT declarados.</p>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-bold text-sm mb-1">Agenda de Modernizaci&oacute;n &mdash; MINEDUC (2024)</h4>
+                <p class="text-sm text-gray-500">Promueve trayectorias flexibles, microcredenciales y consolidaci&oacute;n del SCT Chile. Horizonte de trabajo: 2 a&ntilde;os con el CRUCH.</p>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-bold text-sm mb-1">CUECH &mdash; Programa S&uacute;bete</h4>
+                <p class="text-sm text-gray-500">Compromisos de movilidad virtual entre 18 universidades estatales. Los cr&eacute;ditos SCT deben ser comparables entre instituciones.</p>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-bold text-sm mb-1">Marco de Competencias Digitales Docentes &mdash; CPEIP/MINEDUC</h4>
+                <p class="text-sm text-gray-500">Define las competencias que los docentes deben tener para integrar tecnolog&iacute;a en su pr&aacute;ctica.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- GLOSARIO -->
+        <section id="glosario" class="anchor-offset">
+          <div class="fade-up">
+            <h2 class="font-heading text-3xl font-bold mb-8">Glosario</h2>
+          </div>
+
+          <div class="fade-up grid sm:grid-cols-2 gap-3">
+            <div class="bg-gray-50 rounded-lg p-3"><strong class="text-sm">SCT</strong><p class="text-xs text-gray-500">Sistema de Cr&eacute;ditos Transferibles de Chile. 1 cr&eacute;dito = 27 horas de trabajo real del estudiante.</p></div>
+            <div class="bg-gray-50 rounded-lg p-3"><strong class="text-sm">ECTS</strong><p class="text-xs text-gray-500">Equivalente europeo del SCT. 1 cr&eacute;dito = 25-30 horas.</p></div>
+            <div class="bg-gray-50 rounded-lg p-3"><strong class="text-sm">Carga aut&oacute;noma</strong><p class="text-xs text-gray-500">Horas de trabajo que el estudiante dedica fuera de la clase sincr&oacute;nica.</p></div>
+            <div class="bg-gray-50 rounded-lg p-3"><strong class="text-sm">e-Actividad</strong><p class="text-xs text-gray-500">Actividad dise&ntilde;ada para virtualidad que promueve interacci&oacute;n y aprendizaje activo (Salmon, 2013).</p></div>
+            <div class="bg-gray-50 rounded-lg p-3"><strong class="text-sm">Modularizaci&oacute;n</strong><p class="text-xs text-gray-500">Organizar el curr&iacute;culo en m&oacute;dulos secuenciales en vez de cursos paralelos.</p></div>
+            <div class="bg-gray-50 rounded-lg p-3"><strong class="text-sm">Microcredencial</strong><p class="text-xs text-gray-500">Certificaci&oacute;n de competencias espec&iacute;ficas, apilable hacia un grado mayor.</p></div>
+            <div class="bg-gray-50 rounded-lg p-3"><strong class="text-sm">Backward design</strong><p class="text-xs text-gray-500">Dise&ntilde;ar desde los resultados esperados hacia las actividades (Wiggins &amp; McTighe).</p></div>
+            <div class="bg-gray-50 rounded-lg p-3"><strong class="text-sm">TPACK</strong><p class="text-xs text-gray-500">Technological Pedagogical Content Knowledge &mdash; integrar tecnolog&iacute;a, pedagog&iacute;a y contenido.</p></div>
+            <div class="bg-gray-50 rounded-lg p-3"><strong class="text-sm">PIAC / PAC</strong><p class="text-xs text-gray-500">Plan Instruccional de Actividad Curricular / Programa de Actividad Curricular.</p></div>
+            <div class="bg-gray-50 rounded-lg p-3"><strong class="text-sm">Ucampus</strong><p class="text-xs text-gray-500">Plataforma SIS de gesti&oacute;n acad&eacute;mica usada por la UMCE y 18 universidades estatales.</p></div>
+            <div class="bg-gray-50 rounded-lg p-3"><strong class="text-sm">S&uacute;bete</strong><p class="text-xs text-gray-500">Programa de movilidad virtual entre universidades estatales (CUECH).</p></div>
+            <div class="bg-gray-50 rounded-lg p-3"><strong class="text-sm">CRUCH</strong><p class="text-xs text-gray-500">Consejo de Rectores de Universidades Chilenas &mdash; creador del SCT.</p></div>
+            <div class="bg-gray-50 rounded-lg p-3"><strong class="text-sm">CUECH</strong><p class="text-xs text-gray-500">Consorcio de Universidades del Estado de Chile &mdash; red de movilidad.</p></div>
+            <div class="bg-gray-50 rounded-lg p-3"><strong class="text-sm">CNA</strong><p class="text-xs text-gray-500">Comisi&oacute;n Nacional de Acreditaci&oacute;n.</p></div>
+            <div class="bg-gray-50 rounded-lg p-3"><strong class="text-sm">SGIC</strong><p class="text-xs text-gray-500">Sistema de Gesti&oacute;n Interno de la Calidad.</p></div>
+            <div class="bg-gray-50 rounded-lg p-3"><strong class="text-sm">Heutagog&iacute;a</strong><p class="text-xs text-gray-500">Aprendizaje autodirigido &mdash; el estudiante adulto determina qu&eacute; y c&oacute;mo aprende. Marco para postgrado.</p></div>
+          </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="fade-up pt-8 pb-4 border-t border-gray-100">
+          <div class="text-center">
+            <h2 class="font-heading text-2xl font-bold mb-3">Ahora que sabes c&oacute;mo funciona, &uacute;salo</h2>
+            <p class="text-gray-500 mb-6 max-w-lg mx-auto">La calculadora te permite co-dise&ntilde;ar la carga de tu curso con datos reales, validando que las horas de trabajo del estudiante sean coherentes con los cr&eacute;ditos.</p>
+            <a href="/sct" class="inline-flex items-center gap-2 bg-umce-azul text-white font-heading font-bold px-7 py-3.5 rounded-xl hover:bg-blue-800 transition-colors">
+              Ir a la Calculadora SCT
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+            </a>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/shared/shared.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js" defer></script>
+  <script src="/shared/generative-header.js" defer></script>
+  <script>
+    // Sidebar active state on scroll
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.module-nav a');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    sections.forEach(s => observer.observe(s));
+  </script>
+</body>
+</html>

@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Calculadora SCT — UMCE Virtual</title>
+  <meta name="description" content="Calcula y valida la carga estudiantil de tu curso virtual seg&uacute;n el Sistema de Cr&eacute;ditos Transferibles (SCT Chile). Herramienta de co-dise&ntilde;o para acad&eacute;micos y dise&ntilde;adores instruccionales de la UMCE.">
+  <meta name="keywords" content="SCT Chile, cr&eacute;ditos transferibles, carga estudiantil, dise&ntilde;o instruccional, UMCE, educaci&oacute;n virtual">
+  <meta name="author" content="Unidad de Desarrollo y Formaci&oacute;n Virtual — UMCE">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://umce.online/sct">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://umce.online/sct">
+  <meta property="og:title" content="Calculadora SCT — UMCE Virtual">
+  <meta property="og:description" content="Calcula la carga estudiantil de tu curso virtual. Co-dise&ntilde;o para acad&eacute;micos y dise&ntilde;adores instruccionales.">
+  <meta property="og:image" content="https://umce.online/assets/og-default.png">
+  <meta property="og:site_name" content="UMCE Virtual">
+  <meta property="og:locale" content="es_CL">
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+  <link rel="stylesheet" href="/shared/shared.css">
+  <style>
+    /* === SCT Calculator — Scoped Styles === */
+    .sct-step { counter-increment: sct-step; }
+    .sct-step::before {
+      content: counter(sct-step);
+      display: flex; align-items: center; justify-content: center;
+      width: 2.5rem; height: 2.5rem; border-radius: 50%;
+      background: var(--palette-primary); color: #fff;
+      font-family: 'Trebuchet MS', sans-serif; font-weight: 800; font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .sct-step.completed::before { background: #059669; content: '\2713'; }
+
+    .cat-chip {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      padding: 0.5rem 1rem; border-radius: 9999px; cursor: pointer;
+      font-size: 0.8125rem; font-weight: 600; border: 2px solid transparent;
+      transition: all 0.2s; user-select: none;
+    }
+    .cat-chip:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .cat-chip.active { border-color: currentColor; box-shadow: 0 4px 16px rgba(0,0,0,0.12); transform: translateY(-1px); }
+    .cat-chip .dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; }
+
+    .act-card {
+      padding: 1rem 1.25rem; border-radius: 0.75rem; border: 1.5px solid #e5e7eb;
+      cursor: pointer; transition: all 0.2s; background: #fff;
+    }
+    .act-card:hover { border-color: var(--palette-primary); box-shadow: 0 4px 12px rgba(0,51,161,0.08); }
+
+    .added-row { animation: slideIn 0.3s ease-out; }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
+
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 100; background: rgba(0,29,92,0.5);
+      backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+    .modal-overlay.open .modal-box { transform: translateY(0); opacity: 1; }
+    .modal-box {
+      background: #fff; border-radius: 1rem; padding: 2rem; max-width: 28rem; width: 90%;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.2); transform: translateY(16px); opacity: 0; transition: all 0.3s;
+    }
+
+    .semaforo { width: 4rem; height: 4rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; }
+    .semaforo.verde { background: #D1FAE5; color: #059669; }
+    .semaforo.amarillo { background: #FEF3C7; color: #D97706; }
+    .semaforo.rojo { background: #FEE2E2; color: #DC2626; }
+
+    .donut-segment { transition: stroke-dasharray 0.6s ease, stroke-dashoffset 0.6s ease; }
+
+    .check-item { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.875rem; line-height: 1.5; }
+    .check-icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; margin-top: 0.125rem; }
+
+    .collapsible-trigger { cursor: pointer; user-select: none; }
+    .collapsible-trigger svg { transition: transform 0.2s; }
+    .collapsible-trigger.open svg { transform: rotate(180deg); }
+    .collapsible-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+    .collapsible-body.open { max-height: 600px; }
+
+    .stat-card { background: #fff; border: 1.5px solid #e5e7eb; border-radius: 0.75rem; padding: 1.25rem; text-align: center; }
+    .stat-card .stat-value { font-family: 'Trebuchet MS', sans-serif; font-size: 2rem; font-weight: 800; line-height: 1; }
+    .stat-card .stat-label { font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .weekly-bar { height: 2rem; border-radius: 0.25rem; transition: width 0.4s ease; min-width: 2px; }
+
+    input[type="number"]::-webkit-inner-spin-button { opacity: 1; }
+    .radio-card { border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.15s; }
+    .radio-card:hover { border-color: #93a3c0; }
+    .radio-card.selected { border-color: var(--palette-primary); background: #EFF3FB; }
+    .radio-card input[type="radio"] { accent-color: var(--palette-primary); }
+  </style>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+  <div id="nav-placeholder"></div>
+
+  <!-- Hero -->
+  <section class="hero-gradient pt-32 pb-16 text-white relative overflow-hidden">
+    <div id="p5-header" data-variant="5"></div>
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+      <nav class="breadcrumb text-sm mb-6">
+        <a href="/" class="text-white/60 hover:text-white">Inicio</a>
+        <span class="separator text-white/30 mx-1">/</span>
+        <span class="text-white/90">Calculadora SCT</span>
+      </nav>
+      <h1 class="fade-up font-heading text-4xl md:text-5xl font-extrabold mb-4">Calculadora SCT</h1>
+      <p class="fade-up text-white/80 text-lg max-w-2xl">
+        Dise&ntilde;a la carga de tu curso virtual validando que las horas de trabajo real del estudiante sean coherentes con los cr&eacute;ditos SCT asignados.
+      </p>
+      <p class="fade-up text-white/50 text-sm mt-3">1 cr&eacute;dito SCT = 27 horas de trabajo real del estudiante &middot; Est&aacute;ndar CRUCH / SCT Chile</p>
+    </div>
+  </section>
+
+  <!-- Main Calculator Area -->
+  <div class="max-w-7xl mx-auto px-6 py-12">
+    <div class="grid lg:grid-cols-[1fr_320px] gap-10">
+
+      <!-- Left: Calculator -->
+      <div class="space-y-10" style="counter-reset: sct-step;">
+
+        <!-- STEP 1: Config -->
+        <section class="fade-up">
+          <div class="sct-step flex items-center gap-4 mb-6">
+            <h2 class="font-heading text-2xl font-bold">Datos del m&oacute;dulo</h2>
+          </div>
+
+          <div class="bg-gray-50 rounded-xl p-6 space-y-5">
+            <!-- Module name -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nombre del m&oacute;dulo o actividad curricular</label>
+              <input type="text" id="moduleName" placeholder="Ej: Metodolog&iacute;a Cualitativa" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm transition-colors">
+            </div>
+
+            <!-- SCT + Weeks -->
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Cr&eacute;ditos SCT</label>
+                <input type="number" id="sctCredits" value="3" min="1" max="30" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm transition-colors">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Semanas</label>
+                <input type="number" id="weeks" value="18" min="1" max="52" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm transition-colors">
+              </div>
+            </div>
+
+            <!-- Profile -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Perfil del estudiante</label>
+              <div class="grid sm:grid-cols-3 gap-2" id="profileSelector">
+                <label class="radio-card selected flex items-center gap-2">
+                  <input type="radio" name="profile" value="pregrado" checked>
+                  <div><div class="text-sm font-semibold">Pregrado</div><div class="text-xs text-gray-400">M&aacute;s acompa&ntilde;amiento</div></div>
+                </label>
+                <label class="radio-card flex items-center gap-2">
+                  <input type="radio" name="profile" value="postgrado">
+                  <div><div class="text-sm font-semibold">Postgrado</div><div class="text-xs text-gray-400">M&aacute;s autonom&iacute;a</div></div>
+                </label>
+                <label class="radio-card flex items-center gap-2">
+                  <input type="radio" name="profile" value="continua">
+                  <div><div class="text-sm font-semibold">Ed. Continua</div><div class="text-xs text-gray-400">Flexible</div></div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Unit type -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Tipo de unidad</label>
+              <div class="grid sm:grid-cols-2 gap-2" id="unitSelector">
+                <label class="radio-card selected flex items-center gap-2">
+                  <input type="radio" name="unit" value="semestral" checked>
+                  <div><div class="text-sm font-semibold">Semestral</div><div class="text-xs text-gray-400">18 semanas</div></div>
+                </label>
+                <label class="radio-card flex items-center gap-2">
+                  <input type="radio" name="unit" value="modulo">
+                  <div><div class="text-sm font-semibold">M&oacute;dulo</div><div class="text-xs text-gray-400">8 semanas</div></div>
+                </label>
+                <label class="radio-card flex items-center gap-2">
+                  <input type="radio" name="unit" value="microcredencial">
+                  <div><div class="text-sm font-semibold">Microcredencial</div><div class="text-xs text-gray-400">5 semanas</div></div>
+                </label>
+                <label class="radio-card flex items-center gap-2">
+                  <input type="radio" name="unit" value="cuech">
+                  <div><div class="text-sm font-semibold">CUECH S&uacute;bete</div><div class="text-xs text-gray-400">2 SCT, 16 sem</div></div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Calculated stats -->
+            <div class="grid grid-cols-3 gap-3 pt-2">
+              <div class="stat-card">
+                <div class="stat-value text-umce-azul" id="totalHours">81</div>
+                <div class="stat-label">Horas totales</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value text-umce-azul" id="weeklyHours">4.5</div>
+                <div class="stat-label">Hrs / semana</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="weeklyStatus" style="font-size:1.5rem;">&#10003;</div>
+                <div class="stat-label" id="weeklyStatusLabel">Adecuado</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 2: Activities -->
+        <section class="fade-up">
+          <div class="sct-step flex items-center gap-4 mb-6">
+            <h2 class="font-heading text-2xl font-bold">Agregar e-actividades</h2>
+          </div>
+
+          <!-- Category chips -->
+          <div class="flex flex-wrap gap-2 mb-6" id="categoryChips">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Activity cards grid -->
+          <div id="activityCards" class="grid sm:grid-cols-2 gap-3 mb-8">
+            <div class="text-gray-400 text-sm col-span-2 text-center py-8">Selecciona una categor&iacute;a para ver las actividades disponibles</div>
+          </div>
+
+          <!-- Added activities summary -->
+          <div id="addedSection" class="hidden">
+            <h3 class="font-heading font-bold text-lg mb-3 flex items-center gap-2">
+              <svg class="w-5 h-5 text-umce-azul" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+              Actividades agregadas
+              <span id="addedCount" class="bg-umce-azul text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+            </h3>
+            <div class="bg-gray-50 rounded-xl overflow-hidden">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="text-left text-xs text-gray-400 uppercase tracking-wider border-b border-gray-200">
+                    <th class="px-4 py-3">Actividad</th>
+                    <th class="px-4 py-3 text-center">Cantidad</th>
+                    <th class="px-4 py-3 text-center">Tiempo</th>
+                    <th class="px-4 py-3 text-right">Subtotal</th>
+                    <th class="px-4 py-3 w-10"></th>
+                  </tr>
+                </thead>
+                <tbody id="addedBody"></tbody>
+                <tfoot>
+                  <tr class="border-t-2 border-gray-300 font-bold">
+                    <td class="px-4 py-3" colspan="3">Total acumulado</td>
+                    <td class="px-4 py-3 text-right" id="runningTotal">0 hrs</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+            <div class="mt-3 flex items-center gap-3">
+              <div class="flex-1 bg-gray-200 rounded-full h-3 overflow-hidden">
+                <div id="progressBar" class="h-full rounded-full transition-all duration-500" style="width:0%; background: var(--palette-primary);"></div>
+              </div>
+              <span id="progressLabel" class="text-sm font-semibold text-gray-500">0%</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 3: Results -->
+        <section class="fade-up" id="resultsSection">
+          <div class="sct-step flex items-center gap-4 mb-6">
+            <h2 class="font-heading text-2xl font-bold">Resultado y validaci&oacute;n</h2>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-6">
+            <!-- Donut Chart -->
+            <div class="bg-gray-50 rounded-xl p-6">
+              <h3 class="font-heading font-bold text-sm mb-4 text-gray-500 uppercase tracking-wider">Distribuci&oacute;n por tipo de e-actividad</h3>
+              <div class="flex items-center justify-center">
+                <svg id="donutChart" viewBox="0 0 200 200" class="w-48 h-48">
+                  <circle cx="100" cy="100" r="70" fill="none" stroke="#e5e7eb" stroke-width="28"/>
+                  <!-- Segments rendered by JS -->
+                </svg>
+              </div>
+              <div id="donutLegend" class="mt-4 flex flex-wrap gap-x-4 gap-y-1 justify-center text-xs"></div>
+            </div>
+
+            <!-- Validation -->
+            <div class="space-y-4">
+              <!-- Traffic light -->
+              <div class="bg-gray-50 rounded-xl p-6 flex items-center gap-5" id="trafficLight">
+                <div class="semaforo verde" id="semaforoIcon">&#10003;</div>
+                <div>
+                  <div class="font-heading font-bold text-lg" id="semaforoTitle">Agrega actividades</div>
+                  <div class="text-sm text-gray-500" id="semaforoDesc">Comienza agregando e-actividades para ver el resultado.</div>
+                </div>
+              </div>
+
+              <!-- Pedagogical checklist -->
+              <div class="bg-gray-50 rounded-xl p-6">
+                <h3 class="font-heading font-bold text-sm mb-4 text-gray-500 uppercase tracking-wider">Validaci&oacute;n pedag&oacute;gica</h3>
+                <div class="space-y-2.5" id="checklist">
+                  <!-- Rendered by JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly load bars -->
+          <div class="bg-gray-50 rounded-xl p-6 mt-6" id="weeklyBarsSection" style="display:none;">
+            <h3 class="font-heading font-bold text-sm mb-4 text-gray-500 uppercase tracking-wider">Carga estimada por semana</h3>
+            <div id="weeklyBars" class="space-y-2"></div>
+            <div class="flex items-center gap-4 mt-3 text-xs text-gray-400">
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-green-400 inline-block"></span> Recomendado (&le;10 hrs)</span>
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-yellow-400 inline-block"></span> Alto (10-12 hrs)</span>
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-red-400 inline-block"></span> Sobrecarga (&gt;12 hrs)</span>
+            </div>
+          </div>
+
+          <!-- Export -->
+          <div class="mt-6 flex flex-wrap gap-3">
+            <button onclick="exportPDF()" class="inline-flex items-center gap-2 bg-umce-azul text-white font-heading font-bold text-sm px-6 py-3 rounded-lg hover:bg-blue-800 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              Exportar PDF
+            </button>
+            <button onclick="resetCalculator()" class="inline-flex items-center gap-2 border-2 border-gray-200 text-gray-600 font-heading font-semibold text-sm px-6 py-3 rounded-lg hover:border-gray-400 transition-colors">
+              Reiniciar
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right: Sidebar -->
+      <aside class="space-y-4 lg:sticky lg:top-24 lg:self-start">
+        <!-- SCT Explainer -->
+        <div class="bg-blue-50 border border-blue-100 rounded-xl overflow-hidden">
+          <div class="collapsible-trigger open flex items-center justify-between p-4" onclick="toggleCollapsible(this)">
+            <h3 class="font-heading font-bold text-sm text-umce-azul">&iquest;Qu&eacute; es el SCT?</h3>
+            <svg class="w-4 h-4 text-umce-azul" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+          <div class="collapsible-body open px-4 pb-4">
+            <div class="text-sm text-gray-600 space-y-2">
+              <p>El <strong>Sistema de Cr&eacute;ditos Transferibles</strong> mide la carga de trabajo <em>real</em> del estudiante, no solo las horas de clase.</p>
+              <p><strong>1 SCT = 27 horas</strong> de trabajo total (clases + lecturas + tareas + estudio).</p>
+              <p>Un curso de 3 SCT = 81 horas en el semestre. Si tiene 2 hrs de clase por semana (36 hrs), quedan <strong>45 horas de trabajo aut&oacute;nomo</strong> que hay que dise&ntilde;ar.</p>
+              <p class="text-xs text-gray-400">Fuente: CRUCH, Manual SCT Chile 2&ordf; ed. (2013)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Model -->
+        <div class="bg-amber-50 border border-amber-100 rounded-xl overflow-hidden">
+          <div class="collapsible-trigger flex items-center justify-between p-4" onclick="toggleCollapsible(this)">
+            <h3 class="font-heading font-bold text-sm text-amber-800">Modelo Virtual UMCE</h3>
+            <svg class="w-4 h-4 text-amber-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+          <div class="collapsible-body px-4 pb-4">
+            <div class="text-sm text-gray-600 space-y-2">
+              <p>El modelo virtual UMCE se sostiene en <strong>3 pilares</strong>:</p>
+              <div class="space-y-1.5">
+                <div class="flex items-start gap-2"><span class="w-2 h-2 rounded-full bg-blue-500 mt-1.5 flex-shrink-0"></span><div><strong>Interacci&oacute;n</strong> — entre estudiantes, con docentes y con contenido</div></div>
+                <div class="flex items-start gap-2"><span class="w-2 h-2 rounded-full bg-amber-500 mt-1.5 flex-shrink-0"></span><div><strong>Colaboraci&oacute;n</strong> — construcci&oacute;n conjunta de conocimiento</div></div>
+                <div class="flex items-start gap-2"><span class="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0"></span><div><strong>Flexibilidad</strong> — sincron&iacute;a/asincron&iacute;a seg&uacute;n el objetivo pedag&oacute;gico</div></div>
+              </div>
+              <p class="text-xs text-gray-400 pt-1">Fuente: Garrido (2024), Sangr&agrave; (2020)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Flow -->
+        <div class="bg-gray-50 border border-gray-100 rounded-xl overflow-hidden">
+          <div class="collapsible-trigger flex items-center justify-between p-4" onclick="toggleCollapsible(this)">
+            <h3 class="font-heading font-bold text-sm text-gray-700">&iquest;D&oacute;nde encaja esta herramienta?</h3>
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+          <div class="collapsible-body px-4 pb-4">
+            <div class="text-sm text-gray-600 space-y-2">
+              <p>La calculadora se usa en el <strong>co-dise&ntilde;o</strong> del curso virtual, cuando el acad&eacute;mico y el dise&ntilde;ador instruccional distribuyen las actividades por semana.</p>
+              <p>Conecta con el proceso SGIC de la UMCE (Doc 06 y Doc 09) y alimenta el PAC/PIAC del curso.</p>
+              <p class="text-xs text-gray-400">Producto de Mesa 1 — Virtualizaci&oacute;n Institucional UMCE</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Link to learn more -->
+        <a href="/sct/aprende" class="block bg-white border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-umce-azul hover:bg-blue-50 transition-colors group">
+          <div class="font-heading font-bold text-sm text-gray-600 group-hover:text-umce-azul">Aprender m&aacute;s sobre SCT</div>
+          <div class="text-xs text-gray-400 mt-0.5">Gu&iacute;a completa para acad&eacute;micos y directivos</div>
+        </a>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Modal for adding activity -->
+  <div id="activityModal" class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal-box">
+      <h3 class="font-heading font-bold text-lg mb-1" id="modalTitle"></h3>
+      <p class="text-sm text-gray-400 mb-4" id="modalTools"></p>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Cantidad</label>
+          <input type="number" id="modalQty" value="1" min="1" max="100" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+          <p class="text-xs text-gray-400 mt-1" id="modalUnit"></p>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Tiempo estimado por unidad (minutos)</label>
+          <input type="number" id="modalTime" min="1" max="600" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+          <p class="text-xs text-gray-400 mt-1" id="modalTimeRef"></p>
+        </div>
+        <div class="bg-blue-50 rounded-lg p-3 text-center">
+          <span class="text-xs text-gray-500">Subtotal estimado:</span>
+          <span class="font-heading font-bold text-lg text-umce-azul ml-2" id="modalSubtotal">0 min</span>
+        </div>
+        <div class="flex gap-3">
+          <button onclick="confirmAdd()" class="flex-1 bg-umce-azul text-white font-heading font-bold text-sm py-2.5 rounded-lg hover:bg-blue-800 transition-colors">Agregar</button>
+          <button onclick="closeModal()" class="px-5 border border-gray-200 text-gray-500 font-semibold text-sm py-2.5 rounded-lg hover:bg-gray-50 transition-colors">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/shared/shared.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js" defer></script>
+  <script src="/shared/generative-header.js" defer></script>
+  <script>
+  /* ============================================
+     Calculadora SCT UMCE — Core Logic
+     100% client-side, no dependencies
+     ============================================ */
+  (function() {
+    'use strict';
+
+    let DATA = null;
+    let addedActivities = [];
+    let selectedCat = null;
+    let pendingActivity = null;
+
+    // Load data
+    fetch('/sct-data.json').then(r => r.json()).then(d => { DATA = d; init(); });
+
+    function init() {
+      renderCategoryChips();
+      bindInputs();
+      updateStats();
+      renderChecklist();
+    }
+
+    // === STEP 1: Config ===
+    function bindInputs() {
+      document.getElementById('sctCredits').addEventListener('input', updateStats);
+      document.getElementById('weeks').addEventListener('input', updateStats);
+
+      // Profile radio cards
+      document.querySelectorAll('#profileSelector .radio-card').forEach(card => {
+        card.addEventListener('click', () => {
+          document.querySelectorAll('#profileSelector .radio-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          updateStats();
+          renderChecklist();
+        });
+      });
+
+      // Unit radio cards
+      document.querySelectorAll('#unitSelector .radio-card').forEach(card => {
+        card.addEventListener('click', () => {
+          document.querySelectorAll('#unitSelector .radio-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          const val = card.querySelector('input').value;
+          const unit = DATA.unidades.find(u => u.id === val);
+          if (unit) {
+            document.getElementById('weeks').value = unit.semanasDefault;
+            if (unit.sctFijo) document.getElementById('sctCredits').value = unit.sctFijo;
+          }
+          updateStats();
+        });
+      });
+
+      // Modal live update
+      document.getElementById('modalQty').addEventListener('input', updateModalSubtotal);
+      document.getElementById('modalTime').addEventListener('input', updateModalSubtotal);
+    }
+
+    function getConfig() {
+      const sct = parseInt(document.getElementById('sctCredits').value) || 1;
+      const weeks = parseInt(document.getElementById('weeks').value) || 1;
+      const profile = document.querySelector('input[name="profile"]:checked')?.value || 'pregrado';
+      const totalHours = sct * DATA.config.horasPorCredito;
+      const weeklyHours = totalHours / weeks;
+      return { sct, weeks, profile, totalHours, weeklyHours };
+    }
+
+    function updateStats() {
+      if (!DATA) return;
+      const c = getConfig();
+      document.getElementById('totalHours').textContent = c.totalHours;
+      document.getElementById('weeklyHours').textContent = c.weeklyHours.toFixed(1);
+
+      const statusEl = document.getElementById('weeklyStatus');
+      const statusLabel = document.getElementById('weeklyStatusLabel');
+      if (c.weeklyHours <= DATA.config.cargaSemanalRecomendada) {
+        statusEl.innerHTML = '&#10003;'; statusEl.style.color = '#059669'; statusLabel.textContent = 'Adecuado';
+      } else if (c.weeklyHours <= DATA.config.cargaSemanalMaxima) {
+        statusEl.innerHTML = '!'; statusEl.style.color = '#D97706'; statusLabel.textContent = 'Alto';
+      } else {
+        statusEl.innerHTML = '&#10007;'; statusEl.style.color = '#DC2626'; statusLabel.textContent = 'Sobrecarga';
+      }
+      updateResults();
+    }
+
+    // === STEP 2: Activities ===
+    function renderCategoryChips() {
+      const container = document.getElementById('categoryChips');
+      container.innerHTML = DATA.categorias.map(cat =>
+        `<button class="cat-chip" data-cat="${cat.id}" style="background:${cat.color}12; color:${cat.color};" onclick="window._selectCat('${cat.id}')">
+          <span class="dot" style="background:${cat.color}"></span>
+          ${cat.nombre}
+        </button>`
+      ).join('');
+    }
+
+    window._selectCat = function(catId) {
+      selectedCat = catId;
+      document.querySelectorAll('.cat-chip').forEach(c => c.classList.toggle('active', c.dataset.cat === catId));
+      renderActivityCards(catId);
+    };
+
+    function renderActivityCards(catId) {
+      const acts = DATA.actividades.filter(a => a.cat === catId);
+      const cat = DATA.categorias.find(c => c.id === catId);
+      const container = document.getElementById('activityCards');
+      container.innerHTML = acts.map(a =>
+        `<div class="act-card" onclick="window._openModal('${a.id}')">
+          <div class="font-semibold text-sm mb-1">${a.nombre}</div>
+          <div class="text-xs text-gray-400 mb-2">${a.herramientas}</div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold" style="color:${cat.color}">${a.tiempoMin}-${a.tiempoMax} min</span>
+            <span class="text-xs text-gray-300">${a.unidad}</span>
+          </div>
+        </div>`
+      ).join('');
+    }
+
+    window._openModal = function(actId) {
+      const act = DATA.actividades.find(a => a.id === actId);
+      if (!act) return;
+      pendingActivity = act;
+      document.getElementById('modalTitle').textContent = act.nombre;
+      document.getElementById('modalTools').textContent = act.herramientas;
+      document.getElementById('modalUnit').textContent = act.unidad;
+      document.getElementById('modalQty').value = 1;
+      const avgTime = Math.round((act.tiempoMin + act.tiempoMax) / 2);
+      document.getElementById('modalTime').value = avgTime;
+      document.getElementById('modalTimeRef').textContent = `Referencia: ${act.tiempoMin}-${act.tiempoMax} min (${act.fuente})`;
+      updateModalSubtotal();
+      document.getElementById('activityModal').classList.add('open');
+    };
+
+    function updateModalSubtotal() {
+      const qty = parseInt(document.getElementById('modalQty').value) || 0;
+      const time = parseInt(document.getElementById('modalTime').value) || 0;
+      const total = qty * time;
+      const el = document.getElementById('modalSubtotal');
+      el.textContent = total >= 60 ? `${(total/60).toFixed(1)} hrs` : `${total} min`;
+    }
+
+    window.closeModal = function() {
+      document.getElementById('activityModal').classList.remove('open');
+      pendingActivity = null;
+    };
+
+    window.confirmAdd = function() {
+      if (!pendingActivity) return;
+      const qty = parseInt(document.getElementById('modalQty').value) || 1;
+      const time = parseInt(document.getElementById('modalTime').value) || 0;
+      addedActivities.push({
+        id: pendingActivity.id + '_' + Date.now(),
+        actId: pendingActivity.id,
+        cat: pendingActivity.cat,
+        nombre: pendingActivity.nombre,
+        qty, time,
+        subtotalMin: qty * time
+      });
+      closeModal();
+      renderAdded();
+      updateResults();
+    };
+
+    window._removeActivity = function(id) {
+      addedActivities = addedActivities.filter(a => a.id !== id);
+      renderAdded();
+      updateResults();
+    };
+
+    function renderAdded() {
+      const section = document.getElementById('addedSection');
+      const tbody = document.getElementById('addedBody');
+      const countEl = document.getElementById('addedCount');
+
+      if (addedActivities.length === 0) { section.classList.add('hidden'); return; }
+      section.classList.remove('hidden');
+      countEl.textContent = addedActivities.length;
+
+      tbody.innerHTML = addedActivities.map(a => {
+        const cat = DATA.categorias.find(c => c.id === a.cat);
+        const hrs = (a.subtotalMin / 60).toFixed(1);
+        return `<tr class="added-row border-b border-gray-100">
+          <td class="px-4 py-2.5"><span class="inline-block w-2 h-2 rounded-full mr-2" style="background:${cat?.color || '#999'}"></span>${a.nombre}</td>
+          <td class="px-4 py-2.5 text-center">${a.qty}</td>
+          <td class="px-4 py-2.5 text-center text-gray-400">${a.time} min</td>
+          <td class="px-4 py-2.5 text-right font-semibold">${hrs} hrs</td>
+          <td class="px-2 py-2.5"><button onclick="window._removeActivity('${a.id}')" class="text-gray-300 hover:text-red-500 transition-colors">&times;</button></td>
+        </tr>`;
+      }).join('');
+
+      const totalMin = addedActivities.reduce((s, a) => s + a.subtotalMin, 0);
+      document.getElementById('runningTotal').textContent = `${(totalMin/60).toFixed(1)} hrs`;
+
+      const c = getConfig();
+      const pct = Math.min(100, Math.round((totalMin / 60 / c.totalHours) * 100));
+      document.getElementById('progressBar').style.width = pct + '%';
+      const bar = document.getElementById('progressBar');
+      if (pct <= 90) bar.style.background = 'var(--palette-primary)';
+      else if (pct <= 110) bar.style.background = '#059669';
+      else bar.style.background = '#DC2626';
+      document.getElementById('progressLabel').textContent = pct + '%';
+    }
+
+    // === STEP 3: Results ===
+    function updateResults() {
+      if (!DATA) return;
+      const c = getConfig();
+      const totalMin = addedActivities.reduce((s, a) => s + a.subtotalMin, 0);
+      const totalHrs = totalMin / 60;
+      const pct = c.totalHours > 0 ? totalHrs / c.totalHours : 0;
+
+      // Traffic light
+      const icon = document.getElementById('semaforoIcon');
+      const title = document.getElementById('semaforoTitle');
+      const desc = document.getElementById('semaforoDesc');
+
+      if (addedActivities.length === 0) {
+        icon.className = 'semaforo'; icon.style.background = '#F3F4F6'; icon.style.color = '#9CA3AF'; icon.innerHTML = '?';
+        title.textContent = 'Agrega actividades';
+        desc.textContent = 'Comienza agregando e-actividades para ver el resultado.';
+      } else if (Math.abs(pct - 1) <= DATA.config.toleranciaCarga) {
+        icon.className = 'semaforo verde'; icon.innerHTML = '&#10003;';
+        title.textContent = 'Carga equilibrada';
+        desc.textContent = `${totalHrs.toFixed(1)} hrs de ${c.totalHours} hrs esperadas (${Math.round(pct*100)}%)`;
+      } else if (pct < 1 - DATA.config.toleranciaCarga) {
+        icon.className = 'semaforo amarillo'; icon.innerHTML = '&darr;';
+        title.textContent = 'Subcarga';
+        desc.textContent = `${totalHrs.toFixed(1)} hrs de ${c.totalHours} hrs esperadas. Faltan ${(c.totalHours - totalHrs).toFixed(1)} hrs.`;
+      } else {
+        icon.className = 'semaforo rojo'; icon.innerHTML = '&uarr;';
+        title.textContent = 'Sobrecarga';
+        desc.textContent = `${totalHrs.toFixed(1)} hrs excede las ${c.totalHours} hrs esperadas por ${(totalHrs - c.totalHours).toFixed(1)} hrs.`;
+      }
+
+      renderDonut();
+      renderChecklist();
+      renderWeeklyBars();
+    }
+
+    function renderDonut() {
+      const svg = document.getElementById('donutChart');
+      const legend = document.getElementById('donutLegend');
+      // Remove old segments
+      svg.querySelectorAll('.donut-segment').forEach(s => s.remove());
+
+      const byCategory = {};
+      addedActivities.forEach(a => {
+        byCategory[a.cat] = (byCategory[a.cat] || 0) + a.subtotalMin;
+      });
+      const totalMin = addedActivities.reduce((s, a) => s + a.subtotalMin, 0);
+      if (totalMin === 0) { legend.innerHTML = ''; return; }
+
+      const circumference = 2 * Math.PI * 70;
+      let offset = 0;
+      const entries = Object.entries(byCategory).sort((a,b) => b[1] - a[1]);
+
+      entries.forEach(([catId, mins]) => {
+        const cat = DATA.categorias.find(c => c.id === catId);
+        const fraction = mins / totalMin;
+        const dashLen = fraction * circumference;
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', '100'); circle.setAttribute('cy', '100'); circle.setAttribute('r', '70');
+        circle.setAttribute('fill', 'none'); circle.setAttribute('stroke', cat?.color || '#999');
+        circle.setAttribute('stroke-width', '28');
+        circle.setAttribute('stroke-dasharray', `${dashLen} ${circumference - dashLen}`);
+        circle.setAttribute('stroke-dashoffset', `${-offset}`);
+        circle.setAttribute('transform', 'rotate(-90 100 100)');
+        circle.classList.add('donut-segment');
+        svg.appendChild(circle);
+        offset += dashLen;
+      });
+
+      // Center text
+      let centerText = svg.querySelector('.center-text');
+      if (!centerText) {
+        centerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        centerText.setAttribute('x', '100'); centerText.setAttribute('y', '105');
+        centerText.setAttribute('text-anchor', 'middle'); centerText.setAttribute('font-size', '18');
+        centerText.setAttribute('font-weight', '800'); centerText.setAttribute('fill', '#1f2937');
+        centerText.classList.add('center-text');
+        svg.appendChild(centerText);
+      }
+      centerText.textContent = `${(totalMin/60).toFixed(1)}h`;
+
+      legend.innerHTML = entries.map(([catId, mins]) => {
+        const cat = DATA.categorias.find(c => c.id === catId);
+        return `<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full inline-block" style="background:${cat?.color}"></span>${cat?.nombre} ${Math.round(mins/totalMin*100)}%</span>`;
+      }).join('');
+    }
+
+    function renderChecklist() {
+      if (!DATA) return;
+      const container = document.getElementById('checklist');
+      const c = getConfig();
+      const totalMin = addedActivities.reduce((s, a) => s + a.subtotalMin, 0);
+      const cats = {};
+      addedActivities.forEach(a => { cats[a.cat] = (cats[a.cat] || 0) + a.subtotalMin; });
+
+      const hasInteraction = (cats['EC'] || 0) > 0;
+      const hasCollab = (cats['ED'] || 0) > 0;
+      const hasReflection = (cats['EE'] || 0) > 0;
+      const hasFormative = addedActivities.some(a => {
+        const act = DATA.actividades.find(x => x.id === a.actId);
+        return act && act.tipo === 'formativa';
+      });
+      const contentPct = totalMin > 0 ? (cats['IN'] || 0) / totalMin : 0;
+      const syncMin = addedActivities.filter(a => ['EC3','EC4','EC5','EC6'].includes(a.actId)).reduce((s,a) => s + a.subtotalMin, 0);
+      const syncPct = totalMin > 0 ? syncMin / totalMin : 0;
+      const profileData = DATA.perfiles.find(p => p.id === c.profile);
+      const syncOk = c.profile === 'postgrado' ? syncPct <= 0.5 : syncPct >= 0.15;
+
+      const checks = [
+        { ok: hasInteraction, label: 'Actividades de interacci\u00f3n' },
+        { ok: hasCollab, label: 'Actividades de colaboraci\u00f3n' },
+        { ok: hasReflection, label: 'Actividades de reflexi\u00f3n' },
+        { ok: hasFormative, label: 'Evaluaci\u00f3n formativa presente' },
+        { ok: contentPct <= DATA.config.alertaPasivo, label: `Contenido pasivo \u2264 60% (actual: ${Math.round(contentPct*100)}%)` },
+        { ok: syncOk, label: `Balance s\u00edncrono/as\u00edncrono para ${profileData?.label || 'perfil'}` },
+      ];
+
+      container.innerHTML = checks.map(ch => {
+        const color = addedActivities.length === 0 ? '#9CA3AF' : (ch.ok ? '#059669' : '#D97706');
+        const icon = addedActivities.length === 0 ? 'M12 8v4m0 4h.01' : (ch.ok ? 'M5 13l4 4L19 7' : 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z');
+        return `<div class="check-item">
+          <svg class="check-icon" fill="none" stroke="${color}" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${icon}"/></svg>
+          <span style="color:${addedActivities.length === 0 ? '#9CA3AF' : '#374151'}">${ch.label}</span>
+        </div>`;
+      }).join('');
+    }
+
+    function renderWeeklyBars() {
+      const c = getConfig();
+      const totalMin = addedActivities.reduce((s, a) => s + a.subtotalMin, 0);
+      const section = document.getElementById('weeklyBarsSection');
+      if (addedActivities.length === 0) { section.style.display = 'none'; return; }
+      section.style.display = '';
+
+      const weeklyMin = totalMin / c.weeks;
+      const weeklyHrs = weeklyMin / 60;
+      const maxBar = Math.max(weeklyHrs, DATA.config.cargaSemanalMaxima) * 1.1;
+      const container = document.getElementById('weeklyBars');
+
+      let rows = '';
+      for (let w = 1; w <= Math.min(c.weeks, 20); w++) {
+        const hrs = weeklyHrs;
+        const pct = (hrs / maxBar) * 100;
+        const color = hrs <= DATA.config.cargaSemanalRecomendada ? '#4ADE80' : (hrs <= DATA.config.cargaSemanalMaxima ? '#FACC15' : '#F87171');
+        rows += `<div class="flex items-center gap-3">
+          <span class="text-xs text-gray-400 w-8 text-right">S${w}</span>
+          <div class="flex-1 bg-gray-200 rounded-sm h-5 overflow-hidden">
+            <div class="weekly-bar" style="width:${pct}%; background:${color};"></div>
+          </div>
+          <span class="text-xs font-semibold w-12 text-right">${hrs.toFixed(1)}h</span>
+        </div>`;
+      }
+      if (c.weeks > 20) rows += `<div class="text-xs text-gray-400 text-center pt-1">... mostrando 20 de ${c.weeks} semanas</div>`;
+      container.innerHTML = rows;
+    }
+
+    // === Export ===
+    window.exportPDF = function() {
+      alert('La exportaci\u00f3n a PDF se implementar\u00e1 en la Fase 2. Por ahora puedes usar Ctrl+P para imprimir esta p\u00e1gina.');
+    };
+
+    window.resetCalculator = function() {
+      addedActivities = [];
+      selectedCat = null;
+      document.getElementById('moduleName').value = '';
+      document.getElementById('sctCredits').value = 3;
+      document.getElementById('weeks').value = 18;
+      document.querySelectorAll('#profileSelector .radio-card').forEach((c,i) => c.classList.toggle('selected', i===0));
+      document.querySelectorAll('#profileSelector input')[0].checked = true;
+      document.querySelectorAll('#unitSelector .radio-card').forEach((c,i) => c.classList.toggle('selected', i===0));
+      document.querySelectorAll('#unitSelector input')[0].checked = true;
+      document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+      document.getElementById('activityCards').innerHTML = '<div class="text-gray-400 text-sm col-span-2 text-center py-8">Selecciona una categor\u00eda para ver las actividades disponibles</div>';
+      renderAdded();
+      updateStats();
+    };
+
+    // === Collapsible ===
+    window.toggleCollapsible = function(trigger) {
+      trigger.classList.toggle('open');
+      const body = trigger.nextElementSibling;
+      body.classList.toggle('open');
+    };
+
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+{
+  "config": {
+    "horasPorCredito": 27,
+    "cargaSemanalRecomendada": 10,
+    "cargaSemanalMaxima": 12,
+    "alertaPasivo": 0.6,
+    "toleranciaCarga": 0.1
+  },
+  "perfiles": [
+    { "id": "pregrado", "label": "Pregrado", "descripcion": "Estudiantes de carreras de pregrado", "sincRecomendado": 0.3 },
+    { "id": "postgrado", "label": "Postgrado / Profesional en ejercicio", "descripcion": "Profesionales adultos que trabajan", "sincRecomendado": 0.2 },
+    { "id": "continua", "label": "Educaci\u00f3n Continua / Curso libre", "descripcion": "Formaci\u00f3n breve, flexible", "sincRecomendado": 0.15 }
+  ],
+  "unidades": [
+    { "id": "semestral", "label": "Actividad curricular completa (semestral)", "semanasDefault": 18, "fase": 1 },
+    { "id": "modulo", "label": "M\u00f3dulo independiente (8 semanas)", "semanasDefault": 8, "fase": 2 },
+    { "id": "microcredencial", "label": "Microcredencial / curso corto", "semanasDefault": 5, "fase": 2 },
+    { "id": "cuech", "label": "Curso CUECH S\u00fabete (2 SCT)", "semanasDefault": 16, "sctFijo": 2, "fase": 3 }
+  ],
+  "categorias": [
+    { "id": "EA", "nombre": "An\u00e1lisis y s\u00edntesis", "descripcion": "Organizar o vincular conceptos adquiridos", "color": "#7C3AED", "pilar": "actividad" },
+    { "id": "EB", "nombre": "Investigaci\u00f3n y resoluci\u00f3n de problemas", "descripcion": "Resolver situaciones contextualizadas", "color": "#059669", "pilar": "actividad" },
+    { "id": "EC", "nombre": "Interacci\u00f3n y comunicaci\u00f3n", "descripcion": "Construir conocimiento en di\u00e1logo", "color": "#0033A1", "pilar": "interaccion" },
+    { "id": "ED", "nombre": "Construcci\u00f3n colaborativa", "descripcion": "Co-construir soluciones en equipo", "color": "#D97706", "pilar": "colaboracion" },
+    { "id": "EE", "nombre": "Reflexi\u00f3n", "descripcion": "Vincular experiencia previa con nuevo aprendizaje", "color": "#DB2777", "pilar": "reflexion" },
+    { "id": "IN", "nombre": "Insumos (contenido)", "descripcion": "Recursos que alimentan las e-actividades", "color": "#6B7280", "pilar": "contenido" },
+    { "id": "EV", "nombre": "Evaluaci\u00f3n", "descripcion": "Formativa (para aprender) y sumativa (productos de aprendizaje)", "color": "#DC2626", "pilar": "evaluacion" }
+  ],
+  "actividades": [
+    { "id": "EA1", "cat": "EA", "nombre": "Mapa conceptual / esquema", "herramientas": "Miro, FigJam, Canva", "tiempoMin": 45, "tiempoMax": 90, "unidad": "min/actividad", "fuente": "Estimaci\u00f3n UDFV" },
+    { "id": "EA2", "cat": "EA", "nombre": "L\u00ednea de tiempo", "herramientas": "H5P Timeline, Canva", "tiempoMin": 30, "tiempoMax": 60, "unidad": "min/actividad", "fuente": "Estimaci\u00f3n" },
+    { "id": "EA3", "cat": "EA", "nombre": "Infograf\u00eda / p\u00f3ster", "herramientas": "Canva, Genially", "tiempoMin": 60, "tiempoMax": 180, "unidad": "min/actividad", "fuente": "FAU" },
+    { "id": "EA4", "cat": "EA", "nombre": "Resumen / s\u00edntesis escrita", "herramientas": "Moodle Assignment", "tiempoMin": 30, "tiempoMax": 60, "unidad": "min/p\u00e1gina", "fuente": "Wake Forest" },
+
+    { "id": "EB1", "cat": "EB", "nombre": "Estudio de caso", "herramientas": "Moodle Assignment", "tiempoMin": 120, "tiempoMax": 240, "unidad": "min/actividad", "fuente": "FAU, FGCU" },
+    { "id": "EB2", "cat": "EB", "nombre": "Proyecto de investigaci\u00f3n (semanal)", "herramientas": "Moodle + Google Docs", "tiempoMin": 120, "tiempoMax": 240, "unidad": "min/semana", "fuente": "Penn State" },
+    { "id": "EB3", "cat": "EB", "nombre": "Resoluci\u00f3n de problemas (ABP)", "herramientas": "Moodle, H5P Branching", "tiempoMin": 120, "tiempoMax": 300, "unidad": "min/actividad", "fuente": "Estimaci\u00f3n" },
+    { "id": "EB4", "cat": "EB", "nombre": "Trabajo de campo / pr\u00e1ctica situada", "herramientas": "Moodle + evidencia", "tiempoMin": 180, "tiempoMax": 360, "unidad": "min/actividad", "fuente": "Experiencia UDFV" },
+
+    { "id": "EC1", "cat": "EC", "nombre": "Foro: post original", "herramientas": "Moodle Forum", "tiempoMin": 30, "tiempoMax": 45, "unidad": "min/post", "fuente": "FAU" },
+    { "id": "EC2", "cat": "EC", "nombre": "Foro: respuesta a pares", "herramientas": "Moodle Forum", "tiempoMin": 15, "tiempoMax": 20, "unidad": "min/respuesta", "fuente": "FAU" },
+    { "id": "EC3", "cat": "EC", "nombre": "Sesi\u00f3n sincr\u00f3nica (clase en vivo)", "herramientas": "Zoom, BigBlueButton", "tiempoMin": 60, "tiempoMax": 90, "unidad": "min/sesi\u00f3n (incluye prep)", "fuente": "Penn State" },
+    { "id": "EC4", "cat": "EC", "nombre": "Tutor\u00eda individual/grupal", "herramientas": "Zoom, BigBlueButton", "tiempoMin": 30, "tiempoMax": 60, "unidad": "min/sesi\u00f3n", "fuente": "Experiencia UDFV" },
+    { "id": "EC5", "cat": "EC", "nombre": "Presentaci\u00f3n del estudiante en vivo", "herramientas": "Zoom", "tiempoMin": 60, "tiempoMax": 120, "unidad": "min/presentaci\u00f3n (incluye prep)", "fuente": "FAU" },
+    { "id": "EC6", "cat": "EC", "nombre": "Glosario colaborativo", "herramientas": "Moodle Glossary", "tiempoMin": 15, "tiempoMax": 20, "unidad": "min/entrada", "fuente": "Estimaci\u00f3n" },
+
+    { "id": "ED1", "cat": "ED", "nombre": "Wiki colaborativa", "herramientas": "Moodle Wiki", "tiempoMin": 30, "tiempoMax": 60, "unidad": "min/contribuci\u00f3n", "fuente": "Penn State" },
+    { "id": "ED2", "cat": "ED", "nombre": "Muro colaborativo", "herramientas": "Padlet, Miro, Board", "tiempoMin": 20, "tiempoMax": 40, "unidad": "min/actividad", "fuente": "Estimaci\u00f3n UDFV" },
+    { "id": "ED3", "cat": "ED", "nombre": "Proyecto grupal (semanal)", "herramientas": "Moodle + Miro/FigJam", "tiempoMin": 120, "tiempoMax": 240, "unidad": "min/semana", "fuente": "Penn State" },
+    { "id": "ED4", "cat": "ED", "nombre": "Co-construcci\u00f3n de documento", "herramientas": "Google Docs compartido", "tiempoMin": 60, "tiempoMax": 120, "unidad": "min/sesi\u00f3n", "fuente": "Estimaci\u00f3n" },
+    { "id": "ED5", "cat": "ED", "nombre": "Co-evaluaci\u00f3n entre pares", "herramientas": "Moodle Workshop", "tiempoMin": 30, "tiempoMax": 45, "unidad": "min/trabajo revisado", "fuente": "FAU" },
+
+    { "id": "EE1", "cat": "EE", "nombre": "Diario reflexivo", "herramientas": "Moodle Diary/Journal", "tiempoMin": 15, "tiempoMax": 20, "unidad": "min/entrada", "fuente": "Estimaci\u00f3n" },
+    { "id": "EE2", "cat": "EE", "nombre": "Blog de aprendizaje", "herramientas": "Moodle Blog, Google Sites", "tiempoMin": 30, "tiempoMax": 45, "unidad": "min/entrada", "fuente": "Estimaci\u00f3n" },
+    { "id": "EE3", "cat": "EE", "nombre": "Portafolio de evidencias", "herramientas": "Mahara, Google Sites", "tiempoMin": 30, "tiempoMax": 60, "unidad": "min/entrada", "fuente": "Estimaci\u00f3n" },
+    { "id": "EE4", "cat": "EE", "nombre": "Ensayo reflexivo", "herramientas": "Moodle Assignment", "tiempoMin": 30, "tiempoMax": 45, "unidad": "min/p\u00e1gina", "fuente": "Wake Forest" },
+
+    { "id": "IN1", "cat": "IN", "nombre": "Lectura acad\u00e9mica (paper, journal)", "herramientas": "Moodle recurso (PDF/URL)", "tiempoMin": 4, "tiempoMax": 6, "unidad": "min/p\u00e1gina", "fuente": "Penn State, FAU" },
+    { "id": "IN2", "cat": "IN", "nombre": "Lectura general (gu\u00eda, apuntes)", "herramientas": "Moodle recurso", "tiempoMin": 2, "tiempoMax": 4, "unidad": "min/p\u00e1gina", "fuente": "Penn State" },
+    { "id": "IN3", "cat": "IN", "nombre": "Video instruccional", "herramientas": "YouTube, Moodle", "tiempoMin": 15, "tiempoMax": 30, "unidad": "min/video (1.5x duraci\u00f3n)", "fuente": "FGCU + UDFV" },
+    { "id": "IN4", "cat": "IN", "nombre": "Grabaci\u00f3n de clase (repaso)", "herramientas": "YouTube (desde Zoom)", "tiempoMin": 45, "tiempoMax": 90, "unidad": "min/grabaci\u00f3n", "fuente": "Experiencia UDFV" },
+    { "id": "IN5", "cat": "IN", "nombre": "Podcast / Audio Overview", "herramientas": "NotebookLM, Podcastfy", "tiempoMin": 15, "tiempoMax": 30, "unidad": "min/episodio", "fuente": "Estimaci\u00f3n UDFV" },
+    { "id": "IN6", "cat": "IN", "nombre": "M\u00f3dulo SCORM autoinstruccional", "herramientas": "SCORM en Moodle", "tiempoMin": 15, "tiempoMax": 60, "unidad": "min/m\u00f3dulo", "fuente": "xAPI tracking" },
+    { "id": "IN7", "cat": "IN", "nombre": "Presentaci\u00f3n interactiva", "herramientas": "Genially, H5P Course Presentation", "tiempoMin": 15, "tiempoMax": 45, "unidad": "min/presentaci\u00f3n", "fuente": "Massey" },
+    { "id": "IN8", "cat": "IN", "nombre": "Video interactivo", "herramientas": "H5P Interactive Video, Edpuzzle", "tiempoMin": 15, "tiempoMax": 30, "unidad": "min/video (1.5x duraci\u00f3n)", "fuente": "Estimaci\u00f3n" },
+
+    { "id": "EV1", "cat": "EV", "nombre": "Quiz formativo (no calificado)", "herramientas": "Moodle Quiz, H5P", "tiempoMin": 1, "tiempoMax": 2, "unidad": "min/pregunta", "tipo": "formativa", "fuente": "FAU" },
+    { "id": "EV2", "cat": "EV", "nombre": "Actividades interactivas H5P", "herramientas": "H5P (Drag&Drop, Fill Blanks, Memory, etc.)", "tiempoMin": 5, "tiempoMax": 15, "unidad": "min/actividad", "tipo": "formativa", "fuente": "Estimaci\u00f3n" },
+    { "id": "EV3", "cat": "EV", "nombre": "Escenario ramificado", "herramientas": "H5P Branching Scenario", "tiempoMin": 15, "tiempoMax": 45, "unidad": "min/escenario", "tipo": "formativa", "fuente": "Estimaci\u00f3n" },
+    { "id": "EV4", "cat": "EV", "nombre": "Examen / prueba formal", "herramientas": "Moodle Quiz", "tiempoMin": 60, "tiempoMax": 180, "unidad": "min/examen (sin estudio)", "tipo": "sumativa", "fuente": "Massey" },
+    { "id": "EV5", "cat": "EV", "nombre": "Producto de aprendizaje con r\u00fabrica", "herramientas": "Moodle Assignment + r\u00fabrica", "tiempoMin": 120, "tiempoMax": 480, "unidad": "min/producto", "tipo": "sumativa", "fuente": "Wiggins & McTighe" },
+    { "id": "EV6", "cat": "EV", "nombre": "Presentaci\u00f3n evaluada", "herramientas": "Zoom + r\u00fabrica", "tiempoMin": 60, "tiempoMax": 180, "unidad": "min/presentaci\u00f3n (incluye prep)", "tipo": "sumativa", "fuente": "FAU" },
+    { "id": "EV7", "cat": "EV", "nombre": "Encuesta de cierre / feedback", "herramientas": "Moodle Feedback", "tiempoMin": 10, "tiempoMax": 15, "unidad": "min/encuesta", "tipo": "proceso", "fuente": "Estimaci\u00f3n" }
+  ],
+  "pilares": {
+    "interaccion": { "nombre": "Interacci\u00f3n", "categorias": ["EC"], "minimo": "Al menos 1 actividad de interacci\u00f3n" },
+    "colaboracion": { "nombre": "Colaboraci\u00f3n", "categorias": ["ED"], "minimo": "Al menos 1 actividad colaborativa" },
+    "reflexion": { "nombre": "Reflexi\u00f3n", "categorias": ["EE"], "minimo": "Al menos 1 actividad de reflexi\u00f3n" },
+    "evaluacionFormativa": { "nombre": "Evaluaci\u00f3n formativa", "categorias": ["EV"], "filtro": "formativa", "minimo": "Al menos 1 evaluaci\u00f3n formativa" }
+  }
+}
