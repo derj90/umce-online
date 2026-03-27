@@ -5465,6 +5465,7 @@ app.get('/ayuda', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ayu
 app.get('/privacidad', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacidad.html')));
 app.get('/formacion-docente', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente.html')));
 app.get('/formacion-docente/marco', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente-marco.html')));
+app.get('/formacion-docente/plan', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente-plan.html')));
 
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/piac', (req, res) => res.sendFile(path.join(__dirname, 'public', 'piac.html')));
