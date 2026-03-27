@@ -5421,9 +5421,13 @@ app.get('/api/health', (req, res) => {
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/catalogo', (req, res) => res.sendFile(path.join(__dirname, 'public', 'catalogo.html')));
 app.get('/competencias', (req, res) => res.sendFile(path.join(__dirname, 'public', 'competencias.html')));
-app.get('/sct', (req, res) => res.sendFile(path.join(__dirname, 'public', 'sct.html')));
-app.get('/sct/aprende', (req, res) => res.sendFile(path.join(__dirname, 'public', 'sct-aprende.html')));
-app.get('/sct/actividades', (req, res) => res.sendFile(path.join(__dirname, 'public', 'sct-actividades.html')));
+app.get('/virtualizacion', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion.html')));
+app.get('/virtualizacion/planificador', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-planificador.html')));
+app.get('/virtualizacion/fundamentos', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-fundamentos.html')));
+// Redirects from old SCT URLs
+app.get('/sct', (req, res) => res.redirect(301, '/virtualizacion/planificador'));
+app.get('/sct/aprende', (req, res) => res.redirect(301, '/virtualizacion/fundamentos'));
+app.get('/sct/actividades', (req, res) => res.redirect(301, '/virtualizacion/planificador'));
 app.get('/servicios', (req, res) => res.sendFile(path.join(__dirname, 'public', 'servicios.html')));
 app.get('/noticias', (req, res) => res.sendFile(path.join(__dirname, 'public', 'noticias.html')));
 app.get('/mis-cursos', (req, res) => res.sendFile(path.join(__dirname, 'public', 'mis-cursos.html')));
