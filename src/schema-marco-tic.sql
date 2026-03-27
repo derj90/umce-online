@@ -241,6 +241,6 @@ CREATE POLICY "tic_dominios_read" ON portal.tic_dominios FOR SELECT USING (true)
 CREATE POLICY "tic_ambitos_read" ON portal.tic_ambitos FOR SELECT USING (true);
 CREATE POLICY "tic_descriptores_read" ON portal.tic_descriptores FOR SELECT USING (true);
 
-GRANT SELECT ON portal.tic_dominios TO anon, authenticated;
-GRANT SELECT ON portal.tic_ambitos TO anon, authenticated;
-GRANT SELECT ON portal.tic_descriptores TO anon, authenticated;
+GRANT SELECT ON portal.tic_dominios TO anon, authenticated, service_role;
+GRANT SELECT ON portal.tic_ambitos TO anon, authenticated, service_role;
+GRANT SELECT ON portal.tic_descriptores TO anon, authenticated, service_role;
