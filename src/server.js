@@ -5438,6 +5438,65 @@ app.post('/api/admin/cron/run', adminOrEditorMiddleware, async (req, res) => {
   }
 });
 
+// --- API: Autoformación enrollment ---
+app.post('/api/autoformacion/enroll', async (req, res) => {
+  try {
+    const { nombre, apellido, email, institucion, estamento, course_slug } = req.body;
+    if (!nombre || !apellido || !email) {
+      return res.status(400).json({ error: 'Nombre, apellido y email son requeridos' });
+    }
+
+    const slug = course_slug || 'sustentabilidad';
+
+    // Generate access token
+    const access_token = crypto.randomBytes(32).toString('hex');
+
+    // Check if already enrolled
+    const existing = await portalQuery('autoformacion_enrollments', `email=eq.${encodeURIComponent(email)}&course_slug=eq.${slug}`);
+    if (existing && existing.length > 0) {
+      return res.json({ success: true, message: 'Ya estás inscrito/a', access_token: existing[0].access_token, already_enrolled: true });
+    }
+
+    // Insert
+    await portalMutate('autoformacion_enrollments', 'POST', {
+      course_slug: slug,
+      nombre,
+      apellido,
+      email: email.toLowerCase().trim(),
+      institucion: institucion || null,
+      estamento: estamento || null,
+      access_token
+    });
+
+    res.json({ success: true, message: 'Inscripción exitosa', access_token });
+  } catch (err) {
+    console.error('Enrollment error:', err.message);
+    if (err.message && err.message.includes('duplicate')) {
+      return res.json({ success: true, message: 'Ya estás inscrito/a', already_enrolled: true });
+    }
+    res.status(500).json({ error: 'Error al procesar inscripción' });
+  }
+});
+
+// Get enrollment status
+app.get('/api/autoformacion/status', async (req, res) => {
+  try {
+    const { token, email, slug } = req.query;
+    let enrollment;
+    if (token) {
+      const results = await portalQuery('autoformacion_enrollments', `access_token=eq.${token}`);
+      enrollment = results?.[0];
+    } else if (email && slug) {
+      const results = await portalQuery('autoformacion_enrollments', `email=eq.${encodeURIComponent(email)}&course_slug=eq.${slug || 'sustentabilidad'}`);
+      enrollment = results?.[0];
+    }
+    if (!enrollment) return res.status(404).json({ error: 'No encontrado' });
+    res.json(enrollment);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --- API: Health check ---
 app.get('/api/health', (req, res) => {
   res.json({
@@ -5466,6 +5525,10 @@ app.get('/privacidad', (req, res) => res.sendFile(path.join(__dirname, 'public',
 app.get('/formacion-docente', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente.html')));
 app.get('/formacion-docente/marco', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente-marco.html')));
 app.get('/formacion-docente/plan', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente-plan.html')));
+
+// Autoformación
+app.get('/autoformacion/sustentabilidad', (req, res) => res.sendFile(path.join(__dirname, 'public', 'autoformacion-sustentabilidad.html')));
+app.get('/autoformacion/sustentabilidad/curso', (req, res) => res.sendFile(path.join(__dirname, 'public', 'autoformacion-sustentabilidad-curso.html')));
 
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/piac', (req, res) => res.sendFile(path.join(__dirname, 'public', 'piac.html')));

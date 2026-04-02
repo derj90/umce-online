@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sustentabilidad en Universidades del Estado &mdash; UMCE Online</title>
+  <meta name="description" content="Curso autoinstruccional de 10 horas sobre sustentabilidad en universidades del estado. Proyecto ENRED - CUECH. Constancia oficial para funcionarios, acad&eacute;micos y profesionales.">
+  <link rel="canonical" href="https://umce.online/autoformacion/sustentabilidad">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://umce.online/autoformacion/sustentabilidad">
+  <meta property="og:title" content="Sustentabilidad en Universidades del Estado &mdash; UMCE Online">
+  <meta property="og:description" content="Curso autoinstruccional de 10 horas. Proyecto ENRED &mdash; Compromiso con la Sustentabilidad (CUECH). Constancia oficial.">
+  <meta property="og:site_name" content="UMCE Online">
+  <meta property="og:locale" content="es_CL">
+  <script defer data-domain="umce.online" src="https://plausible.io/js/script.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+  <style>
+    :root {
+      /* Palette: 60-30-10 */
+      --bg-primary: #fafaf9;       /* 60% — stone-50, fondo general */
+      --bg-secondary: #ffffff;     /* 30% — cards, secciones */
+      --accent: #166534;           /* 10% — CTAs, highlights, verde oscuro */
+      --accent-hover: #14532d;
+      --accent-light: #f0fdf4;     /* fondo sutil para badges */
+
+      /* Text — contrast verified */
+      --text-primary: #1c1917;     /* stone-900, ratio 15.4:1 on white */
+      --text-secondary: #57534e;   /* stone-600, ratio 6.1:1 on white */
+      --text-muted: #78716c;       /* stone-500, ratio 4.6:1 on white — only for large text */
+
+      /* Borders */
+      --border: #e7e5e4;           /* stone-200 */
+      --border-light: #f5f5f4;     /* stone-100 */
+
+      /* Palette vars for shared nav */
+      --palette-primary: #166534;
+      --palette-accent: #22c55e;
+      --palette-dark: #0f172a;
+      --palette-secondary: #f0fdf4;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      margin: 0;
+    }
+    .font-heading { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+
+    /* Hero — light background, dark text, high contrast */
+    .hero {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 7rem 1.5rem 3rem;
+    }
+
+    /* Stat chips */
+    .stat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      background: var(--accent-light);
+      color: var(--accent);
+      border: 1px solid #dcfce7;
+    }
+
+    /* Module card */
+    .module-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: box-shadow 0.2s;
+    }
+    .module-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .module-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+      flex-shrink: 0;
+    }
+
+    /* Topic tags */
+    .topic-tag {
+      display: inline-block;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    /* Step card */
+    .step-card {
+      text-align: center;
+      padding: 1.5rem 1rem;
+    }
+    .step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+      margin: 0 auto 0.75rem;
+    }
+
+    /* CTA — 1 primary per view */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 2rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      background: var(--accent);
+      color: white;
+      font-family: 'Inter', system-ui, sans-serif;
+      /* contrast: white on #166534 = 7.1:1 AAA */
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(22,101,52,0.25);
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 2rem;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 0.9375rem;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      transition: all 0.15s;
+    }
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Section card */
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+    }
+
+    /* Form */
+    .form-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-family: 'Inter', system-ui, sans-serif;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(22,101,52,0.12);
+    }
+    .form-input.error { border-color: #dc2626; }
+    .form-label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.375rem;
+    }
+    .form-error {
+      font-size: 0.75rem;
+      color: #dc2626;
+      margin-top: 0.25rem;
+      display: none;
+    }
+    .alert {
+      padding: 1rem 1.25rem;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      display: none;
+    }
+    .alert-success { background: var(--accent-light); color: var(--accent); border: 1px solid #bbf7d0; }
+    .alert-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+    /* Section label */
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.375rem;
+    }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Shared nav -->
+  <div id="nav-container"></div>
+
+  <!-- Hero — light bg, dark text, high contrast -->
+  <section class="hero">
+    <div style="max-width:960px;margin:0 auto;">
+      <p class="section-label">Proyecto ENRED &mdash; CUECH</p>
+      <h1 class="font-heading" style="font-size:2.25rem;font-weight:800;line-height:1.2;margin-bottom:1rem;color:var(--text-primary);max-width:720px;">
+        Avanzando hacia un nuevo paradigma de transformaci&oacute;n cultural en sustentabilidad en Universidades del Estado
+      </h1>
+      <p style="font-size:1.0625rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1.5rem;max-width:640px;">
+        Curso autoinstruccional de 10 horas dirigido a la comunidad universitaria de las Universidades del Estado de Chile. Tercera versi&oacute;n, en un formato m&aacute;s accesible.
+      </p>
+
+      <!-- Stats — chips, not pills over dark -->
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:2rem;">
+        <span class="stat-chip">10 horas</span>
+        <span class="stat-chip">3 m&oacute;dulos</span>
+        <span class="stat-chip">Autoinstruccional</span>
+        <span class="stat-chip">Constancia CUECH</span>
+      </div>
+
+      <!-- 1 primary CTA + 1 secondary -->
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <a href="#inscripcion" class="btn-primary">Inscr&iacute;bete</a>
+        <a href="#programa" class="btn-secondary">Ver programa</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Competencia -->
+  <section style="max-width:960px;margin:2.5rem auto;padding:0 1.5rem;">
+    <div class="card" style="display:flex;align-items:start;gap:1rem;">
+      <div class="module-num" style="width:40px;height:40px;border-radius:10px;">
+        <svg width="20" height="20" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div>
+        <h3 class="font-heading" style="font-weight:700;font-size:0.9375rem;margin-bottom:0.25rem;">Competencia del curso</h3>
+        <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
+          Argumenta reflexiva y cr&iacute;ticamente decisiones en su quehacer profesional considerando la contribuci&oacute;n de la naturaleza y la actividad humana en los ecosistemas y el tejido social.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modules -->
+  <section id="programa" style="max-width:960px;margin:3rem auto;padding:0 1.5rem;">
+    <p class="section-label">Programa</p>
+    <h2 class="font-heading" style="font-weight:700;font-size:1.5rem;margin-bottom:1.25rem;">Contenidos del curso</h2>
+
+    <div style="display:flex;flex-direction:column;gap:1rem;">
+      <!-- M1 -->
+      <div class="module-card">
+        <div style="display:flex;align-items:start;gap:1rem;">
+          <div class="module-num">1</div>
+          <div style="flex:1;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.5rem;">
+              <h3 class="font-heading" style="font-weight:700;font-size:0.9375rem;">Contribuci&oacute;n de la naturaleza y de la actividad humana en los ecosistemas y el tejido social</h3>
+              <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">4 horas &middot; 6 unidades</span>
+            </div>
+            <p style="font-size:0.8125rem;color:var(--text-secondary);line-height:1.6;margin-bottom:0.75rem;">
+              Bases conceptuales de la sustentabilidad, relaci&oacute;n entre sistemas naturales y sociales, impacto de la actividad humana en ecosistemas y comunidades.
+            </p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.25rem;">
+              <span class="topic-tag">Biosfera</span>
+              <span class="topic-tag">Ecosistemas</span>
+              <span class="topic-tag">Antropoceno</span>
+              <span class="topic-tag">ODS</span>
+              <span class="topic-tag">G&eacute;nero</span>
+              <span class="topic-tag">Crisis ambiental</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- M2 -->
+      <div class="module-card">
+        <div style="display:flex;align-items:start;gap:1rem;">
+          <div class="module-num">2</div>
+          <div style="flex:1;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.5rem;">
+              <h3 class="font-heading" style="font-weight:700;font-size:0.9375rem;">Sustentabilidad en las Universidades del Estado de Chile</h3>
+              <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">3 horas</span>
+            </div>
+            <p style="font-size:0.8125rem;color:var(--text-secondary);line-height:1.6;margin-bottom:0.75rem;">
+              Rol de las universidades estatales en la promoci&oacute;n de la sustentabilidad, pol&iacute;ticas institucionales y compromisos asumidos a trav&eacute;s del CUECH.
+            </p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.25rem;">
+              <span class="topic-tag">Universidades del Estado</span>
+              <span class="topic-tag">Pol&iacute;ticas</span>
+              <span class="topic-tag">CUECH</span>
+              <span class="topic-tag">Responsabilidad social</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- M3 -->
+      <div class="module-card">
+        <div style="display:flex;align-items:start;gap:1rem;">
+          <div class="module-num">3</div>
+          <div style="flex:1;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.5rem;">
+              <h3 class="font-heading" style="font-weight:700;font-size:0.9375rem;">Pr&aacute;cticas transformadoras sustentables</h3>
+              <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">3 horas</span>
+            </div>
+            <p style="font-size:0.8125rem;color:var(--text-secondary);line-height:1.6;margin-bottom:0.75rem;">
+              Pr&aacute;cticas concretas de transformaci&oacute;n sustentable en el quehacer universitario cotidiano, desde la gesti&oacute;n hasta la docencia.
+            </p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.25rem;">
+              <span class="topic-tag">Huella de carbono</span>
+              <span class="topic-tag">Huella h&iacute;drica</span>
+              <span class="topic-tag">Campus sustentable</span>
+              <span class="topic-tag">Gesti&oacute;n de recursos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Evaluation -->
+  <section style="max-width:960px;margin:2.5rem auto;padding:0 1.5rem;">
+    <div class="card">
+      <h3 class="font-heading" style="font-weight:700;font-size:1rem;margin-bottom:0.375rem;">Evaluaci&oacute;n formativa</h3>
+      <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
+        Cada m&oacute;dulo incluye un cuestionario con hasta 5 intentos. El curso busca acompa&ntilde;ar el aprendizaje, no sancionar. Al completar los tres m&oacute;dulos recibir&aacute;s una constancia emitida por el CUECH.
+      </p>
+    </div>
+  </section>
+
+  <hr class="divider" style="max-width:960px;margin:0 auto;">
+
+  <!-- How it works -->
+  <section style="max-width:960px;margin:2.5rem auto;padding:0 1.5rem;">
+    <p class="section-label">Proceso</p>
+    <h2 class="font-heading" style="font-weight:700;font-size:1.5rem;margin-bottom:1.25rem;">C&oacute;mo funciona</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:1rem;">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <h3 class="font-heading" style="font-weight:700;font-size:0.875rem;margin-bottom:0.25rem;">Inscr&iacute;bete</h3>
+        <p style="font-size:0.8125rem;color:var(--text-secondary);line-height:1.5;">Completa el formulario con tus datos y universidad.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <h3 class="font-heading" style="font-weight:700;font-size:0.875rem;margin-bottom:0.25rem;">Accede al curso</h3>
+        <p style="font-size:0.8125rem;color:var(--text-secondary);line-height:1.5;">Recibir&aacute;s un correo con las instrucciones de acceso.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <h3 class="font-heading" style="font-weight:700;font-size:0.875rem;margin-bottom:0.25rem;">Completa los m&oacute;dulos</h3>
+        <p style="font-size:0.8125rem;color:var(--text-secondary);line-height:1.5;">Avanza a tu ritmo por los 3 m&oacute;dulos y sus cuestionarios.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <h3 class="font-heading" style="font-weight:700;font-size:0.875rem;margin-bottom:0.25rem;">Obt&eacute;n tu constancia</h3>
+        <p style="font-size:0.8125rem;color:var(--text-secondary);line-height:1.5;">Al completar, recibes una constancia emitida por el CUECH.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" style="max-width:960px;margin:0 auto;">
+
+  <!-- About the project -->
+  <section style="max-width:960px;margin:2.5rem auto;padding:0 1.5rem;">
+    <p class="section-label">Contexto</p>
+    <h2 class="font-heading" style="font-weight:700;font-size:1.5rem;margin-bottom:1rem;">Proyecto ENRED &mdash; Compromiso con la Sustentabilidad</h2>
+    <div style="max-width:65ch;">
+      <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">
+        Este curso es parte del Proyecto ENRED, una iniciativa del Consorcio de Universidades del Estado de Chile (CUECH), que busca promover la transformaci&oacute;n cultural hacia la sustentabilidad en las 18 universidades estatales del pa&iacute;s.
+      </p>
+      <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">
+        El proyecto contribuye a que las comunidades universitarias incorporen pr&aacute;cticas sustentables en su quehacer cotidiano: gesti&oacute;n institucional, docencia, investigaci&oacute;n y vinculaci&oacute;n con el medio.
+      </p>
+      <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.7;">
+        Las dos versiones anteriores registraron cerca de 700 inscripciones. Esta tercera versi&oacute;n ha sido migrada a un formato m&aacute;s accesible.
+      </p>
+    </div>
+  </section>
+
+  <!-- Audience -->
+  <section style="max-width:960px;margin:2.5rem auto;padding:0 1.5rem;">
+    <div class="card">
+      <h3 class="font-heading" style="font-weight:700;font-size:1rem;margin-bottom:0.5rem;">Dirigido a</h3>
+      <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;margin-bottom:0.75rem;">
+        Comunidad universitaria de las Universidades del Estado de Chile, a excepci&oacute;n de estudiantes de pregrado y postgrado.
+      </p>
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+        <span class="stat-chip">Acad&eacute;micos/as</span>
+        <span class="stat-chip">Profesionales</span>
+        <span class="stat-chip">T&eacute;cnicos/as</span>
+        <span class="stat-chip">Administrativos/as</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" style="max-width:960px;margin:0 auto;">
+
+  <!-- Enrollment form -->
+  <section id="inscripcion" style="max-width:960px;margin:3rem auto;padding:0 1.5rem 4rem;">
+    <div style="max-width:560px;margin:0 auto;">
+      <p class="section-label">Inscripci&oacute;n</p>
+      <h2 class="font-heading" style="font-weight:700;font-size:1.5rem;margin-bottom:0.375rem;">Inscr&iacute;bete en el curso</h2>
+      <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;margin-bottom:1.5rem;">
+        Completa tus datos. Recibir&aacute;s un correo con las instrucciones de acceso.
+      </p>
+
+      <div id="form-alert-success" class="alert alert-success" style="margin-bottom:1rem;">
+        <strong>Inscripci&oacute;n enviada.</strong> Revisa tu correo para las instrucciones de acceso.
+      </div>
+      <div id="form-alert-error" class="alert alert-error" style="margin-bottom:1rem;">
+        <strong>Hubo un problema.</strong> <span id="error-detail">Intenta nuevamente o escribe a udfv@umce.cl.</span>
+      </div>
+
+      <form id="enroll-form" novalidate>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+          <div>
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" id="nombre" name="nombre" class="form-input" placeholder="Tu nombre" required>
+            <div class="form-error" id="err-nombre">Ingresa tu nombre.</div>
+          </div>
+          <div>
+            <label for="apellido" class="form-label">Apellido</label>
+            <input type="text" id="apellido" name="apellido" class="form-input" placeholder="Tu apellido" required>
+            <div class="form-error" id="err-apellido">Ingresa tu apellido.</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:1rem;">
+          <label for="email" class="form-label">Correo electr&oacute;nico</label>
+          <input type="email" id="email" name="email" class="form-input" placeholder="tu.correo@universidad.cl" required>
+          <div class="form-error" id="err-email">Ingresa un correo v&aacute;lido.</div>
+        </div>
+
+        <div style="margin-bottom:1rem;">
+          <label for="institucion" class="form-label">Universidad</label>
+          <select id="institucion" name="institucion" class="form-input" required>
+            <option value="">Selecciona tu universidad</option>
+            <option value="Universidad de Chile">Universidad de Chile</option>
+            <option value="Universidad de Santiago de Chile">Universidad de Santiago de Chile</option>
+            <option value="Universidad de Valparaiso">Universidad de Valpara&iacute;so</option>
+            <option value="Universidad de Antofagasta">Universidad de Antofagasta</option>
+            <option value="Universidad de La Serena">Universidad de La Serena</option>
+            <option value="Universidad del Bio-Bio">Universidad del B&iacute;o-B&iacute;o</option>
+            <option value="Universidad de la Frontera">Universidad de la Frontera</option>
+            <option value="Universidad de Magallanes">Universidad de Magallanes</option>
+            <option value="Universidad de Talca">Universidad de Talca</option>
+            <option value="Universidad de Atacama">Universidad de Atacama</option>
+            <option value="Universidad de Tarapaca">Universidad de Tarapac&aacute;</option>
+            <option value="Universidad Arturo Prat">Universidad Arturo Prat</option>
+            <option value="Universidad Metropolitana de Ciencias de la Educacion">Universidad Metropolitana de Ciencias de la Educaci&oacute;n</option>
+            <option value="Universidad de Playa Ancha">Universidad de Playa Ancha</option>
+            <option value="Universidad Tecnologica Metropolitana">Universidad Tecnol&oacute;gica Metropolitana</option>
+            <option value="Universidad de Los Lagos">Universidad de Los Lagos</option>
+            <option value="Universidad de Aysen">Universidad de Ays&eacute;n</option>
+            <option value="Universidad de O'Higgins">Universidad de O&rsquo;Higgins</option>
+            <option value="Otra">Otra</option>
+          </select>
+          <div class="form-error" id="err-institucion">Selecciona tu universidad.</div>
+        </div>
+
+        <div style="margin-bottom:1.5rem;">
+          <label for="estamento" class="form-label">Estamento</label>
+          <select id="estamento" name="estamento" class="form-input" required>
+            <option value="">Selecciona tu estamento</option>
+            <option value="Academico/a">Acad&eacute;mico/a</option>
+            <option value="Profesional">Profesional</option>
+            <option value="Tecnico/a">T&eacute;cnico/a</option>
+            <option value="Administrativo/a">Administrativo/a</option>
+            <option value="Otro">Otro</option>
+          </select>
+          <div class="form-error" id="err-estamento">Selecciona tu estamento.</div>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn-primary" style="width:100%;justify-content:center;">
+          <span id="submit-text">Enviar inscripci&oacute;n</span>
+          <span id="submit-loading" style="display:none;">Enviando...</span>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div id="footer-container"></div>
+
+  <script>
+    // Load shared nav and footer
+    fetch('/shared/nav.html').then(r => r.text()).then(h => document.getElementById('nav-container').innerHTML = h);
+    fetch('/shared/footer.html').then(r => r.text()).then(h => document.getElementById('footer-container').innerHTML = h);
+
+    // Nav: solid dark background (no hero image to show through)
+    setTimeout(function() {
+      var nb = document.getElementById('navbar');
+      if (nb) {
+        nb.style.background = 'rgba(15,23,42,0.97)';
+        nb.style.backdropFilter = 'blur(8px)';
+      }
+    }, 200);
+
+    // Mobile menu toggle (from shared nav)
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('#mobile-menu-btn')) {
+        var m = document.getElementById('mobile-menu');
+        if (m) m.classList.toggle('hidden');
+      }
+    });
+
+    // Form handling
+    (function() {
+      var form = document.getElementById('enroll-form');
+      var submitBtn = document.getElementById('submit-btn');
+      var submitText = document.getElementById('submit-text');
+      var submitLoading = document.getElementById('submit-loading');
+      var alertSuccess = document.getElementById('form-alert-success');
+      var alertError = document.getElementById('form-alert-error');
+      var errorDetail = document.getElementById('error-detail');
+      var fields = ['nombre', 'apellido', 'email', 'institucion', 'estamento'];
+
+      function validateField(name) {
+        var el = document.getElementById(name);
+        var errEl = document.getElementById('err-' + name);
+        var val = el.value.trim();
+        var valid = val.length > 0;
+        if (name === 'email') valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+        el.classList.toggle('error', !valid);
+        errEl.style.display = valid ? 'none' : 'block';
+        return valid;
+      }
+
+      fields.forEach(function(name) {
+        var el = document.getElementById(name);
+        el.addEventListener('blur', function() { validateField(name); });
+        el.addEventListener('input', function() {
+          el.classList.remove('error');
+          document.getElementById('err-' + name).style.display = 'none';
+        });
+      });
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        alertSuccess.style.display = 'none';
+        alertError.style.display = 'none';
+
+        var allValid = true;
+        fields.forEach(function(n) { if (!validateField(n)) allValid = false; });
+        if (!allValid) return;
+
+        submitBtn.disabled = true;
+        submitText.style.display = 'none';
+        submitLoading.style.display = 'inline';
+
+        var data = {};
+        fields.forEach(function(n) { data[n] = document.getElementById(n).value.trim(); });
+
+        fetch('/api/autoformacion/enroll', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+        .then(function(r) {
+          if (!r.ok) return r.json().then(function(b) { throw new Error(b.error); });
+          return r.json();
+        })
+        .then(function() {
+          alertSuccess.style.display = 'block';
+          form.reset();
+          alertSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        })
+        .catch(function(err) {
+          alertError.style.display = 'block';
+          errorDetail.textContent = err.message || 'Intenta nuevamente o escribe a udfv@umce.cl.';
+          alertError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        })
+        .finally(function() {
+          submitBtn.disabled = false;
+          submitText.style.display = 'inline';
+          submitLoading.style.display = 'none';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
