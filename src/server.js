@@ -536,6 +536,8 @@ app.get('/auth/me', (req, res) => {
 });
 
 // --- Static files ---
+// SPA routes: serve index.html for subdirectory apps
+app.get('/sustentabilidad2026', (req, res) => res.sendFile(path.join(__dirname, 'public/sustentabilidad2026/index.html')));
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 0, etag: false }));
 
 // --- Uploads config ---
@@ -5439,34 +5441,106 @@ app.post('/api/admin/cron/run', adminOrEditorMiddleware, async (req, res) => {
 });
 
 // --- API: Autoformación enrollment ---
+const AUTOFORMACION_COURSES = {
+  sustentabilidad: { moodle_platform: 'evirtual', moodle_course_id: 384 }
+};
+
+// Normalizar RUT: sin puntos, minúscula, con guión
+function normalizeRut(rut) {
+  return rut.replace(/\./g, '').replace(/\s/g, '').toLowerCase().trim();
+}
+
 app.post('/api/autoformacion/enroll', async (req, res) => {
   try {
-    const { nombre, apellido, email, institucion, estamento, course_slug } = req.body;
-    if (!nombre || !apellido || !email) {
-      return res.status(400).json({ error: 'Nombre, apellido y email son requeridos' });
+    const { nombre, apellido, rut, email, institucion, estamento, course_slug } = req.body;
+    if (!nombre || !apellido || !email || !rut) {
+      return res.status(400).json({ error: 'Nombre, apellido, RUT y email son requeridos' });
+    }
+
+    const cleanRut = normalizeRut(rut);
+    if (!/^\d{7,8}-[\dka-z]$/.test(cleanRut)) {
+      return res.status(400).json({ error: 'RUT inválido. Formato: 12345678-9 (sin puntos)' });
     }
 
     const slug = course_slug || 'sustentabilidad';
-
-    // Generate access token
-    const access_token = crypto.randomBytes(32).toString('hex');
+    const courseConfig = AUTOFORMACION_COURSES[slug];
 
     // Check if already enrolled
-    const existing = await portalQuery('autoformacion_enrollments', `email=eq.${encodeURIComponent(email)}&course_slug=eq.${slug}`);
+    const existing = await portalQuery('autoformacion_enrollments', `email=eq.${encodeURIComponent(email.toLowerCase().trim())}&course_slug=eq.${slug}`);
     if (existing && existing.length > 0) {
       return res.json({ success: true, message: 'Ya estás inscrito/a', access_token: existing[0].access_token, already_enrolled: true });
     }
 
-    // Insert
+    // Generate access token
+    const access_token = crypto.randomBytes(32).toString('hex');
+
+    // Insert in Supabase
     await portalMutate('autoformacion_enrollments', 'POST', {
       course_slug: slug,
+      rut: cleanRut,
       nombre,
       apellido,
       email: email.toLowerCase().trim(),
-      institucion: institucion || null,
+      universidad: institucion || null,
       estamento: estamento || null,
       access_token
     });
+
+    // Moodle: crear usuario + matricular (no bloquea inscripción si falla)
+    let moodleUserId = null;
+    if (courseConfig) {
+      try {
+        const platform = PLATFORMS.find(p => p.id === courseConfig.moodle_platform);
+        if (platform) {
+          // Buscar si ya existe por email
+          const byEmail = await moodleCall(platform, 'core_user_get_users_by_field', {
+            field: 'email', 'values[0]': email.toLowerCase().trim()
+          });
+
+          if (byEmail && byEmail.length > 0) {
+            moodleUserId = byEmail[0].id;
+          } else {
+            // Buscar por username (RUT) — puede existir con otro email
+            const byRut = await moodleCall(platform, 'core_user_get_users_by_field', {
+              field: 'username', 'values[0]': cleanRut
+            });
+
+            if (byRut && byRut.length > 0) {
+              moodleUserId = byRut[0].id;
+            } else {
+              // No existe — crear con RUT como username y password
+              const created = await moodleCall(platform, 'core_user_create_users', {
+                'users[0][username]': cleanRut,
+                'users[0][password]': cleanRut,
+                'users[0][firstname]': nombre,
+                'users[0][lastname]': apellido,
+                'users[0][email]': email.toLowerCase().trim(),
+                'users[0][idnumber]': cleanRut,
+                'users[0][auth]': 'manual'
+              });
+              moodleUserId = created?.[0]?.id;
+            }
+          }
+
+          // Matricular en el curso
+          if (moodleUserId) {
+            await moodleCall(platform, 'enrol_manual_enrol_users', {
+              'enrolments[0][roleid]': 5,
+              'enrolments[0][userid]': moodleUserId,
+              'enrolments[0][courseid]': courseConfig.moodle_course_id
+            });
+
+            // Actualizar moodle_user_id en Supabase
+            await portalMutate('autoformacion_enrollments', 'PATCH',
+              { moodle_user_id: moodleUserId, moodle_enrolled: true },
+              `access_token=eq.${access_token}`
+            );
+          }
+        }
+      } catch (moodleErr) {
+        console.log(`[Autoformacion] Moodle sync warning (non-blocking): ${moodleErr.message}`);
+      }
+    }
 
     res.json({ success: true, message: 'Inscripción exitosa', access_token });
   } catch (err) {
@@ -5475,6 +5549,55 @@ app.post('/api/autoformacion/enroll', async (req, res) => {
       return res.json({ success: true, message: 'Ya estás inscrito/a', already_enrolled: true });
     }
     res.status(500).json({ error: 'Error al procesar inscripción' });
+  }
+});
+
+// Update progress
+app.patch('/api/autoformacion/progress', async (req, res) => {
+  try {
+    const { token, progress } = req.body;
+    if (!token || !progress) return res.status(400).json({ error: 'Token y progress requeridos' });
+
+    await portalMutate('autoformacion_enrollments', 'PATCH',
+      { progress, updated_at: new Date().toISOString() },
+      `access_token=eq.${token}`
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Mark completion
+app.post('/api/autoformacion/complete', async (req, res) => {
+  try {
+    const { token, module, score } = req.body;
+    if (!token) return res.status(400).json({ error: 'Token requerido' });
+
+    // Get enrollment
+    const results = await portalQuery('autoformacion_enrollments', `access_token=eq.${token}`);
+    const enrollment = results?.[0];
+    if (!enrollment) return res.status(404).json({ error: 'Inscripción no encontrada' });
+
+    // Update progress with module completion
+    const progress = enrollment.progress || {};
+    progress[module] = { completed: true, score, completed_at: new Date().toISOString() };
+
+    // Check if all 3 modules completed
+    const allComplete = ['m1', 'm2', 'm3'].every(m => progress[m]?.completed);
+
+    await portalMutate('autoformacion_enrollments', 'PATCH',
+      {
+        progress,
+        updated_at: new Date().toISOString(),
+        ...(allComplete ? { completed_at: new Date().toISOString() } : {})
+      },
+      `access_token=eq.${token}`
+    );
+
+    res.json({ success: true, all_complete: allComplete });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
