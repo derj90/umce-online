@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curso Sustentabilidad &mdash; UMCE Online</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+  <style>
+    :root {
+      --green-900: #064e3b;
+      --green-700: #047857;
+      --green-600: #059669;
+      --green-100: #d1fae5;
+      --green-50: #ecfdf5;
+      --bg: #f7faf5;
+      --text: #1c1917;
+      --text-secondary: #57534e;
+      --border: #e5e7eb;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    .font-heading { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+
+    /* Layout */
+    .app { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 280px; background: white; border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0;
+      overflow-y: auto; z-index: 20;
+    }
+    .main { flex: 1; margin-left: 280px; }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .mobile-header { display: flex !important; }
+      .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 15; }
+      .sidebar-overlay.open { display: block; }
+    }
+
+    /* Sidebar items */
+    .sidebar-header { padding: 1.25rem; border-bottom: 1px solid var(--border); }
+    .sidebar-nav { padding: 0.75rem; flex: 1; }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0.75rem;
+      border-radius: 8px; cursor: pointer; font-size: 0.875rem; color: var(--text-secondary);
+      transition: background 0.15s;
+    }
+    .sidebar-item:hover { background: var(--green-50); }
+    .sidebar-item.active { background: var(--green-100); color: var(--green-900); font-weight: 600; }
+    .sidebar-item.completed { color: var(--green-600); }
+    .sidebar-item .check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
+    .sidebar-item.completed .check { background: var(--green-600); border-color: var(--green-600); color: white; }
+    .sidebar-module-title { padding: 0.75rem; font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); margin-top: 0.5rem; }
+
+    /* Progress bar */
+    .progress-bar { height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: var(--green-600); border-radius: 2px; transition: width 0.3s; }
+
+    /* Mobile header */
+    .mobile-header {
+      display: none; position: sticky; top: 0; z-index: 10;
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1rem; align-items: center; gap: 0.75rem;
+    }
+    .hamburger { background: none; border: none; cursor: pointer; padding: 0.25rem; }
+    .hamburger svg { width: 24px; height: 24px; }
+
+    /* Content area */
+    .content { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    /* Slide */
+    .slide { display: none; }
+    .slide.active { display: block; }
+    .slide h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--green-900); }
+    .slide p { line-height: 1.75; margin-bottom: 1rem; color: var(--text); }
+    .slide img { max-width: 100%; height: auto; border-radius: 8px; margin: 1rem 0; }
+    .slide .video-embed { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; margin: 1rem 0; }
+    .slide .video-embed iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+
+    /* Nav buttons */
+    .slide-nav { display: flex; justify-content: space-between; align-items: center; padding-top: 2rem; border-top: 1px solid var(--border); margin-top: 2rem; }
+    .btn { padding: 0.625rem 1.25rem; border-radius: 8px; font-weight: 600; font-size: 0.875rem; cursor: pointer; border: none; transition: all 0.15s; }
+    .btn-primary { background: var(--green-700); color: white; }
+    .btn-primary:hover { background: var(--green-900); }
+    .btn-outline { background: white; color: var(--text-secondary); border: 1px solid var(--border); }
+    .btn-outline:hover { background: #f9fafb; border-color: #d1d5db; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Quiz */
+    .quiz-container { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .quiz-question { margin-bottom: 1.5rem; }
+    .quiz-question h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .quiz-option {
+      display: block; width: 100%; text-align: left; padding: 0.75rem 1rem; margin-bottom: 0.5rem;
+      border: 2px solid var(--border); border-radius: 8px; background: white; cursor: pointer;
+      font-size: 0.875rem; transition: all 0.15s;
+    }
+    .quiz-option:hover { border-color: var(--green-600); background: var(--green-50); }
+    .quiz-option.selected { border-color: var(--green-700); background: var(--green-100); }
+    .quiz-option.correct { border-color: #16a34a; background: #dcfce7; }
+    .quiz-option.incorrect { border-color: #dc2626; background: #fef2f2; }
+    .quiz-option:disabled { cursor: default; }
+    .quiz-result { padding: 1rem; border-radius: 8px; margin-top: 1rem; text-align: center; }
+    .quiz-result.passed { background: #dcfce7; color: #166534; }
+    .quiz-result.failed { background: #fef3c7; color: #92400e; }
+
+    /* Completion screen */
+    .completion-screen { text-align: center; padding: 3rem 1.5rem; }
+    .completion-screen h2 { font-size: 2rem; margin-bottom: 1rem; }
+    .completion-screen .big-check { width: 80px; height: 80px; border-radius: 50%; background: var(--green-600); color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+  <!-- Sidebar overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:0.25rem;">Autoformación UMCE</div>
+      <div class="font-heading" style="font-weight:700;font-size:0.9375rem;color:var(--green-900);line-height:1.3;">Sustentabilidad en Universidades del Estado</div>
+      <div style="margin-top:0.75rem;">
+        <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-secondary);margin-bottom:0.25rem;">
+          <span>Progreso</span>
+          <span id="progress-pct">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="sidebar-nav" id="sidebar-nav">
+      <!-- Generated by JS -->
+    </div>
+    <div style="padding:0.75rem;border-top:1px solid var(--border);">
+      <a href="/autoformacion/sustentabilidad" style="font-size:0.8125rem;color:var(--text-secondary);text-decoration:none;">&larr; Volver a la landing</a>
+    </div>
+  </nav>
+
+  <!-- Mobile header -->
+  <div class="mobile-header">
+    <button class="hamburger" onclick="toggleSidebar()" aria-label="Menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <span class="font-heading" style="font-weight:700;font-size:0.875rem;color:var(--green-900);">Sustentabilidad</span>
+    <span id="mobile-progress" style="margin-left:auto;font-size:0.75rem;color:var(--text-secondary);">0%</span>
+  </div>
+
+  <!-- Main content -->
+  <div class="main">
+    <div class="content" id="content-area">
+      <div id="loading" style="text-align:center;padding:4rem;">
+        <p style="color:var(--text-secondary);">Cargando curso...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/autoformacion/js/questions.js"></script>
+  <script src="/autoformacion/js/xapi-tracker-autoformacion.js"></script>
+  <script src="/accesibilidad-dua.js" defer></script>
+  <script>
+  (function() {
+    'use strict';
+
+    // === CONFIG ===
+    var API_BASE = '/api/autoformacion';
+    var PASSING_SCORE = 60;
+    var QUESTIONS_PER_QUIZ = 5;
+
+    // === STATE ===
+    var enrollment = null;
+    var progress = {};
+    var currentModule = 'm1';
+    var currentSlideIndex = 0;
+    var quizState = {}; // { m1: { questions, answers, score, passed }, ... }
+    var tracker = null;
+    var saveTimeout = null;
+
+    // === COURSE CONTENT ===
+    // Each module has slides (content) + quiz at the end
+    var MODULES = {
+      m1: {
+        title: 'Módulo 1: Contribución de la naturaleza y actividad humana',
+        slides: [
+          { title: 'Bienvenida al Módulo 1', type: 'info', html: '<h2>Contribución de la naturaleza y de la actividad humana en los ecosistemas y el tejido social</h2><p>En este módulo comprenderás las interacciones entre la biosfera, los ecosistemas y la actividad humana. Analizarás el Antropoceno, los Objetivos de Desarrollo Sostenible, perspectivas de género y la crisis ambiental contemporánea.</p><p><strong>Duración estimada:</strong> 4 horas</p><p><strong>Unidades:</strong> 6</p>' },
+          { title: 'La Biosfera', type: 'info', html: '<h2>La Biosfera</h2><p>La biosfera es todo el espacio integrado por la atmósfera, hidrósfera y litósfera en el que habitan los seres vivos y las diversas formas geológicas. Comprende desde las profundidades oceánicas hasta las capas más altas de la atmósfera donde existe vida.</p><p>Los ecosistemas dentro de la biosfera mantienen un equilibrio dinámico que permite la vida tal como la conocemos. La biodiversidad — la variedad de formas de vida — es un indicador clave de la salud de estos sistemas.</p>' },
+          { title: 'Biodiversidad y ecosistemas', type: 'info', html: '<h2>Biodiversidad y ecosistemas</h2><p>Cuando se estudia el funcionamiento de la biodiversidad en un ecosistema, se analizan tres atributos fundamentales: <strong>composición, estructura y función</strong>.</p><ul style="margin:1rem 0;padding-left:1.5rem;"><li style="margin-bottom:0.5rem;"><strong>Composición:</strong> qué especies están presentes</li><li style="margin-bottom:0.5rem;"><strong>Estructura:</strong> cómo se organizan espacialmente</li><li style="margin-bottom:0.5rem;"><strong>Función:</strong> qué procesos ecológicos realizan</li></ul><p>La pérdida de cualquiera de estos atributos compromete la capacidad del ecosistema para sostener la vida.</p>' },
+          { title: 'El Antropoceno', type: 'info', html: '<h2>El Antropoceno</h2><p>El Antropoceno es la era geológica actual, marcada por el impacto significativo de la actividad humana sobre los ecosistemas terrestres. Este concepto reconoce que la humanidad se ha convertido en una fuerza geológica capaz de alterar los sistemas planetarios.</p><p>La antropización — la transformación que ejerce el ser humano sobre el medioambiente — se manifiesta en la pérdida de ambientes naturales, la industrialización agrícola y la urbanización acelerada.</p>' },
+          { title: 'Límites planetarios', type: 'info', html: '<h2>Límites planetarios</h2><p>Según Johan Rockström y el Stockholm Resilience Centre, existen 9 límites planetarios que definen el espacio operativo seguro para la humanidad. En 2023, 6 de estos 9 límites ya han sido sobrepasados:</p><ul style="margin:1rem 0;padding-left:1.5rem;"><li>Cambio climático</li><li>Pérdida de biodiversidad</li><li>Ciclo del nitrógeno y fósforo</li><li>Cambio de uso de suelo</li><li>Contaminación química</li><li>Agua dulce</li></ul><p>Esto significa que estamos operando fuera del espacio seguro en la mayoría de las dimensiones planetarias.</p>' },
+          { title: 'Objetivos de Desarrollo Sostenible', type: 'info', html: '<h2>Objetivos de Desarrollo Sostenible (ODS)</h2><p>Los 17 ODS de las Naciones Unidas establecen una hoja de ruta global hacia 2030. La sustentabilidad no es solo medioambiental — abarca los 17 objetivos, incluyendo:</p><ul style="margin:1rem 0;padding-left:1.5rem;"><li>Fin de la pobreza (ODS 1)</li><li>Educación de calidad (ODS 4)</li><li>Igualdad de género (ODS 5)</li><li>Acción por el clima (ODS 13)</li><li>Vida de ecosistemas terrestres (ODS 15)</li></ul><p>Las universidades del Estado tienen un rol fundamental como formadoras de profesionales que lideren esta transformación.</p>' },
+          { title: 'Género y sustentabilidad', type: 'info', html: '<h2>Perspectiva de género y sustentabilidad</h2><p>La Agenda 2030 para el Desarrollo Sostenible establece que la igualdad de género es un principio transversal. En el seguimiento estadístico de los ODS se han definido 169 metas y 232 indicadores globales.</p><p>La transversalización de género en la producción estadística implica observar las diferencias entre hombres y mujeres en todas las dimensiones del desarrollo sostenible — no solo en el ODS 5.</p>' },
+          { title: 'Crisis ambiental contemporánea', type: 'info', html: '<h2>La crisis ambiental contemporánea</h2><p>El último informe científico de la ONU advierte sobre escenarios críticos si la temperatura global sigue aumentando:</p><ul style="margin:1rem 0;padding-left:1.5rem;"><li><strong>+1,5°C:</strong> Límite para estabilizar la temperatura global. Arrecifes de coral mueren en masa.</li><li><strong>+2°C:</strong> Lluvias extremas aumentan un 7%. Huracanes de gran intensidad.</li><li><strong>+3°C:</strong> Olas de calor 3 veces más frecuentes.</li><li><strong>+4,4°C:</strong> La mayor parte de América del Sur será inhabitable a fin de siglo.</li></ul>' },
+          { title: 'Material complementario M1', type: 'info', html: '<h2>Material complementario</h2><p>Para profundizar en los contenidos de este módulo, te recomendamos revisar las siguientes fuentes:</p><ul style="margin:1rem 0;padding-left:1.5rem;line-height:2;"><li>Rockström et al. (2009). A safe operating space for humanity. <em>Nature</em>.</li><li>IPCC (2023). Sixth Assessment Report.</li><li>ONU (2015). Transformar nuestro mundo: la Agenda 2030.</li><li>CEPAL (2020). Transversalización de género en los ODS.</li></ul><p>A continuación, responde la evaluación del módulo.</p>' },
+          { title: 'Evaluación Módulo 1', type: 'quiz' }
+        ]
+      },
+      m2: {
+        title: 'Módulo 2: Sustentabilidad en las Universidades del Estado',
+        slides: [
+          { title: 'Bienvenida al Módulo 2', type: 'info', html: '<h2>Sustentabilidad en las Universidades del Estado de Chile</h2><p>En este módulo examinarás las políticas institucionales de sustentabilidad en las universidades estatales. Conocerás el rol del CUECH y la responsabilidad social universitaria en el contexto nacional.</p><p><strong>Duración estimada:</strong> 3 horas</p><p><strong>Unidades:</strong> 4</p>' },
+          { title: 'El CUECH y la sustentabilidad', type: 'info', html: '<h2>El Consorcio de Universidades del Estado (CUECH)</h2><p>El CUECH reúne a las 18 universidades estatales de Chile bajo una visión compartida de responsabilidad pública. El Proyecto ENRED — Red Compromiso con el Desarrollo Sustentable — es una de las iniciativas emblemáticas del consorcio.</p><p>ENRED busca que cada universidad estatal integre la sustentabilidad en su cultura organizacional, no como un añadido sino como parte fundamental de su misión pública.</p>' },
+          { title: 'Políticas institucionales', type: 'info', html: '<h2>Políticas institucionales de sustentabilidad</h2><p>Las universidades del Estado han avanzado en distintos grados hacia la institucionalización de la sustentabilidad. Algunos ejes comunes:</p><ul style="margin:1rem 0;padding-left:1.5rem;"><li style="margin-bottom:0.5rem;"><strong>Gobernanza:</strong> comités o unidades de sustentabilidad</li><li style="margin-bottom:0.5rem;"><strong>Docencia:</strong> transversalización en mallas curriculares</li><li style="margin-bottom:0.5rem;"><strong>Investigación:</strong> líneas de investigación en sustentabilidad</li><li style="margin-bottom:0.5rem;"><strong>Gestión del campus:</strong> eficiencia energética, gestión de residuos</li><li style="margin-bottom:0.5rem;"><strong>Vinculación con el medio:</strong> impacto territorial</li></ul>' },
+          { title: 'Responsabilidad social universitaria', type: 'info', html: '<h2>Responsabilidad social universitaria</h2><p>La responsabilidad social de las universidades estatales va más allá de la formación de profesionales. Como instituciones públicas, tienen el deber de contribuir al desarrollo sostenible del país.</p><p>Esto implica formar ciudadanos conscientes, generar conocimiento útil para la sociedad, y gestionar sus propios campus como ejemplos de prácticas sustentables.</p>' },
+          { title: 'RECIES y la evaluación', type: 'info', html: '<h2>Red Campus Sustentable (RECIES)</h2><p>La evaluación de sustentabilidad en universidades requiere indicadores verificables. La Red Campus Sustentable (RECIES) establece estándares que permiten medir y comparar el desempeño de las instituciones.</p><p>Los indicadores abarcan: gobernanza de datos ambientales, transparencia en el uso de recursos, gestión de residuos, eficiencia energética y compromiso con la comunidad.</p>' },
+          { title: 'Material complementario M2', type: 'info', html: '<h2>Material complementario</h2><p>Para profundizar en los contenidos de este módulo:</p><ul style="margin:1rem 0;padding-left:1.5rem;line-height:2;"><li>CUECH (2023). Informe de sustentabilidad institucional.</li><li>RECIES. Indicadores de campus sustentable.</li><li>Ley 21.094 sobre Universidades del Estado de Chile.</li></ul><p>A continuación, responde la evaluación del módulo.</p>' },
+          { title: 'Evaluación Módulo 2', type: 'quiz' }
+        ]
+      },
+      m3: {
+        title: 'Módulo 3: Prácticas transformadoras sustentables',
+        slides: [
+          { title: 'Bienvenida al Módulo 3', type: 'info', html: '<h2>Prácticas transformadoras sustentables</h2><p>En este módulo aprenderás herramientas concretas de medición y gestión ambiental aplicables al campus universitario. Desde la huella de carbono hasta la gestión de residuos.</p><p><strong>Duración estimada:</strong> 3 horas</p><p><strong>Unidades:</strong> 5</p>' },
+          { title: 'Huella de carbono', type: 'info', html: '<h2>Huella de carbono</h2><p>La huella de carbono mide el total de gases de efecto invernadero emitidos directa e indirectamente por una persona, organización o actividad. Se expresa en toneladas equivalentes de CO₂.</p><p>Para una universidad, las principales fuentes son: consumo energético de edificios, transporte del personal y estudiantes, y compras institucionales.</p><p>Medir la huella de carbono es el primer paso para reducirla. Sin datos, no hay gestión posible.</p>' },
+          { title: 'Huella hídrica', type: 'info', html: '<h2>Huella hídrica</h2><p>La huella hídrica cuantifica el volumen total de agua dulce utilizada para producir bienes y servicios. Incluye agua directa (consumo) e indirecta (producción de insumos).</p><p>En el contexto universitario, la gestión hídrica abarca: riego de áreas verdes, consumo en laboratorios, servicios sanitarios y alimentación del casino.</p>' },
+          { title: 'Gestión de residuos', type: 'info', html: '<h2>Gestión de residuos en el campus</h2><p>Una gestión sustentable de residuos sigue la jerarquía: <strong>reducir → reutilizar → reciclar → valorizar → disponer</strong>.</p><p>Las universidades generan residuos especiales (laboratorios, equipos electrónicos, papel) que requieren protocolos diferenciados. La separación en origen y la educación de la comunidad son claves.</p>' },
+          { title: 'Eficiencia energética', type: 'info', html: '<h2>Eficiencia energética</h2><p>Los edificios universitarios representan un consumo energético significativo. Estrategias para mejorar la eficiencia:</p><ul style="margin:1rem 0;padding-left:1.5rem;"><li style="margin-bottom:0.5rem;">Iluminación LED y sensores de presencia</li><li style="margin-bottom:0.5rem;">Climatización eficiente (HVAC optimizado)</li><li style="margin-bottom:0.5rem;">Energías renovables (paneles solares en techos)</li><li style="margin-bottom:0.5rem;">Monitoreo de consumo en tiempo real</li></ul>' },
+          { title: 'Campus sustentable', type: 'info', html: '<h2>Hacia un campus sustentable</h2><p>Un campus sustentable integra todas las dimensiones: gestión ambiental, formación, investigación y vinculación con el medio. No es solo "ser verde" — es transformar la cultura organizacional.</p><p>Las buenas prácticas incluyen: compras sustentables, transporte limpio, alimentación responsable, biodiversidad en el campus y participación de toda la comunidad universitaria.</p>' },
+          { title: 'Material complementario M3', type: 'info', html: '<h2>Material complementario</h2><p>Para profundizar en los contenidos de este módulo:</p><ul style="margin:1rem 0;padding-left:1.5rem;line-height:2;"><li>GHG Protocol. Estándar corporativo de contabilidad de GEI.</li><li>Water Footprint Network. Manual de evaluación de huella hídrica.</li><li>MMA Chile. Guía de gestión de residuos para instituciones.</li></ul><p>A continuación, responde la evaluación final del curso.</p>' },
+          { title: 'Evaluación Módulo 3', type: 'quiz' }
+        ]
+      }
+    };
+
+    // === INIT ===
+    var token = new URLSearchParams(window.location.search).get('token');
+    if (!token) {
+      document.getElementById('loading').innerHTML = '<p style="color:#dc2626;">No se encontró token de acceso. <a href="/autoformacion/sustentabilidad">Volver a inscribirse</a></p>';
+      return;
+    }
+
+    fetch(API_BASE + '/status?token=' + token)
+      .then(function(r) { return r.ok ? r.json() : Promise.reject('No encontrado'); })
+      .then(function(data) {
+        enrollment = data;
+        progress = data.progress || {};
+        initCourse();
+      })
+      .catch(function() {
+        document.getElementById('loading').innerHTML = '<p style="color:#dc2626;">Inscripción no encontrada. <a href="/autoformacion/sustentabilidad">Volver a inscribirse</a></p>';
+      });
+
+    function initCourse() {
+      // Init xAPI tracker
+      tracker = new XAPITracker({
+        activityBase: 'https://evirtual.umce.cl/mod/xapi/sustentabilidad',
+        moduleId: 'sustentabilidad',
+        moduleName: 'Sustentabilidad en Universidades del Estado',
+        courseId: '384',
+        userEmail: enrollment.email,
+        userFullname: enrollment.nombre + ' ' + enrollment.apellido,
+        userId: enrollment.moodle_user_id || '',
+        passingScore: PASSING_SCORE,
+        lrsEndpoint: 'https://lrs.udfv.cloud/xAPI/',
+        lrsUser: 'moodle',
+        lrsPassword: 'xApiUMCE2026!'
+      });
+      tracker.init();
+
+      buildSidebar();
+      navigateTo(currentModule, 0);
+    }
+
+    // === SIDEBAR ===
+    function buildSidebar() {
+      var nav = document.getElementById('sidebar-nav');
+      var html = '';
+
+      ['m1', 'm2', 'm3'].forEach(function(mKey) {
+        var mod = MODULES[mKey];
+        var moduleComplete = progress[mKey] && progress[mKey].completed;
+        html += '<div class="sidebar-module-title">' + mod.title.split(':')[0] + '</div>';
+
+        mod.slides.forEach(function(slide, idx) {
+          var slideKey = mKey + '_' + idx;
+          var isViewed = progress[slideKey];
+          var isActive = (mKey === currentModule && idx === currentSlideIndex);
+          var classes = 'sidebar-item';
+          if (isActive) classes += ' active';
+          if (isViewed) classes += ' completed';
+
+          html += '<div class="' + classes + '" data-module="' + mKey + '" data-slide="' + idx + '" onclick="navigateTo(\'' + mKey + '\',' + idx + ')">';
+          html += '<div class="check">' + (isViewed ? '✓' : '') + '</div>';
+          html += '<span>' + slide.title + '</span>';
+          html += '</div>';
+        });
+      });
+
+      nav.innerHTML = html;
+    }
+
+    // === NAVIGATION ===
+    window.navigateTo = function(moduleKey, slideIndex) {
+      currentModule = moduleKey;
+      currentSlideIndex = slideIndex;
+
+      var mod = MODULES[moduleKey];
+      var slide = mod.slides[slideIndex];
+      var contentArea = document.getElementById('content-area');
+
+      // Check if all modules complete
+      var allComplete = ['m1', 'm2', 'm3'].every(function(m) { return progress[m] && progress[m].completed; });
+      if (allComplete && moduleKey === 'complete') {
+        showCompletion();
+        return;
+      }
+
+      var html = '<div class="slide active">';
+
+      if (slide.type === 'quiz') {
+        html += renderQuiz(moduleKey);
+      } else {
+        html += slide.html;
+      }
+
+      // Navigation
+      html += '<div class="slide-nav">';
+
+      // Previous
+      if (slideIndex > 0) {
+        html += '<button class="btn btn-outline" onclick="navigateTo(\'' + moduleKey + '\',' + (slideIndex - 1) + ')">&larr; Anterior</button>';
+      } else {
+        // Previous module last slide
+        var prevMod = moduleKey === 'm2' ? 'm1' : (moduleKey === 'm3' ? 'm2' : null);
+        if (prevMod) {
+          var prevLastSlide = MODULES[prevMod].slides.length - 1;
+          html += '<button class="btn btn-outline" onclick="navigateTo(\'' + prevMod + '\',' + prevLastSlide + ')">&larr; Anterior</button>';
+        } else {
+          html += '<div></div>';
+        }
+      }
+
+      // Slide indicator
+      html += '<span style="font-size:0.8125rem;color:var(--text-secondary);">' + (slideIndex + 1) + ' / ' + mod.slides.length + '</span>';
+
+      // Next
+      if (slide.type !== 'quiz') {
+        if (slideIndex < mod.slides.length - 1) {
+          html += '<button class="btn btn-primary" onclick="navigateTo(\'' + moduleKey + '\',' + (slideIndex + 1) + ')">Siguiente &rarr;</button>';
+        }
+      } else {
+        html += '<div></div>';
+      }
+
+      html += '</div></div>';
+
+      contentArea.innerHTML = html;
+
+      // Mark slide as viewed
+      var slideKey = moduleKey + '_' + slideIndex;
+      if (!progress[slideKey]) {
+        progress[slideKey] = true;
+        saveProgress();
+      }
+
+      // Track xAPI
+      if (tracker) {
+        var totalSlides = mod.slides.length;
+        tracker.trackSlideProgress(slideIndex, totalSlides);
+      }
+
+      buildSidebar();
+      updateProgress();
+      window.scrollTo(0, 0);
+
+      // Close mobile sidebar
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-overlay').classList.remove('open');
+    };
+
+    // === QUIZ ===
+    function renderQuiz(moduleKey) {
+      var qs = quizState[moduleKey];
+      if (!qs || !qs.questions) {
+        var selected = selectQuestions(moduleKey, QUESTIONS_PER_QUIZ);
+        qs = { questions: selected, answers: {}, submitted: false, score: 0, passed: false };
+        quizState[moduleKey] = qs;
+      }
+
+      var html = '<h2>Evaluación — ' + MODULES[moduleKey].title.split(':')[0] + '</h2>';
+      html += '<p style="margin-bottom:1.5rem;color:var(--text-secondary);">' + QUESTIONS_PER_QUIZ + ' preguntas seleccionadas aleatoriamente. Necesitas ' + PASSING_SCORE + '% para aprobar. Puedes reintentar.</p>';
+      html += '<div class="quiz-container">';
+
+      qs.questions.forEach(function(q, qIdx) {
+        html += '<div class="quiz-question" id="qq-' + qIdx + '">';
+        html += '<h3>' + (qIdx + 1) + '. ' + q.text + '</h3>';
+
+        q.options.forEach(function(opt, oIdx) {
+          var classes = 'quiz-option';
+          var disabled = '';
+
+          if (qs.submitted) {
+            disabled = 'disabled';
+            if (opt.correct) classes += ' correct';
+            if (qs.answers[q.id] === oIdx && !opt.correct) classes += ' incorrect';
+          } else if (qs.answers[q.id] === oIdx) {
+            classes += ' selected';
+          }
+
+          html += '<button class="' + classes + '" ' + disabled + ' onclick="selectAnswer(\'' + moduleKey + '\',\'' + q.id + '\',' + oIdx + ')">' + opt.text + '</button>';
+        });
+
+        html += '</div>';
+      });
+
+      if (!qs.submitted) {
+        var allAnswered = qs.questions.every(function(q) { return qs.answers[q.id] !== undefined; });
+        html += '<button class="btn btn-primary" style="width:100%;" ' + (allAnswered ? '' : 'disabled') + ' onclick="submitQuiz(\'' + moduleKey + '\')">Enviar respuestas</button>';
+      } else {
+        html += '<div class="quiz-result ' + (qs.passed ? 'passed' : 'failed') + '">';
+        html += '<strong>' + qs.score + '% — ' + (qs.passed ? '¡Aprobado!' : 'No aprobado') + '</strong><br>';
+        html += '<span>' + Math.round(qs.score / 100 * QUESTIONS_PER_QUIZ) + ' de ' + QUESTIONS_PER_QUIZ + ' correctas</span>';
+        html += '</div>';
+
+        if (qs.passed) {
+          // Next module or completion
+          var nextMod = moduleKey === 'm1' ? 'm2' : (moduleKey === 'm2' ? 'm3' : null);
+          if (nextMod) {
+            html += '<button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="navigateTo(\'' + nextMod + '\',0)">Continuar al siguiente módulo &rarr;</button>';
+          } else {
+            html += '<button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="navigateTo(\'complete\',0)">Ver constancia &rarr;</button>';
+          }
+        } else {
+          html += '<button class="btn btn-outline" style="width:100%;margin-top:1rem;" onclick="retryQuiz(\'' + moduleKey + '\')">Reintentar con nuevas preguntas</button>';
+        }
+      }
+
+      html += '</div>';
+      return html;
+    }
+
+    window.selectAnswer = function(moduleKey, questionId, optionIndex) {
+      var qs = quizState[moduleKey];
+      if (!qs || qs.submitted) return;
+      qs.answers[questionId] = optionIndex;
+      navigateTo(moduleKey, currentSlideIndex); // re-render
+    };
+
+    window.submitQuiz = function(moduleKey) {
+      var qs = quizState[moduleKey];
+      if (!qs) return;
+
+      var correct = 0;
+      qs.questions.forEach(function(q) {
+        var ansIdx = qs.answers[q.id];
+        if (ansIdx !== undefined && q.options[ansIdx] && q.options[ansIdx].correct) correct++;
+      });
+
+      qs.score = Math.round((correct / QUESTIONS_PER_QUIZ) * 100);
+      qs.passed = qs.score >= PASSING_SCORE;
+      qs.submitted = true;
+
+      if (qs.passed) {
+        // Save best score
+        if (!progress[moduleKey] || !progress[moduleKey].completed || qs.score > (progress[moduleKey].score || 0)) {
+          progress[moduleKey] = { completed: true, score: qs.score, completed_at: new Date().toISOString() };
+          saveProgress();
+
+          // Report to backend
+          fetch(API_BASE + '/complete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: token, module: moduleKey, score: qs.score })
+          });
+
+          // xAPI
+          if (tracker) tracker.trackCompletion(qs.score);
+        }
+      }
+
+      // Track quiz answers via xAPI
+      if (tracker) {
+        qs.questions.forEach(function(q) {
+          var ansIdx = qs.answers[q.id];
+          var isCorrect = ansIdx !== undefined && q.options[ansIdx] && q.options[ansIdx].correct;
+          tracker.trackQuizAnswer(q.id, q.text, q.options[ansIdx] ? q.options[ansIdx].text : '', isCorrect);
+        });
+      }
+
+      navigateTo(moduleKey, currentSlideIndex); // re-render
+    };
+
+    window.retryQuiz = function(moduleKey) {
+      quizState[moduleKey] = null;
+      navigateTo(moduleKey, currentSlideIndex);
+    };
+
+    // === COMPLETION ===
+    function showCompletion() {
+      var contentArea = document.getElementById('content-area');
+      contentArea.innerHTML = '<div class="completion-screen">' +
+        '<div class="big-check">✓</div>' +
+        '<h2 class="font-heading">¡Felicitaciones!</h2>' +
+        '<p style="font-size:1.125rem;color:var(--text-secondary);margin-bottom:1.5rem;">Has completado exitosamente los tres módulos del curso de sustentabilidad.</p>' +
+        '<p style="margin-bottom:2rem;">Tu constancia será emitida por el Consorcio de Universidades del Estado de Chile (CUECH) a través de la plataforma eVirtual UMCE.</p>' +
+        '<a href="https://evirtual.umce.cl/course/view.php?id=384" target="_blank" class="btn btn-primary" style="display:inline-block;text-decoration:none;">Acceder a mi constancia en eVirtual</a>' +
+        '<div style="margin-top:2rem;"><a href="/autoformacion/sustentabilidad" style="color:var(--text-secondary);font-size:0.875rem;">Volver a la landing del curso</a></div>' +
+        '</div>';
+
+      buildSidebar();
+      updateProgress();
+    }
+
+    // === PROGRESS ===
+    function updateProgress() {
+      var totalSlides = 0;
+      var viewedSlides = 0;
+      ['m1', 'm2', 'm3'].forEach(function(mKey) {
+        MODULES[mKey].slides.forEach(function(slide, idx) {
+          totalSlides++;
+          if (progress[mKey + '_' + idx]) viewedSlides++;
+        });
+      });
+
+      var pct = totalSlides > 0 ? Math.round((viewedSlides / totalSlides) * 100) : 0;
+      document.getElementById('progress-pct').textContent = pct + '%';
+      document.getElementById('progress-fill').style.width = pct + '%';
+      var mobileProg = document.getElementById('mobile-progress');
+      if (mobileProg) mobileProg.textContent = pct + '%';
+    }
+
+    function saveProgress() {
+      // localStorage (immediate)
+      localStorage.setItem('sust_progress_' + token, JSON.stringify(progress));
+
+      // Supabase (debounced)
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(function() {
+        fetch(API_BASE + '/progress', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: token, progress: progress })
+        }).catch(function() {}); // silent fail
+      }, 3000);
+    }
+
+    // === MOBILE ===
+    window.toggleSidebar = function() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebar-overlay').classList.toggle('open');
+    };
+
+  })();
+  </script>
+</body>
+</html>
