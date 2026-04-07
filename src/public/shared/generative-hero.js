@@ -279,7 +279,7 @@
         cols = p.floor(p.width / scl);
         rows = p.floor(p.height / scl);
         flowField = new Array(cols * rows);
-        let particleCount1 = isMobile ? 150 : 600;
+        let particleCount1 = isMobile ? 250 : 900;
         for (let i = 0; i < particleCount1; i++) {
           particles.push({
             pos: p.createVector(p.random(p.width), p.random(p.height)),
@@ -287,8 +287,8 @@
             acc: p.createVector(0, 0),
             maxSpeed: p.random(1, 3),
             color: p.random() < 0.15 ? AMARILLO : p.random() < 0.3 ? AZUL_LIGHT : AZUL,
-            alpha: p.random(15, 50),
-            weight: p.random(1, 2.5)
+            alpha: p.random(40, 100),
+            weight: p.random(1.5, 3.5)
           });
         }
       }
@@ -328,10 +328,11 @@
         }
       }
       else if (variant === 4) {
-        for (let i = 0; i < 50; i++) {
+        let particleCount4 = isMobile ? 60 : 100;
+        for (let i = 0; i < particleCount4; i++) {
           particles.push({
             x: p.random(p.width), y: p.random(p.height),
-            size: p.random(1, 3), alpha: p.random(30, 80)
+            size: p.random(1.5, 4), alpha: p.random(80, 180)
           });
         }
       }
@@ -352,7 +353,7 @@
 
     // 1: DERIVA
     function drawDeriva() {
-      p.fill(AZUL_DARK[0], AZUL_DARK[1], AZUL_DARK[2], 8);
+      p.fill(AZUL_DARK[0], AZUL_DARK[1], AZUL_DARK[2], 5);
       p.noStroke(); p.rect(0, 0, p.width, p.height);
       let yoff = 0;
       for (let y = 0; y < rows; y++) {
@@ -480,21 +481,21 @@
       p.background(...AZUL_DARK);
       p.noFill();
       let layers = [
-        { color: AZUL, alpha: 30, amp: 50, freq: 0.005, speed: 0.7, yBase: p.height*0.1 },
-        { color: AZUL_LIGHT, alpha: 18, amp: 40, freq: 0.008, speed: 1.0, yBase: p.height*0.2 },
-        { color: AZUL, alpha: 35, amp: 70, freq: 0.007, speed: 0.9, yBase: p.height*0.3 },
-        { color: AMARILLO, alpha: 22, amp: 35, freq: 0.012, speed: 0.6, yBase: p.height*0.38 },
-        { color: AZUL_LIGHT, alpha: 20, amp: 55, freq: 0.009, speed: 1.2, yBase: p.height*0.45 },
-        { color: AZUL, alpha: 35, amp: 80, freq: 0.006, speed: 1.0, yBase: p.height*0.55 },
-        { color: AMARILLO, alpha: 18, amp: 30, freq: 0.015, speed: 0.8, yBase: p.height*0.62 },
-        { color: AZUL_LIGHT, alpha: 22, amp: 60, freq: 0.01, speed: 1.3, yBase: p.height*0.7 },
-        { color: AZUL, alpha: 28, amp: 45, freq: 0.008, speed: 1.5, yBase: p.height*0.8 },
-        { color: AZUL_LIGHT, alpha: 15, amp: 35, freq: 0.013, speed: 0.9, yBase: p.height*0.9 },
+        { color: AZUL, alpha: 65, amp: 50, freq: 0.005, speed: 0.7, yBase: p.height*0.1 },
+        { color: AZUL_LIGHT, alpha: 50, amp: 40, freq: 0.008, speed: 1.0, yBase: p.height*0.2 },
+        { color: AZUL, alpha: 70, amp: 70, freq: 0.007, speed: 0.9, yBase: p.height*0.3 },
+        { color: AMARILLO, alpha: 60, amp: 35, freq: 0.012, speed: 0.6, yBase: p.height*0.38 },
+        { color: AZUL_LIGHT, alpha: 55, amp: 55, freq: 0.009, speed: 1.2, yBase: p.height*0.45 },
+        { color: AZUL, alpha: 70, amp: 80, freq: 0.006, speed: 1.0, yBase: p.height*0.55 },
+        { color: AMARILLO, alpha: 55, amp: 30, freq: 0.015, speed: 0.8, yBase: p.height*0.62 },
+        { color: AZUL_LIGHT, alpha: 58, amp: 60, freq: 0.01, speed: 1.3, yBase: p.height*0.7 },
+        { color: AZUL, alpha: 62, amp: 45, freq: 0.008, speed: 1.5, yBase: p.height*0.8 },
+        { color: AZUL_LIGHT, alpha: 45, amp: 35, freq: 0.013, speed: 0.9, yBase: p.height*0.9 },
       ];
       for (let layer of layers) {
         p.stroke(layer.color[0], layer.color[1], layer.color[2], layer.alpha);
         for (let offset = -20; offset <= 20; offset += 4) {
-          p.strokeWeight(p.map(p.abs(offset), 0, 20, 1.5, 0.4));
+          p.strokeWeight(p.map(p.abs(offset), 0, 20, 2.5, 0.6));
           p.beginShape();
           for (let x = 0; x <= p.width; x += 3) {
             let y = layer.yBase + offset +
@@ -543,11 +544,11 @@
           let maxDist = p.sqrt(p.width*p.width + p.height*p.height) * 0.5;
           hexGrid.push({
             x, y, baseR: hexR,
-            color: p.random() < 0.05 ? AMARILLO : p.random() < 0.08 ? AZUL_LIGHT : AZUL,
-            alpha: p.map(distCenter, 0, maxDist, 0.5, 0.1),
+            color: p.random() < 0.08 ? AMARILLO : p.random() < 0.15 ? AZUL_LIGHT : AZUL,
+            alpha: p.map(distCenter, 0, maxDist, 1.0, 0.35),
             phase: p.random(p.TWO_PI), speed: p.random(0.3, 1.2),
             depth: p.random(0.5, 1.5),
-            isGold: p.random() < 0.05, isAccent: p.random() < 0.08
+            isGold: p.random() < 0.08, isAccent: p.random() < 0.15
           });
         }
       }
@@ -574,8 +575,8 @@
       for (let z of zones) {
         let pr = z.r * (1 + p.sin(t*0.5 + z.x*0.001) * 0.1);
         let grd = ctx.createRadialGradient(z.x,z.y,0,z.x,z.y,pr);
-        grd.addColorStop(0, `rgba(${z.c[0]},${z.c[1]},${z.c[2]},0.04)`);
-        grd.addColorStop(0.5, `rgba(${z.c[0]},${z.c[1]},${z.c[2]},0.015)`);
+        grd.addColorStop(0, `rgba(${z.c[0]},${z.c[1]},${z.c[2]},0.12)`);
+        grd.addColorStop(0.5, `rgba(${z.c[0]},${z.c[1]},${z.c[2]},0.05)`);
         grd.addColorStop(1, `rgba(${z.c[0]},${z.c[1]},${z.c[2]},0)`);
         ctx.fillStyle = grd; ctx.fillRect(0,0,p.width,p.height);
       }
@@ -590,33 +591,33 @@
           if (md < 200) a *= p.map(md, 0, 200, 2.5, 1);
         }
         p.noFill();
-        p.stroke(hex.color[0], hex.color[1], hex.color[2], a * 60);
-        p.strokeWeight(hex.isGold ? 1.5 : 0.6);
+        p.stroke(hex.color[0], hex.color[1], hex.color[2], a * 140);
+        p.strokeWeight(hex.isGold ? 2.5 : 1.2);
         drawHex(hex.x, hex.y, r, hex.depth);
         if (hex.isAccent || hex.isGold) {
           p.noStroke();
-          p.fill(hex.color[0], hex.color[1], hex.color[2], a * (hex.isGold ? 20 : 8));
+          p.fill(hex.color[0], hex.color[1], hex.color[2], a * (hex.isGold ? 50 : 22));
           drawHex(hex.x, hex.y, r, hex.depth);
           if (hex.isGold) {
-            p.fill(AMARILLO[0], AMARILLO[1], AMARILLO[2], a * 6);
+            p.fill(AMARILLO[0], AMARILLO[1], AMARILLO[2], a * 18);
             drawHex(hex.x, hex.y, r * 1.6, hex.depth);
           }
         }
         p.noStroke();
-        let dotA = a * (hex.isGold ? 80 : 20) * (0.5 + pulse * 0.5);
+        let dotA = a * (hex.isGold ? 200 : 80) * (0.5 + pulse * 0.5);
         p.fill(hex.color[0], hex.color[1], hex.color[2], dotA);
-        p.circle(hex.x, hex.y, hex.isGold ? 3 : 1.5);
+        p.circle(hex.x, hex.y, hex.isGold ? 5 : 2.5);
       }
 
       let accented = hexGrid.filter(h => h.isAccent || h.isGold);
       for (let i = 0; i < accented.length; i++) {
         for (let j = i+1; j < accented.length; j++) {
           let d = p.dist(accented[i].x, accented[i].y, accented[j].x, accented[j].y);
-          if (d < 250) {
-            let la = p.map(d, 0, 250, 25, 0);
+          if (d < 300) {
+            let la = p.map(d, 0, 300, 70, 0);
             let isG = accented[i].isGold || accented[j].isGold;
-            p.stroke(isG ? AMARILLO[0] : AZUL_LIGHT[0], isG ? AMARILLO[1] : AZUL_LIGHT[1], isG ? AMARILLO[2] : AZUL_LIGHT[2], isG ? la*0.4 : la);
-            p.strokeWeight(0.4);
+            p.stroke(isG ? AMARILLO[0] : AZUL_LIGHT[0], isG ? AMARILLO[1] : AZUL_LIGHT[1], isG ? AMARILLO[2] : AZUL_LIGHT[2], isG ? la*0.8 : la);
+            p.strokeWeight(isG ? 1.2 : 0.7);
             p.line(accented[i].x, accented[i].y, accented[j].x, accented[j].y);
           }
         }
