@@ -351,7 +351,7 @@
       else if (variant === 5) drawTrama();
       // Canvas draws its own fade to page bg at the bottom
       var ctx = p.drawingContext;
-      var fadeH = p.height * 0.33;
+      var fadeH = p.height * 0.25;
       var y0 = p.height - fadeH;
       var grd = ctx.createLinearGradient(0, y0, 0, p.height);
       grd.addColorStop(0, 'rgba(249,250,251,0)');
