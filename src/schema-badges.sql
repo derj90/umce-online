@@ -1,5 +1,5 @@
 -- =============================================================================
--- User Badges / Insignias SDPA — Schema SQL Migration (Evolutiva)
+-- User Badges / Insignias del Estudiante — Schema SQL Migration (Evolutiva)
 -- Supabase Self-Hosted (supabase.udfv.cloud) — schema portal
 -- Created:  2026-03-26
 -- Updated:  2026-03-26 — Migration evolutiva: lleva el schema inicial al target
@@ -93,7 +93,7 @@ BEGIN
           AND column_name  = 'categoria'
     ) THEN
         ALTER TABLE portal.badge_definitions
-            ADD COLUMN categoria TEXT CHECK (categoria IN ('curso', 'modulo', 'trayectoria', 'manual', 'sdpa'));
+            ADD COLUMN categoria TEXT CHECK (categoria IN ('curso', 'modulo', 'trayectoria', 'manual'));
     END IF;
 END $$;
 
@@ -105,50 +105,20 @@ ALTER TABLE portal.badge_definitions
 -- PASO 3: Poblar slug y categoria en registros existentes (semillas viejas)
 -- Mapeo conservador: badge_type existente → slug/categoria del nuevo schema
 -- ---------------------------------------------------------------------------
+-- Migrar registros viejos que aun no tengan slug/categoria
 UPDATE portal.badge_definitions SET
-    slug      = 'nivel_inicial_tic',
-    categoria = 'sdpa'
-WHERE badge_type = 'certificacion_tic' AND badge_level = 'inicial' AND slug IS NULL;
-
-UPDATE portal.badge_definitions SET
-    slug      = 'nivel_intermedio_tic',
-    categoria = 'sdpa'
-WHERE badge_type = 'certificacion_tic' AND badge_level = 'intermedio' AND slug IS NULL;
-
-UPDATE portal.badge_definitions SET
-    slug      = 'nivel_avanzado_tic',
-    categoria = 'sdpa'
-WHERE badge_type = 'certificacion_tic' AND badge_level = 'avanzado' AND slug IS NULL;
-
-UPDATE portal.badge_definitions SET
-    slug      = 'ruta_ia_nivel_1',
-    categoria = 'sdpa'
-WHERE badge_type = 'ruta_ia' AND badge_level = 'inicial' AND slug IS NULL;
-
-UPDATE portal.badge_definitions SET
-    slug      = 'ruta_ia_nivel_2',
-    categoria = 'sdpa'
-WHERE badge_type = 'ruta_ia' AND badge_level = 'intermedio' AND slug IS NULL;
-
-UPDATE portal.badge_definitions SET
-    slug      = 'ruta_ia_nivel_3',
-    categoria = 'sdpa'
-WHERE badge_type = 'ruta_ia' AND badge_level = 'avanzado' AND slug IS NULL;
-
-UPDATE portal.badge_definitions SET
-    slug      = 'capacitacion_udfv',
-    categoria = 'sdpa'
-WHERE badge_type = 'capacitacion' AND slug IS NULL;
-
-UPDATE portal.badge_definitions SET
-    slug      = 'mentor_sdpa',
+    slug      = 'mencion_especial',
     categoria = 'manual'
-WHERE badge_type = 'mentor' AND slug IS NULL;
+WHERE badge_type = 'innovacion' AND badge_level IS NULL AND slug IS NULL;
 
 UPDATE portal.badge_definitions SET
     slug      = 'innovador',
     categoria = 'manual'
 WHERE badge_type = 'innovacion' AND slug IS NULL;
+
+-- Limpiar registros SDPA legacy: los que tenian categoria='sdpa' se eliminan
+-- porque ahora viven en schema-sdpa.sql (sistema separado del docente)
+DELETE FROM portal.badge_definitions WHERE categoria = 'sdpa';
 
 -- Cualquier fila sin slug ni categoria aun: fallback conservador
 UPDATE portal.badge_definitions SET
@@ -197,13 +167,7 @@ ALTER TABLE portal.user_badges
 ALTER TABLE portal.user_badges
     ADD COLUMN IF NOT EXISTS nucleo_numero INTEGER;
 
--- horas_cronologicas: horas que suma esta insignia para certificacion TIC
-ALTER TABLE portal.user_badges
-    ADD COLUMN IF NOT EXISTS horas_cronologicas NUMERIC(5,1);
-
--- programa_sdpa: 'ruta_ia_nivel_1', 'certificacion_tic_inicial', etc.
-ALTER TABLE portal.user_badges
-    ADD COLUMN IF NOT EXISTS programa_sdpa TEXT;
+-- (horas_cronologicas y programa_sdpa removidos — viven en schema-sdpa.sql)
 
 -- granted_by: 'system' para automaticos, email del admin para manuales
 ALTER TABLE portal.user_badges
@@ -264,51 +228,20 @@ CREATE INDEX IF NOT EXISTS idx_ub_user       ON portal.user_badges (user_email);
 CREATE INDEX IF NOT EXISTS idx_ub_badge      ON portal.user_badges (badge_definition_id);
 CREATE INDEX IF NOT EXISTS idx_ub_piac       ON portal.user_badges (piac_link_id)   WHERE piac_link_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_ub_hash       ON portal.user_badges (verificacion_hash);
-CREATE INDEX IF NOT EXISTS idx_ub_sdpa       ON portal.user_badges (programa_sdpa)  WHERE programa_sdpa IS NOT NULL;
+-- idx_ub_sdpa removido — programa_sdpa ahora vive en schema-sdpa.sql
 
 -- Indice para slug en badge_definitions (busqueda frecuente)
 CREATE INDEX IF NOT EXISTS idx_badge_def_slug      ON portal.badge_definitions (slug);
 CREATE INDEX IF NOT EXISTS idx_badge_def_categoria ON portal.badge_definitions (categoria);
 
--- ---------------------------------------------------------------------------
--- PASO 6: MATERIALIZED VIEW mv_progreso_sdpa
--- (spec lineas 1041-1069)
--- ---------------------------------------------------------------------------
+-- PASO 6: mv_progreso_sdpa REMOVIDO — ahora vive en schema-sdpa.sql
+-- Las vistas de progreso docente (v_resumen_docente_sdpa, v_progreso_certificaciones)
+-- estan definidas en el schema separado del sistema de desarrollo profesional.
 DROP MATERIALIZED VIEW IF EXISTS portal.mv_progreso_sdpa;
 
-CREATE MATERIALIZED VIEW portal.mv_progreso_sdpa AS
-SELECT
-    ub.user_email,
-    ub.programa_sdpa,
-    COUNT(*) AS badges_obtenidos,
-    SUM(ub.horas_cronologicas) AS horas_acumuladas,
-    CASE
-        WHEN ub.programa_sdpa LIKE 'certificacion_tic%' THEN
-            CASE
-                WHEN SUM(ub.horas_cronologicas) >= 81 THEN 'avanzado'
-                WHEN SUM(ub.horas_cronologicas) >= 54 THEN 'intermedio'
-                WHEN SUM(ub.horas_cronologicas) >= 27 THEN 'inicial'
-                ELSE 'en_progreso'
-            END
-        WHEN ub.programa_sdpa LIKE 'ruta_ia%' THEN
-            CASE
-                WHEN COUNT(*) >= 12 THEN 'completa'
-                WHEN COUNT(*) >= 8  THEN 'nivel_3'
-                WHEN COUNT(*) >= 4  THEN 'nivel_2'
-                ELSE 'nivel_1'
-            END
-        ELSE 'en_progreso'
-    END AS nivel_alcanzado,
-    MAX(ub.granted_at) AS ultimo_logro
-FROM portal.user_badges ub
-WHERE ub.programa_sdpa IS NOT NULL
-GROUP BY ub.user_email, ub.programa_sdpa;
-
-CREATE UNIQUE INDEX idx_mv_sdpa ON portal.mv_progreso_sdpa (user_email, programa_sdpa);
-
 -- ---------------------------------------------------------------------------
--- PASO 7: Seeds — 18+ badge_definitions con ON CONFLICT (slug) DO NOTHING
--- (spec lineas 1237-1260 + capacitacion_udfv para compatibilidad con viejos seeds)
+-- PASO 7: Seeds — 12 badge_definitions del estudiante con ON CONFLICT (slug) DO NOTHING
+-- (Las insignias SDPA/docente ahora viven en schema-sdpa.sql)
 -- ---------------------------------------------------------------------------
 INSERT INTO portal.badge_definitions
     (slug, badge_type, badge_level, title, description, icon_name, color,
@@ -357,56 +290,14 @@ VALUES
      'Accediste a cursos en 2 o mas plataformas Moodle',
      'compass',      '#7c3aed', 'trayectoria','{"type": "plataformas_distintas", "threshold": 2}'::jsonb, 12, true),
 
-    ('formador_progreso',    'ruta_ia',          NULL,         'Formador en progreso',
-     'Completaste al menos 1 curso de la Ruta Formativa IA o Certificacion TIC',
-     'trending-up',  '#0891b2', 'trayectoria','{"type": "total_sdpa_cursos", "threshold": 1}'::jsonb,   13, true),
-
-    -- === INSIGNIAS SDPA (docente) ===
-    ('nivel_inicial_tic',    'certificacion_tic','inicial',    'Nivel Inicial TIC',
-     'Certificaste el Nivel Inicial de Competencia Digital Docente (27h)',
-     'award',        '#16a34a', 'sdpa',       NULL,                                                     20, true),
-
-    ('nivel_intermedio_tic', 'certificacion_tic','intermedio', 'Nivel Intermedio TIC',
-     'Certificaste el Nivel Intermedio de Competencia Digital Docente (54h)',
-     'award',        '#eab308', 'sdpa',       NULL,                                                     21, true),
-
-    ('nivel_avanzado_tic',   'certificacion_tic','avanzado',   'Nivel Avanzado TIC',
-     'Certificaste el Nivel Avanzado de Competencia Digital Docente (81h)',
-     'award',        '#dc2626', 'sdpa',       NULL,                                                     22, true),
-
-    ('ruta_ia_nivel_1',      'ruta_ia',          'inicial',    'Ruta IA - Iniciacion',
-     'Completaste los 4 cursos del Nivel 1 de la Ruta Formativa IA (40h)',
-     'brain',        '#06b6d4', 'sdpa',       NULL,                                                     23, true),
-
-    ('ruta_ia_nivel_2',      'ruta_ia',          'intermedio', 'Ruta IA - Aplicacion',
-     'Completaste los 4 cursos del Nivel 2 de la Ruta Formativa IA (44h)',
-     'brain',        '#8b5cf6', 'sdpa',       NULL,                                                     24, true),
-
-    ('ruta_ia_nivel_3',      'ruta_ia',          'avanzado',   'Ruta IA - Integracion',
-     'Completaste los 4 cursos del Nivel 3 de la Ruta Formativa IA (48h)',
-     'brain',        '#dc2626', 'sdpa',       NULL,                                                     25, true),
-
     -- === INSIGNIAS MANUALES (admin/DI) ===
     ('mencion_especial',     'innovacion',       NULL,         'Mencion especial',
      'Reconocimiento por trabajo destacado',
      'sparkles',     '#f59e0b', 'manual',     NULL,                                                     30, true),
 
-    ('mentor_sdpa',          'mentor',           NULL,         'Mentor',
-     'Participaste como mentor en el Sistema de Desarrollo Profesional Academico',
-     'users',        '#0891b2', 'manual',     NULL,                                                     31, true),
-
     ('innovador',            'innovacion',       NULL,         'Innovador',
      'Completaste un proyecto de innovacion educativa',
-     'lightbulb',    '#84cc16', 'manual',     NULL,                                                     32, true),
-
-    ('colaborador_udfv',     'capacitacion',     NULL,         'Colaborador UDFV',
-     'Participaste activamente en actividades de la UDFV',
-     'heart-handshake','#ec4899','manual',    NULL,                                                     33, true),
-
-    -- === COMPATIBILIDAD — seed generico de capacitacion (viejos registros) ===
-    ('capacitacion_udfv',    'capacitacion',     NULL,         'Capacitacion UDFV',
-     'Curso de capacitacion completado en la Unidad de Desarrollo y Formacion Virtual',
-     'book-open',    '#0033A1', 'sdpa',       NULL,                                                     10, true)
+     'lightbulb',    '#84cc16', 'manual',     NULL,                                                     31, true)
 
 ON CONFLICT (slug) DO NOTHING;
 
@@ -469,4 +360,4 @@ GRANT SELECT ON portal.badge_definitions       TO anon, authenticated;
 GRANT ALL    ON portal.badge_definitions       TO service_role;
 GRANT ALL    ON portal.badge_definitions_id_seq TO service_role;
 
-GRANT SELECT ON portal.mv_progreso_sdpa TO anon, authenticated, service_role;
+-- GRANT mv_progreso_sdpa removido — vista ahora en schema-sdpa.sql

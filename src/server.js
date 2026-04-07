@@ -1455,20 +1455,11 @@ app.get('/.well-known/keys/issuer-key-1', (req, res) => {
   });
 });
 
-// DID document for umce.online issuer
-app.get('/.well-known/did.json', (req, res) => {
-  res.json({
-    '@context': ['https://www.w3.org/ns/did/v1', 'https://w3id.org/security/suites/ed25519-2020/v1'],
-    id: 'did:web:umce.online',
-    verificationMethod: [{
-      id: 'did:web:umce.online#issuer-key-1',
-      type: 'Ed25519VerificationKey2020',
-      controller: 'did:web:umce.online',
-      publicKeyMultibase: BADGE_PUBLIC_KEY_B64 ? 'z' + Buffer.from(BADGE_PUBLIC_KEY_B64, 'base64').toString('base64url') : ''
-    }],
-    assertionMethod: ['did:web:umce.online#issuer-key-1']
-  });
-});
+// DID document para umce.online (did:web) — Open Badges 3.0 / Multikey
+// Este endpoint es reemplazado por la implementacion completa mas abajo (linea ~5776).
+// La implementacion real usa BADGE_PUBLIC_KEY (multibase z...) y el formato Multikey.
+// Esta entrada se mantiene como comentario para no duplicar la ruta.
+// app.get('/.well-known/did.json', ...) → ver seccion "Open Badges 3.0" mas abajo.
 
 // --- Badges: catalogo y consulta ---
 
@@ -5618,6 +5609,391 @@ app.get('/api/autoformacion/status', async (req, res) => {
   }
 });
 
+// =============================================================================
+// === Open Badges 3.0 — Emisión y Verificación de Credenciales ===
+// =============================================================================
+//
+// Stack: @digitalcredentials/* (ESM) cargados via import() dinámico desde CJS
+// Firma: Ed25519 + eddsa-rdfc-2022 + data-integrity proof
+// Almacenamiento: portal.user_badges (columna credential_json + verificacion_hash)
+// Clave: BADGE_PRIVATE_KEY (multibase), BADGE_PUBLIC_KEY, BADGE_KEY_ID en .env
+//
+// Setup inicial: ejecutar `node generate-keys.js` una sola vez.
+// =============================================================================
+
+// Cache de las instancias DCC (carga lazy, evita overhead en cada request)
+let _dccLoaded = false;
+let _vcLib = null;
+let _ed25519MultiKey = null;
+let _cryptosuiteLib = null;
+let _dataIntegrityLib = null;
+let _securityLoader = null;
+
+async function loadDCC() {
+  if (_dccLoaded) return;
+  [_vcLib, _ed25519MultiKey, _cryptosuiteLib, _dataIntegrityLib, _securityLoader] = await Promise.all([
+    import('@digitalcredentials/vc'),
+    import('@digitalcredentials/ed25519-multikey'),
+    import('@digitalcredentials/eddsa-rdfc-2022-cryptosuite'),
+    import('@digitalcredentials/data-integrity'),
+    import('@digitalcredentials/security-document-loader'),
+  ]);
+  _dccLoaded = true;
+}
+
+// Configuración del emisor (DID:web)
+const BADGE_BASE_URL = process.env.BASE_URL || 'https://umce.online';
+const BADGE_DID = `did:web:${BADGE_BASE_URL.replace(/^https?:\/\//, '')}`;
+
+// Tipos de badge válidos (sincronizado con schema-badges.sql)
+const VALID_BADGE_TYPES = [
+  'certificacion_tic', 'ruta_ia', 'capacitacion',
+  'curso_completado', 'mentor', 'innovacion',
+  // tipos extendidos del schema evolutivo:
+  'modulo_completado', 'trayectoria', 'manual'
+];
+
+// Helper: construir y retornar el DID document con la clave pública actual
+function buildDidDocument() {
+  const publicKeyMultibase = process.env.BADGE_PUBLIC_KEY;
+  const keyId = process.env.BADGE_KEY_ID || `${BADGE_DID}#${publicKeyMultibase}`;
+  if (!publicKeyMultibase) return null;
+  return {
+    '@context': [
+      'https://www.w3.org/ns/did/v1',
+      'https://w3id.org/security/multikey/v1'
+    ],
+    id: BADGE_DID,
+    verificationMethod: [
+      {
+        id: keyId,
+        type: 'Multikey',
+        controller: BADGE_DID,
+        publicKeyMultibase
+      }
+    ],
+    assertionMethod: [keyId],
+    authentication: [keyId]
+  };
+}
+
+// Helper: construir document loader con soporte para did:web local
+async function buildDocumentLoader() {
+  await loadDCC();
+  const { securityLoader } = _securityLoader;
+  // fetchRemoteContexts: true habilita resolución HTTP de contextos desconocidos
+  const loader = securityLoader({ fetchRemoteContexts: true });
+
+  // Inyectar el DID document local para did:web:umce.online
+  // Esto evita que el document loader intente resolverlo por HTTP durante la emisión
+  const didDoc = buildDidDocument();
+  if (didDoc) {
+    loader.addStatic(BADGE_DID, {
+      '@context': ['https://www.w3.org/ns/did/v1', 'https://w3id.org/security/multikey/v1'],
+      ...didDoc
+    });
+    // Agregar también el fragmento del verification method (referenced by keyId)
+    const keyId = process.env.BADGE_KEY_ID || `${BADGE_DID}#${process.env.BADGE_PUBLIC_KEY}`;
+    if (keyId && keyId !== BADGE_DID) {
+      loader.addStatic(keyId, {
+        '@context': ['https://www.w3.org/ns/did/v1', 'https://w3id.org/security/multikey/v1'],
+        ...didDoc.verificationMethod[0]
+      });
+    }
+  }
+
+  return loader.build();
+}
+
+// Helper: obtener el keypair Ed25519 desde las variables de entorno
+async function getSigningKeyPair() {
+  await loadDCC();
+  const secretKeyMultibase = process.env.BADGE_PRIVATE_KEY;
+  const publicKeyMultibase = process.env.BADGE_PUBLIC_KEY;
+  const keyId = process.env.BADGE_KEY_ID || `${BADGE_DID}#${publicKeyMultibase}`;
+  if (!secretKeyMultibase || !publicKeyMultibase) {
+    throw new Error('BADGE_PRIVATE_KEY y BADGE_PUBLIC_KEY deben estar configurados en .env');
+  }
+  return _ed25519MultiKey.from({
+    id: keyId,
+    controller: BADGE_DID,
+    publicKeyMultibase,
+    secretKeyMultibase
+  });
+}
+
+// Helper: construir un Open Badge 3.0 Verifiable Credential (sin firmar)
+function buildBadgeCredential({ recipientEmail, recipientName, badgeType, courseId, achievementDescription, badgeId, issuanceDate }) {
+  const credentialId = `${BADGE_BASE_URL}/api/badges/verify/${badgeId}`;
+  return {
+    '@context': [
+      'https://www.w3.org/2018/credentials/v1',
+      'https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.3.json'
+    ],
+    id: credentialId,
+    type: ['VerifiableCredential', 'OpenBadgeCredential'],
+    issuer: {
+      id: BADGE_DID,
+      type: ['Profile'],
+      name: 'Universidad Metropolitana de Ciencias de la Educación',
+      url: BADGE_BASE_URL,
+      image: `${BADGE_BASE_URL}/assets/isologo-umce.png`,
+      email: 'udfv@umce.cl'
+    },
+    issuanceDate: issuanceDate || new Date().toISOString(),
+    credentialSubject: {
+      id: `mailto:${recipientEmail}`,
+      type: ['AchievementSubject'],
+      name: recipientName,
+      achievement: {
+        id: `${BADGE_BASE_URL}/badges/definitions/${badgeType}`,
+        type: ['Achievement'],
+        name: badgeType,
+        description: achievementDescription || `Logro verificado por la UMCE: ${badgeType}`,
+        criteria: {
+          narrative: achievementDescription || `El receptor ha cumplido los criterios para obtener este badge.`
+        },
+        image: {
+          id: `${BADGE_BASE_URL}/assets/badges/${badgeType}.png`,
+          type: 'Image'
+        }
+      },
+      ...(courseId ? { courseId: String(courseId) } : {})
+    }
+  };
+}
+
+// --- DID Document: GET /.well-known/did.json ---
+app.get('/.well-known/did.json', (req, res) => {
+  const didDoc = buildDidDocument();
+  if (!didDoc) {
+    return res.status(503).json({ error: 'Clave pública no configurada. Ejecutar generate-keys.js.' });
+  }
+  res.setHeader('Content-Type', 'application/did+ld+json');
+  res.json(didDoc);
+});
+
+// --- POST /api/badges/issue — Emisión de badge (solo admin) ---
+app.post('/api/badges/issue', adminMiddleware, async (req, res) => {
+  // Verificar que las claves estén configuradas
+  if (!process.env.BADGE_PRIVATE_KEY || !process.env.BADGE_PUBLIC_KEY) {
+    return res.status(503).json({
+      error: 'Sistema de badges no configurado. Ejecutar generate-keys.js y agregar BADGE_PRIVATE_KEY/BADGE_PUBLIC_KEY al .env.'
+    });
+  }
+
+  const { recipientEmail, recipientName, badgeType, courseId, achievementDescription } = req.body;
+
+  // Validación de inputs
+  if (!recipientEmail || !recipientEmail.includes('@')) {
+    return res.status(400).json({ error: 'recipientEmail inválido o faltante' });
+  }
+  if (!recipientName || typeof recipientName !== 'string' || !recipientName.trim()) {
+    return res.status(400).json({ error: 'recipientName es requerido' });
+  }
+  if (!badgeType) {
+    return res.status(400).json({ error: 'badgeType es requerido' });
+  }
+
+  try {
+    // Generar hash único de verificación
+    const verificationHash = crypto.randomBytes(32).toString('hex');
+    const issuanceDate = new Date().toISOString();
+
+    // Construir el credential sin firmar
+    const credential = buildBadgeCredential({
+      recipientEmail: recipientEmail.toLowerCase(),
+      recipientName: recipientName.trim(),
+      badgeType,
+      courseId: courseId || null,
+      achievementDescription: achievementDescription || null,
+      badgeId: verificationHash,
+      issuanceDate
+    });
+
+    // Cargar librerías DCC y firmar
+    await loadDCC();
+    const keyPair = await getSigningKeyPair();
+    const cryptosuite = _cryptosuiteLib.cryptosuite;
+    const { DataIntegrityProof } = _dataIntegrityLib;
+    const documentLoader = await buildDocumentLoader();
+
+    const suite = new DataIntegrityProof({ cryptosuite, key: keyPair });
+
+    const signedCredential = await _vcLib.issue({ credential, suite, documentLoader });
+
+    // Guardar en Supabase (portal.user_badges)
+    const badgeRecord = {
+      user_email: recipientEmail.toLowerCase(),
+      badge_type: VALID_BADGE_TYPES.includes(badgeType) ? badgeType : 'capacitacion',
+      title: badgeType,
+      description: achievementDescription || null,
+      course_id: courseId ? parseInt(courseId) : null,
+      granted_by: req.userEmail,
+      verificacion_hash: verificationHash,
+      credential_json: signedCredential,
+      granted_at: issuanceDate,
+      earned_at: issuanceDate,
+      metadata: {
+        recipientName: recipientName.trim(),
+        issuer: BADGE_DID,
+        signed: true,
+        ob_version: '3.0'
+      }
+    };
+
+    const saved = await portalMutate('user_badges', 'POST', badgeRecord);
+    const savedId = Array.isArray(saved) ? saved[0]?.id : saved?.id;
+
+    console.log(`Badge emitido: ${badgeType} → ${recipientEmail} (hash: ${verificationHash}, id: ${savedId})`);
+
+    res.status(201).json({
+      id: savedId,
+      verificationHash,
+      verifyUrl: `${BADGE_BASE_URL}/verificar?id=${verificationHash}`,
+      credential: signedCredential
+    });
+
+  } catch (err) {
+    console.error('Error emitiendo badge:', err.message, err.stack);
+    res.status(500).json({ error: 'Error al emitir el badge', detail: err.message });
+  }
+});
+
+// --- GET /api/badges/verify/:id — Verificación pública de badge ---
+app.get('/api/badges/verify/:id', async (req, res) => {
+  const { id } = req.params;
+  if (!id || id.length < 10) return res.status(400).json({ error: 'ID inválido' });
+
+  try {
+    // Buscar por verificacion_hash o por id numérico
+    const isNumeric = /^\d+$/.test(id);
+    const queryParam = isNumeric
+      ? `id=eq.${id}`
+      : `verificacion_hash=eq.${encodeURIComponent(id)}`;
+
+    const rows = await portalQuery('user_badges', `${queryParam}&limit=1`);
+    if (!rows || rows.length === 0) {
+      return res.status(404).json({ verified: false, error: 'Badge no encontrado' });
+    }
+
+    const badge = rows[0];
+    const credential = badge.credential_json;
+
+    // Sin credential firmado → retornar datos básicos sin verificación criptográfica
+    if (!credential) {
+      return res.json({
+        verified: false,
+        reason: 'Este badge no tiene firma criptográfica',
+        badge: {
+          id: badge.id,
+          badgeType: badge.badge_type,
+          title: badge.title,
+          recipientEmail: badge.user_email,
+          grantedAt: badge.granted_at || badge.earned_at,
+          grantedBy: badge.granted_by
+        }
+      });
+    }
+
+    // Verificar la firma criptográfica
+    if (!process.env.BADGE_PUBLIC_KEY) {
+      // Sin clave pública configurada, retornar datos sin verificar firma
+      return res.json({
+        verified: null,
+        reason: 'Servidor no configurado para verificación criptográfica',
+        credential,
+        badge: {
+          id: badge.id,
+          badgeType: badge.badge_type,
+          title: badge.title,
+          recipientEmail: badge.user_email,
+          grantedAt: badge.granted_at || badge.earned_at
+        }
+      });
+    }
+
+    await loadDCC();
+    const cryptosuite = _cryptosuiteLib.cryptosuite;
+    const { DataIntegrityProof } = _dataIntegrityLib;
+    const documentLoader = await buildDocumentLoader();
+    const suite = new DataIntegrityProof({ cryptosuite });
+
+    const result = await _vcLib.verifyCredential({
+      credential,
+      suite,
+      documentLoader
+    });
+
+    res.json({
+      verified: result.verified,
+      checks: result.checks || [],
+      errors: result.error ? [result.error.message || String(result.error)] : [],
+      credential,
+      badge: {
+        id: badge.id,
+        badgeType: badge.badge_type,
+        title: badge.title,
+        description: badge.description,
+        recipientEmail: badge.user_email,
+        recipientName: badge.metadata?.recipientName || null,
+        grantedAt: badge.granted_at || badge.earned_at,
+        grantedBy: badge.granted_by,
+        courseId: badge.course_id,
+        moodlePlatform: badge.moodle_platform
+      },
+      issuer: {
+        did: BADGE_DID,
+        name: 'Universidad Metropolitana de Ciencias de la Educación',
+        url: BADGE_BASE_URL
+      }
+    });
+
+  } catch (err) {
+    console.error('Error verificando badge:', err.message);
+    res.status(500).json({ verified: false, error: 'Error al verificar el badge', detail: err.message });
+  }
+});
+
+// --- GET /api/badges/recipient/:email — Badges de un usuario (autenticado) ---
+app.get('/api/badges/recipient/:email', authMiddleware, async (req, res) => {
+  const targetEmail = req.params.email.toLowerCase();
+
+  // Solo admin puede ver badges de otros usuarios
+  if (targetEmail !== req.userEmail && !isAdmin(req.userEmail)) {
+    return res.status(403).json({ error: 'Solo puedes ver tus propios badges' });
+  }
+
+  try {
+    const rows = await portalQuery(
+      'user_badges',
+      `user_email=eq.${encodeURIComponent(targetEmail)}&order=granted_at.desc&limit=100`
+    );
+
+    const badges = (rows || []).map(b => ({
+      id: b.id,
+      badgeType: b.badge_type,
+      badgeLevel: b.badge_level,
+      title: b.title,
+      description: b.description,
+      iconName: b.icon_name,
+      color: b.color,
+      courseId: b.course_id,
+      moodlePlatform: b.moodle_platform,
+      grantedAt: b.granted_at || b.earned_at,
+      grantedBy: b.granted_by,
+      verifyUrl: b.verificacion_hash ? `${BADGE_BASE_URL}/verificar?id=${b.verificacion_hash}` : null,
+      hasCryptographicProof: !!(b.credential_json),
+      metadata: b.metadata || {}
+    }));
+
+    res.json({ email: targetEmail, total: badges.length, badges });
+  } catch (err) {
+    console.error('Error listando badges:', err.message);
+    res.status(500).json({ error: 'Error al obtener badges' });
+  }
+});
+
 // --- API: Health check ---
 app.get('/api/health', (req, res) => {
   res.json({
@@ -5636,6 +6012,8 @@ app.get('/virtualizacion', (req, res) => res.sendFile(path.join(__dirname, 'publ
 app.get('/virtualizacion/planificador', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-planificador.html')));
 app.get('/virtualizacion/fundamentos', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-fundamentos.html')));
 app.get('/virtualizacion/rubrica', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-rubrica.html')));
+app.get('/virtualizacion/qa', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-qa.html')));
+app.get('/virtualizacion/sct', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-sct.html')));
 // app.get('/sct', ...);
 // app.get('/servicios', ...);
 // app.get('/noticias', ...);
@@ -5646,6 +6024,8 @@ app.get('/virtualizacion/rubrica', (req, res) => res.sendFile(path.join(__dirnam
 
 app.get('/mis-cursos', (req, res) => res.sendFile(path.join(__dirname, 'public', 'mis-cursos.html')));
 app.get('/privacidad', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacidad.html')));
+app.get('/verificar', (req, res) => res.sendFile(path.join(__dirname, 'public', 'verificar-credencial.html')));
+app.get('/badge/:hash', (req, res) => res.redirect(301, `/verificar?id=${req.params.hash}`));
 
 // Autoformación
 // app.get('/autoformacion/sustentabilidad', ...) — archived, not requested

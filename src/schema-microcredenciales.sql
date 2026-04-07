@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS portal.microcredencial_requisitos (
     id                      SERIAL PRIMARY KEY,
     microcredencial_id      INTEGER NOT NULL REFERENCES portal.microcredencial_definitions(id) ON DELETE CASCADE,
     badge_definition_id     INTEGER NOT NULL REFERENCES portal.badge_definitions(id),
-    -- El badge debe ser de categoria 'modulo' o 'sdpa' (nivel 2 del esquema de credenciales)
+    -- El badge debe ser de categoria 'modulo' (nivel 2 del esquema de credenciales)
     obligatorio             BOOLEAN DEFAULT true,    -- true = obligatorio, false = electivo
     orden                   INTEGER DEFAULT 0,       -- orden sugerido de completacion
     UNIQUE(microcredencial_id, badge_definition_id)

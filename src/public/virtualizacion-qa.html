@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Sistema QA &mdash; Evaluaci&oacute;n Inteligente de Cursos Virtuales | UDFV-UMCE</title>
+  <meta name="description" content="Sistema de Aseguramiento de Calidad para cursos virtuales UMCE. Evaluaci&oacute;n autom&aacute;tica con 77 indicadores en 6 dimensiones. IA observa y recomienda.">
+  <meta name="author" content="Unidad de Desarrollo y Formaci&oacute;n Virtual &mdash; UMCE">
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+  <link rel="stylesheet" href="/shared/shared.css">
+  <style>
+    /* ── Layout principal ── */
+    .qa-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 80px);
+    }
+    @media (max-width: 768px) {
+      .qa-layout { grid-template-columns: 1fr; }
+      .qa-sidebar { display: none; }
+      .qa-sidebar.mobile-open { display: flex; }
+    }
+
+    /* ── Sidebar ── */
+    .qa-sidebar {
+      background: #fff;
+      border-right: 1px solid #E5E7EB;
+      padding: 1.5rem 0;
+      position: sticky;
+      top: 80px;
+      height: calc(100vh - 80px);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.25rem;
+      margin: 0.125rem 0.75rem;
+      border-radius: 0.625rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #4B5563;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border: none;
+      background: none;
+      width: calc(100% - 1.5rem);
+      text-align: left;
+    }
+    .nav-item:hover { background: #F3F4F6; color: #111827; }
+    .nav-item.active { background: #EFF3FB; color: var(--palette-primary); font-weight: 700; }
+    .nav-item .nav-icon {
+      width: 2rem; height: 2rem;
+      border-radius: 0.5rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .nav-item.active .nav-icon { background: var(--palette-primary); }
+    .nav-item:not(.active) .nav-icon { background: #F3F4F6; }
+    .nav-item.active .nav-icon svg { color: #fff; }
+    .nav-item:not(.active) .nav-icon svg { color: #6B7280; }
+
+    /* ── Content panels ── */
+    .qa-panel { display: none; animation: fadeSlide 0.25s ease; }
+    .qa-panel.active { display: block; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Score semaphore ── */
+    .score-pill {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-weight: 800; font-size: 0.875rem;
+      padding: 0.3rem 0.75rem; border-radius: 9999px;
+    }
+    .score-pill.red    { background: #FEE2E2; color: #991B1B; }
+    .score-pill.yellow { background: #FEF3C7; color: #92400E; }
+    .score-pill.green  { background: #D1FAE5; color: #065F46; }
+    .score-pill.darkgreen { background: #A7F3D0; color: #064E3B; }
+
+    /* ── Radar ── */
+    .radar-wrap { max-width: 440px; margin: 0 auto; }
+    .radar-wrap svg { width: 100%; height: auto; }
+
+    /* ── Progress bars ── */
+    .prog-bar {
+      height: 0.5rem; border-radius: 9999px; overflow: hidden;
+      background: #F3F4F6;
+    }
+    .prog-fill {
+      height: 100%; border-radius: 9999px;
+      transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+    }
+    .prog-fill.red    { background: #EF4444; }
+    .prog-fill.yellow { background: #F59E0B; }
+    .prog-fill.green  { background: #10B981; }
+    .prog-fill.darkgreen { background: #059669; }
+
+    /* ── Alert badges ── */
+    .alert-badge {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      font-size: 0.6875rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; padding: 0.2rem 0.6rem; border-radius: 9999px;
+    }
+    .alert-badge.critica   { background: #FEE2E2; color: #991B1B; }
+    .alert-badge.advertencia { background: #FEF3C7; color: #92400E; }
+    .alert-badge.info      { background: #DBEAFE; color: #1E40AF; }
+
+    /* ── Alert card ── */
+    .alert-card {
+      border-radius: 0.75rem; padding: 1rem 1.25rem;
+      border-left: 4px solid;
+      display: flex; gap: 1rem; align-items: flex-start;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .alert-card:hover { transform: translateX(3px); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+    .alert-card.critica     { background: #FFF5F5; border-color: #EF4444; }
+    .alert-card.advertencia { background: #FFFBEB; border-color: #F59E0B; }
+    .alert-card.info        { background: #EFF6FF; border-color: #3B82F6; }
+
+    /* ── Recommendation card ── */
+    .rec-card {
+      border-radius: 0.75rem;
+      border: 1.5px solid #E5E7EB;
+      background: #fff;
+      padding: 1.25rem;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .rec-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px -6px rgba(0,51,161,0.1);
+      border-color: var(--palette-primary);
+    }
+
+    /* ── Priority badge ── */
+    .pri-badge {
+      display: inline-flex; align-items: center; gap: 0.25rem;
+      font-size: 0.6875rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 0.2rem 0.6rem; border-radius: 9999px;
+    }
+    .pri-badge.alta   { background: #FEE2E2; color: #991B1B; }
+    .pri-badge.media  { background: #FEF3C7; color: #92400E; }
+    .pri-badge.baja   { background: #D1FAE5; color: #065F46; }
+
+    /* ── Indicator row ── */
+    .ind-row {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      padding: 0.625rem 0; border-bottom: 1px solid #F3F4F6;
+    }
+    .ind-row:last-child { border-bottom: none; }
+
+    /* ── IA badge (sutil) ── */
+    .ia-badge {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      font-size: 0.6875rem; font-weight: 600; color: #6366F1;
+      background: #EEF2FF; padding: 0.25rem 0.625rem; border-radius: 9999px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Print mode ── */
+    @media print {
+      .qa-sidebar, .qa-tabs-mobile, .qa-header-actions, #print-btn { display: none !important; }
+      .qa-panel { display: block !important; }
+      .qa-content { padding: 0 !important; }
+    }
+
+    /* ── Disclaimer ── */
+    .disclaimer-bar {
+      background: linear-gradient(to right, #EFF3FB, #F8FAFC);
+      border: 1px solid #BFDBFE;
+      border-radius: 0.75rem;
+      padding: 0.875rem 1.25rem;
+      display: flex; align-items: flex-start; gap: 0.875rem;
+    }
+
+    /* ── Analyze button state ── */
+    .btn-primary {
+      background: var(--palette-primary); color: #fff;
+      font-weight: 700; border-radius: 0.625rem;
+      padding: 0.75rem 1.5rem;
+      transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      cursor: pointer; border: none; font-size: 0.9375rem;
+    }
+    .btn-primary:hover { background: #002280; transform: translateY(-1px); box-shadow: 0 8px 20px -6px rgba(0,51,161,0.35); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ── Timeline ── */
+    .timeline-item {
+      display: flex; gap: 1rem; position: relative;
+    }
+    .timeline-item::before {
+      content: ''; position: absolute;
+      left: 1.1875rem; top: 2.5rem; bottom: -0.75rem;
+      width: 1px; background: #E5E7EB;
+    }
+    .timeline-item:last-child::before { display: none; }
+    .timeline-dot {
+      width: 2.375rem; height: 2.375rem; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 0.9rem;
+    }
+
+    /* ── Trend indicator ── */
+    .trend-up   { color: #059669; }
+    .trend-down { color: #DC2626; }
+    .trend-flat { color: #6B7280; }
+
+    /* ── Mobile tab bar ── */
+    .qa-tabs-mobile {
+      display: none; background: #fff; border-bottom: 1px solid #E5E7EB;
+      overflow-x: auto; gap: 0; padding: 0;
+    }
+    @media (max-width: 768px) { .qa-tabs-mobile { display: flex; } }
+    .tab-btn-mobile {
+      flex-shrink: 0; padding: 0.75rem 1.25rem;
+      font-size: 0.8125rem; font-weight: 600; color: #6B7280;
+      border-bottom: 2px solid transparent; cursor: pointer;
+      transition: all 0.2s; white-space: nowrap; background: none; border-top: none; border-left: none; border-right: none;
+    }
+    .tab-btn-mobile.active { color: var(--palette-primary); border-bottom-color: var(--palette-primary); }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased">
+  <div id="nav-placeholder"></div>
+
+  <!-- ================================================
+       HERO
+  ================================================ -->
+  <section class="hero-gradient pt-32 pb-10 text-white relative overflow-hidden">
+    <div id="p5-header" data-variant="2"></div>
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+      <nav class="breadcrumb text-sm mb-6">
+        <a href="/" class="text-white/60 hover:text-white">Inicio</a>
+        <span class="text-white/30 mx-1">/</span>
+        <a href="/virtualizacion" class="text-white/60 hover:text-white">Virtualizaci&oacute;n</a>
+        <span class="text-white/30 mx-1">/</span>
+        <span class="text-white/90">Sistema QA</span>
+      </nav>
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div>
+          <div class="flex items-center gap-3 mb-3">
+            <p class="text-xs font-semibold uppercase tracking-widest text-white/50">Sistema de Aseguramiento de Calidad &mdash; UDFV-UMCE</p>
+            <span class="ia-badge" style="background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85);">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+              IA-asistido
+            </span>
+          </div>
+          <h1 class="font-heading text-3xl md:text-4xl font-extrabold mb-3 leading-tight">Evaluaci&oacute;n Inteligente<br class="hidden sm:block"> de Cursos Virtuales</h1>
+          <p class="text-white/70 text-base max-w-xl">77 indicadores en 6 dimensiones &mdash; Proyecto UMC20992. El sistema analiza y recomienda; el equipo de dise&ntilde;o instruccional decide.</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <a href="/virtualizacion/rubrica" class="inline-flex items-center gap-2 text-sm font-semibold text-white/70 hover:text-white border border-white/20 hover:border-white/50 px-4 py-2 rounded-lg transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            Ver Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Disclaimer bar -->
+  <div class="border-b border-gray-200 bg-white">
+    <div class="max-w-7xl mx-auto px-6 py-3">
+      <div class="disclaimer-bar">
+        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #3B82F6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <p class="text-sm text-gray-600"><strong class="text-gray-800">Este sistema analiza y recomienda.</strong> Las modificaciones en cursos las realiza el equipo de dise&ntilde;o instruccional de la UDFV. La IA nunca crea ni modifica contenido en las plataformas Moodle.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile tab bar -->
+  <div class="qa-tabs-mobile sticky top-20 z-20">
+    <button class="tab-btn-mobile active" onclick="switchTab('evaluar', this)">Evaluar</button>
+    <button class="tab-btn-mobile" onclick="switchTab('recomendar', this)">Recomendar</button>
+    <button class="tab-btn-mobile" onclick="switchTab('alertar', this)">Alertar</button>
+    <button class="tab-btn-mobile" onclick="switchTab('reportar', this)">Reportar</button>
+  </div>
+
+  <!-- ================================================
+       MAIN LAYOUT
+  ================================================ -->
+  <div class="max-w-7xl mx-auto qa-layout" style="min-height: 80vh;">
+
+    <!-- SIDEBAR -->
+    <aside class="qa-sidebar">
+      <div class="px-4 mb-2">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">M&oacute;dulos</p>
+      </div>
+      <nav>
+        <button class="nav-item active" onclick="switchTab('evaluar', this)" id="nav-evaluar">
+          <span class="nav-icon">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          </span>
+          <span>Evaluar</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('recomendar', this)" id="nav-recomendar">
+          <span class="nav-icon">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+          </span>
+          <span>Recomendar</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('alertar', this)" id="nav-alertar">
+          <span class="nav-icon">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          </span>
+          <span>Alertar</span>
+          <span class="ml-auto text-xs font-bold px-1.5 py-0.5 rounded-full bg-red-500 text-white">3</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('reportar', this)" id="nav-reportar">
+          <span class="nav-icon">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </span>
+          <span>Reportar</span>
+        </button>
+      </nav>
+
+      <div class="mt-auto px-4 pb-2">
+        <div class="bg-gray-50 rounded-xl p-3 text-xs text-gray-500">
+          <p class="font-semibold text-gray-700 mb-1">Marco evaluativo</p>
+          <p>77 indicadores &bull; 6 dimensiones &bull; Escala 0&ndash;4</p>
+          <p class="mt-1 text-gray-400">Sepu&uacute;lveda, 2024 &mdash; UMC20992</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTENT AREA -->
+    <main class="qa-content p-6 md:p-8 overflow-auto">
+
+      <!-- ===================== PANEL: EVALUAR ===================== -->
+      <div class="qa-panel active" id="panel-evaluar">
+
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <div>
+            <h2 class="font-heading text-2xl font-extrabold text-gray-900">Evaluaci&oacute;n de Curso</h2>
+            <p class="text-sm text-gray-500 mt-0.5">Ingresa el ID o URL del curso para analizar sus 77 indicadores de calidad.</p>
+          </div>
+          <span class="ia-badge">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            An&aacute;lisis IA-asistido
+          </span>
+        </div>
+
+        <!-- Input form -->
+        <div class="bg-white rounded-2xl border border-gray-200 p-5 mb-6 shadow-sm">
+          <div class="grid sm:grid-cols-[1fr_auto_auto] gap-3 items-end">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">ID o URL del curso Moodle</label>
+              <input type="text" id="course-input" placeholder="Ej: 1523 &oacute; evirtual.umce.cl/course/view.php?id=1523"
+                class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all"
+                value="1523">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Plataforma</label>
+              <select id="platform-select" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
+                <option value="evirtual">eVirtual</option>
+                <option value="virtual">Virtual</option>
+                <option value="pregrado">Pregrado</option>
+                <option value="postgrado">Postgrado</option>
+              </select>
+            </div>
+            <button class="btn-primary" id="analyze-btn" onclick="runAnalysis()">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              Analizar
+            </button>
+          </div>
+          <p class="text-xs text-gray-400 mt-2">Modo demo activo &mdash; los resultados son simulados para ilustrar el sistema.</p>
+        </div>
+
+        <!-- Loading state (hidden by default) -->
+        <div id="loading-state" class="hidden text-center py-16">
+          <div class="inline-block w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+          <p class="text-gray-500 text-sm">Analizando curso &mdash; evaluando 77 indicadores&hellip;</p>
+        </div>
+
+        <!-- Results (shown after analysis) -->
+        <div id="results-container">
+
+          <!-- Course header card -->
+          <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 mb-5">
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Curso analizado</span>
+                  <span class="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-semibold">ID 1523</span>
+                  <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-semibold">eVirtual</span>
+                </div>
+                <h3 class="font-heading font-extrabold text-lg text-gray-900">Psicolog&iacute;a del Aprendizaje</h3>
+                <p class="text-sm text-gray-500">Prosecuci&oacute;n en Educaci&oacute;n B&aacute;sica &bull; Docente: Dra. Carmen L&oacute;pez &bull; 34 estudiantes matriculados</p>
+              </div>
+              <div class="text-center sm:text-right flex-shrink-0">
+                <div class="text-4xl font-extrabold font-heading" style="color: var(--palette-primary);">2.74</div>
+                <div class="text-xs text-gray-400 mt-0.5">promedio general / 4.0</div>
+                <span class="score-pill green mt-2 inline-flex">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="4"/></svg>
+                  Logrado
+                </span>
+              </div>
+            </div>
+
+            <!-- Global score bar -->
+            <div class="mt-4">
+              <div class="prog-bar">
+                <div class="prog-fill green" style="width: 68.5%"></div>
+              </div>
+              <div class="flex justify-between text-xs text-gray-400 mt-1">
+                <span>0 — Ausente</span>
+                <span>1 — Parcial</span>
+                <span>2 — Parcial</span>
+                <span>3 — Logrado</span>
+                <span>4 — &Oacute;ptimo</span>
+              </div>
+            </div>
+
+            <!-- Evaluation meta -->
+            <div class="mt-4 flex flex-wrap gap-3 text-xs text-gray-500">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                52 indicadores autom&aacute;ticos
+              </span>
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                25 requieren revisi&oacute;n humana
+              </span>
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Analizado: 7 abr 2026, 09:42
+              </span>
+            </div>
+          </div>
+
+          <!-- Two-column: radar + dimension list -->
+          <div class="grid lg:grid-cols-[400px_1fr] gap-5 mb-5">
+
+            <!-- Radar -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+              <h4 class="font-heading font-bold text-sm mb-4 text-gray-700">Perfil de Calidad &mdash; 6 dimensiones</h4>
+              <div class="radar-wrap">
+                <svg id="qa-radar" viewBox="0 0 400 380" xmlns="http://www.w3.org/2000/svg"></svg>
+              </div>
+              <div id="qa-legend" class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs justify-center"></div>
+            </div>
+
+            <!-- Dimension breakdown -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+              <h4 class="font-heading font-bold text-sm mb-4 text-gray-700">Desglose por dimensi&oacute;n</h4>
+              <div id="dim-breakdown" class="space-y-3"></div>
+            </div>
+          </div>
+
+          <!-- Indicator detail -->
+          <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+            <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <h4 class="font-heading font-bold text-sm text-gray-700">Indicadores evaluados</h4>
+              <div class="flex gap-2 text-xs flex-wrap">
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500 inline-block"></span> Autom&aacute;tico</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-yellow-400 inline-block"></span> Revisi&oacute;n humana</span>
+              </div>
+            </div>
+            <div id="indicators-list" class="divide-y divide-gray-50"></div>
+          </div>
+
+        </div><!-- /results-container -->
+      </div><!-- /panel-evaluar -->
+
+
+      <!-- ===================== PANEL: RECOMENDAR ===================== -->
+      <div class="qa-panel" id="panel-recomendar">
+
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <div>
+            <h2 class="font-heading text-2xl font-extrabold text-gray-900">Recomendaciones por Dimensi&oacute;n</h2>
+            <p class="text-sm text-gray-500 mt-0.5">Acciones concretas priorizadas por impacto pedag&oacute;gico. Curso: <strong>Psicolog&iacute;a del Aprendizaje</strong></p>
+          </div>
+          <span class="text-xs text-gray-400 bg-gray-100 px-3 py-1.5 rounded-full font-semibold">8 recomendaciones activas</span>
+        </div>
+
+        <!-- Priority summary bar -->
+        <div class="grid grid-cols-3 gap-3 mb-6">
+          <div class="bg-red-50 border border-red-100 rounded-xl p-4 text-center">
+            <div class="text-2xl font-extrabold font-heading text-red-700">3</div>
+            <div class="text-xs text-red-500 font-semibold mt-0.5">Prioridad Alta</div>
+          </div>
+          <div class="bg-yellow-50 border border-yellow-100 rounded-xl p-4 text-center">
+            <div class="text-2xl font-extrabold font-heading text-yellow-700">3</div>
+            <div class="text-xs text-yellow-500 font-semibold mt-0.5">Prioridad Media</div>
+          </div>
+          <div class="bg-green-50 border border-green-100 rounded-xl p-4 text-center">
+            <div class="text-2xl font-extrabold font-heading text-green-700">2</div>
+            <div class="text-xs text-green-600 font-semibold mt-0.5">Prioridad Baja</div>
+          </div>
+        </div>
+
+        <!-- Recommendations list -->
+        <div id="rec-list" class="space-y-4"></div>
+
+      </div><!-- /panel-recomendar -->
+
+
+      <!-- ===================== PANEL: ALERTAR ===================== -->
+      <div class="qa-panel" id="panel-alertar">
+
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <div>
+            <h2 class="font-heading text-2xl font-extrabold text-gray-900">Alertas del Sistema</h2>
+            <p class="text-sm text-gray-500 mt-0.5">Condiciones detectadas que requieren atenci&oacute;n del equipo de dise&ntilde;o instruccional.</p>
+          </div>
+          <div class="flex gap-2 text-xs flex-wrap">
+            <span class="alert-badge critica">1 cr&iacute;tica</span>
+            <span class="alert-badge advertencia">2 advertencias</span>
+            <span class="alert-badge info">3 informativas</span>
+          </div>
+        </div>
+
+        <!-- Active alerts -->
+        <div class="mb-8">
+          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Alertas activas</h3>
+          <div id="alerts-active" class="space-y-3"></div>
+        </div>
+
+        <!-- Timeline -->
+        <div>
+          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Historial reciente</h3>
+          <div id="alerts-timeline" class="space-y-4 pl-2"></div>
+        </div>
+
+      </div><!-- /panel-alertar -->
+
+
+      <!-- ===================== PANEL: REPORTAR ===================== -->
+      <div class="qa-panel" id="panel-reportar">
+
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <div>
+            <h2 class="font-heading text-2xl font-extrabold text-gray-900">Informes y Comparativas</h2>
+            <p class="text-sm text-gray-500 mt-0.5">Visi&oacute;n agregada, tendencia temporal y exportaci&oacute;n de datos.</p>
+          </div>
+          <button class="btn-primary text-sm" id="print-btn" onclick="window.print()" style="padding: 0.625rem 1.25rem;">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            Imprimir / Exportar
+          </button>
+        </div>
+
+        <!-- Trend card -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 mb-5">
+          <h3 class="font-heading font-bold text-sm text-gray-700 mb-4">Tendencia temporal &mdash; Psicolog&iacute;a del Aprendizaje</h3>
+          <div class="grid sm:grid-cols-3 gap-4 mb-4">
+            <div class="text-center">
+              <div class="text-xs text-gray-400 mb-1">Sem. 1 &ndash; 2025</div>
+              <div class="text-2xl font-extrabold font-heading text-gray-500">2.31</div>
+              <span class="score-pill yellow" style="font-size: 0.7rem; padding: 0.2rem 0.6rem;">Parcial</span>
+            </div>
+            <div class="text-center">
+              <div class="text-xs text-gray-400 mb-1">Sem. 2 &ndash; 2025</div>
+              <div class="text-2xl font-extrabold font-heading text-gray-500">2.58</div>
+              <span class="score-pill green" style="font-size: 0.7rem; padding: 0.2rem 0.6rem;">Logrado</span>
+            </div>
+            <div class="text-center">
+              <div class="text-xs text-gray-400 mb-1">Sem. 1 &ndash; 2026 (actual)</div>
+              <div class="text-2xl font-extrabold font-heading" style="color: var(--palette-primary);">2.74</div>
+              <span class="score-pill green" style="font-size: 0.7rem; padding: 0.2rem 0.6rem;">Logrado</span>
+            </div>
+          </div>
+          <div class="bg-green-50 border border-green-100 rounded-lg px-4 py-2.5 text-sm text-green-800">
+            <strong>Mejora sostenida:</strong> el curso pas&oacute; de 2.31 a 2.74 en 3 semestres (+18.6%). La incorporaci&oacute;n de actividades colaborativas en S2-2025 explica el mayor salto.
+          </div>
+        </div>
+
+        <!-- Comparative table -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 mb-5">
+          <h3 class="font-heading font-bold text-sm text-gray-700 mb-4">Comparativa de cursos &mdash; Sem. 1&ndash;2026</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse" id="report-table">
+              <thead>
+                <tr class="bg-gray-900 text-white text-xs">
+                  <th class="text-left px-3 py-2.5 font-semibold rounded-tl-lg">Curso</th>
+                  <th class="text-center px-2 py-2.5 font-semibold">D1</th>
+                  <th class="text-center px-2 py-2.5 font-semibold">D2</th>
+                  <th class="text-center px-2 py-2.5 font-semibold">D3</th>
+                  <th class="text-center px-2 py-2.5 font-semibold">D4</th>
+                  <th class="text-center px-2 py-2.5 font-semibold">D5</th>
+                  <th class="text-center px-2 py-2.5 font-semibold">D6</th>
+                  <th class="text-center px-2 py-2.5 font-semibold rounded-tr-lg">Prom.</th>
+                </tr>
+              </thead>
+              <tbody id="report-tbody"></tbody>
+            </table>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400">
+            <span><strong class="text-gray-600">D1</strong>: Interacci&oacute;n plataforma</span>
+            <span><strong class="text-gray-600">D2</strong>: Accesibilidad</span>
+            <span><strong class="text-gray-600">D3</strong>: Coherencia did&aacute;ctica</span>
+            <span><strong class="text-gray-600">D4</strong>: Docencia virtual</span>
+            <span><strong class="text-gray-600">D5</strong>: G&eacute;nero y equidad</span>
+            <span><strong class="text-gray-600">D6</strong>: Corresponsabilidad</span>
+          </div>
+        </div>
+
+        <!-- Score range legend -->
+        <div class="flex flex-wrap gap-4 text-xs items-center mb-6">
+          <span class="font-semibold text-gray-600">Rangos escala 0&ndash;4:</span>
+          <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-red-100 border border-red-200 inline-block"></span> &lt; 1.5 Ausente</span>
+          <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-yellow-100 border border-yellow-200 inline-block"></span> 1.5&ndash;2.49 Parcial</span>
+          <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-emerald-100 border border-emerald-200 inline-block"></span> 2.5&ndash;3.49 Logrado</span>
+          <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-green-200 border border-green-300 inline-block"></span> &ge; 3.5 &Oacute;ptimo</span>
+        </div>
+
+        <!-- Report footer note -->
+        <div class="bg-gray-50 rounded-xl border border-gray-200 p-4 text-xs text-gray-500">
+          <p><strong class="text-gray-700">Nota metodol&oacute;gica:</strong> Los puntajes son promedios ponderados de los 77 indicadores del Marco Evaluativo UDFV-UMCE (Sepu&uacute;lveda, 2024). Los indicadores de dimensiones D4-D6 pueden no ser evaluables en todos los cursos. Los datos de demo son simulados para ilustrar el sistema.</p>
+        </div>
+
+      </div><!-- /panel-reportar -->
+
+    </main>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/shared/shared.js"></script>
+  <script src="/shared/generative-header.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    // ── DATA ──────────────────────────────────────────────────────────────────
+
+    var dims = [
+      { id: 'd1', nombre: 'Experiencia de interacci\u00f3n con la plataforma', short: 'D1', indicadores: 18, subdims: 4, color: '#0033A1', emoji: '\uD83D\uDCBB',
+        score: 3.15, desc: 'Navegaci\u00f3n, usabilidad y dise\u00f1o del entorno virtual de aprendizaje.' },
+      { id: 'd2', nombre: 'Accesibilidad', short: 'D2', indicadores: 17, subdims: 4, color: '#059669', emoji: '\u267F',
+        score: 1.75, desc: 'Acceso multimodal: subt\u00edtulos, lengua de se\u00f1as, audiodescripci\u00f3n y ajustes.' },
+      { id: 'd3', nombre: 'Coherencia did\u00e1ctica', short: 'D3', indicadores: 16, subdims: 5, color: '#7C3AED', emoji: '\uD83D\uDCDA',
+        score: 2.80, desc: 'Alineaci\u00f3n entre objetivos, actividades y evaluaciones del curso.' },
+      { id: 'd4', nombre: 'Docencia virtual', short: 'D4', indicadores: 7, subdims: 2, color: '#D97706', emoji: '\uD83D\uDC69\u200D\uD83C\uDFEB',
+        score: 3.10, desc: 'Competencias pedag\u00f3gicas del docente en el aula virtual y sesiones s\u00edncronas.' },
+      { id: 'd5', nombre: 'Perspectiva de g\u00e9nero y equidad', short: 'D5', indicadores: 11, subdims: 2, color: '#DB2777', emoji: '\u2696\uFE0F',
+        score: 2.10, desc: 'Lenguaje inclusivo, representaci\u00f3n equitativa y contenidos no sexistas.' },
+      { id: 'd6', nombre: 'Corresponsabilidad social y cuidados', short: 'D6', indicadores: 8, subdims: 3, color: '#DC2626', emoji: '\uD83E\uDD1D',
+        score: 1.50, desc: 'Reconocimiento de cargas de cuidado y contextos de vida de los estudiantes.' }
+    ];
+
+    var demoIndicators = [
+      // D1
+      { dim: 'd1', label: 'Acceso al curso sin barreras t\u00e9cnicas', score: 4, auto: true },
+      { dim: 'd1', label: 'Estructura de navegaci\u00f3n clara y coherente', score: 3, auto: true },
+      { dim: 'd1', label: 'Est\u00e9tica visual consistente con ident. UMCE', score: 3, auto: true },
+      { dim: 'd1', label: 'Velocidad de carga de recursos', score: 4, auto: true },
+      { dim: 'd1', label: 'Instrucciones de uso del entorno', score: 2, auto: false },
+      // D2
+      { dim: 'd2', label: 'Recursos con texto alternativo en im\u00e1genes', score: 1, auto: true },
+      { dim: 'd2', label: 'Videos con subt\u00edtulos o transcripci\u00f3n', score: 1, auto: true },
+      { dim: 'd2', label: 'Documentos en formato accesible (PDF/Word)', score: 2, auto: true },
+      { dim: 'd2', label: 'Contraste de colores adecuado (WCAG AA)', score: 2, auto: false },
+      { dim: 'd2', label: 'Alternativas multimodales para actividades', score: 1, auto: false },
+      // D3
+      { dim: 'd3', label: 'Objetivos de aprendizaje visibles por secci\u00f3n', score: 3, auto: true },
+      { dim: 'd3', label: 'Coherencia entre actividades y evaluaciones', score: 3, auto: false },
+      { dim: 'd3', label: 'Pautas de evaluaci\u00f3n disponibles', score: 2, auto: true },
+      { dim: 'd3', label: 'Diversidad de tipos de actividades', score: 3, auto: true },
+      { dim: 'd3', label: 'Retroalimentaci\u00f3n prevista en las tareas', score: 3, auto: false },
+      // D4
+      { dim: 'd4', label: 'Presencia activa del docente en el curso', score: 3, auto: true },
+      { dim: 'd4', label: 'Respuesta a consultas en plazo razonable', score: 3, auto: true },
+      { dim: 'd4', label: 'Sesi\u00f3n s\u00edncrona documentada y grabada', score: 4, auto: false },
+      // D5
+      { dim: 'd5', label: 'Lenguaje inclusivo en enunciados', score: 2, auto: false },
+      { dim: 'd5', label: 'Diversidad de autores/as en bibliograf\u00eda', score: 2, auto: false },
+      { dim: 'd5', label: 'Ejemplo no estereotipados en contenidos', score: 2, auto: false },
+      // D6
+      { dim: 'd6', label: 'Carga acad\u00e9mica coherente con SCT', score: 2, auto: true },
+      { dim: 'd6', label: 'Avisos con antelaci\u00f3n suficiente', score: 1, auto: true },
+      { dim: 'd6', label: 'Pol\u00edtica de flexibilidad o extensi\u00f3n visible', score: 1, auto: false }
+    ];
+
+    var recs = [
+      { dim: 'd2', title: 'Agregar subt\u00edtulos a todos los videos del curso',
+        body: 'El curso tiene 8 videos sin subt\u00edtulos ni transcripci\u00f3n. Esto afecta la accesibilidad multimodal (D2 = 1.75). Se recomienda generar subt\u00edtulos autom\u00e1ticos con YouTube o Amara y publicar la transcripci\u00f3n junto a cada recurso.',
+        priority: 'alta', impact: 'Alto impacto en D2 (+0.8 estimado)', icon: '\u267F' },
+      { dim: 'd6', title: 'Publicar pol\u00edtica de flexibilidad y extenci\u00f3n',
+        body: 'Ning\u00fan recurso del curso menciona procedimientos de solicitud de extensi\u00f3n ni pol\u00edtica de carga diferida para estudiantes con responsabilidades de cuidado. Agregar un recurso tipo "Gu\u00eda de apoyo estudiantil" en la primera secci\u00f3n.',
+        priority: 'alta', impact: 'Alto impacto en D6 (+0.7 estimado)', icon: '\uD83E\uDD1D' },
+      { dim: 'd5', title: 'Revisar lenguaje inclusivo en enunciados de actividades',
+        body: 'Se detectaron 7 enunciados con lenguaje gen\u00e9rico masculino exclusivo. Ejemplo: "el alumno debe entregar". Reemplazar con f\u00f3rmulas inclusivas: "el/la estudiante", "quien estudia" o "@" seg\u00fan la preferencia del docente.',
+        priority: 'alta', impact: 'Impacto directo en D5 (+0.5 estimado)', icon: '\u2696\uFE0F' },
+      { dim: 'd2', title: 'A\u00f1adir texto alternativo a im\u00e1genes incrustadas',
+        body: 'Se detectaron 23 im\u00e1genes sin atributo alt o con alt vac\u00edo. Estas im\u00e1genes son invisibles para lectores de pantalla. Editar cada recurso en Moodle y agregar descripci\u00f3n concisa en el campo "Descripci\u00f3n de imagen".',
+        priority: 'media', impact: 'Mejora accesibilidad (D2 +0.4 estimado)', icon: '\uD83D\uDDBC\uFE0F' },
+      { dim: 'd3', title: 'Agregar r\u00fabrica a tarea "Trabajo final"',
+        body: 'La tarea "Trabajo final" (Semana 14) no tiene r\u00fabrica asociada. El 68% de los estudiantes de cursos similares reportan mayor desempe\u00f1o cuando conocen los criterios de evaluaci\u00f3n. Crear y vincular una r\u00fabrica en la configuraci\u00f3n de la tarea.',
+        priority: 'media', impact: 'Mejora coherencia did\u00e1ctica (D3 +0.3)', icon: '\uD83D\uDCCB' },
+      { dim: 'd5', title: 'Incorporar autoras en bibliograf\u00eda base',
+        body: 'La bibliograf\u00eda obligatoria (7 textos) incluye solo autores masculinos. Revisar y complementar con referencias de autoras referentes en el campo de la psicolog\u00eda del aprendizaje.',
+        priority: 'media', impact: 'Diversidad bibliogr\u00e1fica (D5 +0.4)', icon: '\uD83D\uDCDA' },
+      { dim: 'd1', title: 'Agregar video de bienvenida o presentaci\u00f3n',
+        body: 'El curso no tiene presentaci\u00f3n inicial del docente ni orientaci\u00f3n al entorno. Un video breve (2\u20133 min) reduce la sensaci\u00f3n de abandono en los primeros d\u00edas e incrementa la permanencia.',
+        priority: 'baja', impact: 'Mejora experiencia inicial (D1 +0.2)', icon: '\uD83D\uDCBB' },
+      { dim: 'd6', title: 'Distribuir plazos con mayor separaci\u00f3n entre semanas',
+        body: 'Se detectan 3 tareas con fecha de entrega en el mismo d\u00eda (viernes 23 mayo). Redistribuir con al menos 48 horas de margen entre entregas facilita la gesti\u00f3n de tiempo de estudiantes con responsabilidades familiares.',
+        priority: 'baja', impact: 'Reducci\u00f3n carga puntual (D6 +0.3)', icon: '\uD83D\uDCC5' }
+    ];
+
+    var alertsActive = [
+      { tipo: 'critica', icon: '\u26D4', titulo: 'Secci\u00f3n "Semana 8" sin ning\u00fan recurso ni actividad',
+        desc: 'El curso tiene una secci\u00f3n completamente vac\u00eda visible para estudiantes. Esto genera confusi\u00f3n y puede interpretarse como error de dise\u00f1o. Ocultar la secci\u00f3n o agregar contenido.',
+        curso: 'Psicolog\u00eda del Aprendizaje', plataforma: 'eVirtual', tiempo: 'Detectado hace 2 d\u00edas' },
+      { tipo: 'advertencia', icon: '\u26A0\uFE0F', titulo: '8 videos sin subt\u00edtulos ni transcripci\u00f3n',
+        desc: 'Afecta accesibilidad (D2). Estudiantes con discapacidad auditiva no pueden acceder al contenido audiovisual del curso.',
+        curso: 'Psicolog\u00eda del Aprendizaje', plataforma: 'eVirtual', tiempo: 'Detectado hace 5 d\u00edas' },
+      { tipo: 'advertencia', icon: '\u26A0\uFE0F', titulo: 'Tarea "Trabajo final" sin fecha de entrega configurada',
+        desc: 'La actividad de evaluaci\u00f3n sumativa principal no tiene fecha l\u00edmite visible. Los estudiantes no pueden planificar su tiempo. Configurar fecha en ajustes de la tarea.',
+        curso: 'Psicolog\u00eda del Aprendizaje', plataforma: 'eVirtual', tiempo: 'Detectado hace 1 d\u00eda' },
+      { tipo: 'info', icon: '\u2139\uFE0F', titulo: 'F\u00f3rum de avisos sin actividad en 18 d\u00edas',
+        desc: 'El f\u00f3rum de novedades del curso no tiene publicaciones recientes. Se recomienda mantener comunicaci\u00f3n activa al menos 1 vez por semana.',
+        curso: 'Psicolog\u00eda del Aprendizaje', plataforma: 'eVirtual', tiempo: 'Detectado hoy' },
+      { tipo: 'info', icon: '\u2139\uFE0F', titulo: '3 recursos en formato .ppt sin conversi\u00f3n a PDF',
+        desc: 'Archivos .pptx requieren software espec\u00edfico. Publicar versi\u00f3n PDF permite acceso desde cualquier dispositivo.',
+        curso: 'Psicolog\u00eda del Aprendizaje', plataforma: 'eVirtual', tiempo: 'Detectado hace 3 d\u00edas' },
+      { tipo: 'info', icon: '\u2139\uFE0F', titulo: 'Curso "Did\u00e1ctica General" tiene 3 secciones sin recursos',
+        desc: 'Las secciones 4, 7 y 11 est\u00e1n visibles pero vac\u00edas. Verificar si son semanas planificadas o errores de estructura.',
+        curso: 'Did\u00e1ctica General', plataforma: 'eVirtual', tiempo: 'Detectado hace 7 d\u00edas' }
+    ];
+
+    var alertsTimeline = [
+      { tipo: 'critica',     icon: '\u26D4', desc: 'Secci\u00f3n vac\u00eda "Semana 8" detectada &mdash; Psicolog\u00eda del Aprendizaje', fecha: '5 abr 2026' },
+      { tipo: 'advertencia', icon: '\u26A0\uFE0F', desc: 'Tarea sin fecha de entrega &mdash; Psicolog\u00eda del Aprendizaje', fecha: '6 abr 2026' },
+      { tipo: 'info',        icon: '\u2139\uFE0F', desc: 'F\u00f3rum sin actividad &gt;15 d\u00edas &mdash; Movimiento y Sonoridad', fecha: '4 abr 2026' },
+      { tipo: 'advertencia', icon: '\u26A0\uFE0F', desc: 'Videos sin subt\u00edtulos detectados &mdash; Psicolog\u00eda del Aprendizaje', fecha: '2 abr 2026' },
+      { tipo: 'info',        icon: '\u2139\uFE0F', desc: 'Evaluaci\u00f3n QA completada &mdash; Did\u00e1ctica General &mdash; score 3.12', fecha: '1 abr 2026' }
+    ];
+
+    var reportCourses = [
+      { nombre: 'Psicolog\u00eda del Aprendizaje', d: [3.15, 1.75, 2.80, 3.10, 2.10, 1.50] },
+      { nombre: 'Movimiento y Sonoridad',        d: [3.00, 1.50, 2.40, 3.30, 1.65, 1.00] },
+      { nombre: 'Did\u00e1ctica General',             d: [2.90, 1.95, 3.10, 2.80, 2.40, 1.80] },
+      { nombre: 'Mesopol\u00edticas Educacionales',   d: [3.05, 1.25, 1.38, 0.00, 1.50, 1.00] },
+      { nombre: 'Estrategias para retos m\u00faltiples', d: [2.45, 1.50, 2.50, 0.00, 2.50, 1.00] }
+    ];
+
+    // ── HELPERS ───────────────────────────────────────────────────────────────
+
+    function scoreColor(v) {
+      if (v < 1.5) return 'red';
+      if (v < 2.5) return 'yellow';
+      if (v < 3.5) return 'green';
+      return 'darkgreen';
+    }
+    function scoreLabel(v) {
+      if (v < 1.5) return 'Ausente';
+      if (v < 2.5) return 'Parcial';
+      if (v < 3.5) return 'Logrado';
+      return '\u00d3ptimo';
+    }
+    function fmt(v) { return v.toFixed(2); }
+    function avg(arr) { return arr.reduce(function(a,b){return a+b;},0)/arr.length; }
+
+    function scoreTableCell(v) {
+      var c = scoreColor(v);
+      var bg = { red:'#FEE2E2', yellow:'#FEF3C7', green:'#D1FAE5', darkgreen:'#A7F3D0' }[c];
+      var co = { red:'#991B1B', yellow:'#92400E', green:'#065F46', darkgreen:'#064E3B' }[c];
+      return '<span style="display:block;text-align:center;font-weight:700;font-size:0.75rem;padding:0.25rem 0.375rem;border-radius:0.375rem;background:'+bg+';color:'+co+'">'+fmt(v)+'</span>';
+    }
+
+    // ── RADAR ─────────────────────────────────────────────────────────────────
+
+    function buildQaRadar() {
+      var svg = document.getElementById('qa-radar');
+      if (!svg) return;
+      var cx = 200, cy = 190, maxR = 140, scale = maxR / 4;
+      var N = 6;
+      function angle(i) { return (Math.PI * 2 * i / N) - Math.PI / 2; }
+      function pt(r, i) { return { x: cx + r * Math.cos(angle(i)), y: cy + r * Math.sin(angle(i)) }; }
+
+      var buf = '';
+
+      // Background rings
+      [1, 2, 3, 4].forEach(function(v) {
+        var r = v * scale;
+        var pts = [];
+        for (var i = 0; i < N; i++) { var p = pt(r, i); pts.push(p.x+','+p.y); }
+        buf += '<polygon points="'+pts.join(' ')+'" fill="none" stroke="#E5E7EB" stroke-width="1"/>';
+        buf += '<text x="'+(cx+r+2)+'" y="'+(cy+4)+'" font-size="8" fill="#9CA3AF">'+v+'</text>';
+      });
+
+      // Spokes
+      for (var i = 0; i < N; i++) {
+        var p = pt(maxR, i);
+        buf += '<line x1="'+cx+'" y1="'+cy+'" x2="'+p.x+'" y2="'+p.y+'" stroke="#E5E7EB" stroke-width="1"/>';
+      }
+
+      // Data polygon
+      var datapts = dims.map(function(d, i) {
+        var r = d.score * scale;
+        return pt(r, i);
+      });
+      buf += '<polygon points="'+datapts.map(function(p){return p.x+','+p.y;}).join(' ')+'" fill="rgba(0,51,161,0.13)" stroke="#0033A1" stroke-width="2"/>';
+      datapts.forEach(function(p, i) {
+        buf += '<circle cx="'+p.x+'" cy="'+p.y+'" r="4.5" fill="'+dims[i].color+'" stroke="#fff" stroke-width="1.5"/>';
+      });
+
+      // Labels
+      dims.forEach(function(d, i) {
+        var p = pt(maxR + 20, i);
+        var anchor = 'middle';
+        if (p.x < cx - 8) anchor = 'end';
+        if (p.x > cx + 8) anchor = 'start';
+        buf += '<text x="'+p.x+'" y="'+p.y+'" font-size="10" font-weight="bold" fill="'+d.color+'" text-anchor="'+anchor+'" dominant-baseline="middle">'+d.short+'</text>';
+        var vp = pt(maxR + 32, i);
+        buf += '<text x="'+vp.x+'" y="'+vp.y+'" font-size="9" fill="#6B7280" text-anchor="'+anchor+'" dominant-baseline="middle">'+fmt(d.score)+'</text>';
+      });
+
+      // Center
+      var overall = avg(dims.map(function(d){return d.score;}));
+      buf += '<text x="'+cx+'" y="'+(cy-8)+'" text-anchor="middle" font-size="9" font-weight="bold" fill="#374151">Prom.</text>';
+      buf += '<text x="'+cx+'" y="'+(cy+8)+'" text-anchor="middle" font-size="14" font-weight="bold" fill="#0033A1">'+fmt(overall)+'</text>';
+
+      svg.innerHTML = buf;
+
+      // Legend
+      var legend = document.getElementById('qa-legend');
+      legend.innerHTML = dims.map(function(d) {
+        return '<span class="inline-flex items-center gap-1" style="font-size:0.7rem;color:#4B5563">'
+             + '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+d.color+'"></span>'
+             + d.short + ': ' + d.nombre + '</span>';
+      }).join('');
+    }
+
+    // ── DIMENSION BREAKDOWN ───────────────────────────────────────────────────
+
+    function buildDimBreakdown() {
+      var el = document.getElementById('dim-breakdown');
+      if (!el) return;
+      el.innerHTML = dims.map(function(d) {
+        var c = scoreColor(d.score);
+        var barColors = { red:'#EF4444', yellow:'#F59E0B', green:'#10B981', darkgreen:'#059669' };
+        var pct = (d.score / 4) * 100;
+        return '<div>'
+             + '<div class="flex items-center justify-between mb-1">'
+             + '  <div class="flex items-center gap-2">'
+             + '    <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+d.color+';flex-shrink:0"></span>'
+             + '    <span class="text-xs font-semibold text-gray-700">'+d.short+' &mdash; '+d.nombre+'</span>'
+             + '  </div>'
+             + '  <span class="score-pill '+c+'" style="font-size:0.7rem;padding:0.15rem 0.5rem;">'+fmt(d.score)+'/4</span>'
+             + '</div>'
+             + '<div class="prog-bar mb-2"><div class="prog-fill '+c+'" style="width:'+pct.toFixed(1)+'%"></div></div>'
+             + '<div class="flex gap-3 text-xs text-gray-400">'
+             + '  <span>'+d.indicadores+' indicadores</span>'
+             + '  <span>'+d.subdims+' subdimensiones</span>'
+             + '</div>'
+             + '</div>';
+      }).join('');
+    }
+
+    // ── INDICATORS LIST ───────────────────────────────────────────────────────
+
+    function buildIndicators() {
+      var el = document.getElementById('indicators-list');
+      if (!el) return;
+      // Group by dim, show 4-5 per dim
+      var shown = demoIndicators.slice(0, 20);
+      el.innerHTML = shown.map(function(ind) {
+        var d = dims.find(function(x){return x.id === ind.dim;});
+        var c = scoreColor(ind.score);
+        var dotColor = ind.auto ? '#10B981' : '#F59E0B';
+        var scoreColors = { red:'#FEE2E2', yellow:'#FEF3C7', green:'#D1FAE5', darkgreen:'#A7F3D0' };
+        var scoreTextColors = { red:'#991B1B', yellow:'#92400E', green:'#065F46', darkgreen:'#064E3B' };
+        return '<div class="ind-row">'
+             + '  <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+dotColor+';margin-top:0.35rem;flex-shrink:0"></span>'
+             + '  <div class="flex-1 min-w-0">'
+             + '    <div class="flex items-start justify-between gap-2">'
+             + '      <span class="text-xs text-gray-700">'+ind.label+'</span>'
+             + '      <span style="font-size:0.75rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:9999px;flex-shrink:0;background:'+scoreColors[c]+';color:'+scoreTextColors[c]+'">'+ind.score+'/4</span>'
+             + '    </div>'
+             + '    <span style="display:inline-block;font-size:0.65rem;color:'+d.color+';font-weight:600;margin-top:0.15rem">'+d.short+'</span>'
+             + '    <span style="display:inline-block;font-size:0.65rem;color:#9CA3AF;margin-left:0.5rem">'+(ind.auto ? 'Autom\u00e1tico' : 'Revisi\u00f3n humana')+'</span>'
+             + '  </div>'
+             + '</div>';
+      }).join('');
+    }
+
+    // ── RECOMMENDATIONS ───────────────────────────────────────────────────────
+
+    function buildRecs() {
+      var el = document.getElementById('rec-list');
+      if (!el) return;
+      el.innerHTML = recs.map(function(r) {
+        var d = dims.find(function(x){return x.id === r.dim;});
+        var impactColor = { alta:'#DC2626', media:'#D97706', baja:'#059669' }[r.priority];
+        return '<div class="rec-card">'
+             + '  <div class="flex items-start justify-between gap-3 mb-2">'
+             + '    <div class="flex items-center gap-2">'
+             + '      <span class="text-lg">'+r.icon+'</span>'
+             + '      <div>'
+             + '        <h3 class="font-heading font-bold text-sm text-gray-900">'+r.title+'</h3>'
+             + '        <div class="flex items-center gap-2 mt-0.5">'
+             + '          <span style="font-size:0.65rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:9999px;background:'+d.color+'20;color:'+d.color+'">'+d.short+' \u2014 '+d.nombre+'</span>'
+             + '        </div>'
+             + '      </div>'
+             + '    </div>'
+             + '    <span class="pri-badge '+r.priority+' flex-shrink-0">'+r.priority.charAt(0).toUpperCase()+r.priority.slice(1)+'</span>'
+             + '  </div>'
+             + '  <p class="text-sm text-gray-600 mb-3 leading-relaxed">'+r.body+'</p>'
+             + '  <div class="flex items-center gap-1.5 text-xs" style="color:'+impactColor+'">'
+             + '    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>'
+             + '    '+r.impact
+             + '  </div>'
+             + '</div>';
+      }).join('');
+    }
+
+    // ── ALERTS ────────────────────────────────────────────────────────────────
+
+    function buildAlerts() {
+      var el = document.getElementById('alerts-active');
+      if (!el) return;
+      el.innerHTML = alertsActive.map(function(a) {
+        return '<div class="alert-card '+a.tipo+'">'
+             + '  <span class="text-2xl flex-shrink-0 mt-0.5">'+a.icon+'</span>'
+             + '  <div class="flex-1 min-w-0">'
+             + '    <div class="flex items-start justify-between gap-2 flex-wrap mb-1">'
+             + '      <div>'
+             + '        <span class="alert-badge '+a.tipo+' mb-1">'+a.tipo+'</span>'
+             + '        <h4 class="font-heading font-bold text-sm text-gray-900">'+a.titulo+'</h4>'
+             + '      </div>'
+             + '      <span class="text-xs text-gray-400 whitespace-nowrap flex-shrink-0">'+a.tiempo+'</span>'
+             + '    </div>'
+             + '    <p class="text-sm text-gray-600 leading-relaxed">'+a.desc+'</p>'
+             + '    <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">'
+             + '      <span>Curso: <strong class="text-gray-600">'+a.curso+'</strong></span>'
+             + '      <span>'+a.plataforma+'</span>'
+             + '    </div>'
+             + '  </div>'
+             + '</div>';
+      }).join('');
+
+      var tl = document.getElementById('alerts-timeline');
+      if (!tl) return;
+      var dotBg = { critica:'#FEE2E2', advertencia:'#FEF3C7', info:'#DBEAFE' };
+      var dotFg = { critica:'#DC2626', advertencia:'#D97706', info:'#2563EB' };
+      tl.innerHTML = alertsTimeline.map(function(a) {
+        return '<div class="timeline-item pb-4">'
+             + '  <div class="timeline-dot" style="background:'+dotBg[a.tipo]+';color:'+dotFg[a.tipo]+'">'+a.icon+'</div>'
+             + '  <div class="pt-1.5">'
+             + '    <p class="text-sm text-gray-700">'+a.desc+'</p>'
+             + '    <p class="text-xs text-gray-400 mt-0.5">'+a.fecha+'</p>'
+             + '  </div>'
+             + '</div>';
+      }).join('');
+    }
+
+    // ── REPORT TABLE ──────────────────────────────────────────────────────────
+
+    function buildReportTable() {
+      var tbody = document.getElementById('report-tbody');
+      if (!tbody) return;
+      var avgs = reportCourses.map(function(c){ return avg(c.d); });
+      var maxA = Math.max.apply(null, avgs);
+      tbody.innerHTML = reportCourses.map(function(c, idx) {
+        var a = avgs[idx];
+        var isBest = a === maxA;
+        var rowStyle = isBest ? 'background:#ECFDF5;' : '';
+        var borderLeft = isBest ? 'border-left:4px solid #059669;' : '';
+        var cells = c.d.map(function(v){ return '<td class="px-1 py-2">'+scoreTableCell(v)+'</td>'; }).join('');
+        return '<tr style="'+rowStyle+'" class="border-b border-gray-50">'
+             + '<td class="px-3 py-2.5" style="'+borderLeft+'">'
+             + '  <span class="text-xs font-semibold text-gray-800">'+c.nombre+'</span>'
+             + (isBest ? '<span class="block text-xs font-bold text-green-600 mt-0.5">Mejor promedio</span>' : '')
+             + '</td>'
+             + cells
+             + '<td class="px-2 py-2.5 text-center"><span class="font-extrabold text-sm" style="color:var(--palette-primary)">'+fmt(a)+'</span></td>'
+             + '</tr>';
+      }).join('');
+    }
+
+    // ── TAB SWITCHING ─────────────────────────────────────────────────────────
+
+    window.switchTab = function(id, btn) {
+      // Hide all panels
+      document.querySelectorAll('.qa-panel').forEach(function(p) { p.classList.remove('active'); });
+      // Remove active from all nav items
+      document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+      document.querySelectorAll('.tab-btn-mobile').forEach(function(n) { n.classList.remove('active'); });
+      // Show target
+      var panel = document.getElementById('panel-' + id);
+      if (panel) panel.classList.add('active');
+      // Activate sidebar item
+      var navItem = document.getElementById('nav-' + id);
+      if (navItem) navItem.classList.add('active');
+      // Activate mobile tab
+      if (btn) btn.classList.add('active');
+    };
+
+    // ── DEMO ANALYSIS ─────────────────────────────────────────────────────────
+
+    window.runAnalysis = function() {
+      var btn = document.getElementById('analyze-btn');
+      var loading = document.getElementById('loading-state');
+      var results = document.getElementById('results-container');
+
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Analizando&hellip;';
+
+      results.style.opacity = '0.3';
+      if (loading) loading.classList.remove('hidden');
+
+      setTimeout(function() {
+        if (loading) loading.classList.add('hidden');
+        results.style.opacity = '1';
+        results.style.transition = 'opacity 0.4s ease';
+        btn.disabled = false;
+        btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg> Analizar';
+
+        // Re-render radar with animation
+        buildQaRadar();
+        buildDimBreakdown();
+        buildIndicators();
+      }, 1800);
+    };
+
+    // ── INIT ──────────────────────────────────────────────────────────────────
+
+    document.addEventListener('DOMContentLoaded', function() {
+      buildQaRadar();
+      buildDimBreakdown();
+      buildIndicators();
+      buildRecs();
+      buildAlerts();
+      buildReportTable();
+    });
+
+  })();
+  </script>
+</body>
+</html>
