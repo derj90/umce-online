@@ -178,7 +178,49 @@
     5: { title: 'Trama', medium: 'Gr\u00e1fica generativa \u00b7 p5.js' },
   };
 
-  let variant = DAY_MAP[new Date().getDay()];
+  let savedVariant = localStorage.getItem('udfv-variant');
+  let variant = savedVariant ? parseInt(savedVariant) : DAY_MAP[new Date().getDay()];
+  if (variant < 1 || variant > 5) variant = DAY_MAP[new Date().getDay()];
+
+  function applyVariant(v) {
+    variant = v;
+    localStorage.setItem('udfv-variant', v);
+    updateCaption();
+    updateVariantPickerUI();
+    if (restartSketch) restartSketch();
+  }
+
+  function buildVariantPicker() {
+    let container = document.getElementById('variant-picker');
+    if (!container) return;
+    container.innerHTML = '';
+    for (let v = 1; v <= 5; v++) {
+      let btn = document.createElement('button');
+      btn.className = 'variant-dot';
+      btn.dataset.variant = v;
+      btn.title = NAMES[v].title;
+      btn.textContent = v;
+      btn.style.cssText = 'width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);cursor:pointer;transition:all 0.2s;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5);font-size:10px;padding:0;flex-shrink:0;line-height:22px;text-align:center;font-weight:600;';
+      btn.addEventListener('click', function() { applyVariant(v); });
+      container.appendChild(btn);
+    }
+    updateVariantPickerUI();
+  }
+
+  function updateVariantPickerUI() {
+    let dots = document.querySelectorAll('.variant-dot');
+    dots.forEach(function(d) {
+      if (parseInt(d.dataset.variant) === variant) {
+        d.style.borderColor = 'rgba(255,255,255,0.9)';
+        d.style.color = 'rgba(255,255,255,0.95)';
+        d.style.background = 'rgba(255,255,255,0.15)';
+      } else {
+        d.style.borderColor = 'rgba(255,255,255,0.15)';
+        d.style.color = 'rgba(255,255,255,0.5)';
+        d.style.background = 'rgba(255,255,255,0.05)';
+      }
+    });
+  }
 
   function updateCaption() {
     let cap = NAMES[variant];
@@ -607,6 +649,7 @@
     instance = new p5(heroSketch);
     buildPicker();
     buildFontPicker();
+    buildVariantPicker();
     applyFont(currentFontKey);
   }
   boot.attempts = 0;
