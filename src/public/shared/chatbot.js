@@ -1,6 +1,6 @@
 /**
- * UMCE Virtual — Chatbot Client
- * FAB toggle, session management, message sending, typing indicator
+ * UMCE Virtual — Chatbot Client V2
+ * Floating FAB + inline mode, role detection, enhanced context
  */
 (function () {
   'use strict';
@@ -8,11 +8,14 @@
   const SESSION_KEY = 'umce_chat_session';
   let sessionToken = null;
   let sending = false;
+  let userRole = 'public';
+  let userEmail = null;
+  let userName = null;
+  let isFloating = true;
+  let isOpen = false;
 
-  // ==========================================
-  // DOM refs (resolved after partial loads)
-  // ==========================================
-  let fab, fabOpen, fabClose, panel, messages, form, input, sendBtn, quickActions;
+  // DOM refs
+  let fab, fabOpen, fabClose, panel, messages, form, input, sendBtn, quickActions, closeBtn, roleBadge, subtitle;
 
   function initDom() {
     fab = document.getElementById('chat-fab');
@@ -24,26 +27,140 @@
     input = document.getElementById('chat-input');
     sendBtn = document.getElementById('chat-send');
     quickActions = document.getElementById('chat-quick-actions');
-    // fab is optional — chatbot may be embedded inline without a FAB
+    closeBtn = document.getElementById('chat-close');
+    roleBadge = document.getElementById('chat-role-badge');
+    subtitle = document.getElementById('chat-subtitle');
     return !!(panel && form && input);
   }
 
   // ==========================================
-  // FAB Toggle (no-op in inline/embedded mode)
+  // Mode Detection
+  // ==========================================
+  function detectMode() {
+    const container = document.getElementById('umce-chatbot');
+    if (!container) return;
+    const mode = container.getAttribute('data-mode');
+    isFloating = mode !== 'inline';
+
+    if (!isFloating) {
+      // Inline mode: panel always visible, no FAB
+      isOpen = true;
+    }
+  }
+
+  // ==========================================
+  // FAB Toggle
   // ==========================================
   function toggleChat() {
-    // In inline mode the panel is always visible — no toggle needed.
-    // This function is kept for compatibility in case other code calls it.
-    if (fab) {
-      const isOpen = panel.classList.toggle('open');
-      if (fabOpen) fabOpen.classList.toggle('hidden', isOpen);
-      if (fabClose) fabClose.classList.toggle('hidden', !isOpen);
-      fab.setAttribute('aria-label', isOpen ? 'Cerrar asistente virtual' : 'Abrir asistente virtual');
-      if (isOpen) {
-        input.focus();
-        ensureSession();
-      }
+    if (!isFloating) return;
+
+    isOpen = !isOpen;
+    panel.classList.toggle('open', isOpen);
+
+    if (fabOpen) fabOpen.classList.toggle('hidden', isOpen);
+    if (fabClose) fabClose.classList.toggle('hidden', !isOpen);
+    if (fab) fab.setAttribute('aria-label', isOpen ? 'Cerrar asistente' : 'Abrir asistente');
+
+    if (isOpen) {
+      input.focus();
+      ensureSession();
     }
+  }
+
+  function closeChat() {
+    if (!isFloating) return;
+    isOpen = false;
+    panel.classList.remove('open');
+    if (fabOpen) fabOpen.classList.remove('hidden');
+    if (fabClose) fabClose.classList.add('hidden');
+    if (fab) fab.setAttribute('aria-label', 'Abrir asistente');
+  }
+
+  // ==========================================
+  // Auth & Role Detection
+  // ==========================================
+  async function detectUserRole() {
+    try {
+      const res = await fetch('/auth/me');
+      if (!res.ok) return;
+      const user = await res.json();
+      if (!user || !user.email) return;
+
+      userEmail = user.email;
+      userName = user.name || user.email.split('@')[0];
+
+      // Check role
+      const roleRes = await fetch('/api/admin/check');
+      if (roleRes.ok) {
+        const roleData = await roleRes.json();
+        if (roleData.isAdmin) {
+          userRole = 'admin';
+        } else {
+          userRole = 'user'; // logged in but not admin — student or teacher
+        }
+      } else {
+        userRole = 'user';
+      }
+
+      updateUIForRole();
+    } catch {
+      // Not logged in — keep public role
+    }
+  }
+
+  function updateUIForRole() {
+    // Update subtitle
+    if (subtitle && userName) {
+      subtitle.textContent = 'Hola ' + userName.split(' ')[0];
+    }
+
+    // Show role badge
+    if (roleBadge && userRole !== 'public') {
+      const labels = {
+        user: 'Conectado con @umce.cl',
+        admin: 'Administrador UDFV'
+      };
+      const classes = {
+        user: 'role-student',
+        admin: 'role-admin'
+      };
+      roleBadge.textContent = labels[userRole] || '';
+      roleBadge.className = 'px-4 py-1.5 text-[11px] text-center ' + (classes[userRole] || '');
+      roleBadge.classList.remove('hidden');
+    }
+
+    // Update quick action chips based on role
+    updateQuickActions();
+  }
+
+  function updateQuickActions() {
+    if (!quickActions) return;
+
+    const chips = {
+      public: [
+        { text: '\u00bfQu\u00e9 cursos hay?', q: '\u00bfQu\u00e9 cursos hay disponibles?' },
+        { text: '\u00bfC\u00f3mo me inscribo?', q: '\u00bfC\u00f3mo me inscribo en un curso?' },
+        { text: 'No puedo ingresar', q: 'No puedo ingresar a Moodle' },
+        { text: 'Estado plataformas', q: '\u00bfCu\u00e1l es el estado de las plataformas Moodle?' },
+      ],
+      user: [
+        { text: 'Mis cursos', q: '\u00bfCu\u00e1les son mis cursos?' },
+        { text: 'Mis calificaciones', q: '\u00bfC\u00f3mo veo mis calificaciones?' },
+        { text: 'Tareas pendientes', q: '\u00bfTengo tareas pendientes?' },
+        { text: 'No puedo ingresar', q: 'No puedo ingresar a Moodle' },
+      ],
+      admin: [
+        { text: 'Estado plataformas', q: '\u00bfCu\u00e1l es el estado de las plataformas?' },
+        { text: 'Buscar usuario', q: 'Necesito buscar un usuario en Moodle' },
+        { text: 'Estad\u00edsticas', q: '\u00bfCu\u00e1ntos cursos y usuarios hay en total?' },
+        { text: 'Mis cursos', q: '\u00bfCu\u00e1les son mis cursos?' },
+      ],
+    };
+
+    const roleChips = chips[userRole] || chips.public;
+    quickActions.innerHTML = roleChips.map(c =>
+      '<button class="chat-chip" data-query="' + c.q.replace(/"/g, '&quot;') + '">' + c.text + '</button>'
+    ).join('');
   }
 
   // ==========================================
@@ -61,7 +178,7 @@
       const resp = await fetch('/api/chat/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
+        body: JSON.stringify({ user_email: userEmail })
       });
       if (!resp.ok) throw new Error('session error');
       const data = await resp.json();
@@ -75,13 +192,12 @@
   async function loadHistory() {
     if (!sessionToken) return;
     try {
-      const resp = await fetch(`/api/chat/history?session_token=${encodeURIComponent(sessionToken)}`);
+      const resp = await fetch('/api/chat/history?session_token=' + encodeURIComponent(sessionToken));
       if (!resp.ok) return;
-      const history = await resp.json();
+      var history = await resp.json();
       if (history.length > 0) {
-        // Clear welcome message and show history
         messages.innerHTML = '';
-        history.forEach(msg => appendMessage(msg.role, msg.content));
+        history.forEach(function (msg) { appendMessage(msg.role, msg.content); });
         hideQuickActions();
         scrollToBottom();
       }
@@ -94,9 +210,9 @@
   // Messages
   // ==========================================
   function appendMessage(role, text) {
-    const wrapper = document.createElement('div');
-    wrapper.className = `chat-msg ${role}`;
-    const bubble = document.createElement('div');
+    var wrapper = document.createElement('div');
+    wrapper.className = 'chat-msg ' + role;
+    var bubble = document.createElement('div');
     bubble.className = role === 'user'
       ? 'px-4 py-3 text-sm max-w-[85%]'
       : 'bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-gray-700 max-w-[85%]';
@@ -108,25 +224,24 @@
   }
 
   function showTyping() {
-    const wrapper = document.createElement('div');
+    var wrapper = document.createElement('div');
     wrapper.className = 'chat-msg assistant';
     wrapper.id = 'chat-typing-indicator';
-    wrapper.innerHTML = `
-      <div class="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-gray-700 max-w-[85%]">
-        <div class="chat-typing"><span></span><span></span><span></span></div>
-      </div>
-    `;
+    wrapper.innerHTML =
+      '<div class="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-gray-700 max-w-[85%]">' +
+        '<div class="chat-typing"><span></span><span></span><span></span></div>' +
+      '</div>';
     messages.appendChild(wrapper);
     scrollToBottom();
   }
 
   function hideTyping() {
-    const el = document.getElementById('chat-typing-indicator');
+    var el = document.getElementById('chat-typing-indicator');
     if (el) el.remove();
   }
 
   function scrollToBottom() {
-    requestAnimationFrame(() => {
+    requestAnimationFrame(function () {
       messages.scrollTop = messages.scrollHeight;
     });
   }
@@ -135,7 +250,6 @@
     if (quickActions) quickActions.style.display = 'none';
   }
 
-  /** Basic markdown-like formatting */
   function formatResponse(text) {
     if (!text) return '';
     return text
@@ -144,7 +258,7 @@
       .replace(/>/g, '&gt;')
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\n- /g, '\n&#8226; ')
-      .replace(/\n\d+\.\s/g, (m) => '\n' + m.trim() + ' ')
+      .replace(/\n\d+\.\s/g, function (m) { return '\n' + m.trim() + ' '; })
       .replace(/\n/g, '<br>')
       .replace(/`(.+?)`/g, '<code style="background:#F3F4F6;padding:1px 4px;border-radius:3px;font-size:12px;">$1</code>');
   }
@@ -166,33 +280,39 @@
     showTyping();
 
     try {
-      const resp = await fetch('/api/chat/message', {
+      var body = {
+        session_token: sessionToken,
+        message: text.trim(),
+        user_role: userRole,
+        user_email: userEmail
+      };
+      if (window.CHATBOT_CONTEXT_LINK_ID) {
+        body.context_link_id = window.CHATBOT_CONTEXT_LINK_ID;
+      }
+
+      var resp = await fetch('/api/chat/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          session_token: sessionToken,
-          message: text.trim(),
-          ...(window.CHATBOT_CONTEXT_LINK_ID ? { context_link_id: window.CHATBOT_CONTEXT_LINK_ID } : {})
-        })
+        body: JSON.stringify(body)
       });
 
       hideTyping();
 
       if (!resp.ok) {
-        const err = await resp.json().catch(() => ({}));
+        var err = await resp.json().catch(function () { return {}; });
         if (resp.status === 429) {
-          appendMessage('assistant', 'Has alcanzado el limite de mensajes por hora. Intenta de nuevo mas tarde.');
+          appendMessage('assistant', 'Has alcanzado el l\u00edmite de mensajes por hora. Intenta de nuevo m\u00e1s tarde.');
         } else {
-          appendMessage('assistant', err.error || 'Ocurrio un error. Intenta de nuevo.');
+          appendMessage('assistant', err.error || 'Ocurri\u00f3 un error. Intenta de nuevo.');
         }
         return;
       }
 
-      const data = await resp.json();
+      var data = await resp.json();
       appendMessage('assistant', data.response || 'No pude generar una respuesta.');
     } catch (err) {
       hideTyping();
-      appendMessage('assistant', 'Error de conexion. Verifica tu internet e intenta de nuevo.');
+      appendMessage('assistant', 'Error de conexi\u00f3n. Verifica tu internet e intenta de nuevo.');
     } finally {
       sending = false;
       input.disabled = false;
@@ -206,54 +326,66 @@
   // ==========================================
   function init() {
     if (!initDom()) {
-      // Retry once after a short delay (partials might still be loading)
-      setTimeout(() => {
+      setTimeout(function () {
         if (!initDom()) return;
-        bindEvents();
-        ensureSession(); // auto-init session for inline embedded mode
+        setup();
       }, 500);
       return;
     }
+    setup();
+  }
+
+  function setup() {
+    detectMode();
     bindEvents();
-    ensureSession(); // auto-init session for inline embedded mode
+    detectUserRole();
+
+    // Auto-init session for inline mode
+    if (!isFloating) {
+      ensureSession();
+    }
   }
 
   function bindEvents() {
-    // FAB toggle (only bind if FAB exists — it's hidden in inline/embedded mode)
+    // FAB toggle
     if (fab) fab.addEventListener('click', toggleChat);
 
+    // Close button
+    if (closeBtn) closeBtn.addEventListener('click', closeChat);
+
     // Form submit
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
       sendMessage(input.value);
     });
 
     // Enable/disable send button
-    input.addEventListener('input', () => {
+    input.addEventListener('input', function () {
       sendBtn.disabled = !input.value.trim() || sending;
     });
 
-    // Quick action chips
+    // Quick action chips (use data-query attribute or text content)
     if (quickActions) {
-      quickActions.addEventListener('click', (e) => {
-        const chip = e.target.closest('.chat-chip');
-        if (chip) sendMessage(chip.textContent);
-      });
-    }
-
-    // Close on Escape (only relevant in FAB/floating mode)
-    if (fab) {
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && panel.classList.contains('open')) {
-          toggleChat();
+      quickActions.addEventListener('click', function (e) {
+        var chip = e.target.closest('.chat-chip');
+        if (chip) {
+          var query = chip.getAttribute('data-query') || chip.textContent;
+          sendMessage(query);
         }
       });
     }
+
+    // Close on Escape (floating mode only)
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && isFloating && isOpen) {
+        closeChat();
+      }
+    });
   }
 
   // Wait for DOM + partials
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => setTimeout(init, 200));
+    document.addEventListener('DOMContentLoaded', function () { setTimeout(init, 200); });
   } else {
     setTimeout(init, 200);
   }

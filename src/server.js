@@ -2256,6 +2256,21 @@ app.post('/api/chat/message', async (req, res) => {
       return res.status(429).json({ error: 'Has alcanzado el límite de mensajes. Intenta en una hora.' });
     }
 
+    // Detect user role from auth cookie (server-verified, not client-declared)
+    let chatUserRole = 'public';
+    let chatUserEmail = null;
+    try {
+      const cookies = parseCookies(req);
+      const token = cookies[COOKIE_NAME];
+      if (token) {
+        const user = verifyToken(token);
+        if (user && user.email) {
+          chatUserEmail = user.email;
+          chatUserRole = isAdmin(user.email) ? 'admin' : 'user';
+        }
+      }
+    } catch { /* not logged in */ }
+
     // Save user message
     await portalMutate('chat_messages', 'POST', {
       session_id: session.id,
@@ -2271,8 +2286,18 @@ app.post('/api/chat/message', async (req, res) => {
 
     const fullPrompt = history ? `Conversación previa:\n${history}\n\nUsuario: ${message}` : message;
 
-    // Build system prompt — extend with course context if linkId provided
+    // Build system prompt — extend with role context
     let systemPrompt = chatSystemPrompt;
+
+    // Add role context (server-verified identity, not modifiable by user)
+    const roleContext = chatUserRole === 'admin'
+      ? `\n\n[IDENTIDAD VERIFICADA POR SERVIDOR]\nRol: Administrador UDFV\nEmail: ${chatUserEmail}\nAcceso: Total — puede consultar cualquier curso, usuario o plataforma.`
+      : chatUserRole === 'user'
+      ? `\n\n[IDENTIDAD VERIFICADA POR SERVIDOR]\nRol: Usuario autenticado @umce.cl\nEmail: ${chatUserEmail}\nAcceso: Puede consultar información de SUS propios cursos y datos personales. NO dar información de otros usuarios.`
+      : '\n\n[USUARIO NO AUTENTICADO]\nRol: Público\nAcceso: Solo FAQ general, estado de plataformas e información pública. Para consultas personalizadas, invitar a iniciar sesión con cuenta @umce.cl en umce.online.';
+    systemPrompt += roleContext;
+
+    // Build system prompt — extend with course context if linkId provided
     const contextLinkId = req.body.context_link_id;
     if (contextLinkId) {
       try {

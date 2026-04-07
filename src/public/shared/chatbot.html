@@ -1,24 +1,31 @@
-<!-- Chatbot Widget UMCE Virtual -->
-<div id="umce-chatbot">
-  <!-- FAB Button (hidden — chatbot is embedded inline on ayuda page) -->
-  <button id="chat-fab" aria-label="Abrir asistente virtual" style="display:none;">
+<!-- Chatbot Widget UMCE Virtual — V2: Floating FAB + Inline modes -->
+<div id="umce-chatbot" data-mode="floating">
+  <!-- FAB Button -->
+  <button id="chat-fab" aria-label="Abrir asistente virtual">
     <svg id="chat-fab-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
     <svg id="chat-fab-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
   </button>
 
-  <!-- Chat Panel (embedded inline) -->
-  <div id="chat-panel" class="bg-white flex flex-col overflow-hidden" style="position: relative; width: 100%; max-width: 600px; margin: 0 auto; border-radius: 1rem; box-shadow: 0 4px 24px rgba(0,0,0,0.10); border: 1px solid #e5e7eb;" data-default-height="500">
+  <!-- Chat Panel -->
+  <div id="chat-panel" class="bg-white flex flex-col overflow-hidden">
 
     <!-- Header -->
     <div class="bg-umce-azul text-white px-5 py-4 flex items-center gap-3 flex-shrink-0">
       <div class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg>
       </div>
-      <div>
+      <div class="flex-1">
         <h3 class="font-heading font-bold text-sm">Asistente UMCE Virtual</h3>
-        <p class="text-white/70 text-xs">Consulta sobre cursos y servicios</p>
+        <p id="chat-subtitle" class="text-white/70 text-xs">Consulta sobre cursos y servicios</p>
       </div>
+      <!-- Close button (floating mode only) -->
+      <button id="chat-close" class="text-white/60 hover:text-white transition-colors p-1" aria-label="Cerrar chat">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
     </div>
+
+    <!-- User role badge (shown when logged in) -->
+    <div id="chat-role-badge" class="px-4 py-1.5 text-[11px] text-center hidden"></div>
 
     <!-- Messages -->
     <div id="chat-messages" class="flex-1 overflow-y-auto px-4 py-4 space-y-3">
@@ -31,10 +38,11 @@
 
     <!-- Quick actions -->
     <div id="chat-quick-actions" class="px-4 pb-2 flex flex-wrap gap-1.5 flex-shrink-0">
-      <button class="chat-chip">&iquest;Qu&eacute; cursos hay?</button>
-      <button class="chat-chip">&iquest;C&oacute;mo me inscribo?</button>
-      <button class="chat-chip">No puedo ingresar</button>
-      <button class="chat-chip">&iquest;Hay programas disponibles ahora?</button>
+      <!-- Default chips — updated dynamically based on role -->
+      <button class="chat-chip" data-role="public">&iquest;Qu&eacute; cursos hay?</button>
+      <button class="chat-chip" data-role="public">&iquest;C&oacute;mo me inscribo?</button>
+      <button class="chat-chip" data-role="public">No puedo ingresar</button>
+      <button class="chat-chip" data-role="public">Estado plataformas</button>
     </div>
 
     <!-- Input -->
@@ -53,26 +61,104 @@
 </div>
 
 <style>
+  /* === Message bubbles === */
   .chat-msg { display: flex; }
   .chat-msg.user { justify-content: flex-end; }
   .chat-msg.user > div { background: #0033A1; color: white; border-radius: 1rem 1rem 0.25rem 1rem; }
   .chat-msg.assistant > div { background: #F9FAFB; border-radius: 1rem 1rem 1rem 0.25rem; }
+
+  /* === Quick action chips === */
   .chat-chip {
     font-size: 12px; padding: 5px 12px; border-radius: 999px;
     background: #F3F4F6; color: #4B5563; border: 1px solid #E5E7EB;
     cursor: pointer; transition: all 0.15s; white-space: nowrap;
   }
   .chat-chip:hover { background: #E5E7EB; border-color: #D1D5DB; }
+
+  /* === Typing indicator === */
   .chat-typing { display: flex; gap: 4px; padding: 4px 0; }
   .chat-typing span { width: 6px; height: 6px; background: #9CA3AF; border-radius: 50%; animation: chatBounce 1.4s infinite; }
   .chat-typing span:nth-child(2) { animation-delay: 0.2s; }
   .chat-typing span:nth-child(3) { animation-delay: 0.4s; }
   @keyframes chatBounce { 0%,80%,100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
-  #chat-panel { height: 500px; }
-  @media (max-width: 480px) {
-    #chat-panel { max-width: 100%; height: 420px; }
+
+  /* === FLOATING MODE (default — all pages except /ayuda) === */
+  #umce-chatbot[data-mode="floating"] #chat-fab {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 9998;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #0033A1;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,51,161,0.35);
+    transition: transform 0.2s, box-shadow 0.2s;
   }
-  body.is-native-app #chat-panel {
+  #umce-chatbot[data-mode="floating"] #chat-fab:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 20px rgba(0,51,161,0.45);
+  }
+
+  #umce-chatbot[data-mode="floating"] #chat-panel {
+    position: fixed;
+    bottom: 5.5rem;
+    right: 1.5rem;
+    width: 380px;
+    height: 520px;
+    max-height: calc(100vh - 8rem);
+    z-index: 9999;
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    border: 1px solid #e5e7eb;
+    display: none; /* hidden until opened */
+  }
+  #umce-chatbot[data-mode="floating"] #chat-panel.open {
+    display: flex;
+  }
+  #umce-chatbot[data-mode="floating"] #chat-close { display: block; }
+
+  @media (max-width: 480px) {
+    #umce-chatbot[data-mode="floating"] #chat-panel {
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      max-height: 100vh;
+      border-radius: 0;
+    }
+    #umce-chatbot[data-mode="floating"] #chat-fab {
+      bottom: 1rem;
+      right: 1rem;
+    }
+  }
+
+  /* === INLINE MODE (/ayuda page) === */
+  #umce-chatbot[data-mode="inline"] #chat-fab { display: none !important; }
+  #umce-chatbot[data-mode="inline"] #chat-close { display: none !important; }
+  #umce-chatbot[data-mode="inline"] #chat-panel {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    height: 500px;
+    border-radius: 1rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    border: 1px solid #e5e7eb;
+    display: flex;
+  }
+  @media (max-width: 480px) {
+    #umce-chatbot[data-mode="inline"] #chat-panel { max-width: 100%; height: 420px; }
+  }
+
+  /* === NATIVE APP OVERRIDES === */
+  body.is-native-app #umce-chatbot[data-mode="inline"] #chat-panel {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
@@ -88,10 +174,13 @@
     margin: 0 !important;
     z-index: 100 !important;
   }
-  body.is-native-app #chat-panel > div:first-child {
+  body.is-native-app #umce-chatbot[data-mode="inline"] #chat-panel > div:first-child {
     padding-top: calc(env(safe-area-inset-top, 0px) + 12px) !important;
   }
-  body.is-native-app #chat-input {
-    font-size: 16px !important;
-  }
+  body.is-native-app #chat-input { font-size: 16px !important; }
+
+  /* === Role badge === */
+  #chat-role-badge.role-student { background: #EFF6FF; color: #1D4ED8; border-bottom: 1px solid #DBEAFE; }
+  #chat-role-badge.role-teacher { background: #F0FDF4; color: #15803D; border-bottom: 1px solid #DCFCE7; }
+  #chat-role-badge.role-admin { background: #FEF3C7; color: #92400E; border-bottom: 1px solid #FDE68A; }
 </style>

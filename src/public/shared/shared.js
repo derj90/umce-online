@@ -39,9 +39,13 @@
       loadPartial('nav-placeholder', '/shared/nav.html'),
       loadPartial('footer-placeholder', '/shared/footer.html'),
     ];
-    if (window.location.pathname === '/ayuda' || window.location.pathname === '/ayuda/') {
-      loadPromises.push(loadPartial('chatbot-placeholder', '/shared/chatbot.html'));
+    // Load chatbot on all pages (auto-create placeholder if missing)
+    if (!document.getElementById('chatbot-placeholder')) {
+      var cp = document.createElement('div');
+      cp.id = 'chatbot-placeholder';
+      document.body.appendChild(cp);
     }
+    loadPromises.push(loadPartial('chatbot-placeholder', '/shared/chatbot.html'));
     await Promise.all(loadPromises);
 
     // Initialize nav after loading
@@ -52,6 +56,13 @@
     checkAdminAccess();
     // Update nav for logged-in users
     checkAuthState();
+
+    // Set chatbot mode: inline on /ayuda, floating FAB everywhere else
+    const chatContainer = document.getElementById('umce-chatbot');
+    if (chatContainer) {
+      const isAyuda = window.location.pathname === '/ayuda' || window.location.pathname === '/ayuda/';
+      chatContainer.setAttribute('data-mode', isAyuda ? 'inline' : 'floating');
+    }
   }
 
   // ==========================================
