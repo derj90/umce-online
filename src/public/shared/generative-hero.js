@@ -349,7 +349,24 @@
       else if (variant === 3) drawSinapsis();
       else if (variant === 4) drawResonancia();
       else if (variant === 5) drawTrama();
+      // Bottom fade: canvas draws its own gradient to merge with page bg
+      drawBottomFade();
     };
+
+    function drawBottomFade() {
+      var ctx = p.drawingContext;
+      var fadeH = p.height * 0.35;
+      var y0 = p.height - fadeH;
+      var grd = ctx.createLinearGradient(0, y0, 0, p.height);
+      grd.addColorStop(0, 'rgba(249,250,251,0)');
+      grd.addColorStop(0.3, 'rgba(249,250,251,0.15)');
+      grd.addColorStop(0.5, 'rgba(249,250,251,0.4)');
+      grd.addColorStop(0.7, 'rgba(249,250,251,0.7)');
+      grd.addColorStop(0.85, 'rgba(249,250,251,0.92)');
+      grd.addColorStop(1, 'rgba(249,250,251,1)');
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, y0, p.width, fadeH);
+    }
 
     // 1: DERIVA
     function drawDeriva() {
