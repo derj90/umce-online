@@ -184,6 +184,26 @@
   </section>
 
   <!-- ============================================ -->
+  <!-- NOTICIAS UMCE (din&aacute;micas desde API) -->
+  <!-- ============================================ -->
+  <section id="noticias" class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-12">
+        <div class="fade-up inline-flex items-center gap-2 text-umce-azul text-xs font-bold uppercase tracking-widest mb-4">
+          <span class="w-8 h-px bg-umce-azul"></span>
+          Noticias
+          <span class="w-8 h-px bg-umce-azul"></span>
+        </div>
+        <h2 class="fade-up font-heading text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">Noticias UMCE</h2>
+        <p class="fade-up text-gray-500 text-lg max-w-2xl mx-auto">Informaci&oacute;n p&uacute;blica de la Universidad Metropolitana de Ciencias de la Educaci&oacute;n.</p>
+      </div>
+      <div id="news-grid" class="stagger grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Loaded dynamically from /api/news -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
   <!-- CONTACTO -->
   <!-- ============================================ -->
   <section id="contacto" class="py-16 bg-gray-50">
@@ -250,7 +270,24 @@
 
   <script src="/shared/shared.js"></script>
   <script src="/shared/chatbot.js" defer></script>
-  <!-- Featured programs script archived -->
+  <script>
+    (async function() {
+      var grid = document.getElementById('news-grid');
+      if (!grid) return;
+      try {
+        var news = await fetch('/api/news?limit=6').then(function(r) { return r.json(); });
+        if (!news.length) { grid.innerHTML = '<p class="col-span-full text-center text-gray-400">No hay noticias disponibles.</p>'; return; }
+        var E = typeof UMCE !== 'undefined' && UMCE.esc ? UMCE.esc : function(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+        grid.innerHTML = news.map(function(n) {
+          var date = n.published_at ? new Date(n.published_at).toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+          var img = n.image_url ? '<img src="' + E(n.image_url) + '" alt="" class="w-full h-40 object-cover">' : '<div class="w-full h-40 bg-gradient-to-br from-umce-azul to-umce-azul-dark flex items-center justify-center"><svg class="w-10 h-10 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"/></svg></div>';
+          var link = n.source_url ? n.source_url : '#';
+          return '<a href="' + E(link) + '" target="_blank" rel="noopener" class="fade-up bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow group">' + img + '<div class="p-5"><div class="text-xs text-gray-400 mb-2">' + E(date) + '</div><h3 class="font-heading font-bold text-sm text-gray-900 mb-2 group-hover:text-umce-azul transition-colors line-clamp-2">' + E(n.title) + '</h3><p class="text-gray-500 text-xs line-clamp-2">' + E(n.excerpt || '') + '</p></div></a>';
+        }).join('');
+        if (typeof UMCE !== 'undefined' && UMCE.observeNewElements) UMCE.observeNewElements(grid);
+      } catch(e) { console.warn('News load error:', e); }
+    })();
+  </script>
   <script src="/accesibilidad-dua.js" defer></script>
 </body>
 </html>
