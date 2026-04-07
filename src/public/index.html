@@ -115,14 +115,14 @@
       </div>
     </div>
 
+    <!-- Bottom fade: inside hero, above overlay (z-5), below content (z-10 won't matter here) -->
+    <div class="absolute bottom-0 left-0 right-0 pointer-events-none" style="z-index: 15; height: 150px; background: linear-gradient(to bottom, transparent 0%, #F9FAFB 100%);"></div>
   </section>
 
   <!-- ============================================ -->
   <!-- NOTICIAS UMCE (din&aacute;micas desde API) -->
   <!-- ============================================ -->
-  <section id="noticias" class="relative pb-16 bg-gray-50" style="padding-top: 120px; margin-top: -120px;">
-    <!-- Fade overlap from hero into this section -->
-    <div class="absolute top-0 left-0 right-0 pointer-events-none" style="height: 120px; z-index: 30; background: linear-gradient(to bottom, transparent, #F9FAFB);"></div>
+  <section id="noticias" class="relative pt-16 pb-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-6">
       <div class="text-center mb-12">
         <div class="fade-up inline-flex items-center gap-2 text-umce-azul text-xs font-bold uppercase tracking-widest mb-4">
