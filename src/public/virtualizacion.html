@@ -154,12 +154,12 @@
       <p class="fade-up text-white/80 text-lg md:text-xl max-w-2xl leading-relaxed">El proceso institucional para dise&ntilde;ar, implementar y monitorear programas y actividades curriculares en modalidad virtual.</p>
       <p class="fade-up text-white/50 text-sm mt-4 max-w-xl">Producto de las Mesas de Virtualizaci&oacute;n 2026 &mdash; Mesa 1: Modelo Instruccional, Calidad y Aprendizaje.</p>
       <div class="fade-up flex flex-wrap gap-3 mt-8">
-        <a href="/virtualizacion/planificador" class="inline-flex items-center gap-2 font-heading font-bold text-sm px-6 py-3 rounded-lg transition-colors" style="background: var(--palette-accent); color: #001D5C;">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-          Usar el Planificador
+        <a href="#herramientas" class="inline-flex items-center gap-2 font-heading font-bold text-sm px-6 py-3 rounded-lg transition-colors" style="background: var(--palette-accent); color: #001D5C;">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          Ver todas las herramientas
         </a>
-        <a href="/virtualizacion/fundamentos" class="inline-flex items-center gap-2 font-heading font-bold text-sm px-6 py-3 rounded-lg border-2 border-white/30 text-white hover:bg-white/10 transition-colors">
-          Leer los Fundamentos
+        <a href="#momentos" class="inline-flex items-center gap-2 font-heading font-bold text-sm px-6 py-3 rounded-lg border-2 border-white/30 text-white hover:bg-white/10 transition-colors">
+          Los 5 momentos
         </a>
       </div>
     </div>
@@ -300,25 +300,35 @@
 
   <!-- Herramientas -->
   <section class="py-16 md:py-20" id="herramientas">
-    <div class="max-w-5xl mx-auto px-6">
-      <div class="fade-up text-center mb-12">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="fade-up text-center mb-4">
         <h2 class="font-heading text-3xl md:text-4xl font-extrabold mb-4">Herramientas disponibles</h2>
-        <p class="text-gray-500 text-lg max-w-xl mx-auto">Recursos construidos por la UDFV para acompa&ntilde;ar cada momento del proceso.</p>
+        <p class="text-gray-500 text-lg max-w-xl mx-auto">Cada herramienta tiene un prop&oacute;sito espec&iacute;fico y se usa en un momento distinto del proceso. Elige la que corresponde a tu situaci&oacute;n.</p>
       </div>
 
-      <div class="grid md:grid-cols-2 gap-6">
-        <!-- Planificador -->
-        <a href="/virtualizacion/planificador" class="fade-up tool-card group block">
+      <!-- Legend -->
+      <div class="fade-up flex flex-wrap items-center justify-center gap-4 mb-10 text-xs text-gray-500">
+        <span class="flex items-center gap-1.5"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background: #EFF3FB;"></span>Herramienta activa (realiza c&aacute;lculos o evaluaciones)</span>
+        <span class="flex items-center gap-1.5"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background: #F3F4F6;"></span>Referencia (consulta o resultados hist&oacute;ricos)</span>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Calculadora SCT -->
+        <a href="/virtualizacion/sct" class="fade-up tool-card group block">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center" style="background: #EFF3FB;">
               <svg class="w-6 h-6 text-umce-azul" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
             </div>
-            <div>
-              <h3 class="font-heading font-bold text-lg group-hover:text-umce-azul transition-colors">Planificador Curricular</h3>
-              <p class="text-sm text-gray-500 mt-1 mb-3">Dise&ntilde;a la carga de tu m&oacute;dulo paso a paso. Selecciona e-actividades, distribuye horas y valida que los cr&eacute;ditos SCT sean coherentes con el trabajo real del estudiante.</p>
-              <div class="flex flex-wrap gap-2">
-                <span class="pillar-badge" style="background: #EFF3FB; color: var(--palette-primary);">Momento 1</span>
-                <span class="pillar-badge" style="background: #D1FAE5; color: #059669;">Momento 2</span>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <h3 class="font-heading font-bold text-base group-hover:text-umce-azul transition-colors">Calculadora SCT</h3>
+                <span class="pillar-badge text-xs" style="background: #EFF3FB; color: var(--palette-primary);">Momento 1</span>
+              </div>
+              <p class="text-sm text-gray-500 mb-3">Verifica que los cr&eacute;ditos y las horas de tu curso sean coherentes antes de presentar la resoluci&oacute;n exenta a la UGCI.</p>
+              <div class="text-xs text-gray-400 space-y-1">
+                <div><strong class="text-gray-600">Para qui&eacute;n:</strong> Coordinador de programa, UGCI</div>
+                <div><strong class="text-gray-600">Produce:</strong> Ficha de validaci&oacute;n SCT para adjuntar al PAC</div>
               </div>
             </div>
           </div>
@@ -328,27 +338,143 @@
           </div>
         </a>
 
-        <!-- Fundamentos -->
-        <a href="/virtualizacion/fundamentos" class="fade-up tool-card group block">
+        <!-- Planificador -->
+        <a href="/virtualizacion/planificador" class="fade-up tool-card group block">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center" style="background: #FEF3C7;">
-              <svg class="w-6 h-6" style="color: #D97706;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            <div class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center" style="background: #EDE9FE;">
+              <svg class="w-6 h-6" style="color: #7C3AED;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10M4 18h6"/></svg>
             </div>
-            <div>
-              <h3 class="font-heading font-bold text-lg group-hover:text-umce-azul transition-colors">Fundamentos</h3>
-              <p class="text-sm text-gray-500 mt-1 mb-3">Marco pedag&oacute;gico, normativo y operativo. Qu&eacute; es el SCT, c&oacute;mo funciona la modularizaci&oacute;n, el modelo virtual UMCE, Ucampus, el flujo SGIC y el marco regulatorio.</p>
-              <div class="flex flex-wrap gap-2">
-                <span class="pillar-badge" style="background: #F3F4F6; color: #6B7280;">7 m&oacute;dulos</span>
-                <span class="pillar-badge" style="background: #F3F4F6; color: #6B7280;">Glosario</span>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <h3 class="font-heading font-bold text-base group-hover:text-umce-azul transition-colors">Planificador Curricular</h3>
+                <span class="pillar-badge text-xs" style="background: #EDE9FE; color: #7C3AED;">Momento 3</span>
+              </div>
+              <p class="text-sm text-gray-500 mb-3">Dise&ntilde;a las e-actividades de tu curso semana a semana. Se usa despu&eacute;s de que los cr&eacute;ditos ya fueron aprobados por la UGCI.</p>
+              <div class="text-xs text-gray-400 space-y-1">
+                <div><strong class="text-gray-600">Para qui&eacute;n:</strong> Dise&ntilde;ador instruccional (UDFV), Acad&eacute;mico</div>
+                <div><strong class="text-gray-600">Produce:</strong> PIAC con e-actividades por semana</div>
               </div>
             </div>
           </div>
           <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
-            <span class="text-xs text-gray-400">Gu&iacute;a completa para acad&eacute;micos y directivos</span>
+            <span class="text-xs text-gray-400">Cat&aacute;logo de actividades &mdash; distribuci&oacute;n de carga</span>
             <svg class="w-4 h-4 text-gray-300 group-hover:text-umce-azul group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
           </div>
         </a>
+
+        <!-- Sistema QA -->
+        <a href="/virtualizacion/qa" class="fade-up tool-card group block">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center" style="background: #FEF3C7;">
+              <svg class="w-6 h-6" style="color: #D97706;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <h3 class="font-heading font-bold text-base group-hover:text-umce-azul transition-colors">Sistema QA</h3>
+                <span class="pillar-badge text-xs" style="background: #FEF3C7; color: #92400E;">Momentos 4&ndash;5</span>
+              </div>
+              <p class="text-sm text-gray-500 mb-3">Eval&uacute;a la calidad de un curso ya implementado en Moodle. Aplica 77 indicadores en 6 dimensiones y genera recomendaciones con IA.</p>
+              <div class="text-xs text-gray-400 space-y-1">
+                <div><strong class="text-gray-600">Para qui&eacute;n:</strong> UDFV, equipo de dise&ntilde;o instruccional</div>
+                <div><strong class="text-gray-600">Produce:</strong> Informe de calidad con prioridades de mejora</div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+            <span class="text-xs text-gray-400">Evaluaci&oacute;n IA-asistida &mdash; 77 indicadores</span>
+            <svg class="w-4 h-4 text-gray-300 group-hover:text-umce-azul group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </div>
+        </a>
+
+        <!-- Rúbrica QA -->
+        <a href="/virtualizacion/rubrica" class="fade-up tool-card group block" style="background: #FAFAFA;">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center" style="background: #F3F4F6;">
+              <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <h3 class="font-heading font-bold text-base group-hover:text-umce-azul transition-colors">R&uacute;brica QA</h3>
+                <span class="pillar-badge text-xs" style="background: #F3F4F6; color: #6B7280;">Referencia</span>
+              </div>
+              <p class="text-sm text-gray-500 mb-3">Dashboard con los resultados hist&oacute;ricos de los 5 cursos ya evaluados (2024). Sirve como referencia para entender los est&aacute;ndares de calidad esperados.</p>
+              <div class="text-xs text-gray-400 space-y-1">
+                <div><strong class="text-gray-600">Para qui&eacute;n:</strong> Directivos, coordinadores, UDFV</div>
+                <div><strong class="text-gray-600">Produce:</strong> Visualizaci&oacute;n comparativa de 5 cursos evaluados</div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+            <span class="text-xs text-gray-400">Resultados hist&oacute;ricos &mdash; postgrado y prosecuci&oacute;n 2024</span>
+            <svg class="w-4 h-4 text-gray-300 group-hover:text-umce-azul group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </div>
+        </a>
+
+        <!-- Fundamentos -->
+        <a href="/virtualizacion/fundamentos" class="fade-up tool-card group block" style="background: #FAFAFA;">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center" style="background: #F3F4F6;">
+              <svg class="w-6 h-6" style="color: #6B7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <h3 class="font-heading font-bold text-base group-hover:text-umce-azul transition-colors">Fundamentos Pedag&oacute;gicos</h3>
+                <span class="pillar-badge text-xs" style="background: #F3F4F6; color: #6B7280;">Referencia</span>
+              </div>
+              <p class="text-sm text-gray-500 mb-3">Marco pedag&oacute;gico, normativo y operativo del modelo UMCE. Explica el SCT, la modularizaci&oacute;n, el flujo SGIC y la fundamentaci&oacute;n de todas las herramientas.</p>
+              <div class="text-xs text-gray-400 space-y-1">
+                <div><strong class="text-gray-600">Para qui&eacute;n:</strong> Acad&eacute;micos, coordinadores, directivos</div>
+                <div><strong class="text-gray-600">Produce:</strong> Comprensi&oacute;n del modelo y sus fundamentos</div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+            <span class="text-xs text-gray-400">7 m&oacute;dulos &mdash; Glosario incluido</span>
+            <svg class="w-4 h-4 text-gray-300 group-hover:text-umce-azul group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </div>
+        </a>
+
+        <!-- Asistente IA -->
+        <a href="/virtualizacion/asistente" class="fade-up tool-card group block">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center" style="background: #EEF2FF;">
+              <svg class="w-6 h-6" style="color: #6366F1;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <h3 class="font-heading font-bold text-base group-hover:text-umce-azul transition-colors">Asistente IA</h3>
+                <span class="pillar-badge text-xs" style="background: #EEF2FF; color: #6366F1;">Cualquier momento</span>
+              </div>
+              <p class="text-sm text-gray-500 mb-3">Chatbot especializado en virtualizaci&oacute;n UMCE. Responde preguntas sobre el proceso, las herramientas, el SCT y las normas institucionales.</p>
+              <div class="text-xs text-gray-400 space-y-1">
+                <div><strong class="text-gray-600">Para qui&eacute;n:</strong> Cualquier persona del proceso</div>
+                <div><strong class="text-gray-600">Produce:</strong> Respuestas contextualizadas al modelo UMCE</div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+            <span class="text-xs text-gray-400">Preguntas y respuestas en lenguaje natural</span>
+            <svg class="w-4 h-4 text-gray-300 group-hover:text-umce-azul group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </div>
+        </a>
+
       </div>
+
+      <!-- Aclaración SCT vs Planificador -->
+      <div class="fade-up mt-10 bg-blue-50 border border-blue-200 rounded-xl p-5 md:p-6">
+        <p class="text-xs font-bold uppercase tracking-widest text-umce-azul mb-3">Herramientas que pueden confundirse</p>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="font-semibold text-sm text-gray-800 mb-1">Calculadora SCT <span class="text-gray-400 font-normal">&rarr; Momento 1</span></p>
+            <p class="text-sm text-gray-600">Se usa <strong>antes</strong> de diseñar el curso. Responde: &laquo;¿Las horas declaradas en la resolución son coherentes con los créditos?&raquo; Lo usa el coordinador de programa para sustentar la resolución exenta.</p>
+          </div>
+          <div>
+            <p class="font-semibold text-sm text-gray-800 mb-1">Planificador Curricular <span class="text-gray-400 font-normal">&rarr; Momento 3</span></p>
+            <p class="text-sm text-gray-600">Se usa <strong>después</strong> de que la UGCI aprobó los créditos. Responde: &laquo;¿Cómo distribuyo esas horas en actividades concretas semana a semana?&raquo; Lo usan el DI y el académico para construir el PIAC.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
