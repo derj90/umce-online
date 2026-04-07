@@ -536,9 +536,28 @@ app.get('/auth/me', (req, res) => {
 });
 
 // --- Static files ---
+// Cache-busting: ETags enabled + no-cache forces browser to always revalidate
+// For CSS/JS: browser caches but checks freshness each time (304 if unchanged)
+// For HTML: no-store prevents caching entirely
+app.use((req, res, next) => {
+  if (req.path.endsWith('.html') || req.path === '/' || !req.path.includes('.')) {
+    res.set('Cache-Control', 'no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+  }
+  next();
+});
 // SPA routes: serve index.html for subdirectory apps
 app.get('/sustentabilidad2026', (req, res) => res.sendFile(path.join(__dirname, 'public/sustentabilidad2026/index.html')));
-app.use(express.static(path.join(__dirname, 'public'), { maxAge: 0, etag: false }));
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: 0,
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.css') || filePath.endsWith('.js')) {
+      res.set('Cache-Control', 'no-cache, must-revalidate');
+    }
+  }
+}));
 
 // --- Uploads config ---
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
