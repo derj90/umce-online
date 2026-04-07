@@ -226,6 +226,37 @@
       transition: all 0.2s; white-space: nowrap; background: none; border-top: none; border-left: none; border-right: none;
     }
     .tab-btn-mobile.active { color: var(--palette-primary); border-bottom-color: var(--palette-primary); }
+
+    /* Fundamentación panels */
+    .fundamentacion-panel {
+      background: #EFF6FF;
+      border-left: 4px solid #0033A1;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+    .fundamentacion-panel summary {
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #0033A1;
+      cursor: pointer;
+      list-style: none;
+    }
+    .fundamentacion-panel summary::before { content: '📚 '; }
+    .fundamentacion-panel summary::-webkit-details-marker { display: none; }
+    .fundamentacion-content {
+      padding: 0 1rem 1rem;
+      font-size: 0.8125rem;
+      color: #374151;
+      line-height: 1.6;
+    }
+    .fundamentacion-refs {
+      font-size: 0.75rem;
+      color: #6B7280;
+      font-style: italic;
+      margin-top: 0.5rem;
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900 antialiased">
@@ -621,6 +652,37 @@
 
     </main>
   </div>
+
+  <!-- Fundamentación académica -->
+  <section class="py-12" style="background: #F8FAFC;">
+    <div class="max-w-4xl mx-auto px-6">
+      <p class="text-xs font-bold uppercase tracking-widest mb-4" style="color: #0033A1;">Fundamentación de decisiones de diseño</p>
+
+      <details class="fundamentacion-panel">
+        <summary>¿Por qué 6 dimensiones de evaluación?</summary>
+        <div class="fundamentacion-content">
+          <p>El Marco Evaluativo UDFV-UMCE organiza la calidad del curso virtual en seis dimensiones que cubren desde la interacción con la plataforma hasta la corresponsabilidad. Este modelo fue construido con 77 indicadores validados mediante pilotaje en 5 actividades curriculares y revisión con informantes clave de áreas académicas UMCE en noviembre-diciembre 2024. Las 6 dimensiones permiten diagnósticos diferenciados que orientan mejoras específicas, evitando la mirada genérica de un puntaje único.</p>
+          <p class="fundamentacion-refs">Referencias: Sepúlveda, D. (2024). Marco Evaluativo UDFV-UMCE. Proyecto UMC20992</p>
+        </div>
+      </details>
+
+      <details class="fundamentacion-panel">
+        <summary>¿Por qué OSCQR como base del marco?</summary>
+        <div class="fundamentacion-content">
+          <p>OSCQR (Open SUNY Course Quality Review) fue elegido como referente base por ser de código abierto (licencia Creative Commons), orientado explícitamente a la mejora continua y no al juicio punitivo, y por contar con 50 estándares probados en miles de cursos en línea. A diferencia de Quality Matters, que es propietario y orientado a certificación, OSCQR permite adaptación contextual sin restricciones de licencia, lo que es coherente con el principio de soberanía académica de la UMCE.</p>
+          <p class="fundamentacion-refs">Referencias: SUNY OSCQR (open source, CC); Quality Matters (propietario, referencia de contraste)</p>
+        </div>
+      </details>
+
+      <details class="fundamentacion-panel">
+        <summary>¿Por qué la IA no modifica cursos directamente?</summary>
+        <div class="fundamentacion-content">
+          <p>El principio rector de la UDFV establece que la inteligencia artificial observa, relaciona y alerta, pero no decide ni actúa sobre los cursos. Las decisiones pedagógicas —reorganizar actividades, cambiar evaluaciones, ajustar contenidos— involucran juicio profesional sobre el contexto del estudiante, la intención docente y la coherencia curricular. Delegar esas decisiones a un sistema automático implicaría riesgo pedagógico y pérdida de agencia del equipo docente.</p>
+          <p class="fundamentacion-refs">Referencias: Principio UDFV de IA como soporte (no sustituto) del juicio pedagógico</p>
+        </div>
+      </details>
+    </div>
+  </section>
 
   <div id="audio-narrator" data-src="/audio/sistema-qa.mp3"></div>
   <div id="footer-placeholder"></div>

@@ -89,6 +89,37 @@
       border-left: 4px solid #059669;
       padding-left: calc(0.75rem - 4px);
     }
+
+    /* Fundamentación panels */
+    .fundamentacion-panel {
+      background: #EFF6FF;
+      border-left: 4px solid #0033A1;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+    .fundamentacion-panel summary {
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #0033A1;
+      cursor: pointer;
+      list-style: none;
+    }
+    .fundamentacion-panel summary::before { content: '📚 '; }
+    .fundamentacion-panel summary::-webkit-details-marker { display: none; }
+    .fundamentacion-content {
+      padding: 0 1rem 1rem;
+      font-size: 0.8125rem;
+      color: #374151;
+      line-height: 1.6;
+    }
+    .fundamentacion-refs {
+      font-size: 0.75rem;
+      color: #6B7280;
+      font-style: italic;
+      margin-top: 0.5rem;
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900 antialiased">
@@ -309,6 +340,29 @@
       <div class="fade-up bg-gray-50 border border-gray-200 rounded-xl p-5 text-sm text-gray-600">
         <p><strong>Referencia:</strong> Sepúlveda, D. (2024). <em>Marco Evaluativo UDFV-UMCE: Instrumento de aseguramiento de calidad para cursos virtuales</em>. Unidad de Desarrollo y Formaci&oacute;n Virtual, Universidad Metropolitana de Ciencias de la Educaci&oacute;n. Proyecto de Fortalecimiento Institucional UMC20992.</p>
       </div>
+    </div>
+  </section>
+
+  <!-- Fundamentación académica -->
+  <section class="py-12" style="background: #F8FAFC;">
+    <div class="max-w-4xl mx-auto px-6">
+      <p class="text-xs font-bold uppercase tracking-widest mb-4" style="color: #0033A1;">Fundamentación de decisiones de diseño</p>
+
+      <details class="fundamentacion-panel">
+        <summary>¿Por qué incluir perspectiva de género?</summary>
+        <div class="fundamentacion-content">
+          <p>La perspectiva de género es una dimensión transversal del Marco Evaluativo UDFV-UMCE, incorporada como resguardo explícito de la Mesa 1 de Virtualizaciones 2026 a propuesta de Angélica Marín. Esta decisión es coherente con la política institucional de equidad de la UMCE y con evidencia internacional que muestra cómo el diseño de cursos virtuales puede reproducir sesgos si no se incorpora activamente: desde el uso de lenguaje inclusivo hasta la representación equilibrada en ejemplos y casos de estudio.</p>
+          <p class="fundamentacion-refs">Referencias: Dimensión transversal Mesa 1 (Marín, 2026); Política institucional UMCE equidad de género</p>
+        </div>
+      </details>
+
+      <details class="fundamentacion-panel">
+        <summary>¿Por qué escala 0–4 y no porcentaje?</summary>
+        <div class="fundamentacion-content">
+          <p>La escala Likert de frecuencia de 0 a 4 permite evaluar la presencia gradual de un indicador en el curso (de "nunca presente" a "siempre presente") sin reducirlo a un juicio binario. A diferencia del porcentaje, esta escala es compatible con análisis estadístico descriptivo estándar (medias, desviaciones, quartiles), facilita la comparación entre dimensiones y dimensiona la frecuencia de ocurrencia, que es más informativa pedagógicamente que un puntaje acumulativo.</p>
+          <p class="fundamentacion-refs">Referencias: Likert, R. (1932). A technique for the measurement of attitudes; Escala de frecuencia OSCQR adaptada</p>
+        </div>
+      </details>
     </div>
   </section>
 

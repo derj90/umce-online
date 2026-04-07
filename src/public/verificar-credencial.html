@@ -53,6 +53,37 @@
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Fundamentación panels */
+    .fundamentacion-panel {
+      background: #EFF6FF;
+      border-left: 4px solid #0033A1;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+    .fundamentacion-panel summary {
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #0033A1;
+      cursor: pointer;
+      list-style: none;
+    }
+    .fundamentacion-panel summary::before { content: '📚 '; }
+    .fundamentacion-panel summary::-webkit-details-marker { display: none; }
+    .fundamentacion-content {
+      padding: 0 1rem 1rem;
+      font-size: 0.8125rem;
+      color: #374151;
+      line-height: 1.6;
+    }
+    .fundamentacion-refs {
+      font-size: 0.75rem;
+      color: #6B7280;
+      font-style: italic;
+      margin-top: 0.5rem;
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900 antialiased min-h-screen flex flex-col">
@@ -227,6 +258,29 @@
     </div>
 
   </main>
+
+  <!-- Fundamentación académica -->
+  <section class="py-12" style="background: #F8FAFC;">
+    <div class="max-w-2xl mx-auto px-6">
+      <p class="text-xs font-bold uppercase tracking-widest mb-4" style="color: #0033A1;">Fundamentación de decisiones de diseño</p>
+
+      <details class="fundamentacion-panel">
+        <summary>¿Por qué Open Badges 3.0 y no 2.0?</summary>
+        <div class="fundamentacion-content">
+          <p>Open Badges 3.0 incorpora el estándar W3C Verifiable Credentials, lo que convierte cada credencial en un documento autocontenido que no requiere consultar al emisor original para ser verificado. La firma criptográfica Ed25519 (curva elíptica) hace que la credencial sea inalterable por terceros. A diferencia de la versión 2.0, que dependía de un servidor externo para validación, OB 3.0 garantiza la verificabilidad incluso si la UMCE cambia de sistema en el futuro.</p>
+          <p class="fundamentacion-refs">Referencias: W3C Verifiable Credentials Data Model; IMS Global Open Badges 3.0; MIT Digital Credentials Consortium (open source)</p>
+        </div>
+      </details>
+
+      <details class="fundamentacion-panel">
+        <summary>¿Por qué infraestructura propia y no un proveedor externo?</summary>
+        <div class="fundamentacion-content">
+          <p>Emitir credenciales desde infraestructura propia (VPS UMCE + Supabase self-hosted) garantiza la soberanía de los datos de los estudiantes en una institución estatal, elimina el riesgo de vendor lock-in ante cambios de precios o cierre de proveedores, y tiene costo marginal cero una vez operativa. Es coherente con el principio de open source que la UMCE promueve en su ecosistema tecnológico.</p>
+          <p class="fundamentacion-refs">Referencias: Principio de soberanía de datos (universidades estatales); MIT DCC open source stack</p>
+        </div>
+      </details>
+    </div>
+  </section>
 
   <div id="audio-narrator" data-src="/audio/verificar-credencial.mp3"></div>
   <div id="footer-placeholder"></div>

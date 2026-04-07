@@ -105,6 +105,37 @@
       font-weight: 800;
       line-height: 1;
     }
+
+    /* Fundamentación panels */
+    .fundamentacion-panel {
+      background: #EFF6FF;
+      border-left: 4px solid #0033A1;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+    .fundamentacion-panel summary {
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #0033A1;
+      cursor: pointer;
+      list-style: none;
+    }
+    .fundamentacion-panel summary::before { content: '📚 '; }
+    .fundamentacion-panel summary::-webkit-details-marker { display: none; }
+    .fundamentacion-content {
+      padding: 0 1rem 1rem;
+      font-size: 0.8125rem;
+      color: #374151;
+      line-height: 1.6;
+    }
+    .fundamentacion-refs {
+      font-size: 0.75rem;
+      color: #6B7280;
+      font-style: italic;
+      margin-top: 0.5rem;
+    }
   </style>
 </head>
 <body class="bg-white text-gray-900 antialiased">
@@ -355,6 +386,29 @@
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Fundamentación académica -->
+  <section class="py-16 md:py-20">
+    <div class="max-w-4xl mx-auto px-6">
+      <p class="text-xs font-bold uppercase tracking-widest mb-4" style="color: #0033A1;">Fundamentación de decisiones de diseño</p>
+
+      <details class="fundamentacion-panel">
+        <summary>¿Por qué ADDIE y no otro modelo instruccional?</summary>
+        <div class="fundamentacion-content">
+          <p>ADDIE (Análisis, Diseño, Desarrollo, Implementación, Evaluación) es el marco de diseño instruccional más extendido globalmente, con décadas de aplicación en contextos universitarios presenciales y virtuales. Su adaptabilidad a diferentes contextos institucionales, su compatibilidad con los procesos de aseguramiento de calidad (SGIC) ya existentes en la UMCE, y su integración con enfoques de Experiential Design (EXD) lo hacen el marco más pertinente. Modelos alternativos como SAM son más ágiles pero asumen equipos de diseño dedicados, condición que aún no existe en todos los programas UMCE.</p>
+          <p class="fundamentacion-refs">Referencias: ADDIE (marco global); Caballero, M. (2022). Integración EXD-ADDIE; compatibilidad con SGIC UMCE</p>
+        </div>
+      </details>
+
+      <details class="fundamentacion-panel">
+        <summary>¿Por qué 5 momentos y no 4?</summary>
+        <div class="fundamentacion-content">
+          <p>La distinción entre 5 momentos (en lugar de los 4 tradicionales de ADDIE) responde a la necesidad de separar explícitamente el PAC del PIAC. El PAC (Programa de Actividades Curriculares) es el documento institucional que aprueba la UGCI y define los resultados de aprendizaje y la carga macro. El PIAC (Plan Instruccional de Actividades Curriculares) es el diseño detallado semana a semana que construyen el diseñador instruccional y el académico. Fusionarlos en un solo momento invisibiliza la responsabilidad diferenciada entre la UGCI y la UDFV.</p>
+          <p class="fundamentacion-refs">Referencias: Diferenciación PAC/PIAC (UGCI-UDFV, uso institucional); Marco instruccional Mesa 1 (2026)</p>
+        </div>
+      </details>
     </div>
   </section>
 

@@ -89,6 +89,37 @@
 
     /* Weekly bar */
     .weekly-bar { height: 1.25rem; border-radius: 0.25rem; transition: width 0.4s ease; min-width: 2px; }
+
+    /* Fundamentación panels */
+    .fundamentacion-panel {
+      background: #EFF6FF;
+      border-left: 4px solid #0033A1;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+    .fundamentacion-panel summary {
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #0033A1;
+      cursor: pointer;
+      list-style: none;
+    }
+    .fundamentacion-panel summary::before { content: '📚 '; }
+    .fundamentacion-panel summary::-webkit-details-marker { display: none; }
+    .fundamentacion-content {
+      padding: 0 1rem 1rem;
+      font-size: 0.8125rem;
+      color: #374151;
+      line-height: 1.6;
+    }
+    .fundamentacion-refs {
+      font-size: 0.75rem;
+      color: #6B7280;
+      font-style: italic;
+      margin-top: 0.5rem;
+    }
   </style>
 </head>
 <body class="bg-white text-gray-900 antialiased">
@@ -593,6 +624,45 @@
           <p class="text-sm text-gray-600">Una vez validados los SCT, usa el <a href="/virtualizacion/planificador" class="text-umce-azul font-semibold hover:underline">Planificador Curricular</a> para distribuir las horas en e-actividades concretas semana a semana.</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Fundamentación académica -->
+  <section class="py-12 no-print" style="background: #F8FAFC;">
+    <div class="max-w-3xl mx-auto px-6">
+      <p class="text-xs font-bold uppercase tracking-widest mb-4" style="color: #0033A1;">Fundamentación de decisiones de diseño</p>
+
+      <details class="fundamentacion-panel">
+        <summary>¿Por qué 27 horas por crédito?</summary>
+        <div class="fundamentacion-content">
+          <p>El Sistema de Créditos Transferibles (SCT-Chile) fue creado en 2003 por las universidades del CRUCH para homologar la carga académica con el sistema europeo ECTS. El estándar de 27 horas por crédito refleja el tiempo total de trabajo real del estudiante (presencial, autónomo y evaluativo) y fue adoptado por la UMCE mediante resoluciones exentas internas. La UGCI lo operacionaliza en la Guía de Cálculo SCT, que es la base técnica de esta calculadora.</p>
+          <p class="fundamentacion-refs">Referencias: Declaración de Valparaíso (CRUCH, 2003); Manual SCT-Chile (CRUCH, 2007); Res. Exenta N° 002140 (UMCE, 2011)</p>
+        </div>
+      </details>
+
+      <details class="fundamentacion-panel">
+        <summary>¿Por qué redondeo al entero superior (ceil)?</summary>
+        <div class="fundamentacion-content">
+          <p>El redondeo hacia arriba (ceil) es un criterio operativo consensuado institucionalmente adoptado por la UGCI para evitar la subdeclaración de créditos cuando el cálculo compositivo produce fracciones. No existe norma SCT-Chile que imponga un método único de redondeo, por lo que la decisión responde al uso práctico en procesos de aprobación curricular de la UMCE.</p>
+          <p class="fundamentacion-refs">Referencias: Criterio operativo UGCI (uso institucional consensuado)</p>
+        </div>
+      </details>
+
+      <details class="fundamentacion-panel">
+        <summary>¿Por qué perfiles diferenciados (pregrado / postgrado)?</summary>
+        <div class="fundamentacion-content">
+          <p>El perfil del estudiante determina la distribución óptima de la carga. En postgrado, el estudiante es un profesional en ejercicio con mayor autonomía de aprendizaje, lo que justifica mayor asincronismo, menor carga de actividades presenciales sincrónicas y diseños heutagógicos que respetan la autogestión. El modelo e-Moderating de Salmon y la experiencia de la UOC son referentes para esta distinción en entornos virtuales avanzados.</p>
+          <p class="fundamentacion-refs">Referencias: Salmon, G. (2013). <em>E-tivities</em>; Guitert, M. (2015). Aprendizaje colaborativo en entornos virtuales; Hase, S. &amp; Kenyon, C. (heutagogía, adultos profesionales)</p>
+        </div>
+      </details>
+
+      <details class="fundamentacion-panel">
+        <summary>¿Por qué encuestas de estimación de carga percibida?</summary>
+        <div class="fundamentacion-content">
+          <p>El Manual SCT-Chile (CRUCH) recomienda contrastar tres tipos de carga: la planificada (calculada por el diseñador), la percibida (reportada por el estudiante) y la efectiva (medida con registros reales). Las encuestas de estimación permiten detectar brechas entre lo planificado y lo vivido, cerrando el ciclo de mejora continua que el sistema SCT-Chile tiene como finalidad última.</p>
+          <p class="fundamentacion-refs">Referencias: Manual SCT-Chile (CRUCH, 2007); Guía de Cálculo SCT UGCI (UMCE)</p>
+        </div>
+      </details>
     </div>
   </section>
 
