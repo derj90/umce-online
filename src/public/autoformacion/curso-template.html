@@ -447,13 +447,9 @@
     // BOOT SEQUENCE
     // ============================================================
     token = new URLSearchParams(window.location.search).get('token');
+    var previewMode = !token;
 
-    if (!token) {
-      showError('No se encontró token de acceso.', '/autoformacion/' + COURSE_SLUG);
-      return;
-    }
-
-    // Fetch config + questions en paralelo, luego fetch enrollment
+    // Fetch config + questions en paralelo
     Promise.all([
       fetch('/autoformacion/courses/' + COURSE_SLUG + '.json').then(function(r) {
         if (!r.ok) throw new Error('Config no encontrada');
@@ -468,25 +464,35 @@
       courseConfig = results[0];
       questionBank = results[1];
       applyAccentColors(courseConfig.accentColors);
-      return fetch(API_BASE + '/status?token=' + token);
-    })
-    .then(function(r) {
-      if (!r.ok) throw new Error('Inscripción no encontrada');
-      return r.json();
-    })
-    .then(function(data) {
-      enrollment = data;
-      progress   = data.progress || {};
 
-      // Intentar restaurar progreso de localStorage si es más completo
-      var localKey = 'af_progress_' + COURSE_SLUG + '_' + token;
-      var local = null;
-      try { local = JSON.parse(localStorage.getItem(localKey) || 'null'); } catch(e) {}
-      if (local && Object.keys(local).length > Object.keys(progress).length) {
-        progress = local;
+      if (previewMode) {
+        // Preview mode: no enrollment, progreso solo en localStorage
+        enrollment = { nombre: 'Visitante', apellido: '', email: '' };
+        var localKey = 'af_progress_' + COURSE_SLUG + '_preview';
+        try { progress = JSON.parse(localStorage.getItem(localKey) || '{}'); } catch(e) { progress = {}; }
+        initCourse();
+        return;
       }
 
-      initCourse();
+      return fetch(API_BASE + '/status?token=' + token)
+        .then(function(r) {
+          if (!r.ok) throw new Error('Inscripción no encontrada');
+          return r.json();
+        })
+        .then(function(data) {
+          enrollment = data;
+          progress   = data.progress || {};
+
+          // Intentar restaurar progreso de localStorage si es más completo
+          var localKey = 'af_progress_' + COURSE_SLUG + '_' + token;
+          var local = null;
+          try { local = JSON.parse(localStorage.getItem(localKey) || 'null'); } catch(e) {}
+          if (local && Object.keys(local).length > Object.keys(progress).length) {
+            progress = local;
+          }
+
+          initCourse();
+        });
     })
     .catch(function(err) {
       showError(err.message || 'Error al cargar el curso.', '/autoformacion/' + COURSE_SLUG);
@@ -810,12 +816,14 @@
           };
           saveProgress();
 
-          // Reportar al backend
-          fetch(API_BASE + '/complete', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: token, module: moduleKey, score: qs.score })
-          }).catch(function() {});
+          // Reportar al backend (solo con token real)
+          if (!previewMode) {
+            fetch(API_BASE + '/complete', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ token: token, module: moduleKey, score: qs.score })
+            }).catch(function() {});
+          }
 
           // xAPI: completed
           if (tracker) tracker.trackCompletion(qs.score);
@@ -896,10 +904,11 @@
 
     function saveProgress() {
       // localStorage inmediato
-      var localKey = 'af_progress_' + COURSE_SLUG + '_' + token;
+      var localKey = 'af_progress_' + COURSE_SLUG + '_' + (previewMode ? 'preview' : token);
       try { localStorage.setItem(localKey, JSON.stringify(progress)); } catch(e) {}
 
-      // Backend debounced (3s)
+      // Backend debounced (3s) — solo si tiene token real
+      if (previewMode) return;
       clearTimeout(saveTimeout);
       saveTimeout = setTimeout(function() {
         fetch(API_BASE + '/progress', {
