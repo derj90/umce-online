@@ -2,7 +2,7 @@
  * Audio Narrator — Floating play button for page narration
  * Usage: Add <div id="audio-narrator" data-src="/audio/filename.mp3"></div> to any page
  */
-(function () {
+document.addEventListener('DOMContentLoaded', function () {
   'use strict';
 
   var container = document.getElementById('audio-narrator');
@@ -11,12 +11,21 @@
   var src = container.getAttribute('data-src');
   if (!src) return;
 
-  var audio = new Audio(src);
+  var audio = new Audio();
+  audio.preload = 'auto';
+  audio.src = src;
   var isPlaying = false;
   var progressInterval = null;
 
+  // Log load errors
+  audio.addEventListener('error', function () {
+    console.error('Audio narrator: failed to load', src, audio.error);
+  });
+  audio.addEventListener('canplaythrough', function () {
+    console.log('Audio narrator: ready to play', src);
+  });
+
   // Build the floating button
-  // Positioned above the chatbot FAB (bottom:6rem) to avoid overlap
   container.innerHTML = '';
   container.style.cssText = 'position:fixed;bottom:6rem;right:1.5rem;z-index:9999;display:flex;align-items:center;gap:0.75rem;';
 
@@ -81,10 +90,16 @@
   btn.addEventListener('mouseenter', function () {
     btn.style.transform = 'scale(1.08)';
     btn.style.boxShadow = '0 6px 28px rgba(0,51,161,0.45)';
+    label.style.display = 'block';
+    label.style.opacity = '1';
   });
   btn.addEventListener('mouseleave', function () {
     btn.style.transform = 'scale(1)';
     btn.style.boxShadow = '0 4px 20px rgba(0,51,161,0.35)';
+    if (!isPlaying) {
+      label.style.opacity = '0';
+      setTimeout(function () { label.style.display = 'none'; }, 300);
+    }
   });
 
   function updateProgress() {
@@ -95,47 +110,51 @@
     }
   }
 
-  function play() {
-    var playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(function () {
-        // Playback failed (e.g. network error) — reset state silently
-        isPlaying = false;
-        iconSpan.innerHTML = playIcon;
-        label.textContent = 'Escuchar';
-        btn.style.background = '#0033A1';
-        clearInterval(progressInterval);
-      });
-    }
+  function setPlayingUI() {
     isPlaying = true;
     iconSpan.innerHTML = pauseIcon;
     label.textContent = 'Pausar';
+    label.style.display = 'block';
+    label.style.opacity = '1';
     btn.style.background = '#1a4db3';
     progressInterval = setInterval(updateProgress, 100);
   }
 
-  function pause() {
-    audio.pause();
+  function setStoppedUI(labelText) {
     isPlaying = false;
     iconSpan.innerHTML = playIcon;
-    label.textContent = 'Escuchar';
+    label.textContent = labelText || 'Escuchar';
     btn.style.background = '#0033A1';
     clearInterval(progressInterval);
   }
 
-  btn.addEventListener('click', function () {
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
     if (isPlaying) {
-      pause();
+      audio.pause();
+      setStoppedUI('Escuchar');
     } else {
-      play();
+      var playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(function () {
+          setPlayingUI();
+        }).catch(function (err) {
+          console.error('Audio narrator: play failed', err);
+          setStoppedUI('Error');
+        });
+      } else {
+        // Old browsers where play() doesn't return a promise
+        setPlayingUI();
+      }
     }
   });
 
   audio.addEventListener('ended', function () {
-    pause();
+    setStoppedUI('Escuchar de nuevo');
     audio.currentTime = 0;
     progressCircle.style.strokeDashoffset = ringCircumference;
-    label.textContent = 'Escuchar de nuevo';
   });
 
   // Hide label after 4 seconds
@@ -143,16 +162,4 @@
     label.style.opacity = '0';
     setTimeout(function () { label.style.display = 'none'; }, 300);
   }, 4000);
-
-  // Show label on hover
-  btn.addEventListener('mouseenter', function () {
-    label.style.display = 'block';
-    label.style.opacity = '1';
-  });
-  btn.addEventListener('mouseleave', function () {
-    if (!isPlaying) {
-      label.style.opacity = '0';
-      setTimeout(function () { label.style.display = 'none'; }, 300);
-    }
-  });
-})();
+});
