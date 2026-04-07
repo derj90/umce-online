@@ -4330,9 +4330,7 @@ app.get('/api/curso-landing/:linkId', async (req, res) => {
   }
 });
 
-app.get('/curso/:linkId', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'curso-landing.html'));
-});
+// app.get('/curso/:linkId', ...) — curso-landing archived
 
 // --- API: Curso Virtual (authenticated, read-only) ---
 app.get('/api/curso-virtual/:linkId', authMiddleware, async (req, res) => {
@@ -5631,23 +5629,22 @@ app.get('/api/health', (req, res) => {
 
 // === Page Routes ===
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
-app.get('/catalogo', (req, res) => res.sendFile(path.join(__dirname, 'public', 'catalogo.html')));
-app.get('/competencias', (req, res) => res.sendFile(path.join(__dirname, 'public', 'competencias.html')));
-app.get('/virtualizacion', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion.html')));
-app.get('/virtualizacion/planificador', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-planificador.html')));
-app.get('/virtualizacion/fundamentos', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-fundamentos.html')));
-// Redirects from old SCT URLs
-app.get('/sct', (req, res) => res.redirect(301, '/virtualizacion/planificador'));
-app.get('/sct/aprende', (req, res) => res.redirect(301, '/virtualizacion/fundamentos'));
-app.get('/sct/actividades', (req, res) => res.redirect(301, '/virtualizacion/planificador'));
-app.get('/servicios', (req, res) => res.sendFile(path.join(__dirname, 'public', 'servicios.html')));
-app.get('/noticias', (req, res) => res.sendFile(path.join(__dirname, 'public', 'noticias.html')));
+// --- Hidden pages (archived in src/pages-archive/, restore when ready) ---
+// app.get('/catalogo', ...);
+// app.get('/competencias', ...);
+// app.get('/virtualizacion', ...);
+// app.get('/virtualizacion/planificador', ...);
+// app.get('/virtualizacion/fundamentos', ...);
+// app.get('/sct', ...);
+// app.get('/servicios', ...);
+// app.get('/noticias', ...);
+// app.get('/ayuda', ...);
+// app.get('/formacion-docente', ...);
+// app.get('/formacion-docente/marco', ...);
+// app.get('/formacion-docente/plan', ...);
+
 app.get('/mis-cursos', (req, res) => res.sendFile(path.join(__dirname, 'public', 'mis-cursos.html')));
-app.get('/ayuda', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ayuda.html')));
 app.get('/privacidad', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacidad.html')));
-app.get('/formacion-docente', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente.html')));
-app.get('/formacion-docente/marco', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente-marco.html')));
-app.get('/formacion-docente/plan', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente-plan.html')));
 
 // Autoformación
 app.get('/autoformacion/sustentabilidad', (req, res) => res.sendFile(path.join(__dirname, 'public', 'autoformacion-sustentabilidad.html')));
@@ -5658,10 +5655,10 @@ app.get('/piac', (req, res) => res.sendFile(path.join(__dirname, 'public', 'piac
 app.get('/sdpa-admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'sdpa-admin.html')));
 app.get('/curso-virtual/:linkId', (req, res) => res.sendFile(path.join(__dirname, 'public', 'curso-virtual.html')));
 
-// Dynamic slug-based pages
-app.get('/programa/:slug', (req, res) => res.sendFile(path.join(__dirname, 'public', 'programa.html')));
-app.get('/curso/:slug', (req, res) => res.sendFile(path.join(__dirname, 'public', 'curso.html')));
-app.get('/noticia/:slug', (req, res) => res.sendFile(path.join(__dirname, 'public', 'noticia.html')));
+// Dynamic slug-based pages (archived)
+// app.get('/programa/:slug', ...);
+// app.get('/curso/:slug', ...);
+// app.get('/noticia/:slug', ...);
 
 // Backward compatibility redirects
 app.get('/mis-cursos.html', (req, res) => res.redirect(301, '/mis-cursos'));

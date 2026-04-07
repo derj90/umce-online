@@ -519,17 +519,9 @@
         '<svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a23.838 23.838 0 0 0-1.012 5.434l-.122.06c-.467.218-.954.43-1.458.637a.75.75 0 0 1-.76-.056l-.072-.054A25.03 25.03 0 0 0 4.26 10.147M12 3v1.5M12 3c2.662 0 5.247.428 7.644 1.22M12 3c-2.662 0-5.247.428-7.644 1.22M12 4.5c2.01 0 3.96.273 5.818.795M12 4.5c-2.01 0-3.96.273-5.818.795"/></svg>' +
         '<span>Mis Cursos</span>' +
       '</a>' +
-      '<a href="/catalogo" class="' + cls('/catalogo') + '" aria-label="Catálogo">' +
-        '<svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>' +
-        '<span>Catálogo</span>' +
-      '</a>' +
-      '<a href="/noticias" class="' + cls('/noticias') + '" aria-label="Noticias">' +
-        '<svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>' +
-        '<span>Noticias</span>' +
-      '</a>' +
-      '<a href="/ayuda" class="' + cls('/ayuda') + '" aria-label="Ayuda">' +
-        '<svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg>' +
-        '<span>Ayuda</span>' +
+      '<a href="/autoformacion/sustentabilidad" class="' + cls('/autoformacion') + '" aria-label="Cursos">' +
+        '<svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg>' +
+        '<span>Cursos</span>' +
       '</a>';
 
     document.body.appendChild(nav);
