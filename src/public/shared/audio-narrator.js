@@ -16,8 +16,9 @@
   var progressInterval = null;
 
   // Build the floating button
+  // Positioned above the chatbot FAB (bottom:6rem) to avoid overlap
   container.innerHTML = '';
-  container.style.cssText = 'position:fixed;bottom:2rem;right:2rem;z-index:9999;display:flex;align-items:center;gap:0.75rem;';
+  container.style.cssText = 'position:fixed;bottom:6rem;right:1.5rem;z-index:9999;display:flex;align-items:center;gap:0.75rem;';
 
   // Progress ring + button
   var btn = document.createElement('button');
@@ -95,7 +96,17 @@
   }
 
   function play() {
-    audio.play();
+    var playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(function () {
+        // Playback failed (e.g. network error) — reset state silently
+        isPlaying = false;
+        iconSpan.innerHTML = playIcon;
+        label.textContent = 'Escuchar';
+        btn.style.background = '#0033A1';
+        clearInterval(progressInterval);
+      });
+    }
     isPlaying = true;
     iconSpan.innerHTML = pauseIcon;
     label.textContent = 'Pausar';
