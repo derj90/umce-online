@@ -163,7 +163,7 @@
         <div class="progress-dot" id="dot4" onclick="goToStep(4)">4</div>
       </div>
       <div class="flex justify-between mt-2 text-xs text-gray-400">
-        <span id="stepLabel1" class="font-semibold text-umce-azul">Estimaci&oacute;n</span>
+        <span id="stepLabel1" class="font-semibold text-umce-azul">Tu curso</span>
         <span id="stepLabel2">C&aacute;lculo SCT</span>
         <span id="stepLabel3">Presentaci&oacute;n</span>
         <span id="stepLabel4">Verificaci&oacute;n</span>
@@ -176,106 +176,114 @@
     <!-- ==================== ETAPA 1: Estimacion de carga ==================== -->
     <div class="wizard-step active" id="step1">
       <div class="explain-box">
-        <div class="explain-title">Etapa 1 &mdash; Estimaci&oacute;n de carga</div>
-        <p>Ingresa los datos de tu curso o m&oacute;dulo y las horas de trabajo estimadas. En el SCT Chile, <strong>1 cr&eacute;dito = 27 horas</strong> de trabajo real del estudiante: clases, lecturas, tareas, evaluaciones y estudio aut&oacute;nomo. Todo cuenta.</p>
+        <div class="explain-title">&iquest;Qu&eacute; vamos a hacer?</div>
+        <p>Vamos a verificar que las <strong>horas de trabajo de tu curso sean coherentes con los cr&eacute;ditos SCT declarados</strong>. En el SCT Chile, <strong>1 cr&eacute;dito = 27 horas</strong> de trabajo real del estudiante: clases, lecturas, tareas, evaluaciones y estudio aut&oacute;nomo. Todo cuenta.</p>
         <p class="mt-2">Esta herramienta sigue la Gu&iacute;a de c&aacute;lculo SCT de la UGCI y se usa en el <strong>Momento 1 del flujo institucional</strong>: antes de la Resoluci&oacute;n Exenta.</p>
       </div>
 
       <div class="space-y-6">
-        <!-- Datos del curso -->
-        <div class="bg-gray-50 rounded-xl p-5 space-y-4">
-          <h3 class="font-heading font-bold text-gray-800">Datos del curso o m&oacute;dulo</h3>
-          <div class="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nombre del curso / m&oacute;dulo</label>
-              <input type="text" id="courseName" placeholder="Ej: Metodolog&iacute;a Cualitativa" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm transition-colors">
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1.5">C&oacute;digo (opcional)</label>
-              <input type="text" id="courseCode" placeholder="Ej: EDU3210" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Programa / carrera</label>
-              <input type="text" id="programName" placeholder="Ej: Ped. en Educaci&oacute;n B&aacute;sica" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Semestre / per&iacute;odo</label>
-              <input type="text" id="semester" placeholder="Ej: 2do semestre 2026" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
-            </div>
+
+        <!-- Nombre del curso -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">&iquest;C&oacute;mo se llama tu curso o m&oacute;dulo?</label>
+          <input type="text" id="courseName" placeholder="Ej: Metodolog&iacute;a Cualitativa" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm transition-colors">
+        </div>
+
+        <!-- Datos adicionales (colapsados visualmente, en grid compacto) -->
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">C&oacute;digo <span class="text-gray-400 font-normal">(opcional)</span></label>
+            <input type="text" id="courseCode" placeholder="Ej: EDU3210" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Programa / carrera</label>
+            <input type="text" id="programName" placeholder="Ej: Ped. en Ed. B&aacute;sica" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Semestre / per&iacute;odo</label>
+            <input type="text" id="semester" placeholder="Ej: 2do sem. 2026" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+          </div>
+        </div>
+
+        <!-- Creditos declarados — OBLIGATORIO Y PROMINENTE -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">&iquest;Cu&aacute;ntos cr&eacute;ditos SCT tiene seg&uacute;n la resoluci&oacute;n exenta?</label>
+          <div class="flex items-center gap-3">
+            <input type="number" id="sctDeclarados" value="3" min="1" max="60" class="w-28 px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-center font-bold text-xl">
+            <span class="text-sm text-gray-500">cr&eacute;ditos SCT. Si a&uacute;n no tienes resoluci&oacute;n, usa el valor estimado &mdash; la calculadora te dir&aacute; si las horas son coherentes.</span>
           </div>
         </div>
 
         <!-- Perfil de estudiantes -->
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Perfil de estudiantes</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">&iquest;Qu&eacute; tipo de estudiantes tiene?</label>
           <p class="text-xs text-gray-400 mb-2">El perfil determina la distribuci&oacute;n sincr&oacute;nico/asincr&oacute;nico recomendada.</p>
           <div class="grid sm:grid-cols-3 gap-2" id="profileSelector">
             <label class="radio-card selected flex items-center gap-2">
               <input type="radio" name="profile" value="pregrado" checked>
-              <div>
-                <div class="text-sm font-semibold">Pregrado</div>
-                <div class="text-xs text-gray-400">M&aacute;s acompa&ntilde;amiento</div>
-              </div>
+              <div><div class="text-sm font-semibold">Pregrado</div><div class="text-xs text-gray-400">M&aacute;s acompa&ntilde;amiento sincr&oacute;nico</div></div>
             </label>
             <label class="radio-card flex items-center gap-2">
               <input type="radio" name="profile" value="postgrado">
-              <div>
-                <div class="text-sm font-semibold">Postgrado</div>
-                <div class="text-xs text-gray-400">Profesionales, autonom&iacute;a</div>
-              </div>
+              <div><div class="text-sm font-semibold">Postgrado</div><div class="text-xs text-gray-400">Profesionales, m&aacute;s autonom&iacute;a</div></div>
             </label>
             <label class="radio-card flex items-center gap-2">
               <input type="radio" name="profile" value="continua">
-              <div>
-                <div class="text-sm font-semibold">Ed. Continua</div>
-                <div class="text-xs text-gray-400">Flexible, ritmo propio</div>
-              </div>
+              <div><div class="text-sm font-semibold">Ed. Continua</div><div class="text-xs text-gray-400">Flexible, ritmo propio</div></div>
             </label>
           </div>
         </div>
 
-        <!-- Horas y semanas -->
-        <div class="bg-gray-50 rounded-xl p-5 space-y-4">
-          <h3 class="font-heading font-bold text-gray-800">Horas de trabajo del estudiante</h3>
-          <div class="grid sm:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1.5">
-                Horas presenciales / sincr&oacute;nicas (HP)
-              </label>
-              <input type="number" id="hp" value="36" min="0" max="500" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
-              <p class="text-xs text-gray-400 mt-1">Clases en vivo, sincr&oacute;nicas Zoom</p>
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1.5">
-                Horas aut&oacute;nomas / asincr&oacute;nicas (HA)
-              </label>
-              <input type="number" id="ha" value="45" min="0" max="500" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
-              <p class="text-xs text-gray-400 mt-1">Lecturas, tareas, e-actividades</p>
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1.5">
-                N&uacute;mero de semanas (NS)
-              </label>
-              <input type="number" id="ns" value="18" min="1" max="52" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
-              <p class="text-xs text-gray-400 mt-1">Duraci&oacute;n del semestre o m&oacute;dulo</p>
-            </div>
-          </div>
-          <!-- Créditos declarados -->
-          <div class="bg-white border border-gray-200 rounded-xl p-4 mt-2">
-            <label class="block text-sm font-semibold text-gray-700 mb-1.5">
-              Cr&eacute;ditos SCT declarados en la resoluci&oacute;n exenta (opcional)
+        <!-- Formato — auto-ajusta semanas y créditos -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">&iquest;Qu&eacute; tipo de formato tiene?</label>
+          <p class="text-xs text-gray-400 mb-2">Ajusta autom&aacute;ticamente las semanas y los cr&eacute;ditos de referencia.</p>
+          <div class="grid sm:grid-cols-2 gap-2" id="formatSelector">
+            <label class="radio-card selected flex items-center gap-2">
+              <input type="radio" name="formato" value="semestral" checked>
+              <div><div class="text-sm font-semibold">Semestral</div><div class="text-xs text-gray-400">18 semanas, estructura tradicional</div></div>
             </label>
-            <div class="flex items-center gap-3">
-              <input type="number" id="sctDeclarados" value="" min="1" max="60" placeholder="Ej: 4" class="w-24 px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm text-center font-bold text-lg">
-              <span class="text-sm text-gray-500">Si lo ingresas, te diremos si las horas son coherentes con los cr&eacute;ditos</span>
-            </div>
+            <label class="radio-card flex items-center gap-2">
+              <input type="radio" name="formato" value="modulo">
+              <div><div class="text-sm font-semibold">M&oacute;dulo</div><div class="text-xs text-gray-400">8 semanas, intensivo</div></div>
+            </label>
+            <label class="radio-card flex items-center gap-2">
+              <input type="radio" name="formato" value="microcredencial">
+              <div><div class="text-sm font-semibold">Microcredencial</div><div class="text-xs text-gray-400">5 semanas, certificaci&oacute;n espec&iacute;fica</div></div>
+            </label>
+            <label class="radio-card flex items-center gap-2">
+              <input type="radio" name="formato" value="cuech">
+              <div><div class="text-sm font-semibold">CUECH S&uacute;bete</div><div class="text-xs text-gray-400">Movilidad virtual, 2 SCT</div></div>
+            </label>
           </div>
+        </div>
 
-          <!-- Summary preview -->
-          <div class="grid grid-cols-3 gap-3 pt-2">
+        <!-- Horas por semana y semanas -->
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">HP sincr&oacute;nicas <span class="text-gray-400 font-normal text-xs">(hrs/sem)</span></label>
+            <input type="number" id="hp" value="2" min="0" max="40" step="0.5" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+            <p class="text-xs text-gray-400 mt-1">Zoom, clases en vivo</p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">HA aut&oacute;nomas <span class="text-gray-400 font-normal text-xs">(hrs/sem)</span></label>
+            <input type="number" id="ha" value="2.5" min="0" max="40" step="0.5" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+            <p class="text-xs text-gray-400 mt-1">Lecturas, tareas, e-actividades</p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Semanas <span class="text-gray-400 font-normal text-xs">(NS)</span></label>
+            <input type="number" id="ns" value="18" min="1" max="52" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+            <p class="text-xs text-gray-400 mt-1">Duraci&oacute;n del m&oacute;dulo</p>
+          </div>
+        </div>
+
+        <!-- Bloque azul: Lo que esto significa para tu estudiante -->
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-5">
+          <div class="text-sm font-semibold text-umce-azul mb-3">Lo que esto significa para tu estudiante:</div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
             <div class="stat-card">
               <div class="stat-value text-umce-azul" id="previewTotal">81</div>
-              <div class="stat-label">Hrs totales</div>
+              <div class="stat-label">Horas totales</div>
             </div>
             <div class="stat-card">
               <div class="stat-value" id="previewWeekly" style="color:#059669">4.5</div>
@@ -285,26 +293,30 @@
               <div class="stat-value text-umce-azul" id="previewSCT">3</div>
               <div class="stat-label">SCT calculados</div>
             </div>
+            <div class="stat-card">
+              <div class="stat-value" id="previewStatus" style="font-size:1.5rem; color:#059669;">&#10003;</div>
+              <div class="stat-label" id="previewStatusLabel">Coherente</div>
+            </div>
           </div>
 
-          <!-- Feedback inmediato -->
-          <div id="liveVerdict" class="rounded-xl p-4 mt-2 transition-all duration-300" style="display:none;">
+          <!-- Veredicto textual -->
+          <div id="liveVerdict" class="rounded-xl p-4 transition-all duration-300" style="display:none;">
             <div class="flex items-center gap-3">
-              <div class="semaforo w-10 h-10 text-base" id="liveIcon"></div>
+              <div class="semaforo w-10 h-10 text-base flex-shrink-0" id="liveIcon"></div>
               <div>
                 <div class="text-sm font-bold" id="liveTitle"></div>
-                <div class="text-xs text-gray-600" id="liveDesc"></div>
+                <div class="text-xs text-gray-600 mt-0.5" id="liveDesc"></div>
               </div>
             </div>
           </div>
 
-          <p class="text-xs text-gray-400 mt-2">F&oacute;rmula: SCT = ((HP + HA) &times; NS) &divide; 27. Carga semanal recomendada: m&aacute;ximo 10 hrs/semana.</p>
+          <p class="text-xs text-gray-400 mt-3">F&oacute;rmula: SCT = ((HP + HA) &times; NS) &divide; 27. Carga recomendada: m&aacute;x. 10 hrs/semana. Alerta: sobre 12 hrs/semana.</p>
         </div>
 
         <!-- Encuesta docente simplificada -->
         <div>
           <h3 class="font-heading font-bold text-gray-800 mb-1">Encuesta docente simplificada</h3>
-          <p class="text-sm text-gray-500 mb-3">Estima cu&aacute;ntas horas requiere cada tipo de actividad en tu curso. Este desglose permite validar que el total coincide con HP + HA declarados.</p>
+          <p class="text-sm text-gray-500 mb-3">Estima cu&aacute;ntas horas requiere cada tipo de actividad en tu curso por semana. El total debe coincidir con HP + HA declarados arriba.</p>
           <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
             <div class="grid grid-cols-[1fr_auto_auto] gap-0 text-xs font-bold uppercase tracking-wide text-gray-500 bg-gray-50 px-4 py-2.5 border-b border-gray-200">
               <span>Tipo de actividad</span>
@@ -323,7 +335,7 @@
 
         <div class="flex justify-end pt-4">
           <button class="btn-primary" onclick="goToStep(2)">
-            Calcular SCT
+            Calcular SCT &rarr;
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
           </button>
         </div>
@@ -708,11 +720,11 @@
 
     // Encuesta docente: tipos de actividad con horas/semana
     var ENCUESTA_TIPOS = [
-      { id: 'enc_sinc', label: 'Sesiones sincr\u00f3nicas (Zoom, clase en vivo)', hrsDefault: 2 },
-      { id: 'enc_lect', label: 'Lecturas y estudio de materiales', hrsDefault: 1.5 },
-      { id: 'enc_tar', label: 'Tareas y e-actividades', hrsDefault: 1.5 },
-      { id: 'enc_eval', label: 'Evaluaciones (quizzes, pruebas, productos)', hrsDefault: 0.5 },
-      { id: 'enc_colab', label: 'Trabajo colaborativo y foros', hrsDefault: 0.5 },
+      { id: 'enc_sinc', label: 'Sesiones sincr\u00f3nicas (Zoom, clase en vivo)', hrsDefault: 0 },
+      { id: 'enc_lect', label: 'Lecturas y estudio de materiales', hrsDefault: 0 },
+      { id: 'enc_tar', label: 'Tareas y e-actividades', hrsDefault: 0 },
+      { id: 'enc_eval', label: 'Evaluaciones (quizzes, pruebas, productos)', hrsDefault: 0 },
+      { id: 'enc_colab', label: 'Trabajo colaborativo y foros', hrsDefault: 0 },
       { id: 'enc_auto', label: 'Estudio aut\u00f3nomo y repaso', hrsDefault: 0 },
     ];
 
@@ -720,7 +732,6 @@
     // Inicializacion
     // ================================
     function init() {
-      renderProfileCards();
       renderEncuesta();
       bindInputs();
       updatePreview();
@@ -764,22 +775,17 @@
     };
 
     // ================================
-    // Profile radio cards
-    // ================================
-    function renderProfileCards() {
-      document.querySelectorAll('#profileSelector .radio-card').forEach(function(card) {
-        card.addEventListener('click', function() {
-          document.querySelectorAll('#profileSelector .radio-card').forEach(function(c) { c.classList.remove('selected'); });
-          card.classList.add('selected');
-          var radio = card.querySelector('input[type=radio]');
-          if (radio) radio.checked = true;
-        });
-      });
-    }
-
-    // ================================
     // Bind inputs para preview en vivo
     // ================================
+
+    // Configuracion de formatos (auto-ajusta semanas y SCT declarados)
+    var FORMATOS = {
+      semestral:      { semanas: 18, sctFijo: null },
+      modulo:         { semanas: 8,  sctFijo: null },
+      microcredencial:{ semanas: 5,  sctFijo: null },
+      cuech:          { semanas: 8,  sctFijo: 2    }
+    };
+
     function bindInputs() {
       ['hp','ha','ns','sctDeclarados'].forEach(function(id) {
         var el = document.getElementById(id);
@@ -789,6 +795,34 @@
             if (id !== 'sctDeclarados') updateEncuesta();
           });
         }
+      });
+
+      // Selector de perfil
+      document.querySelectorAll('#profileSelector .radio-card').forEach(function(card) {
+        card.addEventListener('click', function() {
+          document.querySelectorAll('#profileSelector .radio-card').forEach(function(c) { c.classList.remove('selected'); });
+          card.classList.add('selected');
+          var radio = card.querySelector('input[type=radio]');
+          if (radio) radio.checked = true;
+          updatePreview();
+        });
+      });
+
+      // Selector de formato
+      document.querySelectorAll('#formatSelector .radio-card').forEach(function(card) {
+        card.addEventListener('click', function() {
+          document.querySelectorAll('#formatSelector .radio-card').forEach(function(c) { c.classList.remove('selected'); });
+          card.classList.add('selected');
+          var radio = card.querySelector('input[type=radio]');
+          if (radio) radio.checked = true;
+          var fmt = FORMATOS[radio ? radio.value : 'semestral'];
+          if (fmt) {
+            document.getElementById('ns').value = fmt.semanas;
+            if (fmt.sctFijo !== null) document.getElementById('sctDeclarados').value = fmt.sctFijo;
+          }
+          updatePreview();
+          updateEncuesta();
+        });
       });
     }
 
@@ -802,18 +836,32 @@
       var total = (hp + ha) * ns;
       var sctExact = total / 27;
       var sct = Math.ceil(sctExact);
-      var weekly = ns > 0 ? (hp + ha) : 0;
+      var weekly = hp + ha;
 
       document.getElementById('previewTotal').textContent = total.toFixed(0);
-      document.getElementById('previewSCT').textContent = sct.toFixed(0);
+      document.getElementById('previewSCT').textContent = sct;
 
+      // Color de carga semanal
       var weeklyEl = document.getElementById('previewWeekly');
       weeklyEl.textContent = weekly.toFixed(1);
       if (weekly <= 10) { weeklyEl.style.color = '#059669'; }
       else if (weekly <= 12) { weeklyEl.style.color = '#D97706'; }
       else { weeklyEl.style.color = '#DC2626'; }
 
-      // Live verdict
+      // Icono de status en la 4a stat-card
+      var statusEl = document.getElementById('previewStatus');
+      var statusLbl = document.getElementById('previewStatusLabel');
+      if (statusEl && statusLbl) {
+        if (weekly <= 10) {
+          statusEl.innerHTML = '&#10003;'; statusEl.style.color = '#059669'; statusLbl.textContent = 'Adecuado';
+        } else if (weekly <= 12) {
+          statusEl.innerHTML = '!'; statusEl.style.color = '#D97706'; statusLbl.textContent = 'Alto';
+        } else {
+          statusEl.innerHTML = '&#10007;'; statusEl.style.color = '#DC2626'; statusLbl.textContent = 'Sobrecarga';
+        }
+      }
+
+      // Live verdict (veredicto textual)
       updateLiveVerdict(sct, weekly);
     }
 
@@ -824,31 +872,30 @@
       var title = document.getElementById('liveTitle');
       var desc = document.getElementById('liveDesc');
 
-      // Always show weekly feedback
       var msgs = [];
-      var worstLevel = 'verde'; // verde, amarillo, rojo
+      var worstLevel = 'verde';
 
-      // Weekly load check
+      // Check carga semanal
       if (weekly > 12) {
-        msgs.push('Carga semanal de ' + weekly.toFixed(1) + ' hrs excede el m\u00e1ximo de 12 hrs/semana.');
+        msgs.push('La carga semanal de ' + weekly.toFixed(1) + ' hrs excede el m\u00e1ximo de 12 hrs/semana. Reducir actividades o distribuir en m\u00e1s semanas.');
         worstLevel = 'rojo';
       } else if (weekly > 10) {
-        msgs.push('Carga semanal de ' + weekly.toFixed(1) + ' hrs est\u00e1 en zona de alerta (10-12 hrs).');
-        if (worstLevel !== 'rojo') worstLevel = 'amarillo';
+        msgs.push('La carga de ' + weekly.toFixed(1) + ' hrs/semana est\u00e1 en zona de alerta (entre 10 y 12 hrs). Evaluar si es sostenible seg\u00fan el perfil.');
+        worstLevel = 'amarillo';
       } else if (weekly > 0) {
-        msgs.push('Carga semanal de ' + weekly.toFixed(1) + ' hrs es adecuada.');
+        msgs.push('Carga de ' + weekly.toFixed(1) + ' hrs/semana \u2014 dentro del rango recomendado (\u226410 hrs).');
       }
 
-      // SCT comparison (if declared)
+      // Check coherencia SCT
       if (!isNaN(declared) && declared > 0) {
         if (sctCalc === declared) {
-          msgs.push('Los cr\u00e9ditos calculados (' + sctCalc + ' SCT) coinciden con los declarados.');
+          msgs.push('Los SCT calculados (' + sctCalc + ') coinciden con los declarados (' + declared + ').');
         } else if (sctCalc > declared) {
-          msgs.push('Las horas dan ' + sctCalc + ' SCT pero el curso declara ' + declared + ' SCT \u2014 la carga real es mayor a la declarada.');
-          if (worstLevel !== 'rojo') worstLevel = 'amarillo';
+          msgs.push('Las horas calculan ' + sctCalc + ' SCT, pero el curso declara ' + declared + ' SCT \u2014 la carga real es mayor a la declarada. Ajustar horas o SCT.');
+          if (worstLevel === 'verde') worstLevel = 'amarillo';
         } else {
-          msgs.push('Las horas dan ' + sctCalc + ' SCT pero el curso declara ' + declared + ' SCT \u2014 la carga declarada es mayor a la real.');
-          if (worstLevel !== 'rojo') worstLevel = 'amarillo';
+          msgs.push('Las horas calculan ' + sctCalc + ' SCT, pero el curso declara ' + declared + ' SCT \u2014 las horas actuales no alcanzan los cr\u00e9ditos declarados. Agregar m\u00e1s carga.');
+          if (worstLevel === 'verde') worstLevel = 'amarillo';
         }
       }
 
@@ -858,23 +905,20 @@
       }
 
       panel.style.display = 'block';
-      icon.className = 'semaforo w-10 h-10 text-base';
+      icon.className = 'semaforo w-10 h-10 text-base flex-shrink-0';
 
       if (worstLevel === 'verde') {
-        icon.classList.add('verde');
-        icon.innerHTML = '&#10003;';
+        icon.classList.add('verde'); icon.innerHTML = '&#10003;';
         title.textContent = 'Todo en orden';
-        panel.style.background = '#ECFDF5';
+        panel.style.background = '#ECFDF5'; panel.style.border = '1px solid #BBF7D0';
       } else if (worstLevel === 'amarillo') {
-        icon.classList.add('amarillo');
-        icon.innerHTML = '!';
-        title.textContent = 'Revisar';
-        panel.style.background = '#FFFBEB';
+        icon.classList.add('amarillo'); icon.innerHTML = '!';
+        title.textContent = 'Revisar antes de continuar';
+        panel.style.background = '#FFFBEB'; panel.style.border = '1px solid #FDE68A';
       } else {
-        icon.classList.add('rojo');
-        icon.innerHTML = '&#10007;';
+        icon.classList.add('rojo'); icon.innerHTML = '&#10007;';
         title.textContent = 'Requiere ajuste';
-        panel.style.background = '#FEF2F2';
+        panel.style.background = '#FEF2F2'; panel.style.border = '1px solid #FECACA';
       }
 
       desc.textContent = msgs.join(' ');
@@ -1250,10 +1294,16 @@
       document.getElementById('courseCode').value = '';
       document.getElementById('programName').value = '';
       document.getElementById('semester').value = '';
-      document.getElementById('hp').value = 36;
-      document.getElementById('ha').value = 45;
+      document.getElementById('hp').value = 2;
+      document.getElementById('ha').value = 2.5;
       document.getElementById('ns').value = 18;
+      document.getElementById('sctDeclarados').value = 3;
       document.querySelectorAll('#profileSelector .radio-card').forEach(function(c, i) {
+        c.classList.toggle('selected', i === 0);
+        var r = c.querySelector('input');
+        if (r) r.checked = i === 0;
+      });
+      document.querySelectorAll('#formatSelector .radio-card').forEach(function(c, i) {
         c.classList.toggle('selected', i === 0);
         var r = c.querySelector('input');
         if (r) r.checked = i === 0;
