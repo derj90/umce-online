@@ -115,19 +115,14 @@
       </div>
     </div>
 
-    <!-- Bottom fade — sits above all hero layers (canvas z-0, overlay z-5, content z-10) -->
-    <div class="absolute bottom-0 left-0 right-0 pointer-events-none" style="z-index: 15; height: 33%; background: linear-gradient(to bottom, transparent, #F9FAFB);"></div>
   </section>
-
-
-  <!-- Sections archived: Programas Destacados, Competencias Digitales, Recursos -->
-
-  <!-- Section archived: Experiencias (static cards) -->
 
   <!-- ============================================ -->
   <!-- NOTICIAS UMCE (din&aacute;micas desde API) -->
   <!-- ============================================ -->
-  <section id="noticias" class="py-16 bg-gray-50">
+  <section id="noticias" class="relative pt-16 pb-16 bg-gray-50">
+    <!-- Fade from hero dark into this section's bg -->
+    <div class="absolute top-0 left-0 right-0 pointer-events-none" style="height: 120px; margin-top: -120px; background: linear-gradient(to bottom, transparent, #F9FAFB);"></div>
     <div class="max-w-7xl mx-auto px-6">
       <div class="text-center mb-12">
         <div class="fade-up inline-flex items-center gap-2 text-umce-azul text-xs font-bold uppercase tracking-widest mb-4">
