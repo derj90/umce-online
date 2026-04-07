@@ -1,5 +1,5 @@
 /**
- * UMCE Virtual — Chatbot Client V2
+ * UMCE.online — Chatbot Client V2
  * Floating FAB + inline mode, role detection, enhanced context
  */
 (function () {

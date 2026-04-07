@@ -1,5 +1,5 @@
 /**
- * Botón de Accesibilidad DUA — UMCE Virtual
+ * Botón de Accesibilidad DUA — UMCE.online
  * Diseño Universal para el Aprendizaje (DUA)
  *
  * Principios DUA:

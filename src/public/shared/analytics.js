@@ -1,5 +1,5 @@
 /**
- * UMCE Virtual — Analytics & Tracking
+ * UMCE.online — Analytics & Tracking
  *
  * Integrates Google Analytics 4 (GA4) and Microsoft Clarity.
  * Respects cookie consent: scripts only initialize after the user

@@ -1,5 +1,5 @@
 /**
- * UMCE Virtual — Shared JavaScript
+ * UMCE.online — Shared JavaScript
  * Partial loader, navigation, scroll observer, utilities
  */
 

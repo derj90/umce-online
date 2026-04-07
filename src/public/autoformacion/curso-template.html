@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cargando curso... — UMCE Online</title>
+  <title>Cargando curso... — UMCE.online</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/shared/tailwind.min.css">
   <style>
@@ -365,7 +365,7 @@
   <!-- Sidebar -->
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="sidebar-label">Autoformación UMCE</div>
+      <div class="sidebar-label">UMCE.online</div>
       <div class="sidebar-course-title" id="sidebar-title">Cargando...</div>
       <div style="margin-top:0.75rem;">
         <div class="progress-meta">
@@ -420,8 +420,7 @@
     'use strict';
 
     // ============================================================
-    // SLUG — Express inyecta antes de servir:
-    //   html.replace('<!--COURSE_SLUG_INJECT-->', '<script>window.COURSE_SLUG="slug"</script>')
+    // SLUG — Express inyecta antes de servir via COURSE_SLUG_INJECT placeholder
     // ============================================================
     var COURSE_SLUG = (typeof window.COURSE_SLUG !== 'undefined' && window.COURSE_SLUG)
       ? window.COURSE_SLUG
@@ -514,7 +513,7 @@
       var cfg = courseConfig;
 
       // Actualizar page title
-      document.title = cfg.title + ' \u2014 UMCE Online';
+      document.title = cfg.title + ' \u2014 UMCE.online';
 
       // Sidebar title
       document.getElementById('sidebar-title').textContent = cfg.title;

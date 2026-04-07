@@ -1,5 +1,5 @@
 /**
- * UMCE Virtual — Admin Assistant Client
+ * UMCE.online — Admin Assistant Client
  * Auth check, chat, action preview cards, execution, pending approvals
  */
 (function () {
