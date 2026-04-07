@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Marco Evaluativo de Cursos Virtuales &mdash; R&uacute;brica QA UDFV-UMCE</title>
+  <meta name="description" content="Dashboard de resultados del Marco Evaluativo UDFV-UMCE: 77 indicadores en 6 dimensiones aplicados en 5 actividades curriculares de postgrado y prosecuci&oacute;n.">
+  <meta name="author" content="Unidad de Desarrollo y Formaci&oacute;n Virtual &mdash; UMCE">
+  <link rel="canonical" href="https://umce.online/virtualizacion/rubrica">
+  <meta property="og:title" content="Marco Evaluativo de Cursos Virtuales &mdash; UDFV-UMCE">
+  <meta property="og:description" content="Instrumento de aseguramiento de calidad con 77 indicadores en 6 dimensiones. Resultados de 5 cursos evaluados.">
+  <meta property="og:image" content="https://umce.online/assets/og-default.png">
+  <meta property="og:site_name" content="UMCE Virtual">
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+  <link rel="stylesheet" href="/shared/shared.css">
+  <style>
+    /* Radar chart container */
+    .radar-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .radar-container svg {
+      max-width: 520px;
+      width: 100%;
+      height: auto;
+    }
+
+    /* Score badge coloring */
+    .score-red    { background: #FEE2E2; color: #991B1B; }
+    .score-yellow { background: #FEF3C7; color: #92400E; }
+    .score-green  { background: #D1FAE5; color: #065F46; }
+    .score-darkgreen { background: #A7F3D0; color: #064E3B; }
+
+    /* Progress bar color variants */
+    .bar-red    { background: #EF4444; }
+    .bar-yellow { background: #F59E0B; }
+    .bar-green  { background: #10B981; }
+    .bar-darkgreen { background: #059669; }
+
+    /* Insight cards */
+    .insight-card {
+      background: #F8FAFC;
+      border-left: 4px solid var(--palette-primary);
+      border-radius: 0 0.75rem 0.75rem 0;
+      padding: 1.25rem 1.5rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .insight-card:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 16px rgba(0,51,161,0.1);
+    }
+    .insight-card.accent-green  { border-color: #059669; }
+    .insight-card.accent-orange { border-color: #D97706; }
+    .insight-card.accent-pink   { border-color: #DB2777; }
+
+    /* Table score cells */
+    td.cell-val {
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+      padding: 0.6rem 0.5rem;
+      border-radius: 0.375rem;
+    }
+    .anchor-offset { scroll-margin-top: 6rem; }
+
+    /* Dimension card hover */
+    .dim-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .dim-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px -8px rgba(0,51,161,0.15);
+    }
+
+    /* Methodology boxes */
+    .method-item {
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+    }
+
+    /* Best course highlight */
+    tr.best-course td {
+      background: #ECFDF5;
+    }
+    tr.best-course td:first-child {
+      border-left: 4px solid #059669;
+      padding-left: calc(0.75rem - 4px);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased">
+  <div id="nav-placeholder"></div>
+
+  <!-- ================================================
+       HERO
+  ================================================ -->
+  <section class="hero-gradient pt-32 pb-20 text-white relative overflow-hidden">
+    <div id="p5-header" data-variant="3"></div>
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+      <nav class="breadcrumb text-sm mb-6">
+        <a href="/" class="text-white/60 hover:text-white">Inicio</a>
+        <span class="text-white/30 mx-1">/</span>
+        <a href="/virtualizacion" class="text-white/60 hover:text-white">Virtualizaci&oacute;n</a>
+        <span class="text-white/30 mx-1">/</span>
+        <span class="text-white/90">R&uacute;brica QA</span>
+      </nav>
+
+      <div class="stagger">
+        <p class="fade-up text-xs font-semibold uppercase tracking-widest text-white/50 mb-3">Marco Evaluativo UDFV-UMCE &mdash; Proyecto UMC20992</p>
+        <h1 class="fade-up font-heading text-4xl md:text-5xl font-extrabold mb-4 leading-tight">
+          Marco Evaluativo de<br class="hidden sm:block"> Cursos Virtuales
+        </h1>
+        <p class="fade-up text-white/80 text-lg max-w-2xl mb-3">
+          Instrumento de aseguramiento de calidad con <strong class="text-white">77 indicadores</strong> en <strong class="text-white">6 dimensiones</strong> — desarrollado y validado por la UDFV-UMCE.
+        </p>
+        <p class="fade-up text-white/60 text-sm max-w-2xl">
+          Aplicado en 5 actividades curriculares de postgrado y prosecuci&oacute;n (noviembre&ndash;diciembre 2024) &mdash; Sepúlveda, 2024
+        </p>
+      </div>
+
+      <!-- Stats strip -->
+      <div class="fade-up mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl">
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 text-center">
+          <div class="text-2xl font-extrabold font-heading">77</div>
+          <div class="text-white/60 text-xs mt-0.5">indicadores</div>
+        </div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 text-center">
+          <div class="text-2xl font-extrabold font-heading">6</div>
+          <div class="text-white/60 text-xs mt-0.5">dimensiones</div>
+        </div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 text-center">
+          <div class="text-2xl font-extrabold font-heading">5</div>
+          <div class="text-white/60 text-xs mt-0.5">cursos evaluados</div>
+        </div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 text-center">
+          <div class="text-2xl font-extrabold font-heading">20</div>
+          <div class="text-white/60 text-xs mt-0.5">subdimensiones</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       SECCIÓN 1: RADAR CHART
+  ================================================ -->
+  <section id="radar" class="anchor-offset bg-white py-16">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="fade-up text-center mb-10">
+        <p class="text-sm font-semibold text-umce-azul uppercase tracking-widest mb-2" style="color: var(--palette-primary);">Visi&oacute;n general</p>
+        <h2 class="font-heading text-3xl font-bold mb-2">Perfil de Calidad &mdash; Promedio General</h2>
+        <p class="text-gray-500 text-sm max-w-xl mx-auto">Promedio de los 5 cursos evaluados por dimensi&oacute;n. Escala 0&ndash;4 (0 = no evaluable / ausente &mdash; 4 = siempre presente).</p>
+      </div>
+
+      <div class="fade-up radar-container">
+        <svg id="radar-chart" viewBox="0 0 520 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Radar de 6 dimensiones de calidad">
+          <!-- Generated by JS below -->
+        </svg>
+      </div>
+
+      <!-- Legend -->
+      <div class="fade-up mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
+        <div id="radar-legend" class="flex flex-wrap justify-center gap-x-6 gap-y-2"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       SECCIÓN 2: CARDS DE DIMENSIONES
+  ================================================ -->
+  <section id="dimensiones" class="anchor-offset bg-gray-50 py-16">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="fade-up text-center mb-10">
+        <p class="text-sm font-semibold uppercase tracking-widest mb-2" style="color: var(--palette-primary);">Resultados por dimensi&oacute;n</p>
+        <h2 class="font-heading text-3xl font-bold mb-2">Las 6 Dimensiones del Marco</h2>
+        <p class="text-gray-500 text-sm max-w-xl mx-auto">Cada dimensi&oacute;n concentra indicadores validados con informantes clave UDFV y &aacute;reas acad&eacute;micas UMCE.</p>
+      </div>
+      <div id="dimensiones-grid" class="stagger grid sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       SECCIÓN 3: TABLA COMPARATIVA
+  ================================================ -->
+  <section id="tabla" class="anchor-offset bg-white py-16">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="fade-up text-center mb-10">
+        <p class="text-sm font-semibold uppercase tracking-widest mb-2" style="color: var(--palette-primary);">Comparativa</p>
+        <h2 class="font-heading text-3xl font-bold mb-2">Resultados por Curso</h2>
+        <p class="text-gray-500 text-sm max-w-xl mx-auto">Medias por dimensi&oacute;n calculadas desde los datos de evaluaci&oacute;n (nov&ndash;dic 2024). El curso con mayor promedio general aparece resaltado.</p>
+      </div>
+      <div class="fade-up overflow-x-auto rounded-xl shadow-sm border border-gray-100">
+        <table class="w-full text-sm border-collapse bg-white">
+          <thead>
+            <tr class="bg-gray-900 text-white">
+              <th class="text-left px-4 py-3 font-semibold rounded-tl-xl">Curso</th>
+              <th class="text-left px-4 py-3 font-semibold hidden sm:table-cell">Programa</th>
+              <th class="text-center px-3 py-3 font-semibold text-xs">D1</th>
+              <th class="text-center px-3 py-3 font-semibold text-xs">D2</th>
+              <th class="text-center px-3 py-3 font-semibold text-xs">D3</th>
+              <th class="text-center px-3 py-3 font-semibold text-xs">D4</th>
+              <th class="text-center px-3 py-3 font-semibold text-xs">D5</th>
+              <th class="text-center px-3 py-3 font-semibold text-xs">D6</th>
+              <th class="text-center px-3 py-3 font-semibold rounded-tr-xl">Prom.</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-cursos"></tbody>
+        </table>
+      </div>
+      <!-- Dimension key legend below table -->
+      <div id="tabla-dim-key" class="fade-up mt-4 flex flex-wrap gap-x-5 gap-y-1 text-xs text-gray-500"></div>
+      <!-- Score range legend -->
+      <div class="fade-up mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs items-center">
+        <span class="font-semibold text-gray-600">Rangos:</span>
+        <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-red-100 border border-red-200 inline-block"></span> 0&ndash;1.49 Ausente</span>
+        <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-yellow-100 border border-yellow-200 inline-block"></span> 1.5&ndash;2.49 Parcial</span>
+        <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-emerald-100 border border-emerald-200 inline-block"></span> 2.5&ndash;3.49 Logrado</span>
+        <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-green-200 border border-green-300 inline-block"></span> 3.5&ndash;4.0 &Oacute;ptimo</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       SECCIÓN 4: HALLAZGOS CLAVE
+  ================================================ -->
+  <section id="hallazgos" class="anchor-offset bg-gray-50 py-16">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="fade-up text-center mb-10">
+        <p class="text-sm font-semibold uppercase tracking-widest mb-2" style="color: var(--palette-primary);">Hallazgos</p>
+        <h2 class="font-heading text-3xl font-bold mb-2">Conclusiones Principales</h2>
+        <p class="text-gray-500 text-sm max-w-xl mx-auto">Patrones identificados en las 5 actividades curriculares evaluadas.</p>
+      </div>
+      <div class="stagger space-y-4">
+        <div class="fade-up insight-card accent-pink">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl flex-shrink-0">⚠️</span>
+            <div>
+              <p class="font-semibold text-gray-800 text-sm mb-1">G&eacute;nero y corresponsabilidad: las dimensiones m&aacute;s d&eacute;biles</p>
+              <p class="text-gray-600 text-sm">D5 (perspectiva de g&eacute;nero y equidad) y D6 (corresponsabilidad social y cuidados) muestran los puntajes m&aacute;s bajos en todos los cursos. Estos ejes no est&aacute;n incorporados en los procesos de planificaci&oacute;n instruccional institucional.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="fade-up insight-card accent-green">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl flex-shrink-0">✅</span>
+            <div>
+              <p class="font-semibold text-gray-800 text-sm mb-1">Docencia virtual: fortaleza en cursos con sesi&oacute;n s&iacute;ncrona</p>
+              <p class="text-gray-600 text-sm">D4 alcanza los puntajes m&aacute;s altos en cursos donde exist&iacute;a sesi&oacute;n s&iacute;ncrona evaluable (Prosecuci&oacute;n y Magíster Ed. Física). Los docentes demuestran competencias pedag&oacute;gicas s&oacute;lidas en la gesti&oacute;n del aula virtual. En cambio, los cursos sin esta dimensi&oacute;n activa registran D4 = 0.00.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="fade-up insight-card accent-orange">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl flex-shrink-0">🔍</span>
+            <div>
+              <p class="font-semibold text-gray-800 text-sm mb-1">Accesibilidad multimodal: brecha transversal</p>
+              <p class="text-gray-600 text-sm">La accesibilidad multimodal &mdash; subtítulos, lengua de se&ntilde;as, audiodescripci&oacute;n &mdash; est&aacute; ausente o es parcial en todos los cursos evaluados. D2 (Accesibilidad) se ubica consistentemente en el rango 1.25&ndash;1.95, lo que indica trabajo pendiente en esta dimensi&oacute;n.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="fade-up insight-card">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl flex-shrink-0">📐</span>
+            <div>
+              <p class="font-semibold text-gray-800 text-sm mb-1">Instrumento &uacute;nico a nivel nacional</p>
+              <p class="text-gray-600 text-sm">77 indicadores validados con informantes clave de la UDFV y &aacute;reas acad&eacute;micas UMCE. Es el &uacute;nico instrumento nacional que incorpora dimensi&oacute;n de perspectiva de g&eacute;nero y corresponsabilidad social junto a los est&aacute;ndares OSCQR (SUNY) y Quality Matters.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       SECCIÓN 5: MARCO METODOLÓGICO
+  ================================================ -->
+  <section id="metodologia" class="anchor-offset bg-white py-16">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="fade-up text-center mb-10">
+        <p class="text-sm font-semibold uppercase tracking-widest mb-2" style="color: var(--palette-primary);">Metodolog&iacute;a</p>
+        <h2 class="font-heading text-3xl font-bold mb-2">Marco Metodol&oacute;gico</h2>
+        <p class="text-gray-500 text-sm max-w-xl mx-auto">Instrumento validado mediante pilotaje y revisi&oacute;n con informantes clave. Basado en est&aacute;ndares internacionales y contexto UMCE.</p>
+      </div>
+
+      <div class="fade-up grid sm:grid-cols-2 gap-4 mb-8">
+        <div class="method-item">
+          <p class="font-semibold text-sm mb-1" style="color: var(--palette-primary);">Escala de medici&oacute;n</p>
+          <p class="text-sm text-gray-600">Likert de frecuencia 0&ndash;4: <strong>0</strong> = no evaluable, <strong>1</strong> = nunca / casi nunca, <strong>2</strong> = a veces, <strong>3</strong> = frecuentemente, <strong>4</strong> = siempre presente.</p>
+        </div>
+        <div class="method-item">
+          <p class="font-semibold text-sm mb-1" style="color: var(--palette-primary);">Jerarqu&iacute;a de indicadores</p>
+          <p class="text-sm text-gray-600"><strong>29</strong> indicadores de importancia alta &bull; <strong>31</strong> media &bull; <strong>16</strong> baja &bull; <strong>1</strong> observaci&oacute;n libre. Total: <strong>77 indicadores</strong>.</p>
+        </div>
+        <div class="method-item">
+          <p class="font-semibold text-sm mb-1" style="color: var(--palette-primary);">Validaci&oacute;n</p>
+          <p class="text-sm text-gray-600">Pilotaje en 5 actividades curriculares + revisi&oacute;n con informantes clave de la UDFV y &aacute;reas acad&eacute;micas UMCE (nov&ndash;dic 2024).</p>
+        </div>
+        <div class="method-item">
+          <p class="font-semibold text-sm mb-1" style="color: var(--palette-primary);">Bases te&oacute;ricas</p>
+          <p class="text-sm text-gray-600">OSCQR (SUNY, open source) &bull; Quality Matters &bull; Protocolos UDFV &bull; Perspectiva de g&eacute;nero en educaci&oacute;n virtual.</p>
+        </div>
+      </div>
+
+      <div class="fade-up bg-gray-50 border border-gray-200 rounded-xl p-5 text-sm text-gray-600">
+        <p><strong>Referencia:</strong> Sepúlveda, D. (2024). <em>Marco Evaluativo UDFV-UMCE: Instrumento de aseguramiento de calidad para cursos virtuales</em>. Unidad de Desarrollo y Formaci&oacute;n Virtual, Universidad Metropolitana de Ciencias de la Educaci&oacute;n. Proyecto de Fortalecimiento Institucional UMC20992.</p>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+
+  <!-- ================================================
+       SCRIPTS
+  ================================================ -->
+  <script src="/shared/shared.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    // ── DATA ──────────────────────────────────────────────────────────────────
+
+    var cursos = [
+      {
+        nombre: "Procesos psicológicos para la educación básica",
+        programa: "Prosecución Ed. Básica",
+        dimensiones: { d1: 2.68, d2: 1.63, d3: 2.58, d4: 3.20, d5: 1.90, d6: 1.00 }
+      },
+      {
+        nombre: "Movimiento y sonoridad",
+        programa: "Prosecución Artes Escénicas",
+        dimensiones: { d1: 3.00, d2: 1.50, d3: 2.40, d4: 3.30, d5: 1.65, d6: 1.00 }
+      },
+      {
+        nombre: "Diagnóstico de calidad de vida e indicadores de salud",
+        programa: "Magíster Ed. Física y Salud",
+        dimensiones: { d1: 3.13, d2: 1.95, d3: 2.68, d4: 3.10, d5: 2.15, d6: 1.00 }
+      },
+      {
+        nombre: "Mesopolíticas educacionales",
+        programa: "Magíster en Política Educativa",
+        dimensiones: { d1: 3.05, d2: 1.25, d3: 1.38, d4: 0.00, d5: 1.50, d6: 1.00 }
+      },
+      {
+        nombre: "Estrategias para estudiantes con retos múltiples",
+        programa: "Magíster Ed. Diferencial",
+        dimensiones: { d1: 2.45, d2: 1.50, d3: 2.50, d4: 0.00, d5: 2.50, d6: 1.00 }
+      }
+    ];
+
+    var dimensiones = [
+      { id: 'd1', nombre: 'Experiencia de interacción con la plataforma', subdimensiones: 4, indicadores: 18, color: '#0033A1', emoji: '🖥️', desc: 'Navegación, usabilidad y diseño del entorno virtual de aprendizaje.' },
+      { id: 'd2', nombre: 'Accesibilidad', subdimensiones: 4, indicadores: 17, color: '#059669', emoji: '♿', desc: 'Acceso multimodal: subtítulos, lengua de señas, audiodescripción y ajustes.' },
+      { id: 'd3', nombre: 'Coherencia didáctica', subdimensiones: 5, indicadores: 16, color: '#7C3AED', emoji: '📚', desc: 'Alineación entre objetivos, actividades y evaluaciones del curso.' },
+      { id: 'd4', nombre: 'Docencia virtual', subdimensiones: 2, indicadores: 7, color: '#D97706', emoji: '👩‍🏫', desc: 'Competencias pedagógicas del docente en el aula virtual y sesiones síncronas.' },
+      { id: 'd5', nombre: 'Perspectiva de género y equidad', subdimensiones: 2, indicadores: 11, color: '#DB2777', emoji: '⚖️', desc: 'Lenguaje inclusivo, representación equitativa y contenidos no sexistas.' },
+      { id: 'd6', nombre: 'Corresponsabilidad social y cuidados', subdimensiones: 3, indicadores: 8, color: '#DC2626', emoji: '🤝', desc: 'Reconocimiento de cargas de cuidado y contextos de vida de los estudiantes.' }
+    ];
+
+    // ── HELPERS ───────────────────────────────────────────────────────────────
+
+    function courseAvg(curso) {
+      var keys = Object.keys(curso.dimensiones);
+      var sum = keys.reduce(function(acc, k) { return acc + curso.dimensiones[k]; }, 0);
+      return sum / keys.length;
+    }
+
+    function dimAvg(dimId) {
+      var sum = cursos.reduce(function(acc, c) { return acc + c.dimensiones[dimId]; }, 0);
+      return sum / cursos.length;
+    }
+
+    function scoreClass(val) {
+      if (val < 1.5)  return 'score-red';
+      if (val < 2.5)  return 'score-yellow';
+      if (val < 3.5)  return 'score-green';
+      return 'score-darkgreen';
+    }
+
+    function barClass(val) {
+      if (val < 1.5)  return 'bar-red';
+      if (val < 2.5)  return 'bar-yellow';
+      if (val < 3.5)  return 'bar-green';
+      return 'bar-darkgreen';
+    }
+
+    function bgClass(val) {
+      if (val < 1.5)  return 'bg-red-50';
+      if (val < 2.5)  return 'bg-yellow-50';
+      if (val < 3.5)  return 'bg-emerald-50';
+      return 'bg-green-100';
+    }
+
+    function textClass(val) {
+      if (val < 1.5)  return 'text-red-800';
+      if (val < 2.5)  return 'text-yellow-800';
+      if (val < 3.5)  return 'text-emerald-800';
+      return 'text-green-900';
+    }
+
+    function fmt(val) { return val.toFixed(2); }
+
+    // ── RADAR CHART (SVG + Math) ───────────────────────────────────────────────
+
+    function buildRadar() {
+      var svg = document.getElementById('radar-chart');
+      var cx = 260, cy = 240, maxR = 170, scale = maxR / 4;
+      var N = 6;
+
+      // angles: start top, clockwise
+      function angle(i) { return (Math.PI * 2 * i / N) - Math.PI / 2; }
+      function pt(r, i) {
+        return { x: cx + r * Math.cos(angle(i)), y: cy + r * Math.sin(angle(i)) };
+      }
+
+      var buf = '';
+
+      // Background rings
+      [1, 2, 3, 4].forEach(function(v) {
+        var r = v * scale;
+        var pts = [];
+        for (var i = 0; i < N; i++) { var p = pt(r, i); pts.push(p.x + ',' + p.y); }
+        buf += '<polygon points="' + pts.join(' ') + '" fill="none" stroke="#E5E7EB" stroke-width="1"/>';
+        // Ring label at right
+        buf += '<text x="' + (cx + r + 3) + '" y="' + (cy + 4) + '" font-size="9" fill="#9CA3AF">' + v + '</text>';
+      });
+
+      // Axis spokes
+      for (var i = 0; i < N; i++) {
+        var p = pt(maxR, i);
+        buf += '<line x1="' + cx + '" y1="' + cy + '" x2="' + p.x + '" y2="' + p.y + '" stroke="#E5E7EB" stroke-width="1"/>';
+      }
+
+      // Data polygon — promedio general por dimensión
+      var dimIds = dimensiones.map(function(d) { return d.id; });
+      var dataPolygon = dimIds.map(function(id, i) {
+        var avg = dimAvg(id);
+        var r = avg * scale;
+        return pt(r, i);
+      });
+      var polyPts = dataPolygon.map(function(p) { return p.x + ',' + p.y; }).join(' ');
+      buf += '<polygon points="' + polyPts + '" fill="rgba(0,51,161,0.15)" stroke="#0033A1" stroke-width="2.5"/>';
+
+      // Data dots
+      dataPolygon.forEach(function(p, i) {
+        buf += '<circle cx="' + p.x + '" cy="' + p.y + '" r="5" fill="' + dimensiones[i].color + '" stroke="#fff" stroke-width="1.5"/>';
+      });
+
+      // Vertex labels
+      dimensiones.forEach(function(dim, i) {
+        var p = pt(maxR + 22, i);
+        var anchor = 'middle';
+        if (p.x < cx - 10) anchor = 'end';
+        if (p.x > cx + 10) anchor = 'start';
+        // Short label
+        var short = 'D' + (i + 1);
+        buf += '<text x="' + p.x + '" y="' + p.y + '" font-size="12" font-weight="bold" fill="' + dim.color + '" text-anchor="' + anchor + '" dominant-baseline="middle">' + short + '</text>';
+        // Avg value
+        var avg = dimAvg(dim.id);
+        var vp = pt(maxR + 36, i);
+        buf += '<text x="' + vp.x + '" y="' + vp.y + '" font-size="10" fill="#6B7280" text-anchor="' + anchor + '" dominant-baseline="middle">' + fmt(avg) + '</text>';
+      });
+
+      // Center label
+      buf += '<text x="' + cx + '" y="' + (cy - 8) + '" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">Prom. gral.</text>';
+      var overallAvg = dimensiones.reduce(function(acc, d) { return acc + dimAvg(d.id); }, 0) / N;
+      buf += '<text x="' + cx + '" y="' + (cy + 8) + '" text-anchor="middle" font-size="15" font-weight="bold" fill="#0033A1">' + fmt(overallAvg) + '</text>';
+
+      svg.innerHTML = buf;
+
+      // Legend
+      var legend = document.getElementById('radar-legend');
+      var lbuf = '';
+      dimensiones.forEach(function(dim) {
+        lbuf += '<span class="inline-flex items-center gap-1.5">'
+              + '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + dim.color + '"></span>'
+              + '<span class="text-gray-600 text-xs">' + dim.id.toUpperCase() + ': ' + dim.nombre + '</span>'
+              + '</span>';
+      });
+      legend.innerHTML = lbuf;
+    }
+
+    // ── DIMENSION CARDS ───────────────────────────────────────────────────────
+
+    function buildDimensionCards() {
+      var grid = document.getElementById('dimensiones-grid');
+      var html = '';
+
+      dimensiones.forEach(function(dim) {
+        var avg = dimAvg(dim.id);
+        var barPct = (avg / 4) * 100;
+        var barColor = barClass(avg);
+        var sc = scoreClass(avg);
+
+        html += '<div class="fade-up dim-card bg-white rounded-xl border border-gray-100 shadow-sm p-5">'
+              + '  <div class="flex items-start justify-between mb-3">'
+              + '    <span class="text-3xl">' + dim.emoji + '</span>'
+              + '    <span class="text-xs font-bold px-2 py-0.5 rounded-full ' + sc + '">' + fmt(avg) + ' / 4</span>'
+              + '  </div>'
+              + '  <div class="mb-1">'
+              + '    <span class="inline-block text-xs font-bold uppercase tracking-widest px-2 py-0.5 rounded" style="background:' + dim.color + '20;color:' + dim.color + '">' + dim.id.toUpperCase() + '</span>'
+              + '  </div>'
+              + '  <h3 class="font-heading font-bold text-sm leading-snug mb-2 text-gray-800">' + dim.nombre + '</h3>'
+              + '  <p class="text-xs text-gray-500 mb-4">' + dim.desc + '</p>'
+              + '  <div class="mb-3">'
+              + '    <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">'
+              + '      <div class="h-2 rounded-full transition-all duration-700 ' + barColor + '" style="width:' + barPct.toFixed(1) + '%"></div>'
+              + '    </div>'
+              + '  </div>'
+              + '  <div class="flex gap-4 text-xs text-gray-400">'
+              + '    <span><strong class="text-gray-600">' + dim.subdimensiones + '</strong> subdimensiones</span>'
+              + '    <span><strong class="text-gray-600">' + dim.indicadores + '</strong> indicadores</span>'
+              + '  </div>'
+              + '</div>';
+      });
+
+      grid.innerHTML = html;
+    }
+
+    // ── COMPARISON TABLE ──────────────────────────────────────────────────────
+
+    function buildTable() {
+      var tbody = document.getElementById('tabla-cursos');
+      var dimKey = document.getElementById('tabla-dim-key');
+
+      // Find best course
+      var avgs = cursos.map(courseAvg);
+      var maxAvg = Math.max.apply(null, avgs);
+
+      var html = '';
+      cursos.forEach(function(curso, idx) {
+        var avg = courseAvg(curso);
+        var isBest = (avg === maxAvg);
+        var rowClass = isBest ? 'best-course' : '';
+
+        html += '<tr class="' + rowClass + ' border-b border-gray-50 hover:bg-gray-50 transition-colors">';
+        html += '<td class="px-4 py-3">';
+        html += '  <div class="font-medium text-gray-800 text-sm leading-snug">' + curso.nombre + '</div>';
+        if (isBest) { html += '  <span class="text-xs font-bold text-emerald-600 mt-0.5 block">Mejor promedio general</span>'; }
+        html += '</td>';
+        html += '<td class="px-3 py-3 text-gray-500 text-xs hidden sm:table-cell">' + curso.programa + '</td>';
+
+        dimensiones.forEach(function(dim) {
+          var val = curso.dimensiones[dim.id];
+          html += '<td class="px-1 py-2">'
+                + '<span class="block text-center font-bold text-xs px-1.5 py-1 rounded ' + scoreClass(val) + '">' + fmt(val) + '</span>'
+                + '</td>';
+        });
+
+        html += '<td class="px-2 py-3 text-center">'
+              + '<span class="font-extrabold text-sm ' + textClass(avg) + '">' + fmt(avg) + '</span>'
+              + '</td>';
+        html += '</tr>';
+      });
+
+      tbody.innerHTML = html;
+
+      // Dimension key
+      var keyHtml = dimensiones.map(function(d) {
+        return '<span><span class="font-semibold" style="color:' + d.color + '">' + d.id.toUpperCase() + '</span>: ' + d.nombre + '</span>';
+      }).join('<span class="text-gray-300 mx-0.5">·</span>');
+      dimKey.innerHTML = keyHtml;
+    }
+
+    // ── INIT ──────────────────────────────────────────────────────────────────
+
+    document.addEventListener('DOMContentLoaded', function() {
+      buildRadar();
+      buildDimensionCards();
+      buildTable();
+    });
+
+  })();
+  </script>
+</body>
+</html>

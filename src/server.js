@@ -5635,6 +5635,7 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.ht
 app.get('/virtualizacion', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion.html')));
 app.get('/virtualizacion/planificador', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-planificador.html')));
 app.get('/virtualizacion/fundamentos', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-fundamentos.html')));
+app.get('/virtualizacion/rubrica', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-rubrica.html')));
 // app.get('/sct', ...);
 // app.get('/servicios', ...);
 // app.get('/noticias', ...);
