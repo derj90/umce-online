@@ -169,14 +169,18 @@
       background: #0033A1;
       color: white;
       border: none;
-      cursor: pointer;
+      cursor: grab;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 16px rgba(0,51,161,0.35);
       transition: transform 0.2s, box-shadow 0.2s;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
     }
-    #a11y-fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(0,51,161,0.45); }
+    #a11y-fab:active { cursor: grabbing; }
+    #a11y-fab:hover { box-shadow: 0 6px 24px rgba(0,51,161,0.45); }
     #a11y-fab:focus-visible { outline: 3px solid #FF9E18; outline-offset: 3px; }
     #a11y-fab svg { width: 26px; height: 26px; pointer-events: none; }
 
@@ -498,13 +502,93 @@
   ruler.innerHTML = `<div class="ruler-shade-top"></div><div class="ruler-band"></div><div class="ruler-shade-bottom"></div>`;
   document.body.appendChild(ruler);
 
-  // --- Event: toggle panel ---
+  // --- Draggable FAB ---
+  let isDragging = false;
+  let dragStartX, dragStartY, fabStartX, fabStartY;
+  let hasMoved = false;
+
+  function getFabPos() {
+    const r = fab.getBoundingClientRect();
+    return { x: r.left, y: r.top };
+  }
+
+  function setFabPos(x, y) {
+    const maxX = window.innerWidth - fab.offsetWidth;
+    const maxY = window.innerHeight - fab.offsetHeight;
+    x = Math.max(0, Math.min(x, maxX));
+    y = Math.max(0, Math.min(y, maxY));
+    fab.style.left = x + 'px';
+    fab.style.top = y + 'px';
+    fab.style.right = 'auto';
+    fab.style.bottom = 'auto';
+    // Position panel relative to fab
+    const onRight = x > window.innerWidth / 2;
+    panel.style.right = onRight ? (window.innerWidth - x - fab.offsetWidth) + 'px' : 'auto';
+    panel.style.left = onRight ? 'auto' : x + 'px';
+    panel.style.bottom = (window.innerHeight - y + 12) + 'px';
+    panel.style.top = 'auto';
+    // Save position
+    localStorage.setItem('a11y_fab_pos', JSON.stringify({ x, y }));
+  }
+
+  function onDragStart(e) {
+    const ev = e.touches ? e.touches[0] : e;
+    const pos = getFabPos();
+    dragStartX = ev.clientX;
+    dragStartY = ev.clientY;
+    fabStartX = pos.x;
+    fabStartY = pos.y;
+    isDragging = true;
+    hasMoved = false;
+    fab.style.transition = 'none';
+    e.preventDefault();
+  }
+
+  function onDragMove(e) {
+    if (!isDragging) return;
+    const ev = e.touches ? e.touches[0] : e;
+    const dx = ev.clientX - dragStartX;
+    const dy = ev.clientY - dragStartY;
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) hasMoved = true;
+    if (hasMoved) setFabPos(fabStartX + dx, fabStartY + dy);
+  }
+
+  function onDragEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+    fab.style.transition = '';
+  }
+
+  fab.addEventListener('mousedown', onDragStart);
+  document.addEventListener('mousemove', onDragMove);
+  document.addEventListener('mouseup', onDragEnd);
+  fab.addEventListener('touchstart', onDragStart, { passive: false });
+  document.addEventListener('touchmove', onDragMove, { passive: false });
+  document.addEventListener('touchend', onDragEnd);
+
+  // Restore saved position
+  try {
+    const saved = JSON.parse(localStorage.getItem('a11y_fab_pos'));
+    if (saved && typeof saved.x === 'number') {
+      requestAnimationFrame(() => setFabPos(saved.x, saved.y));
+    }
+  } catch(e) {}
+
+  // --- Event: toggle panel (only if not dragged) ---
   let panelOpen = false;
   fab.addEventListener('click', () => {
+    if (hasMoved) return; // was a drag, not a click
     panelOpen = !panelOpen;
     panel.classList.toggle('open', panelOpen);
     fab.setAttribute('aria-expanded', panelOpen);
     if (panelOpen) {
+      // Reposition panel near fab
+      const pos = getFabPos();
+      const onRight = pos.x > window.innerWidth / 2;
+      panel.style.right = onRight ? (window.innerWidth - pos.x - fab.offsetWidth) + 'px' : 'auto';
+      panel.style.left = onRight ? 'auto' : pos.x + 'px';
+      panel.style.bottom = (window.innerHeight - pos.y + 12) + 'px';
+      panel.style.top = 'auto';
       panel.querySelector('button, input').focus();
     }
   });
