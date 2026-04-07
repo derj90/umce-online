@@ -260,6 +260,17 @@
               <p class="text-xs text-gray-400 mt-1">Duraci&oacute;n del semestre o m&oacute;dulo</p>
             </div>
           </div>
+          <!-- Créditos declarados -->
+          <div class="bg-white border border-gray-200 rounded-xl p-4 mt-2">
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">
+              Cr&eacute;ditos SCT declarados en la resoluci&oacute;n exenta (opcional)
+            </label>
+            <div class="flex items-center gap-3">
+              <input type="number" id="sctDeclarados" value="" min="1" max="60" placeholder="Ej: 4" class="w-24 px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm text-center font-bold text-lg">
+              <span class="text-sm text-gray-500">Si lo ingresas, te diremos si las horas son coherentes con los cr&eacute;ditos</span>
+            </div>
+          </div>
+
           <!-- Summary preview -->
           <div class="grid grid-cols-3 gap-3 pt-2">
             <div class="stat-card">
@@ -271,11 +282,23 @@
               <div class="stat-label">Hrs / semana</div>
             </div>
             <div class="stat-card">
-              <div class="stat-value text-umce-azul" id="previewSCT">3.0</div>
-              <div class="stat-label">SCT estimados</div>
+              <div class="stat-value text-umce-azul" id="previewSCT">3</div>
+              <div class="stat-label">SCT calculados</div>
             </div>
           </div>
-          <p class="text-xs text-gray-400">F&oacute;rmula: SCT = ((HP + HA) &times; NS) &divide; 27. Carga semanal recomendada: m&aacute;ximo 10 hrs/semana.</p>
+
+          <!-- Feedback inmediato -->
+          <div id="liveVerdict" class="rounded-xl p-4 mt-2 transition-all duration-300" style="display:none;">
+            <div class="flex items-center gap-3">
+              <div class="semaforo w-10 h-10 text-base" id="liveIcon"></div>
+              <div>
+                <div class="text-sm font-bold" id="liveTitle"></div>
+                <div class="text-xs text-gray-600" id="liveDesc"></div>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-xs text-gray-400 mt-2">F&oacute;rmula: SCT = ((HP + HA) &times; NS) &divide; 27. Carga semanal recomendada: m&aacute;ximo 10 hrs/semana.</p>
         </div>
 
         <!-- Encuesta docente simplificada -->
@@ -758,12 +781,12 @@
     // Bind inputs para preview en vivo
     // ================================
     function bindInputs() {
-      ['hp','ha','ns'].forEach(function(id) {
+      ['hp','ha','ns','sctDeclarados'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) {
           el.addEventListener('input', function() {
             updatePreview();
-            updateEncuesta();
+            if (id !== 'sctDeclarados') updateEncuesta();
           });
         }
       });
@@ -789,6 +812,72 @@
       if (weekly <= 10) { weeklyEl.style.color = '#059669'; }
       else if (weekly <= 12) { weeklyEl.style.color = '#D97706'; }
       else { weeklyEl.style.color = '#DC2626'; }
+
+      // Live verdict
+      updateLiveVerdict(sct, weekly);
+    }
+
+    function updateLiveVerdict(sctCalc, weekly) {
+      var declared = parseInt(document.getElementById('sctDeclarados').value);
+      var panel = document.getElementById('liveVerdict');
+      var icon = document.getElementById('liveIcon');
+      var title = document.getElementById('liveTitle');
+      var desc = document.getElementById('liveDesc');
+
+      // Always show weekly feedback
+      var msgs = [];
+      var worstLevel = 'verde'; // verde, amarillo, rojo
+
+      // Weekly load check
+      if (weekly > 12) {
+        msgs.push('Carga semanal de ' + weekly.toFixed(1) + ' hrs excede el m\u00e1ximo de 12 hrs/semana.');
+        worstLevel = 'rojo';
+      } else if (weekly > 10) {
+        msgs.push('Carga semanal de ' + weekly.toFixed(1) + ' hrs est\u00e1 en zona de alerta (10-12 hrs).');
+        if (worstLevel !== 'rojo') worstLevel = 'amarillo';
+      } else if (weekly > 0) {
+        msgs.push('Carga semanal de ' + weekly.toFixed(1) + ' hrs es adecuada.');
+      }
+
+      // SCT comparison (if declared)
+      if (!isNaN(declared) && declared > 0) {
+        if (sctCalc === declared) {
+          msgs.push('Los cr\u00e9ditos calculados (' + sctCalc + ' SCT) coinciden con los declarados.');
+        } else if (sctCalc > declared) {
+          msgs.push('Las horas dan ' + sctCalc + ' SCT pero el curso declara ' + declared + ' SCT \u2014 la carga real es mayor a la declarada.');
+          if (worstLevel !== 'rojo') worstLevel = 'amarillo';
+        } else {
+          msgs.push('Las horas dan ' + sctCalc + ' SCT pero el curso declara ' + declared + ' SCT \u2014 la carga declarada es mayor a la real.');
+          if (worstLevel !== 'rojo') worstLevel = 'amarillo';
+        }
+      }
+
+      if (weekly === 0) {
+        panel.style.display = 'none';
+        return;
+      }
+
+      panel.style.display = 'block';
+      icon.className = 'semaforo w-10 h-10 text-base';
+
+      if (worstLevel === 'verde') {
+        icon.classList.add('verde');
+        icon.innerHTML = '&#10003;';
+        title.textContent = 'Todo en orden';
+        panel.style.background = '#ECFDF5';
+      } else if (worstLevel === 'amarillo') {
+        icon.classList.add('amarillo');
+        icon.innerHTML = '!';
+        title.textContent = 'Revisar';
+        panel.style.background = '#FFFBEB';
+      } else {
+        icon.classList.add('rojo');
+        icon.innerHTML = '&#10007;';
+        title.textContent = 'Requiere ajuste';
+        panel.style.background = '#FEF2F2';
+      }
+
+      desc.textContent = msgs.join(' ');
     }
 
     // ================================
