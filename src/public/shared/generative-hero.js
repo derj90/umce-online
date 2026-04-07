@@ -349,12 +349,15 @@
       else if (variant === 3) drawSinapsis();
       else if (variant === 4) drawResonancia();
       else if (variant === 5) drawTrama();
-      // Canvas draws its own fade to page bg at the bottom
+      // Canvas draws its own fade — must be white BEFORE overlay becomes transparent
       var ctx = p.drawingContext;
-      var fadeH = p.height * 0.25;
+      var fadeH = p.height * 0.45;
       var y0 = p.height - fadeH;
       var grd = ctx.createLinearGradient(0, y0, 0, p.height);
       grd.addColorStop(0, 'rgba(249,250,251,0)');
+      grd.addColorStop(0.4, 'rgba(249,250,251,0.5)');
+      grd.addColorStop(0.65, 'rgba(249,250,251,0.85)');
+      grd.addColorStop(0.8, 'rgba(249,250,251,0.97)');
       grd.addColorStop(1, 'rgba(249,250,251,1)');
       ctx.fillStyle = grd;
       ctx.fillRect(0, y0, p.width, fadeH);
