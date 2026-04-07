@@ -6348,11 +6348,12 @@ app.get('/virtualizacion/asistente', (req, res) => res.sendFile(path.join(__dirn
 // app.get('/sct', ...);
 // app.get('/servicios', ...);
 // app.get('/noticias', ...);
-// app.get('/ayuda', ...);
+app.get('/ayuda', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ayuda.html')));
 // app.get('/formacion-docente', ...);
 // app.get('/formacion-docente/marco', ...);
 // app.get('/formacion-docente/plan', ...);
 
+app.get('/formacion', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion.html')));
 app.get('/mis-cursos', (req, res) => res.sendFile(path.join(__dirname, 'public', 'mis-cursos.html')));
 app.get('/privacidad', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacidad.html')));
 app.get('/verificar', (req, res) => res.sendFile(path.join(__dirname, 'public', 'verificar-credencial.html')));
