@@ -2143,6 +2143,42 @@ const CLAUDE_PROXY_URL = 'http://claude-proxy-container:3099/chat';
 const CLAUDE_PROXY_FALLBACK = 'http://172.18.0.1:3099/chat';
 const CHAT_RATE_LIMIT = 20; // messages per hour
 
+// RAG: search knowledge base in Supabase for relevant context
+async function searchKnowledgeBase(query) {
+  if (!query || query.length < 3) return '';
+  try {
+    const res = await fetch(`${process.env.SUPABASE_URL || 'https://supabase.udfv.cloud'}/rest/v1/rpc/search_knowledge`, {
+      method: 'POST',
+      headers: {
+        'apikey': process.env.SUPABASE_SERVICE_KEY,
+        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query_text: query, match_count: 4 }),
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return '';
+    const results = await res.json();
+    if (!Array.isArray(results) || results.length === 0) return '';
+    // Deduplicate by content and build context
+    const seen = new Set();
+    const unique = results.filter(r => {
+      const key = r.content?.substring(0, 100);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    if (unique.length === 0) return '';
+    return '\n\n--- INFORMACIÓN DE LA BASE DE CONOCIMIENTO ---\n' +
+      unique.map((r, i) => `[${i + 1}] ${r.content}`).join('\n\n') +
+      '\n--- FIN BASE DE CONOCIMIENTO ---\n' +
+      'Usa esta información para responder cuando sea relevante. Si la pregunta no se relaciona con esta información, responde con tu conocimiento general sobre la UMCE.';
+  } catch (err) {
+    console.warn('RAG search error:', err.message);
+    return '';
+  }
+}
+
 // System prompt with portal context — built on startup
 let chatSystemPrompt = '';
 async function buildChatSystemPrompt() {
@@ -2286,8 +2322,11 @@ app.post('/api/chat/message', async (req, res) => {
 
     const fullPrompt = history ? `Conversación previa:\n${history}\n\nUsuario: ${message}` : message;
 
-    // Build system prompt — extend with role context
-    let systemPrompt = chatSystemPrompt;
+    // RAG: search knowledge base for relevant context
+    const ragContext = await searchKnowledgeBase(message);
+
+    // Build system prompt — extend with role context + RAG
+    let systemPrompt = chatSystemPrompt + ragContext;
 
     // Add role context (server-verified identity, not modifiable by user)
     const roleContext = chatUserRole === 'admin'
