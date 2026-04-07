@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cargando curso... — UMCE Online</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+  <style>
+    :root {
+      /* Accent colors — sobreescritas desde JSON via JS */
+      --accent-900: #1e3a5f;
+      --accent-700: #1d4ed8;
+      --accent-600: #2563eb;
+      --accent-100: #dbeafe;
+      --accent-50:  #eff6ff;
+      --accent-bg:  #f5f8ff;
+
+      --text: #1c1917;
+      --text-secondary: #57534e;
+      --border: #e5e7eb;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--accent-bg); color: var(--text); }
+    .font-heading { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+
+    /* ============================================================
+       LAYOUT
+    ============================================================ */
+    .app { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 280px;
+      background: white;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      overflow-y: auto;
+      z-index: 20;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+    }
+
+    .main { flex: 1; margin-left: 280px; }
+
+    /* ============================================================
+       MOBILE
+    ============================================================ */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .mobile-header { display: flex !important; }
+      .sidebar-overlay {
+        display: none;
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 15;
+      }
+      .sidebar-overlay.open { display: block; }
+    }
+
+    /* ============================================================
+       SIDEBAR COMPONENTS
+    ============================================================ */
+    .sidebar-header {
+      padding: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .sidebar-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+    }
+
+    .sidebar-course-title {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 0.9375rem;
+      color: var(--accent-900);
+      line-height: 1.3;
+    }
+
+    .sidebar-nav { padding: 0.75rem; flex: 1; }
+
+    .sidebar-module-title {
+      padding: 0.75rem 0.75rem 0.25rem;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      margin-top: 0.5rem;
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.625rem 0.75rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      transition: background 0.15s;
+    }
+    .sidebar-item:hover { background: var(--accent-50); }
+    .sidebar-item.active { background: var(--accent-100); color: var(--accent-900); font-weight: 600; }
+    .sidebar-item.completed { color: var(--accent-600); }
+
+    .check {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .sidebar-item.completed .check {
+      background: var(--accent-600);
+      border-color: var(--accent-600);
+      color: white;
+    }
+
+    .sidebar-footer {
+      padding: 0.75rem;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .sidebar-footer a {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .sidebar-footer a:hover { color: var(--accent-700); }
+
+    /* ============================================================
+       PROGRESS BAR
+    ============================================================ */
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+    }
+    .progress-bar { height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: var(--accent-600); border-radius: 2px; transition: width 0.3s ease; }
+
+    /* ============================================================
+       MOBILE HEADER
+    ============================================================ */
+    .mobile-header {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .hamburger { background: none; border: none; cursor: pointer; padding: 0.25rem; line-height: 0; }
+    .hamburger svg { width: 24px; height: 24px; color: var(--text); }
+
+    /* ============================================================
+       CONTENT AREA
+    ============================================================ */
+    .content { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    /* Slide typography */
+    .slide-body h2 {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--accent-900);
+      line-height: 1.3;
+    }
+    .slide-body h3 {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: var(--accent-900);
+    }
+    .slide-body p { line-height: 1.75; margin-bottom: 1rem; color: var(--text); }
+    .slide-body ul, .slide-body ol { margin: 1rem 0; padding-left: 1.5rem; }
+    .slide-body li { margin-bottom: 0.5rem; line-height: 1.6; }
+    .slide-body strong { color: var(--text); }
+    .slide-body em { font-style: italic; }
+    .slide-body img { max-width: 100%; height: auto; border-radius: 8px; margin: 1rem 0; }
+    .slide-body .video-embed { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; margin: 1rem 0; }
+    .slide-body .video-embed iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+
+    /* ============================================================
+       NAV BUTTONS
+    ============================================================ */
+    .slide-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+
+    .btn {
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .btn-primary { background: var(--accent-700); color: white; }
+    .btn-primary:hover { background: var(--accent-900); }
+    .btn-outline { background: white; color: var(--text-secondary); border: 1px solid var(--border); }
+    .btn-outline:hover { background: #f9fafb; border-color: #d1d5db; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-full { width: 100%; display: block; text-align: center; margin-top: 0.75rem; }
+
+    /* ============================================================
+       QUIZ
+    ============================================================ */
+    .quiz-container {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .quiz-header { margin-bottom: 1.5rem; }
+    .quiz-header h2 {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent-900);
+      margin-bottom: 0.25rem;
+    }
+    .quiz-header p { font-size: 0.875rem; color: var(--text-secondary); }
+
+    .quiz-question { margin-bottom: 1.75rem; }
+    .quiz-question-text {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .quiz-option {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-family: inherit;
+      transition: all 0.15s;
+      line-height: 1.4;
+    }
+    .quiz-option:hover:not(:disabled) { border-color: var(--accent-600); background: var(--accent-50); }
+    .quiz-option.selected { border-color: var(--accent-700); background: var(--accent-100); }
+    .quiz-option.correct { border-color: #16a34a; background: #dcfce7; }
+    .quiz-option.incorrect { border-color: #dc2626; background: #fef2f2; }
+    .quiz-option:disabled { cursor: default; }
+
+    .quiz-submit {
+      display: block;
+      width: 100%;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      cursor: pointer;
+      border: none;
+      background: var(--accent-700);
+      color: white;
+      transition: background 0.15s;
+      font-family: inherit;
+      margin-top: 1rem;
+    }
+    .quiz-submit:hover:not(:disabled) { background: var(--accent-900); }
+    .quiz-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .quiz-result {
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      text-align: center;
+    }
+    .quiz-result.passed { background: #dcfce7; color: #166534; }
+    .quiz-result.failed { background: #fef3c7; color: #92400e; }
+    .quiz-result strong { display: block; font-size: 1.125rem; margin-bottom: 0.25rem; }
+    .quiz-result span { font-size: 0.875rem; }
+
+    /* ============================================================
+       COMPLETION SCREEN
+    ============================================================ */
+    .completion-screen { text-align: center; padding: 3rem 1.5rem; }
+    .completion-screen .big-check {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: var(--accent-600);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .completion-screen h2 {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent-900);
+      margin-bottom: 1rem;
+    }
+    .completion-screen p { color: var(--text-secondary); font-size: 1rem; line-height: 1.75; margin-bottom: 1rem; }
+    .completion-screen .btn { display: inline-block; text-decoration: none; margin-top: 0.5rem; }
+
+    /* ============================================================
+       LOADING / ERROR STATES
+    ============================================================ */
+    .state-message {
+      text-align: center;
+      padding: 4rem 1.5rem;
+    }
+    .state-message p { color: var(--text-secondary); margin-bottom: 0.5rem; }
+    .state-message .error-text { color: #dc2626; }
+    .state-message a { color: var(--accent-600); text-decoration: underline; }
+
+    /* ============================================================
+       SLIDE COUNTER BADGE
+    ============================================================ */
+    .slide-counter {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-label">Autoformación UMCE</div>
+      <div class="sidebar-course-title" id="sidebar-title">Cargando...</div>
+      <div style="margin-top:0.75rem;">
+        <div class="progress-meta">
+          <span>Progreso</span>
+          <span id="progress-pct">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-nav" id="sidebar-nav">
+      <!-- Generado por JS después del fetch -->
+    </div>
+    <div class="sidebar-footer">
+      <a id="back-link" href="/autoformacion">&larr; Volver a la landing</a>
+    </div>
+  </nav>
+
+  <!-- Mobile header -->
+  <div class="mobile-header" id="mobile-header">
+    <button class="hamburger" onclick="toggleSidebar()" aria-label="Abrir menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <span class="font-heading" style="font-weight:700;font-size:0.875rem;color:var(--accent-900);" id="mobile-title">Curso</span>
+    <span id="mobile-progress" style="margin-left:auto;font-size:0.75rem;color:var(--text-secondary);">0%</span>
+  </div>
+
+  <!-- Main content -->
+  <div class="main">
+    <div class="content" id="content-area">
+      <div class="state-message" id="loading">
+        <p>Cargando curso...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slug inyectado por Express: reemplaza este comentario con <script>window.COURSE_SLUG='...'</script> -->
+  <!--COURSE_SLUG_INJECT-->
+
+  <!-- xAPI tracker (reutilizable, ya existe) -->
+  <script src="/autoformacion/js/xapi-tracker-autoformacion.js"></script>
+  <!-- Accesibilidad DUA (portal-wide) -->
+  <script src="/accesibilidad-dua.js" defer></script>
+
+  <script>
+  (function() {
+    'use strict';
+
+    // ============================================================
+    // SLUG — Express inyecta antes de servir:
+    //   html.replace('<!--COURSE_SLUG_INJECT-->', '<script>window.COURSE_SLUG="slug"</script>')
+    // ============================================================
+    var COURSE_SLUG = (typeof window.COURSE_SLUG !== 'undefined' && window.COURSE_SLUG)
+      ? window.COURSE_SLUG
+      : 'sustentabilidad'; // fallback de desarrollo
+
+    var API_BASE = '/api/autoformacion';
+
+    // ============================================================
+    // STATE
+    // ============================================================
+    var courseConfig   = null;   // JSON de config del curso
+    var questionBank   = null;   // JSON banco de preguntas
+    var enrollment     = null;   // Datos del usuario (del backend)
+    var progress       = {};     // { 'm1_0': true, 'm1': { completed, score }, ... }
+    var moduleKeys     = [];     // ['m1', 'm2', ...] — en orden
+    var currentModule  = null;
+    var currentSlideIndex = 0;
+    var quizState      = {};     // { m1: { questions, answers, score, passed, submitted } }
+    var tracker        = null;
+    var saveTimeout    = null;
+    var token          = null;
+
+    // ============================================================
+    // BOOT SEQUENCE
+    // ============================================================
+    token = new URLSearchParams(window.location.search).get('token');
+
+    if (!token) {
+      showError('No se encontró token de acceso.', '/autoformacion/' + COURSE_SLUG);
+      return;
+    }
+
+    // Fetch config + questions en paralelo, luego fetch enrollment
+    Promise.all([
+      fetch('/autoformacion/courses/' + COURSE_SLUG + '.json').then(function(r) {
+        if (!r.ok) throw new Error('Config no encontrada');
+        return r.json();
+      }),
+      fetch('/autoformacion/courses/' + COURSE_SLUG + '-questions.json').then(function(r) {
+        if (!r.ok) throw new Error('Banco de preguntas no encontrado');
+        return r.json();
+      })
+    ])
+    .then(function(results) {
+      courseConfig = results[0];
+      questionBank = results[1];
+      applyAccentColors(courseConfig.accentColors);
+      return fetch(API_BASE + '/status?token=' + token);
+    })
+    .then(function(r) {
+      if (!r.ok) throw new Error('Inscripción no encontrada');
+      return r.json();
+    })
+    .then(function(data) {
+      enrollment = data;
+      progress   = data.progress || {};
+
+      // Intentar restaurar progreso de localStorage si es más completo
+      var localKey = 'af_progress_' + COURSE_SLUG + '_' + token;
+      var local = null;
+      try { local = JSON.parse(localStorage.getItem(localKey) || 'null'); } catch(e) {}
+      if (local && Object.keys(local).length > Object.keys(progress).length) {
+        progress = local;
+      }
+
+      initCourse();
+    })
+    .catch(function(err) {
+      showError(err.message || 'Error al cargar el curso.', '/autoformacion/' + COURSE_SLUG);
+    });
+
+    // ============================================================
+    // APPLY ACCENT COLORS → CSS custom properties
+    // ============================================================
+    function applyAccentColors(colors) {
+      var root = document.documentElement;
+      if (!colors) return;
+      if (colors['900']) root.style.setProperty('--accent-900', colors['900']);
+      if (colors['700']) root.style.setProperty('--accent-700', colors['700']);
+      if (colors['600']) root.style.setProperty('--accent-600', colors['600']);
+      if (colors['100']) root.style.setProperty('--accent-100', colors['100']);
+      if (colors['50'])  root.style.setProperty('--accent-50',  colors['50']);
+      if (colors['bg'])  root.style.setProperty('--accent-bg',  colors['bg']);
+    }
+
+    // ============================================================
+    // INIT COURSE — después de tener config + enrollment
+    // ============================================================
+    function initCourse() {
+      var cfg = courseConfig;
+
+      // Actualizar page title
+      document.title = cfg.title + ' \u2014 UMCE Online';
+
+      // Sidebar title
+      document.getElementById('sidebar-title').textContent = cfg.title;
+      document.getElementById('mobile-title').textContent = cfg.title.split(':')[0];
+
+      // Back link
+      document.getElementById('back-link').href = '/autoformacion/' + COURSE_SLUG;
+
+      // Module keys en orden desde el JSON
+      moduleKeys = cfg.modules.map(function(m) { return m.id; });
+      currentModule = moduleKeys[0];
+
+      // xAPI Tracker
+      var moodlePlatformUrls = {
+        evirtual:  'https://evirtual.umce.cl',
+        practica:  'https://evirtual-practica.umce.cl',
+        virtual:   'https://virtual.umce.cl',
+        pregrado:  'https://evirtual-pregrado.umce.cl',
+        postgrado: 'https://evirtual-postgrado.umce.cl'
+      };
+      var platformUrl = moodlePlatformUrls[cfg.moodle.platform] || 'https://evirtual.umce.cl';
+
+      tracker = new XAPITracker({
+        activityBase: cfg.xapi.activityBase,
+        moduleId:     cfg.xapi.moduleId,
+        moduleName:   cfg.title,
+        courseId:     String(cfg.moodle.courseId),
+        userEmail:    enrollment.email,
+        userFullname: (enrollment.nombre || '') + ' ' + (enrollment.apellido || ''),
+        userId:       enrollment.moodle_user_id || '',
+        passingScore: cfg.passingScore || 60,
+        lrsEndpoint:  'https://lrs.udfv.cloud/xAPI/',
+        lrsUser:      'moodle',
+        lrsPassword:  'xApiUMCE2026!'
+      });
+      tracker.init();
+
+      buildSidebar();
+      navigateTo(currentModule, 0);
+    }
+
+    // ============================================================
+    // SIDEBAR
+    // ============================================================
+    function buildSidebar() {
+      var nav = document.getElementById('sidebar-nav');
+      var html = '';
+
+      moduleKeys.forEach(function(mKey) {
+        var mod = getModule(mKey);
+        if (!mod) return;
+
+        // Encabezado del módulo (solo el label corto: "Módulo 1")
+        var shortLabel = mod.fullTitle
+          ? mod.fullTitle.split(':')[0].trim()
+          : (mod.title || mKey);
+        html += '<div class="sidebar-module-title">' + escHtml(shortLabel) + '</div>';
+
+        mod.slides.forEach(function(slide, idx) {
+          var slideKey = mKey + '_' + idx;
+          var isViewed = !!progress[slideKey];
+          var isActive = (mKey === currentModule && idx === currentSlideIndex);
+
+          var classes = 'sidebar-item';
+          if (isActive)  classes += ' active';
+          if (isViewed)  classes += ' completed';
+
+          html += '<div class="' + classes + '"'
+               + ' data-module="' + mKey + '" data-slide="' + idx + '"'
+               + ' onclick="navigateTo(\'' + mKey + '\',' + idx + ')"'
+               + ' role="button" tabindex="0"'
+               + ' onkeydown="if(event.key===\'Enter\'||event.key===\' \')navigateTo(\'' + mKey + '\',' + idx + ')"'
+               + '>';
+          html += '<div class="check">' + (isViewed ? '&#10003;' : '') + '</div>';
+          html += '<span>' + escHtml(slide.title) + '</span>';
+          html += '</div>';
+        });
+      });
+
+      nav.innerHTML = html;
+    }
+
+    // ============================================================
+    // NAVIGATION
+    // ============================================================
+    window.navigateTo = function(moduleKey, slideIndex) {
+      // Caso especial: pantalla de completado
+      if (moduleKey === 'complete') {
+        showCompletion();
+        return;
+      }
+
+      var mod = getModule(moduleKey);
+      if (!mod) return;
+
+      currentModule     = moduleKey;
+      currentSlideIndex = slideIndex;
+
+      var slide = mod.slides[slideIndex];
+      if (!slide) return;
+
+      var contentArea = document.getElementById('content-area');
+      var html = '';
+
+      if (slide.type === 'quiz') {
+        html += renderQuiz(moduleKey);
+      } else {
+        html += '<div class="slide-body">' + (slide.html || '') + '</div>';
+      }
+
+      // Navegación inferior
+      html += buildSlideNav(moduleKey, slideIndex, slide, mod);
+
+      contentArea.innerHTML = html;
+
+      // Marcar slide como vista
+      var slideKey = moduleKey + '_' + slideIndex;
+      if (!progress[slideKey]) {
+        progress[slideKey] = true;
+        saveProgress();
+      }
+
+      // xAPI: progressed
+      if (tracker) {
+        tracker.trackSlideProgress(slideIndex, mod.slides.length);
+      }
+
+      buildSidebar();
+      updateProgress();
+      window.scrollTo(0, 0);
+
+      // Cerrar sidebar en mobile
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-overlay').classList.remove('open');
+    };
+
+    // Botones Anterior / Siguiente
+    function buildSlideNav(moduleKey, slideIndex, slide, mod) {
+      var html = '<div class="slide-nav">';
+
+      // --- Anterior ---
+      var prevHtml = '';
+      if (slideIndex > 0) {
+        prevHtml = '<button class="btn btn-outline" onclick="navigateTo(\'' + moduleKey + '\',' + (slideIndex - 1) + ')">&larr; Anterior</button>';
+      } else {
+        var prevModKey = getPrevModule(moduleKey);
+        if (prevModKey) {
+          var prevMod = getModule(prevModKey);
+          var prevLast = prevMod.slides.length - 1;
+          prevHtml = '<button class="btn btn-outline" onclick="navigateTo(\'' + prevModKey + '\',' + prevLast + ')">&larr; Anterior</button>';
+        } else {
+          prevHtml = '<div></div>';
+        }
+      }
+      html += prevHtml;
+
+      // --- Contador central ---
+      html += '<span class="slide-counter">' + (slideIndex + 1) + ' / ' + mod.slides.length + '</span>';
+
+      // --- Siguiente (solo en slides de info; quiz maneja su propio avance) ---
+      var nextHtml = '<div></div>';
+      if (slide.type !== 'quiz') {
+        if (slideIndex < mod.slides.length - 1) {
+          nextHtml = '<button class="btn btn-primary" onclick="navigateTo(\'' + moduleKey + '\',' + (slideIndex + 1) + ')">Siguiente &rarr;</button>';
+        } else {
+          // Último slide de info del módulo (antes del quiz)
+          // No hay botón siguiente: el quiz aparece en el slide final del módulo
+          nextHtml = '<div></div>';
+        }
+      }
+      html += nextHtml;
+
+      html += '</div>';
+      return html;
+    }
+
+    // ============================================================
+    // QUIZ RENDER
+    // ============================================================
+    function renderQuiz(moduleKey) {
+      var cfg = courseConfig;
+      var questionsPerQuiz = cfg.questionsPerQuiz || 5;
+      var passingScore     = cfg.passingScore     || 60;
+
+      var mod = getModule(moduleKey);
+      var qs = quizState[moduleKey];
+
+      if (!qs || !qs.questions) {
+        var bank = questionBank[moduleKey] || [];
+        var selected = selectRandom(bank, questionsPerQuiz);
+        qs = { questions: selected, answers: {}, submitted: false, score: 0, passed: false };
+        quizState[moduleKey] = qs;
+      }
+
+      var html = '<div class="quiz-container">';
+      html += '<div class="quiz-header">';
+      html += '<h2>Evaluaci&oacute;n &mdash; ' + escHtml(mod.title) + '</h2>';
+      html += '<p>' + questionsPerQuiz + ' preguntas seleccionadas aleatoriamente. '
+            + 'Necesitas ' + passingScore + '% para aprobar. Puedes reintentar.</p>';
+      html += '</div>';
+
+      qs.questions.forEach(function(q, qIdx) {
+        html += '<div class="quiz-question">';
+        html += '<p class="quiz-question-text">' + (qIdx + 1) + '. ' + escHtml(q.text) + '</p>';
+
+        q.options.forEach(function(opt, oIdx) {
+          var classes = 'quiz-option';
+          var disabled = '';
+
+          if (qs.submitted) {
+            disabled = 'disabled';
+            if (opt.correct)                          classes += ' correct';
+            if (qs.answers[q.id] === oIdx && !opt.correct) classes += ' incorrect';
+          } else if (qs.answers[q.id] === oIdx) {
+            classes += ' selected';
+          }
+
+          html += '<button class="' + classes + '" '
+               + disabled + ' '
+               + 'onclick="selectAnswer(\'' + moduleKey + '\',\'' + q.id + '\',' + oIdx + ')">'
+               + escHtml(opt.text)
+               + '</button>';
+        });
+
+        html += '</div>';
+      });
+
+      if (!qs.submitted) {
+        var allAnswered = qs.questions.every(function(q) {
+          return qs.answers[q.id] !== undefined;
+        });
+        html += '<button class="quiz-submit" '
+             + (allAnswered ? '' : 'disabled')
+             + ' onclick="submitQuiz(\'' + moduleKey + '\')">'
+             + 'Enviar respuestas'
+             + '</button>';
+      } else {
+        // Resultado
+        var resultClass = qs.passed ? 'passed' : 'failed';
+        var correct = Math.round(qs.score / 100 * qs.questions.length);
+        html += '<div class="quiz-result ' + resultClass + '">';
+        html += '<strong>' + qs.score + '% &mdash; ' + (qs.passed ? 'Aprobado' : 'No aprobado') + '</strong>';
+        html += '<span>' + correct + ' de ' + qs.questions.length + ' correctas</span>';
+        html += '</div>';
+
+        if (qs.passed) {
+          var nextModKey = getNextModule(moduleKey);
+          if (nextModKey) {
+            html += '<button class="btn btn-primary btn-full" onclick="navigateTo(\'' + nextModKey + '\',0)">Continuar al siguiente m&oacute;dulo &rarr;</button>';
+          } else {
+            html += '<button class="btn btn-primary btn-full" onclick="navigateTo(\'complete\',0)">Ver constancia &rarr;</button>';
+          }
+        } else {
+          html += '<button class="btn btn-outline btn-full" onclick="retryQuiz(\'' + moduleKey + '\')">Reintentar con nuevas preguntas</button>';
+        }
+      }
+
+      html += '</div>';
+      return html;
+    }
+
+    window.selectAnswer = function(moduleKey, questionId, optionIndex) {
+      var qs = quizState[moduleKey];
+      if (!qs || qs.submitted) return;
+      qs.answers[questionId] = optionIndex;
+      navigateTo(moduleKey, currentSlideIndex); // re-render
+    };
+
+    window.submitQuiz = function(moduleKey) {
+      var qs = quizState[moduleKey];
+      if (!qs) return;
+
+      var questionsPerQuiz = courseConfig.questionsPerQuiz || 5;
+      var passingScore     = courseConfig.passingScore     || 60;
+
+      var correct = 0;
+      qs.questions.forEach(function(q) {
+        var ansIdx = qs.answers[q.id];
+        if (ansIdx !== undefined && q.options[ansIdx] && q.options[ansIdx].correct) correct++;
+      });
+
+      qs.score    = Math.round((correct / qs.questions.length) * 100);
+      qs.passed   = qs.score >= passingScore;
+      qs.submitted = true;
+
+      if (qs.passed) {
+        // Guardar solo si es mejor puntaje
+        var prev = progress[moduleKey];
+        if (!prev || !prev.completed || qs.score > (prev.score || 0)) {
+          progress[moduleKey] = {
+            completed:    true,
+            score:        qs.score,
+            completed_at: new Date().toISOString()
+          };
+          saveProgress();
+
+          // Reportar al backend
+          fetch(API_BASE + '/complete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: token, module: moduleKey, score: qs.score })
+          }).catch(function() {});
+
+          // xAPI: completed
+          if (tracker) tracker.trackCompletion(qs.score);
+        }
+      }
+
+      // xAPI: respuestas
+      if (tracker) {
+        qs.questions.forEach(function(q) {
+          var ansIdx   = qs.answers[q.id];
+          var isCorrect = ansIdx !== undefined && q.options[ansIdx] && q.options[ansIdx].correct;
+          var ansText   = (ansIdx !== undefined && q.options[ansIdx]) ? q.options[ansIdx].text : '';
+          tracker.trackQuizAnswer(q.id, q.text, ansText, isCorrect);
+        });
+      }
+
+      navigateTo(moduleKey, currentSlideIndex); // re-render con resultados
+    };
+
+    window.retryQuiz = function(moduleKey) {
+      quizState[moduleKey] = null;
+      navigateTo(moduleKey, currentSlideIndex);
+    };
+
+    // ============================================================
+    // COMPLETION SCREEN
+    // ============================================================
+    function showCompletion() {
+      var cfg = courseConfig;
+      var completion = cfg.completion || {};
+
+      var contentArea = document.getElementById('content-area');
+      var msg        = completion.message    || 'Has completado exitosamente el curso.';
+      var nextUrl    = completion.nextStepUrl   || ('#');
+      var nextLabel  = completion.nextStepLabel || 'Continuar';
+
+      var html = '<div class="completion-screen">';
+      html += '<div class="big-check">&#10003;</div>';
+      html += '<h2 class="font-heading">Curso completado</h2>';
+      html += '<p>' + escHtml(msg) + '</p>';
+      html += '<a href="' + escHtml(nextUrl) + '" target="_blank" class="btn btn-primary">' + escHtml(nextLabel) + '</a>';
+      html += '<div style="margin-top:2rem;">';
+      html += '<a href="/autoformacion/' + COURSE_SLUG + '" style="color:var(--text-secondary);font-size:0.875rem;">Volver a la landing del curso</a>';
+      html += '</div></div>';
+
+      contentArea.innerHTML = html;
+      buildSidebar();
+      updateProgress();
+    }
+
+    // ============================================================
+    // PROGRESS
+    // ============================================================
+    function updateProgress() {
+      var totalSlides  = 0;
+      var viewedSlides = 0;
+
+      moduleKeys.forEach(function(mKey) {
+        var mod = getModule(mKey);
+        if (!mod) return;
+        mod.slides.forEach(function(slide, idx) {
+          totalSlides++;
+          if (progress[mKey + '_' + idx]) viewedSlides++;
+        });
+      });
+
+      var pct = totalSlides > 0 ? Math.round((viewedSlides / totalSlides) * 100) : 0;
+      var pctStr = pct + '%';
+
+      var fillEl   = document.getElementById('progress-fill');
+      var pctEl    = document.getElementById('progress-pct');
+      var mobileEl = document.getElementById('mobile-progress');
+
+      if (fillEl)   fillEl.style.width = pctStr;
+      if (pctEl)    pctEl.textContent  = pctStr;
+      if (mobileEl) mobileEl.textContent = pctStr;
+    }
+
+    function saveProgress() {
+      // localStorage inmediato
+      var localKey = 'af_progress_' + COURSE_SLUG + '_' + token;
+      try { localStorage.setItem(localKey, JSON.stringify(progress)); } catch(e) {}
+
+      // Backend debounced (3s)
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(function() {
+        fetch(API_BASE + '/progress', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: token, progress: progress })
+        }).catch(function() {}); // silent fail
+      }, 3000);
+    }
+
+    // ============================================================
+    // MOBILE SIDEBAR
+    // ============================================================
+    window.toggleSidebar = function() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebar-overlay').classList.toggle('open');
+    };
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+
+    function getModule(moduleKey) {
+      if (!courseConfig) return null;
+      return courseConfig.modules.find(function(m) { return m.id === moduleKey; }) || null;
+    }
+
+    function getPrevModule(moduleKey) {
+      var idx = moduleKeys.indexOf(moduleKey);
+      return idx > 0 ? moduleKeys[idx - 1] : null;
+    }
+
+    function getNextModule(moduleKey) {
+      var idx = moduleKeys.indexOf(moduleKey);
+      return (idx >= 0 && idx < moduleKeys.length - 1) ? moduleKeys[idx + 1] : null;
+    }
+
+    // Fisher-Yates shuffle → toma N elementos aleatorios
+    function selectRandom(arr, n) {
+      var copy = arr.slice();
+      for (var i = copy.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = copy[i]; copy[i] = copy[j]; copy[j] = tmp;
+      }
+      return copy.slice(0, Math.min(n, copy.length));
+    }
+
+    // Escapa HTML para insertar texto en innerHTML
+    function escHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function showError(msg, backUrl) {
+      var el = document.getElementById('loading');
+      if (!el) return;
+      el.innerHTML = '<p class="error-text">' + escHtml(msg) + '</p>'
+        + (backUrl ? '<p><a href="' + backUrl + '">Volver a inscribirse</a></p>' : '');
+    }
+
+  })();
+  </script>
+</body>
+</html>

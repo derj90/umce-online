@@ -1,0 +1,134 @@
+{
+  "slug": "modelo-educativo",
+  "title": "Modelo Educativo UMCE",
+  "subtitle": "Inducción al modelo educativo institucional basado en competencias y UDA",
+  "description": "Conoce los fundamentos del Modelo Educativo de la UMCE: competencias genéricas y específicas, Unidades de Desempeño Académico (UDA), pedagogía activa y evaluación auténtica. Este curso es una introducción para toda la comunidad académica.",
+  "accent": "indigo",
+  "accentColors": {
+    "900": "#312e81",
+    "700": "#4338ca",
+    "600": "#4f46e5",
+    "100": "#e0e7ff",
+    "50": "#eef2ff",
+    "bg": "#f5f7ff"
+  },
+  "duration": "2 semanas",
+  "level": "Introductorio",
+  "modality": "Autoformación",
+  "price": "Gratuito",
+  "moodle": {
+    "platform": "evirtual",
+    "courseId": null
+  },
+  "xapi": {
+    "activityBase": "https://umce.online/autoformacion/modelo-educativo",
+    "moduleId": "modelo-educativo"
+  },
+  "instructor": {
+    "name": "UDFV — Unidad de Desarrollo y Formación Virtual",
+    "role": "Vicerrectoría Académica, UMCE",
+    "avatar": null
+  },
+  "enrollment": {
+    "requireRut": false,
+    "requireInstitution": false,
+    "institutions": []
+  },
+  "passingScore": 60,
+  "questionsPerQuiz": 5,
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Fundamentos del Modelo Educativo",
+      "fullTitle": "Módulo 1: Fundamentos del Modelo Educativo UMCE",
+      "duration": "3 horas",
+      "units": 5,
+      "slides": [
+        {
+          "title": "Bienvenida",
+          "type": "info",
+          "html": "<h2>Fundamentos del Modelo Educativo UMCE</h2><p>Bienvenido/a al primer módulo del curso sobre el Modelo Educativo de la Universidad Metropolitana de Ciencias de la Educación.</p><p>La UMCE, como universidad pedagógica de Chile, tiene un modelo educativo centrado en la <strong>formación de profesionales de la educación</strong> con identidad, compromiso social y capacidad transformadora.</p><p><strong>Duración estimada:</strong> 3 horas</p><p><strong>Unidades:</strong> 5</p>"
+        },
+        {
+          "title": "Misión y visión UMCE",
+          "type": "info",
+          "html": "<h2>Misión y visión de la UMCE</h2><p>La UMCE es la única universidad estatal de Chile dedicada exclusivamente a la formación de profesores y profesionales de la educación. Su misión se articula en torno a:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Formación inicial docente</strong> de excelencia</li><li style=\"margin-bottom:0.5rem;\"><strong>Investigación educativa</strong> que impacte en las políticas públicas</li><li style=\"margin-bottom:0.5rem;\"><strong>Vinculación con el sistema escolar</strong> chileno</li><li style=\"margin-bottom:0.5rem;\"><strong>Compromiso con la educación pública</strong></li></ul><p>El Modelo Educativo traduce esta misión en un marco pedagógico concreto para todas las carreras.</p>"
+        },
+        {
+          "title": "Enfoque por competencias",
+          "type": "info",
+          "html": "<h2>Enfoque por competencias</h2><p>El Modelo Educativo UMCE adopta un <strong>enfoque por competencias</strong> que integra conocimientos, habilidades, actitudes y valores en desempeños complejos.</p><p>Las competencias se organizan en dos niveles:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Competencias genéricas:</strong> transversales a todas las carreras (comunicación, pensamiento crítico, compromiso ético, trabajo colaborativo)</li><li style=\"margin-bottom:0.5rem;\"><strong>Competencias específicas:</strong> propias de cada perfil de egreso (disciplinares y pedagógicas)</li></ul><p>Este enfoque supera la formación basada solo en contenidos, orientándose al <em>saber hacer en contexto</em>.</p>"
+        },
+        {
+          "title": "Unidades de Desempeño Académico (UDA)",
+          "type": "info",
+          "html": "<h2>Unidades de Desempeño Académico (UDA)</h2><p>La UDA es la unidad curricular básica del Modelo Educativo UMCE. Reemplaza el concepto tradicional de \"asignatura\" con un diseño orientado a competencias.</p><p>Cada UDA se caracteriza por:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Resultados de aprendizaje</strong> explícitos y evaluables</li><li style=\"margin-bottom:0.5rem;\"><strong>Créditos SCT-Chile</strong> que reflejan la carga real del estudiante</li><li style=\"margin-bottom:0.5rem;\"><strong>Estrategias de enseñanza activa</strong> (no solo clases expositivas)</li><li style=\"margin-bottom:0.5rem;\"><strong>Evaluación auténtica</strong> alineada con los resultados de aprendizaje</li></ul><p>El sistema SCT (Sistema de Créditos Transferibles) considera que 1 crédito = 27-30 horas de trabajo total del estudiante (presencial + autónomo).</p>"
+        },
+        {
+          "title": "Material complementario M1",
+          "type": "info",
+          "html": "<h2>Material complementario</h2><p>Para profundizar en los fundamentos del Modelo Educativo UMCE:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;line-height:2;\"><li>UMCE (2023). Modelo Educativo Institucional.</li><li>CNA (2022). Criterios de acreditación para carreras de pedagogía.</li><li>CNED. Sistema de Créditos Transferibles SCT-Chile.</li><li>Tobón, S. (2013). Formación integral y competencias.</li></ul><p>A continuación, responde la evaluación del módulo.</p>"
+        },
+        { "title": "Evaluación Módulo 1", "type": "quiz" }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "Pedagogía activa y evaluación",
+      "fullTitle": "Módulo 2: Pedagogía activa y evaluación auténtica",
+      "duration": "3 horas",
+      "units": 5,
+      "slides": [
+        {
+          "title": "Bienvenida al Módulo 2",
+          "type": "info",
+          "html": "<h2>Pedagogía activa y evaluación auténtica</h2><p>En este módulo explorarás las estrategias de enseñanza activa y los principios de evaluación auténtica que fundamentan el Modelo Educativo UMCE.</p><p><strong>Duración estimada:</strong> 3 horas</p><p><strong>Unidades:</strong> 5</p>"
+        },
+        {
+          "title": "Aprendizaje activo",
+          "type": "info",
+          "html": "<h2>Aprendizaje activo</h2><p>El Modelo Educativo UMCE promueve estrategias donde el estudiante es protagonista de su aprendizaje. Las metodologías activas incluyen:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Aprendizaje Basado en Problemas (ABP):</strong> situaciones reales del contexto educativo</li><li style=\"margin-bottom:0.5rem;\"><strong>Estudio de casos:</strong> análisis de situaciones pedagógicas complejas</li><li style=\"margin-bottom:0.5rem;\"><strong>Aprendizaje colaborativo:</strong> trabajo en equipos con roles definidos</li><li style=\"margin-bottom:0.5rem;\"><strong>Aprendizaje-Servicio:</strong> vinculación con comunidades educativas reales</li></ul><p>Estas estrategias preparan al futuro docente para enfrentar la complejidad del aula.</p>"
+        },
+        {
+          "title": "Evaluación auténtica",
+          "type": "info",
+          "html": "<h2>Evaluación auténtica</h2><p>La evaluación auténtica es coherente con el enfoque por competencias: evalúa desempeños complejos en contextos significativos, no solo la memorización de contenidos.</p><p>Principios clave:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Alineamiento constructivo:</strong> la evaluación se alinea con los resultados de aprendizaje y las actividades de enseñanza</li><li style=\"margin-bottom:0.5rem;\"><strong>Retroalimentación formativa:</strong> el feedback es continuo, no solo al final</li><li style=\"margin-bottom:0.5rem;\"><strong>Rúbricas:</strong> criterios transparentes y compartidos con el estudiante</li><li style=\"margin-bottom:0.5rem;\"><strong>Portafolio:</strong> evidencia progresiva de aprendizaje</li></ul>"
+        },
+        {
+          "title": "Práctica pedagógica",
+          "type": "info",
+          "html": "<h2>Práctica pedagógica en el Modelo UMCE</h2><p>La práctica pedagógica es el eje articulador de la formación. El modelo establece una línea de práctica progresiva desde el primer año:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Práctica inicial:</strong> observación y análisis del contexto educativo</li><li style=\"margin-bottom:0.5rem;\"><strong>Práctica intermedia:</strong> diseño e implementación de actividades acotadas</li><li style=\"margin-bottom:0.5rem;\"><strong>Práctica profesional:</strong> ejercicio docente supervisado en establecimientos</li></ul><p>Esta progresión permite que el estudiante construya su identidad profesional desde la experiencia, no solo desde la teoría.</p>"
+        },
+        {
+          "title": "Material complementario M2",
+          "type": "info",
+          "html": "<h2>Material complementario</h2><p>Para profundizar en pedagogía activa y evaluación:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;line-height:2;\"><li>Biggs, J. &amp; Tang, C. (2011). Teaching for Quality Learning at University.</li><li>Wiggins, G. (1998). Educative Assessment.</li><li>UMCE. Reglamento de Evaluación Institucional.</li></ul><p>A continuación, responde la evaluación del módulo.</p>"
+        },
+        { "title": "Evaluación Módulo 2", "type": "quiz" }
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "¿Este curso es obligatorio para los docentes UMCE?",
+      "a": "No es obligatorio, pero es altamente recomendado. El curso permite conocer los fundamentos del modelo educativo institucional que se aplica en todas las carreras."
+    },
+    {
+      "q": "¿Necesito ser parte de la UMCE para inscribirme?",
+      "a": "No. El curso está abierto a cualquier persona interesada en conocer el modelo educativo de la UMCE."
+    },
+    {
+      "q": "¿Cuánto dura el curso?",
+      "a": "El curso tiene 2 módulos con una duración estimada total de 6 horas. Puedes avanzar a tu ritmo."
+    },
+    {
+      "q": "¿Qué son las UDA?",
+      "a": "Las Unidades de Desempeño Académico (UDA) son la unidad curricular básica del Modelo Educativo UMCE, orientadas a competencias con créditos SCT-Chile."
+    }
+  ],
+  "completion": {
+    "message": "Has completado exitosamente el curso Modelo Educativo UMCE. Ahora conoces los fundamentos del enfoque por competencias, las UDA, la pedagogía activa y la evaluación auténtica.",
+    "nextStepUrl": null,
+    "nextStepLabel": "Volver al portal"
+  }
+}

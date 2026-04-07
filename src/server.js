@@ -5691,8 +5691,49 @@ app.post('/api/admin/cron/run', adminOrEditorMiddleware, async (req, res) => {
 
 // --- API: Autoformación enrollment ---
 const AUTOFORMACION_COURSES = {
-  sustentabilidad: { moodle_platform: 'evirtual', moodle_course_id: 384 }
+  sustentabilidad: { moodle_platform: 'evirtual', moodle_course_id: 384 },
+  'modelo-educativo': { moodle_platform: 'evirtual', moodle_course_id: null }
 };
+
+// Helper: load course config JSON (cached)
+const _courseConfigCache = {};
+function loadCourseConfig(slug) {
+  if (_courseConfigCache[slug]) return _courseConfigCache[slug];
+  try {
+    const configPath = path.join(__dirname, 'public', 'autoformacion', 'courses', slug + '.json');
+    if (fs.existsSync(configPath)) {
+      _courseConfigCache[slug] = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      return _courseConfigCache[slug];
+    }
+  } catch (e) { console.log('[Autoformacion] Config load error:', e.message); }
+  return null;
+}
+
+// Dynamic course landing page
+app.get('/autoformacion/:slug', (req, res) => {
+  const slug = req.params.slug;
+  // Skip if it's a file request (js, css, etc.)
+  if (slug.includes('.')) return res.status(404).send('Not found');
+  const config = loadCourseConfig(slug);
+  if (!config) return res.status(404).send('Curso no encontrado');
+  const templatePath = path.join(__dirname, 'public', 'autoformacion', 'landing-template.html');
+  if (!fs.existsSync(templatePath)) return res.status(404).send('Template no disponible');
+  let html = fs.readFileSync(templatePath, 'utf8');
+  html = html.replace('<!--COURSE_SLUG_INJECT-->', '<script>window.COURSE_SLUG = ' + JSON.stringify(slug) + ';</script>');
+  res.send(html);
+});
+
+// Dynamic course learning space
+app.get('/autoformacion/:slug/curso', (req, res) => {
+  const slug = req.params.slug;
+  const config = loadCourseConfig(slug);
+  if (!config) return res.status(404).send('Curso no encontrado');
+  const templatePath = path.join(__dirname, 'public', 'autoformacion', 'curso-template.html');
+  if (!fs.existsSync(templatePath)) return res.status(404).send('Template no disponible');
+  let html = fs.readFileSync(templatePath, 'utf8');
+  html = html.replace('<!--COURSE_SLUG_INJECT-->', '<script>window.COURSE_SLUG = ' + JSON.stringify(slug) + ';</script>');
+  res.send(html);
+});
 
 // Normalizar RUT: sin puntos, minúscula, con guión
 function normalizeRut(rut) {
@@ -5702,17 +5743,25 @@ function normalizeRut(rut) {
 app.post('/api/autoformacion/enroll', async (req, res) => {
   try {
     const { nombre, apellido, rut, email, institucion, estamento, course_slug } = req.body;
-    if (!nombre || !apellido || !email || !rut) {
-      return res.status(400).json({ error: 'Nombre, apellido, RUT y email son requeridos' });
-    }
-
-    const cleanRut = normalizeRut(rut);
-    if (!/^\d{7,8}-[\dka-z]$/.test(cleanRut)) {
-      return res.status(400).json({ error: 'RUT inválido. Formato: 12345678-9 (sin puntos)' });
-    }
-
     const slug = course_slug || 'sustentabilidad';
-    const courseConfig = AUTOFORMACION_COURSES[slug];
+    const jsonConfig = loadCourseConfig(slug);
+    const requireRut = jsonConfig?.enrollment?.requireRut !== false;
+
+    if (!nombre || !apellido || !email) {
+      return res.status(400).json({ error: 'Nombre, apellido y email son requeridos' });
+    }
+
+    let cleanRut = null;
+    if (rut) {
+      cleanRut = normalizeRut(rut);
+      if (!/^\d{7,8}-[\dka-z]$/.test(cleanRut)) {
+        return res.status(400).json({ error: 'RUT inválido. Formato: 12345678-9 (sin puntos)' });
+      }
+    } else if (requireRut) {
+      return res.status(400).json({ error: 'RUT es requerido para este curso' });
+    }
+
+    const courseConfig = AUTOFORMACION_COURSES[slug] || (jsonConfig?.moodle ? { moodle_platform: jsonConfig.moodle.platform, moodle_course_id: jsonConfig.moodle.courseId } : null);
 
     // Check if already enrolled
     const existing = await portalQuery('autoformacion_enrollments', `email=eq.${encodeURIComponent(email.toLowerCase().trim())}&course_slug=eq.${slug}`);
@@ -5726,7 +5775,7 @@ app.post('/api/autoformacion/enroll', async (req, res) => {
     // Insert in Supabase
     await portalMutate('autoformacion_enrollments', 'POST', {
       course_slug: slug,
-      rut: cleanRut,
+      ...(cleanRut ? { rut: cleanRut } : {}),
       nombre,
       apellido,
       email: email.toLowerCase().trim(),
@@ -5832,8 +5881,10 @@ app.post('/api/autoformacion/complete', async (req, res) => {
     const progress = enrollment.progress || {};
     progress[module] = { completed: true, score, completed_at: new Date().toISOString() };
 
-    // Check if all 3 modules completed
-    const allComplete = ['m1', 'm2', 'm3'].every(m => progress[m]?.completed);
+    // Check if all modules completed (dynamically from config or fallback to m1-m3)
+    const courseJsonConfig = loadCourseConfig(enrollment.course_slug || 'sustentabilidad');
+    const moduleIds = courseJsonConfig?.modules?.map(m => m.id) || ['m1', 'm2', 'm3'];
+    const allComplete = moduleIds.every(m => progress[m]?.completed);
 
     await portalMutate('autoformacion_enrollments', 'PATCH',
       {
@@ -6288,9 +6339,8 @@ app.get('/privacidad', (req, res) => res.sendFile(path.join(__dirname, 'public',
 app.get('/verificar', (req, res) => res.sendFile(path.join(__dirname, 'public', 'verificar-credencial.html')));
 app.get('/badge/:hash', (req, res) => res.redirect(301, `/verificar?id=${req.params.hash}`));
 
-// Autoformación
-// app.get('/autoformacion/sustentabilidad', ...) — archived, not requested
-app.get('/autoformacion/sustentabilidad/curso', (req, res) => res.sendFile(path.join(__dirname, 'public', 'autoformacion-sustentabilidad-curso.html')));
+// Autoformación — rutas dinámicas ahora en sección de API (buscar "Dynamic course landing page")
+// Legacy: /autoformacion/sustentabilidad/curso → manejado por /autoformacion/:slug/curso
 
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/piac', (req, res) => res.sendFile(path.join(__dirname, 'public', 'piac.html')));

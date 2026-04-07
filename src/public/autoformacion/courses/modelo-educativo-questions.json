@@ -1,0 +1,146 @@
+{
+  "m1": [
+    {
+      "id": "m1q1",
+      "text": "¿Cuál es la característica distintiva de la UMCE en el sistema universitario chileno?",
+      "options": [
+        { "text": "Es la universidad más antigua de Chile", "correct": false },
+        { "text": "Es la única universidad estatal dedicada exclusivamente a la formación de profesores", "correct": true },
+        { "text": "Es la universidad con más estudiantes de pedagogía", "correct": false },
+        { "text": "Es la única universidad que ofrece programas de postgrado en educación", "correct": false }
+      ]
+    },
+    {
+      "id": "m1q2",
+      "text": "En el enfoque por competencias del Modelo Educativo UMCE, ¿cómo se organizan las competencias?",
+      "options": [
+        { "text": "Competencias básicas y avanzadas", "correct": false },
+        { "text": "Competencias teóricas y prácticas", "correct": false },
+        { "text": "Competencias genéricas y específicas", "correct": true },
+        { "text": "Competencias disciplinares y transversales", "correct": false }
+      ]
+    },
+    {
+      "id": "m1q3",
+      "text": "¿Qué es una UDA en el contexto del Modelo Educativo UMCE?",
+      "options": [
+        { "text": "Una Unidad de Docencia Avanzada para postgrados", "correct": false },
+        { "text": "Una Unidad de Desempeño Académico, la unidad curricular básica orientada a competencias", "correct": true },
+        { "text": "Un departamento académico de la universidad", "correct": false },
+        { "text": "Un instrumento de evaluación estandarizado", "correct": false }
+      ]
+    },
+    {
+      "id": "m1q4",
+      "text": "En el sistema SCT-Chile, 1 crédito equivale aproximadamente a:",
+      "options": [
+        { "text": "10-15 horas de trabajo total del estudiante", "correct": false },
+        { "text": "15-20 horas de clases presenciales", "correct": false },
+        { "text": "27-30 horas de trabajo total del estudiante (presencial + autónomo)", "correct": true },
+        { "text": "40 horas de trabajo autónomo", "correct": false }
+      ]
+    },
+    {
+      "id": "m1q5",
+      "text": "¿Cuál de las siguientes NO es una competencia genérica típica del Modelo UMCE?",
+      "options": [
+        { "text": "Comunicación efectiva", "correct": false },
+        { "text": "Pensamiento crítico", "correct": false },
+        { "text": "Programación en Python", "correct": true },
+        { "text": "Compromiso ético", "correct": false }
+      ]
+    },
+    {
+      "id": "m1q6",
+      "text": "El enfoque por competencias se diferencia de la formación tradicional porque:",
+      "options": [
+        { "text": "Elimina los contenidos disciplinares", "correct": false },
+        { "text": "Se orienta al saber hacer en contexto, integrando conocimientos, habilidades y actitudes", "correct": true },
+        { "text": "Solo evalúa habilidades prácticas", "correct": false },
+        { "text": "No requiere evaluación formal", "correct": false }
+      ]
+    },
+    {
+      "id": "m1q7",
+      "text": "¿Qué aspecto de la UDA refleja la carga real de trabajo del estudiante?",
+      "options": [
+        { "text": "El número de horas de clase presencial", "correct": false },
+        { "text": "Los créditos SCT-Chile", "correct": true },
+        { "text": "La cantidad de evaluaciones", "correct": false },
+        { "text": "El número de bibliografía obligatoria", "correct": false }
+      ]
+    }
+  ],
+  "m2": [
+    {
+      "id": "m2q1",
+      "text": "¿Cuál de las siguientes es una metodología de aprendizaje activo promovida por el Modelo UMCE?",
+      "options": [
+        { "text": "Clase magistral expositiva", "correct": false },
+        { "text": "Aprendizaje Basado en Problemas (ABP)", "correct": true },
+        { "text": "Dictado de apuntes", "correct": false },
+        { "text": "Lectura individual sin discusión", "correct": false }
+      ]
+    },
+    {
+      "id": "m2q2",
+      "text": "El alineamiento constructivo en evaluación significa que:",
+      "options": [
+        { "text": "Todos los estudiantes deben obtener la misma calificación", "correct": false },
+        { "text": "La evaluación se alinea con los resultados de aprendizaje y las actividades de enseñanza", "correct": true },
+        { "text": "Solo se evalúa al final del semestre", "correct": false },
+        { "text": "La evaluación la diseña un comité externo", "correct": false }
+      ]
+    },
+    {
+      "id": "m2q3",
+      "text": "¿Qué instrumento de evaluación permite evidenciar el progreso del estudiante a lo largo del tiempo?",
+      "options": [
+        { "text": "Examen final", "correct": false },
+        { "text": "Prueba de selección múltiple", "correct": false },
+        { "text": "Portafolio", "correct": true },
+        { "text": "Control de lectura", "correct": false }
+      ]
+    },
+    {
+      "id": "m2q4",
+      "text": "La línea de práctica progresiva del Modelo UMCE comienza con:",
+      "options": [
+        { "text": "Práctica profesional en establecimientos educacionales", "correct": false },
+        { "text": "Práctica inicial de observación y análisis del contexto educativo", "correct": true },
+        { "text": "Diseño de una clase completa", "correct": false },
+        { "text": "Evaluación docente por pares", "correct": false }
+      ]
+    },
+    {
+      "id": "m2q5",
+      "text": "La retroalimentación formativa se caracteriza por ser:",
+      "options": [
+        { "text": "Entregada solo al final del curso con la calificación", "correct": false },
+        { "text": "Continua y orientada a mejorar el proceso de aprendizaje", "correct": true },
+        { "text": "Exclusivamente numérica", "correct": false },
+        { "text": "Proporcionada solo por el docente, nunca por pares", "correct": false }
+      ]
+    },
+    {
+      "id": "m2q6",
+      "text": "¿Cuál es la función principal de las rúbricas en la evaluación auténtica?",
+      "options": [
+        { "text": "Simplificar la corrección para el docente", "correct": false },
+        { "text": "Establecer criterios transparentes y compartidos con el estudiante", "correct": true },
+        { "text": "Reemplazar las calificaciones numéricas", "correct": false },
+        { "text": "Evaluar solo contenidos memorísticos", "correct": false }
+      ]
+    },
+    {
+      "id": "m2q7",
+      "text": "El Aprendizaje-Servicio en el contexto UMCE implica:",
+      "options": [
+        { "text": "Realizar trabajo voluntario no vinculado a la formación", "correct": false },
+        { "text": "Vinculación con comunidades educativas reales como parte de la formación", "correct": true },
+        { "text": "Servicios de tutoría entre estudiantes", "correct": false },
+        { "text": "Prácticas laborales remuneradas", "correct": false }
+      ]
+    }
+  ]
+}
