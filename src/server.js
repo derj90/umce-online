@@ -5647,7 +5647,7 @@ app.get('/mis-cursos', (req, res) => res.sendFile(path.join(__dirname, 'public',
 app.get('/privacidad', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacidad.html')));
 
 // Autoformación
-app.get('/autoformacion/sustentabilidad', (req, res) => res.sendFile(path.join(__dirname, 'public', 'autoformacion-sustentabilidad.html')));
+// app.get('/autoformacion/sustentabilidad', ...) — archived, not requested
 app.get('/autoformacion/sustentabilidad/curso', (req, res) => res.sendFile(path.join(__dirname, 'public', 'autoformacion-sustentabilidad-curso.html')));
 
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
