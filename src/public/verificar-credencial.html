@@ -91,9 +91,16 @@
   <div id="nav-placeholder"></div>
 
   <!-- HERO -->
-  <section class="text-white pt-10 pb-8 sm:pt-14 sm:pb-10"
-    style="background: linear-gradient(135deg, #001D5C 0%, #0033A1 60%, #003F6E 100%);">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+  <section class="hero-gradient text-white pt-10 pb-8 sm:pt-14 sm:pb-10 relative overflow-hidden">
+    <div id="p5-header" data-variant="5"></div>
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center relative z-10">
+      <nav class="breadcrumb text-sm mb-5 flex justify-center">
+        <a href="/" class="text-white/60 hover:text-white">Inicio</a>
+        <span class="text-white/30 mx-1">/</span>
+        <a href="/virtualizacion" class="text-white/60 hover:text-white">Virtualizaci&oacute;n</a>
+        <span class="text-white/30 mx-1">/</span>
+        <span class="text-white/90">Verificar Credencial</span>
+      </nav>
       <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5"
         style="background: rgba(255,255,255,0.12);">
         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -286,6 +293,7 @@
   <div id="footer-placeholder"></div>
 
   <script src="/shared/shared.js"></script>
+  <script src="/shared/generative-header.js"></script>
   <script src="/shared/audio-narrator.js"></script>
   <script>
     // Pre-cargar ID desde la URL si viene como ?id=...
