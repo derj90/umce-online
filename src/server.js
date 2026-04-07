@@ -5632,9 +5632,9 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.ht
 // --- Hidden pages (archived in src/pages-archive/, restore when ready) ---
 // app.get('/catalogo', ...);
 // app.get('/competencias', ...);
-// app.get('/virtualizacion', ...);
-// app.get('/virtualizacion/planificador', ...);
-// app.get('/virtualizacion/fundamentos', ...);
+app.get('/virtualizacion', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion.html')));
+app.get('/virtualizacion/planificador', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-planificador.html')));
+app.get('/virtualizacion/fundamentos', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-fundamentos.html')));
 // app.get('/sct', ...);
 // app.get('/servicios', ...);
 // app.get('/noticias', ...);

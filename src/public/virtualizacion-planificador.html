@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Planificador Curricular — Virtualizaci&oacute;n UMCE</title>
+  <meta name="description" content="Dise&ntilde;a y valida la carga estudiantil de tu programa o curso virtual. Herramienta de co-dise&ntilde;o curricular para el proceso de virtualizaci&oacute;n de la UMCE.">
+  <meta name="author" content="Unidad de Desarrollo y Formaci&oacute;n Virtual — UMCE">
+  <link rel="canonical" href="https://umce.online/virtualizacion/planificador">
+  <meta property="og:title" content="Planificador Curricular — Virtualizaci&oacute;n UMCE">
+  <meta property="og:description" content="Dise&ntilde;a la carga estudiantil de tu curso virtual. Co-dise&ntilde;o curricular para acad&eacute;micos y dise&ntilde;adores instruccionales.">
+  <meta property="og:image" content="https://umce.online/assets/og-default.png">
+  <meta property="og:site_name" content="UMCE Virtual">
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+  <link rel="stylesheet" href="/shared/shared.css">
+  <style>
+    .wizard-step { display: none; animation: fadeStep 0.4s ease; }
+    .wizard-step.active { display: block; }
+    @keyframes fadeStep { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    .progress-dot { width: 2.25rem; height: 2.25rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8125rem; font-weight: 800; border: 2px solid #D1D5DB; color: #9CA3AF; background: #fff; transition: all 0.3s; cursor: pointer; }
+    .progress-dot.active { border-color: var(--palette-primary); background: var(--palette-primary); color: #fff; }
+    .progress-dot.completed { border-color: #059669; background: #059669; color: #fff; }
+    .progress-line { height: 2px; flex: 1; background: #E5E7EB; transition: background 0.3s; }
+    .progress-line.filled { background: #059669; }
+
+    .radio-card { border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.15s; }
+    .radio-card:hover { border-color: #93a3c0; }
+    .radio-card.selected { border-color: var(--palette-primary); background: #EFF3FB; }
+
+    .cat-chip { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.5rem 1rem; border-radius: 9999px; cursor: pointer; font-size: 0.8125rem; font-weight: 600; border: 2px solid transparent; transition: all 0.2s; user-select: none; }
+    .cat-chip:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .cat-chip.active { border-color: currentColor; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+    .cat-chip .dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; }
+
+    .act-card { padding: 1rem 1.25rem; border-radius: 0.75rem; border: 1.5px solid #e5e7eb; cursor: pointer; transition: all 0.2s; background: #fff; }
+    .act-card:hover { border-color: var(--palette-primary); box-shadow: 0 4px 12px rgba(0,51,161,0.08); }
+
+    .added-row { animation: slideIn 0.3s ease-out; }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
+
+    .modal-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(0,29,92,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+    .modal-overlay.open .modal-box { transform: translateY(0); opacity: 1; }
+    .modal-box { background: #fff; border-radius: 1rem; padding: 2rem; max-width: 28rem; width: 90%; box-shadow: 0 24px 48px rgba(0,0,0,0.2); transform: translateY(16px); opacity: 0; transition: all 0.3s; }
+
+    .semaforo { width: 4rem; height: 4rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; }
+    .semaforo.verde { background: #D1FAE5; color: #059669; }
+    .semaforo.amarillo { background: #FEF3C7; color: #D97706; }
+    .semaforo.rojo { background: #FEE2E2; color: #DC2626; }
+
+    .donut-segment { transition: stroke-dasharray 0.6s ease, stroke-dashoffset 0.6s ease; }
+    .check-item { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.875rem; line-height: 1.5; }
+    .check-icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; margin-top: 0.125rem; }
+    .stat-card { background: #fff; border: 1.5px solid #e5e7eb; border-radius: 0.75rem; padding: 1.25rem; text-align: center; }
+    .stat-card .stat-value { font-family: 'Trebuchet MS', sans-serif; font-size: 2rem; font-weight: 800; line-height: 1; }
+    .stat-card .stat-label { font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .weekly-bar { height: 1.5rem; border-radius: 0.25rem; transition: width 0.4s ease; min-width: 2px; }
+    .explain-box { background: #F0F9FF; border-left: 4px solid var(--palette-primary); padding: 1rem 1.25rem; border-radius: 0 0.5rem 0.5rem 0; margin-bottom: 1.5rem; }
+    .explain-box p { font-size: 0.875rem; color: #374151; line-height: 1.6; }
+    .explain-box .explain-title { font-weight: 700; color: var(--palette-primary); margin-bottom: 0.25rem; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    input[type="number"]::-webkit-inner-spin-button { opacity: 1; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--palette-primary); color: #fff; font-family: 'Trebuchet MS', sans-serif; font-weight: 700; font-size: 0.875rem; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background 0.15s; cursor: pointer; border: none; }
+    .btn-primary:hover { background: #002280; }
+    .btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; border: 2px solid #E5E7EB; color: #6B7280; font-family: 'Trebuchet MS', sans-serif; font-weight: 600; font-size: 0.875rem; padding: 0.625rem 1.25rem; border-radius: 0.5rem; transition: all 0.15s; cursor: pointer; background: #fff; }
+    .btn-secondary:hover { border-color: #9CA3AF; color: #374151; }
+  </style>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+  <div id="nav-placeholder"></div>
+
+  <!-- Hero -->
+  <section class="hero-gradient pt-32 pb-16 text-white relative overflow-hidden">
+    <div id="p5-header" data-variant="5"></div>
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+      <nav class="breadcrumb text-sm mb-6">
+        <a href="/" class="text-white/60 hover:text-white">Inicio</a>
+        <span class="text-white/30 mx-1">/</span>
+        <a href="/virtualizacion" class="text-white/60 hover:text-white">Virtualizaci&oacute;n</a>
+        <span class="text-white/30 mx-1">/</span>
+        <span class="text-white/90">Planificador</span>
+      </nav>
+      <h1 class="fade-up font-heading text-4xl md:text-5xl font-extrabold mb-4">Planificador Curricular</h1>
+      <p class="fade-up text-white/80 text-lg max-w-2xl">Dise&ntilde;a la carga de tu curso virtual paso a paso, validando que las horas de trabajo del estudiante sean coherentes con los cr&eacute;ditos SCT.</p>
+    </div>
+  </section>
+
+  <!-- Progress Bar -->
+  <div class="bg-white border-b border-gray-100 sticky top-16 z-30">
+    <div class="max-w-3xl mx-auto px-6 py-4">
+      <div class="flex items-center gap-2">
+        <div class="progress-dot active" data-step="1" onclick="goToStep(1)">1</div>
+        <div class="progress-line" id="line1"></div>
+        <div class="progress-dot" data-step="2" onclick="goToStep(2)">2</div>
+        <div class="progress-line" id="line2"></div>
+        <div class="progress-dot" data-step="3" onclick="goToStep(3)">3</div>
+        <div class="progress-line" id="line3"></div>
+        <div class="progress-dot" data-step="4" onclick="goToStep(4)">4</div>
+      </div>
+      <div class="flex justify-between mt-2 text-xs text-gray-400">
+        <span id="stepLabel1" class="font-semibold text-umce-azul">Tu m&oacute;dulo</span>
+        <span id="stepLabel2">Actividades</span>
+        <span id="stepLabel3">Revisar</span>
+        <span id="stepLabel4">Resultado</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-3xl mx-auto px-6 py-10">
+
+    <!-- ==================== STEP 1: Tu módulo ==================== -->
+    <div class="wizard-step active" id="step1">
+      <div class="explain-box">
+        <div class="explain-title">&iquest;Qu&eacute; vamos a hacer?</div>
+        <p>Vamos a calcular cu&aacute;ntas <strong>horas de trabajo real</strong> necesita un estudiante para completar tu m&oacute;dulo o curso. En el Sistema de Cr&eacute;ditos Transferibles (SCT Chile), <strong>1 cr&eacute;dito = 27 horas</strong> de trabajo total: clases, lecturas, tareas, evaluaciones, estudio aut&oacute;nomo. Todo.</p>
+        <p class="mt-2">Primero, cu&eacute;ntanos sobre tu m&oacute;dulo.</p>
+      </div>
+
+      <div class="space-y-6">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">&iquest;C&oacute;mo se llama tu m&oacute;dulo o actividad curricular?</label>
+          <input type="text" id="moduleName" placeholder="Ej: Metodolog&iacute;a Cualitativa" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm transition-colors">
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">&iquest;Cu&aacute;ntos cr&eacute;ditos SCT tiene?</label>
+            <input type="number" id="sctCredits" value="3" min="1" max="30" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+            <p class="text-xs text-gray-400 mt-1">Si no lo sabes, preg&uacute;ntale al coordinador de tu programa.</p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">&iquest;Cu&aacute;ntas semanas dura?</label>
+            <input type="number" id="weeks" value="18" min="1" max="52" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">&iquest;Qu&eacute; tipo de estudiantes tiene?</label>
+          <p class="text-xs text-gray-400 mb-2">Esto afecta cu&aacute;nta autonom&iacute;a y sincron&iacute;a se recomienda en el dise&ntilde;o.</p>
+          <div class="grid sm:grid-cols-3 gap-2" id="profileSelector">
+            <label class="radio-card selected flex items-center gap-2">
+              <input type="radio" name="profile" value="pregrado" checked>
+              <div><div class="text-sm font-semibold">Pregrado</div><div class="text-xs text-gray-400">M&aacute;s acompa&ntilde;amiento sincr&oacute;nico</div></div>
+            </label>
+            <label class="radio-card flex items-center gap-2">
+              <input type="radio" name="profile" value="postgrado">
+              <div><div class="text-sm font-semibold">Postgrado</div><div class="text-xs text-gray-400">Profesionales, m&aacute;s autonom&iacute;a</div></div>
+            </label>
+            <label class="radio-card flex items-center gap-2">
+              <input type="radio" name="profile" value="continua">
+              <div><div class="text-sm font-semibold">Ed. Continua</div><div class="text-xs text-gray-400">Flexible, ritmo propio</div></div>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">&iquest;Qu&eacute; tipo de formato tiene?</label>
+          <p class="text-xs text-gray-400 mb-2">Esto ajusta las semanas y cr&eacute;ditos autom&aacute;ticamente.</p>
+          <div class="grid sm:grid-cols-2 gap-2" id="unitSelector">
+            <label class="radio-card selected flex items-center gap-2">
+              <input type="radio" name="unit" value="semestral" checked>
+              <div><div class="text-sm font-semibold">Semestral</div><div class="text-xs text-gray-400">18 semanas, estructura tradicional</div></div>
+            </label>
+            <label class="radio-card flex items-center gap-2">
+              <input type="radio" name="unit" value="modulo">
+              <div><div class="text-sm font-semibold">M&oacute;dulo</div><div class="text-xs text-gray-400">8 semanas, intensivo</div></div>
+            </label>
+            <label class="radio-card flex items-center gap-2">
+              <input type="radio" name="unit" value="microcredencial">
+              <div><div class="text-sm font-semibold">Microcredencial</div><div class="text-xs text-gray-400">5 semanas, certificaci&oacute;n espec&iacute;fica</div></div>
+            </label>
+            <label class="radio-card flex items-center gap-2">
+              <input type="radio" name="unit" value="cuech">
+              <div><div class="text-sm font-semibold">CUECH S&uacute;bete</div><div class="text-xs text-gray-400">Movilidad virtual, 2 SCT</div></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Calculated summary -->
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-5">
+          <div class="text-sm font-semibold text-umce-azul mb-3">Lo que esto significa para tu estudiante:</div>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="stat-card"><div class="stat-value text-umce-azul" id="totalHours">81</div><div class="stat-label">Horas totales</div></div>
+            <div class="stat-card"><div class="stat-value text-umce-azul" id="weeklyHours">4.5</div><div class="stat-label">Hrs / semana</div></div>
+            <div class="stat-card"><div class="stat-value" id="weeklyStatus" style="font-size:1.5rem;">&#10003;</div><div class="stat-label" id="weeklyStatusLabel">Adecuado</div></div>
+          </div>
+          <p class="text-xs text-gray-400 mt-3">Recomendado: m&aacute;ximo 10 hrs/semana. Alerta sobre 12 hrs/semana.</p>
+        </div>
+
+        <div class="flex justify-end pt-4">
+          <button class="btn-primary" onclick="goToStep(2)">
+            Siguiente: agregar actividades
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== STEP 2: Actividades ==================== -->
+    <div class="wizard-step" id="step2">
+      <div class="explain-box">
+        <div class="explain-title">&iquest;Qu&eacute; actividades tendr&aacute; tu curso?</div>
+        <p>Ahora vamos a agregar las <strong>e-actividades</strong> que componen tu curso: sesiones sincr&oacute;nicas, foros, lecturas, tareas, evaluaciones, etc. Cada una tiene un tiempo estimado de trabajo para el estudiante.</p>
+        <p class="mt-2">Las actividades est&aacute;n organizadas en <strong>7 categor&iacute;as</strong> seg&uacute;n el modelo pedag&oacute;gico UMCE. Selecciona una categor&iacute;a para ver las opciones.</p>
+      </div>
+
+      <!-- Module summary ribbon -->
+      <div class="bg-gray-50 rounded-lg px-4 py-3 mb-6 flex flex-wrap items-center justify-between gap-2 text-sm">
+        <div><strong id="ribbonName">Sin nombre</strong> &middot; <span id="ribbonSCT">3</span> SCT &middot; <span id="ribbonWeeks">18</span> semanas</div>
+        <div class="font-bold"><span id="ribbonUsed">0</span> / <span id="ribbonTotal">81</span> hrs usadas</div>
+      </div>
+
+      <!-- Category chips -->
+      <div class="flex flex-wrap gap-2 mb-6" id="categoryChips"></div>
+
+      <!-- Category description -->
+      <div id="catDescription" class="text-sm text-gray-500 mb-4 hidden"></div>
+
+      <!-- Activity cards grid -->
+      <div id="activityCards" class="grid sm:grid-cols-2 gap-3 mb-8">
+        <div class="text-gray-400 text-sm col-span-2 text-center py-8 border-2 border-dashed border-gray-200 rounded-xl">
+          <svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+          Selecciona una categor&iacute;a arriba para ver las actividades disponibles
+        </div>
+      </div>
+
+      <!-- Added activities -->
+      <div id="addedSection" class="hidden">
+        <h3 class="font-heading font-bold text-lg mb-3 flex items-center gap-2">
+          <svg class="w-5 h-5 text-umce-azul" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          Actividades de tu curso
+          <span id="addedCount" class="bg-umce-azul text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+        </h3>
+        <div class="bg-gray-50 rounded-xl overflow-hidden">
+          <table class="w-full text-sm">
+            <thead><tr class="text-left text-xs text-gray-400 uppercase tracking-wider border-b border-gray-200">
+              <th class="px-4 py-3">Actividad</th><th class="px-4 py-3 text-center">Cant.</th><th class="px-4 py-3 text-center">Tiempo</th><th class="px-4 py-3 text-right">Subtotal</th><th class="px-4 py-3 w-10"></th>
+            </tr></thead>
+            <tbody id="addedBody"></tbody>
+            <tfoot><tr class="border-t-2 border-gray-300 font-bold">
+              <td class="px-4 py-3" colspan="3">Total acumulado</td><td class="px-4 py-3 text-right" id="runningTotal">0 hrs</td><td></td>
+            </tr></tfoot>
+          </table>
+        </div>
+        <div class="mt-3 flex items-center gap-3">
+          <div class="flex-1 bg-gray-200 rounded-full h-3 overflow-hidden">
+            <div id="progressBar" class="h-full rounded-full transition-all duration-500" style="width:0%; background: var(--palette-primary);"></div>
+          </div>
+          <span id="progressLabel" class="text-sm font-semibold text-gray-500">0%</span>
+        </div>
+      </div>
+
+      <div class="flex justify-between pt-6">
+        <button class="btn-secondary" onclick="goToStep(1)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          Volver
+        </button>
+        <button class="btn-primary" onclick="goToStep(3)">
+          Siguiente: revisar
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== STEP 3: Revisar ==================== -->
+    <div class="wizard-step" id="step3">
+      <div class="explain-box">
+        <div class="explain-title">Revisa tu dise&ntilde;o</div>
+        <p>Antes de ver el resultado final, revisa las actividades que agregaste. Puedes volver al paso anterior para agregar o quitar actividades.</p>
+      </div>
+
+      <!-- Summary table -->
+      <div class="bg-gray-50 rounded-xl overflow-hidden mb-6">
+        <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center">
+          <h3 class="font-heading font-bold text-base"><span id="reviewName">M&oacute;dulo</span></h3>
+          <span class="text-sm text-gray-500"><span id="reviewSCT">3</span> SCT &middot; <span id="reviewWeeks">18</span> semanas &middot; <span id="reviewProfile">Pregrado</span></span>
+        </div>
+        <table class="w-full text-sm">
+          <thead><tr class="text-left text-xs text-gray-400 uppercase tracking-wider border-b border-gray-200">
+            <th class="px-4 py-2">Categor&iacute;a</th><th class="px-4 py-2">Actividad</th><th class="px-4 py-2 text-center">Cant.</th><th class="px-4 py-2 text-right">Horas</th>
+          </tr></thead>
+          <tbody id="reviewBody"></tbody>
+          <tfoot><tr class="border-t-2 border-gray-300 font-bold text-base">
+            <td class="px-4 py-3" colspan="3">Total</td><td class="px-4 py-3 text-right" id="reviewTotal">0 hrs</td>
+          </tr></tfoot>
+        </table>
+      </div>
+
+      <!-- Quick check -->
+      <div class="grid sm:grid-cols-3 gap-3 mb-6">
+        <div class="stat-card"><div class="stat-value text-umce-azul" id="reviewExpected">81</div><div class="stat-label">Hrs esperadas</div></div>
+        <div class="stat-card"><div class="stat-value" id="reviewActual" style="color:#059669;">0</div><div class="stat-label">Hrs dise&ntilde;adas</div></div>
+        <div class="stat-card"><div class="stat-value" id="reviewDiff">-81</div><div class="stat-label" id="reviewDiffLabel">Diferencia</div></div>
+      </div>
+
+      <div class="flex justify-between pt-4">
+        <button class="btn-secondary" onclick="goToStep(2)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          Editar actividades
+        </button>
+        <button class="btn-primary" onclick="goToStep(4)">
+          Ver resultado y validaci&oacute;n
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== STEP 4: Resultado ==================== -->
+    <div class="wizard-step" id="step4">
+      <div class="explain-box">
+        <div class="explain-title">Resultado y validaci&oacute;n pedag&oacute;gica</div>
+        <p>La calculadora verifica dos cosas: que la <strong>carga horaria</strong> sea coherente con los cr&eacute;ditos SCT, y que el dise&ntilde;o cumpla con los <strong>3 pilares del modelo virtual UMCE</strong> (interacci&oacute;n, colaboraci&oacute;n, flexibilidad).</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <!-- Donut -->
+        <div class="bg-gray-50 rounded-xl p-6">
+          <h3 class="font-heading font-bold text-sm mb-4 text-gray-500 uppercase tracking-wider">Distribuci&oacute;n por tipo</h3>
+          <div class="flex items-center justify-center">
+            <svg id="donutChart" viewBox="0 0 200 200" class="w-48 h-48">
+              <circle cx="100" cy="100" r="70" fill="none" stroke="#e5e7eb" stroke-width="28"/>
+            </svg>
+          </div>
+          <div id="donutLegend" class="mt-4 flex flex-wrap gap-x-4 gap-y-1 justify-center text-xs"></div>
+        </div>
+
+        <!-- Validation -->
+        <div class="space-y-4">
+          <div class="bg-gray-50 rounded-xl p-6 flex items-center gap-5" id="trafficLight">
+            <div class="semaforo" id="semaforoIcon" style="background:#F3F4F6; color:#9CA3AF;">?</div>
+            <div>
+              <div class="font-heading font-bold text-lg" id="semaforoTitle">Calculando...</div>
+              <div class="text-sm text-gray-500" id="semaforoDesc"></div>
+            </div>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-6">
+            <h3 class="font-heading font-bold text-sm mb-4 text-gray-500 uppercase tracking-wider">Modelo Virtual UMCE</h3>
+            <div class="space-y-2.5" id="checklist"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weekly bars -->
+      <div class="bg-gray-50 rounded-xl p-6 mb-6" id="weeklyBarsSection" style="display:none;">
+        <h3 class="font-heading font-bold text-sm mb-4 text-gray-500 uppercase tracking-wider">Carga estimada por semana</h3>
+        <div id="weeklyBars" class="space-y-1.5"></div>
+        <div class="flex items-center gap-4 mt-3 text-xs text-gray-400">
+          <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-green-400 inline-block"></span> &le;10 hrs</span>
+          <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-yellow-400 inline-block"></span> 10-12 hrs</span>
+          <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-red-400 inline-block"></span> &gt;12 hrs</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-wrap justify-between gap-3 pt-4">
+        <button class="btn-secondary" onclick="goToStep(2)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          Editar actividades
+        </button>
+        <div class="flex gap-3">
+          <button class="btn-secondary" onclick="resetCalculator()">Reiniciar</button>
+          <button class="btn-primary" onclick="exportPDF()">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Exportar PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Learn more -->
+      <div class="mt-10 border-t border-gray-100 pt-8 text-center">
+        <p class="text-gray-400 text-sm mb-4">&iquest;Quieres entender m&aacute;s sobre el proceso de virtualizaci&oacute;n y el modelo UMCE?</p>
+        <div class="flex flex-wrap justify-center gap-3">
+          <a href="/virtualizacion/fundamentos" class="btn-secondary">Fundamentos y marco te&oacute;rico</a>
+          <a href="/virtualizacion" class="btn-secondary">Proceso de virtualizaci&oacute;n</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="activityModal" class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal-box">
+      <h3 class="font-heading font-bold text-lg mb-1" id="modalTitle"></h3>
+      <p class="text-sm text-gray-400 mb-1" id="modalTools"></p>
+      <p class="text-xs text-gray-300 mb-4" id="modalDesc"></p>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">&iquest;Cu&aacute;ntas veces se realiza esta actividad?</label>
+          <input type="number" id="modalQty" value="1" min="1" max="100" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+          <p class="text-xs text-gray-400 mt-1" id="modalUnit"></p>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">&iquest;Cu&aacute;ntos minutos toma cada vez?</label>
+          <input type="number" id="modalTime" min="1" max="600" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+          <p class="text-xs text-gray-400 mt-1" id="modalTimeRef"></p>
+        </div>
+        <div class="bg-blue-50 rounded-lg p-3 text-center">
+          <span class="text-xs text-gray-500">Tiempo total para el estudiante:</span>
+          <span class="font-heading font-bold text-lg text-umce-azul ml-2" id="modalSubtotal">0 min</span>
+        </div>
+        <div class="flex gap-3">
+          <button onclick="confirmAdd()" class="flex-1 btn-primary justify-center">Agregar al curso</button>
+          <button onclick="closeModal()" class="btn-secondary">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/shared/shared.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js" defer></script>
+  <script src="/shared/generative-header.js" defer></script>
+  <script>
+  (function() {
+    'use strict';
+    let DATA = null, addedActivities = [], selectedCat = null, pendingActivity = null, currentStep = 1, maxStepReached = 1;
+    fetch('/sct-data.json').then(r => r.json()).then(d => { DATA = d; init(); });
+
+    function init() { renderCategoryChips(); bindInputs(); updateStats(); }
+
+    // === WIZARD NAVIGATION ===
+    window.goToStep = function(step) {
+      if (step > maxStepReached + 1) return;
+      currentStep = step;
+      if (step > maxStepReached) maxStepReached = step;
+      document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step' + step).classList.add('active');
+      // Update progress dots
+      document.querySelectorAll('.progress-dot').forEach(d => {
+        const s = parseInt(d.dataset.step);
+        d.classList.remove('active', 'completed');
+        if (s === step) d.classList.add('active');
+        else if (s < step) d.classList.add('completed');
+      });
+      document.querySelectorAll('.progress-line').forEach((l, i) => {
+        l.classList.toggle('filled', i + 1 < step);
+      });
+      document.querySelectorAll('[id^="stepLabel"]').forEach((l, i) => {
+        l.className = (i + 1 === step) ? 'font-semibold text-umce-azul' : 'text-gray-400';
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (step === 2) updateRibbon();
+      if (step === 3) updateReview();
+      if (step === 4) updateResults();
+    };
+
+    // === STEP 1: CONFIG ===
+    function bindInputs() {
+      document.getElementById('sctCredits').addEventListener('input', updateStats);
+      document.getElementById('weeks').addEventListener('input', updateStats);
+      document.querySelectorAll('#profileSelector .radio-card').forEach(card => {
+        card.addEventListener('click', () => { document.querySelectorAll('#profileSelector .radio-card').forEach(c => c.classList.remove('selected')); card.classList.add('selected'); updateStats(); });
+      });
+      document.querySelectorAll('#unitSelector .radio-card').forEach(card => {
+        card.addEventListener('click', () => {
+          document.querySelectorAll('#unitSelector .radio-card').forEach(c => c.classList.remove('selected')); card.classList.add('selected');
+          const val = card.querySelector('input').value, unit = DATA.unidades.find(u => u.id === val);
+          if (unit) { document.getElementById('weeks').value = unit.semanasDefault; if (unit.sctFijo) document.getElementById('sctCredits').value = unit.sctFijo; }
+          updateStats();
+        });
+      });
+      document.getElementById('modalQty').addEventListener('input', updateModalSubtotal);
+      document.getElementById('modalTime').addEventListener('input', updateModalSubtotal);
+    }
+    function getConfig() {
+      const sct = parseInt(document.getElementById('sctCredits').value) || 1, weeks = parseInt(document.getElementById('weeks').value) || 1;
+      const profile = document.querySelector('input[name="profile"]:checked')?.value || 'pregrado';
+      const totalHours = sct * DATA.config.horasPorCredito;
+      return { sct, weeks, profile, totalHours, weeklyHours: totalHours / weeks };
+    }
+    function updateStats() {
+      if (!DATA) return;
+      const c = getConfig();
+      document.getElementById('totalHours').textContent = c.totalHours;
+      document.getElementById('weeklyHours').textContent = c.weeklyHours.toFixed(1);
+      const el = document.getElementById('weeklyStatus'), lbl = document.getElementById('weeklyStatusLabel');
+      if (c.weeklyHours <= 10) { el.innerHTML = '&#10003;'; el.style.color = '#059669'; lbl.textContent = 'Adecuado'; }
+      else if (c.weeklyHours <= 12) { el.innerHTML = '!'; el.style.color = '#D97706'; lbl.textContent = 'Alto'; }
+      else { el.innerHTML = '&#10007;'; el.style.color = '#DC2626'; lbl.textContent = 'Sobrecarga'; }
+    }
+
+    // === STEP 2: ACTIVITIES ===
+    function renderCategoryChips() {
+      document.getElementById('categoryChips').innerHTML = DATA.categorias.map(cat =>
+        `<button class="cat-chip" data-cat="${cat.id}" style="background:${cat.color}12; color:${cat.color};" onclick="window._selectCat('${cat.id}')"><span class="dot" style="background:${cat.color}"></span>${cat.nombre}</button>`
+      ).join('');
+    }
+    window._selectCat = function(catId) {
+      selectedCat = catId;
+      document.querySelectorAll('.cat-chip').forEach(c => c.classList.toggle('active', c.dataset.cat === catId));
+      const cat = DATA.categorias.find(c => c.id === catId);
+      const desc = document.getElementById('catDescription');
+      desc.textContent = cat.descripcion; desc.classList.remove('hidden');
+      renderActivityCards(catId);
+    };
+    function renderActivityCards(catId) {
+      const acts = DATA.actividades.filter(a => a.cat === catId), cat = DATA.categorias.find(c => c.id === catId);
+      document.getElementById('activityCards').innerHTML = acts.map(a =>
+        `<div class="act-card" onclick="window._openModal('${a.id}')">
+          <div class="font-semibold text-sm mb-1">${a.nombre}</div>
+          <div class="text-xs text-gray-400 mb-2">${a.herramientas}</div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold" style="color:${cat.color}">${a.tiempoMin}-${a.tiempoMax} min</span>
+            <span class="text-xs text-gray-300">${a.unidad}</span>
+          </div>
+        </div>`
+      ).join('');
+    }
+    function updateRibbon() {
+      const c = getConfig(), totalMin = addedActivities.reduce((s, a) => s + a.subtotalMin, 0);
+      document.getElementById('ribbonName').textContent = document.getElementById('moduleName').value || 'Sin nombre';
+      document.getElementById('ribbonSCT').textContent = c.sct;
+      document.getElementById('ribbonWeeks').textContent = c.weeks;
+      document.getElementById('ribbonUsed').textContent = (totalMin / 60).toFixed(1);
+      document.getElementById('ribbonTotal').textContent = c.totalHours;
+    }
+    window._openModal = function(actId) {
+      const act = DATA.actividades.find(a => a.id === actId); if (!act) return;
+      pendingActivity = act;
+      document.getElementById('modalTitle').textContent = act.nombre;
+      document.getElementById('modalTools').textContent = act.herramientas;
+      document.getElementById('modalDesc').textContent = act.unidad;
+      document.getElementById('modalQty').value = 1;
+      document.getElementById('modalTime').value = Math.round((act.tiempoMin + act.tiempoMax) / 2);
+      document.getElementById('modalTimeRef').textContent = `Referencia: ${act.tiempoMin}-${act.tiempoMax} min (${act.fuente})`;
+      document.getElementById('modalUnit').textContent = `Ejemplo: si hay 16 semanas de clases, pon 16.`;
+      updateModalSubtotal();
+      document.getElementById('activityModal').classList.add('open');
+    };
+    function updateModalSubtotal() {
+      const qty = parseInt(document.getElementById('modalQty').value) || 0, time = parseInt(document.getElementById('modalTime').value) || 0, total = qty * time;
+      document.getElementById('modalSubtotal').textContent = total >= 60 ? `${(total/60).toFixed(1)} hrs` : `${total} min`;
+    }
+    window.closeModal = function() { document.getElementById('activityModal').classList.remove('open'); pendingActivity = null; };
+    window.confirmAdd = function() {
+      if (!pendingActivity) return;
+      const qty = parseInt(document.getElementById('modalQty').value) || 1, time = parseInt(document.getElementById('modalTime').value) || 0;
+      addedActivities.push({ id: pendingActivity.id + '_' + Date.now(), actId: pendingActivity.id, cat: pendingActivity.cat, nombre: pendingActivity.nombre, qty, time, subtotalMin: qty * time });
+      closeModal(); renderAdded(); updateRibbon();
+    };
+    window._removeActivity = function(id) { addedActivities = addedActivities.filter(a => a.id !== id); renderAdded(); updateRibbon(); };
+    function renderAdded() {
+      const section = document.getElementById('addedSection'), tbody = document.getElementById('addedBody');
+      if (addedActivities.length === 0) { section.classList.add('hidden'); return; }
+      section.classList.remove('hidden');
+      document.getElementById('addedCount').textContent = addedActivities.length;
+      tbody.innerHTML = addedActivities.map(a => {
+        const cat = DATA.categorias.find(c => c.id === a.cat);
+        return `<tr class="added-row border-b border-gray-100"><td class="px-4 py-2.5"><span class="inline-block w-2 h-2 rounded-full mr-2" style="background:${cat?.color||'#999'}"></span>${a.nombre}</td><td class="px-4 py-2.5 text-center">${a.qty}</td><td class="px-4 py-2.5 text-center text-gray-400">${a.time} min</td><td class="px-4 py-2.5 text-right font-semibold">${(a.subtotalMin/60).toFixed(1)} hrs</td><td class="px-2 py-2.5"><button onclick="window._removeActivity('${a.id}')" class="text-gray-300 hover:text-red-500">&times;</button></td></tr>`;
+      }).join('');
+      const totalMin = addedActivities.reduce((s, a) => s + a.subtotalMin, 0), c = getConfig();
+      document.getElementById('runningTotal').textContent = `${(totalMin/60).toFixed(1)} hrs`;
+      const pct = Math.min(100, Math.round((totalMin / 60 / c.totalHours) * 100));
+      const bar = document.getElementById('progressBar'); bar.style.width = pct + '%';
+      bar.style.background = pct <= 90 ? 'var(--palette-primary)' : pct <= 110 ? '#059669' : '#DC2626';
+      document.getElementById('progressLabel').textContent = pct + '%';
+    }
+
+    // === STEP 3: REVIEW ===
+    function updateReview() {
+      const c = getConfig(), totalMin = addedActivities.reduce((s, a) => s + a.subtotalMin, 0), totalHrs = totalMin / 60;
+      document.getElementById('reviewName').textContent = document.getElementById('moduleName').value || 'Sin nombre';
+      document.getElementById('reviewSCT').textContent = c.sct;
+      document.getElementById('reviewWeeks').textContent = c.weeks;
+      const profileLabels = { pregrado: 'Pregrado', postgrado: 'Postgrado', continua: 'Ed. Continua' };
+      document.getElementById('reviewProfile').textContent = profileLabels[c.profile] || c.profile;
+      document.getElementById('reviewExpected').textContent = c.totalHours;
+      document.getElementById('reviewActual').textContent = totalHrs.toFixed(1);
+      const diff = totalHrs - c.totalHours;
+      const diffEl = document.getElementById('reviewDiff');
+      diffEl.textContent = (diff >= 0 ? '+' : '') + diff.toFixed(1);
+      diffEl.style.color = Math.abs(diff / c.totalHours) <= 0.1 ? '#059669' : '#DC2626';
+      document.getElementById('reviewDiffLabel').textContent = diff >= 0 ? 'Hrs de m\u00e1s' : 'Hrs faltan';
+      // Build review table grouped by category
+      const byCategory = {};
+      addedActivities.forEach(a => { if (!byCategory[a.cat]) byCategory[a.cat] = []; byCategory[a.cat].push(a); });
+      let rows = '';
+      Object.entries(byCategory).forEach(([catId, acts]) => {
+        const cat = DATA.categorias.find(c => c.id === catId);
+        acts.forEach((a, i) => {
+          rows += `<tr class="border-b border-gray-100"><td class="px-4 py-2 text-xs" style="color:${cat?.color}">${i===0?cat?.nombre:''}</td><td class="px-4 py-2 text-sm">${a.nombre}</td><td class="px-4 py-2 text-center text-sm">${a.qty}</td><td class="px-4 py-2 text-right text-sm font-semibold">${(a.subtotalMin/60).toFixed(1)}</td></tr>`;
+        });
+      });
+      document.getElementById('reviewBody').innerHTML = rows;
+      document.getElementById('reviewTotal').textContent = totalHrs.toFixed(1) + ' hrs';
+    }
+
+    // === STEP 4: RESULTS ===
+    function updateResults() {
+      if (!DATA) return;
+      const c = getConfig(), totalMin = addedActivities.reduce((s, a) => s + a.subtotalMin, 0), totalHrs = totalMin / 60, pct = c.totalHours > 0 ? totalHrs / c.totalHours : 0;
+      const icon = document.getElementById('semaforoIcon'), title = document.getElementById('semaforoTitle'), desc = document.getElementById('semaforoDesc');
+      if (addedActivities.length === 0) { icon.className = 'semaforo'; icon.style.background = '#F3F4F6'; icon.style.color = '#9CA3AF'; icon.innerHTML = '?'; title.textContent = 'Sin actividades'; desc.textContent = 'Vuelve al paso 2 para agregar actividades.'; }
+      else if (Math.abs(pct - 1) <= DATA.config.toleranciaCarga) { icon.className = 'semaforo verde'; icon.innerHTML = '&#10003;'; title.textContent = 'Carga equilibrada'; desc.textContent = `${totalHrs.toFixed(1)} hrs de ${c.totalHours} hrs esperadas (${Math.round(pct*100)}%)`; }
+      else if (pct < 1 - DATA.config.toleranciaCarga) { icon.className = 'semaforo amarillo'; icon.innerHTML = '&darr;'; title.textContent = 'Subcarga'; desc.textContent = `${totalHrs.toFixed(1)} hrs de ${c.totalHours}. Faltan ${(c.totalHours - totalHrs).toFixed(1)} hrs de actividades.`; }
+      else { icon.className = 'semaforo rojo'; icon.innerHTML = '&uarr;'; title.textContent = 'Sobrecarga'; desc.textContent = `${totalHrs.toFixed(1)} hrs excede las ${c.totalHours} esperadas por ${(totalHrs - c.totalHours).toFixed(1)} hrs.`; }
+      renderDonut(); renderChecklist(); renderWeeklyBars();
+    }
+    function renderDonut() {
+      const svg = document.getElementById('donutChart'), legend = document.getElementById('donutLegend');
+      svg.querySelectorAll('.donut-segment,.center-text').forEach(s => s.remove());
+      const byCategory = {}; addedActivities.forEach(a => { byCategory[a.cat] = (byCategory[a.cat] || 0) + a.subtotalMin; });
+      const totalMin = addedActivities.reduce((s, a) => s + a.subtotalMin, 0);
+      if (totalMin === 0) { legend.innerHTML = ''; return; }
+      const circ = 2 * Math.PI * 70; let offset = 0;
+      Object.entries(byCategory).sort((a,b) => b[1] - a[1]).forEach(([catId, mins]) => {
+        const cat = DATA.categorias.find(c => c.id === catId), frac = mins / totalMin, dash = frac * circ;
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        ['cx','100','cy','100','r','70','fill','none','stroke',cat?.color||'#999','stroke-width','28'].reduce((el, v, i) => { if (i%2===0) el._k=v; else el.setAttribute(el._k,v); return el; }, circle);
+        circle.setAttribute('stroke-dasharray', `${dash} ${circ-dash}`); circle.setAttribute('stroke-dashoffset', `${-offset}`);
+        circle.setAttribute('transform', 'rotate(-90 100 100)'); circle.classList.add('donut-segment'); svg.appendChild(circle); offset += dash;
+      });
+      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      t.setAttribute('x','100'); t.setAttribute('y','105'); t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','18'); t.setAttribute('font-weight','800'); t.setAttribute('fill','#1f2937');
+      t.classList.add('center-text'); t.textContent = `${(totalMin/60).toFixed(1)}h`; svg.appendChild(t);
+      legend.innerHTML = Object.entries(byCategory).sort((a,b)=>b[1]-a[1]).map(([catId, mins]) => {
+        const cat = DATA.categorias.find(c => c.id === catId);
+        return `<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full inline-block" style="background:${cat?.color}"></span>${cat?.nombre} ${Math.round(mins/totalMin*100)}%</span>`;
+      }).join('');
+    }
+    function renderChecklist() {
+      const c = getConfig(), totalMin = addedActivities.reduce((s, a) => s + a.subtotalMin, 0), cats = {};
+      addedActivities.forEach(a => { cats[a.cat] = (cats[a.cat] || 0) + a.subtotalMin; });
+      const hasInteraction = (cats['EC'] || 0) > 0, hasCollab = (cats['ED'] || 0) > 0, hasReflection = (cats['EE'] || 0) > 0;
+      const hasFormative = addedActivities.some(a => { const act = DATA.actividades.find(x => x.id === a.actId); return act && act.tipo === 'formativa'; });
+      const contentPct = totalMin > 0 ? (cats['IN'] || 0) / totalMin : 0;
+      const syncMin = addedActivities.filter(a => ['EC3','EC4','EC5','EC6'].includes(a.actId)).reduce((s,a) => s + a.subtotalMin, 0);
+      const syncPct = totalMin > 0 ? syncMin / totalMin : 0;
+      const syncOk = c.profile === 'postgrado' ? syncPct <= 0.5 : syncPct >= 0.15;
+      const profileLabels = { pregrado: 'Pregrado', postgrado: 'Postgrado', continua: 'Ed. Continua' };
+      const checks = [
+        { ok: hasInteraction, label: 'Hay actividades de interacci\u00f3n (foros, sincr\u00f3nicas, tutor\u00edas)', desc: 'El modelo UMCE requiere interacci\u00f3n entre estudiantes y con docentes.' },
+        { ok: hasCollab, label: 'Hay actividades de colaboraci\u00f3n (wikis, proyectos grupales, co-evaluaci\u00f3n)', desc: 'La construcci\u00f3n conjunta de conocimiento es pilar del modelo.' },
+        { ok: hasReflection, label: 'Hay actividades de reflexi\u00f3n (diarios, portafolios, ensayos reflexivos)', desc: 'Vincular experiencia previa con nuevo aprendizaje.' },
+        { ok: hasFormative, label: 'Hay evaluaci\u00f3n formativa (quizzes, H5P, escenarios)', desc: 'Evaluar para aprender, no solo para calificar.' },
+        { ok: contentPct <= 0.6, label: `Contenido pasivo \u2264 60% (actual: ${Math.round(contentPct*100)}%)`, desc: 'El modelo est\u00e1 centrado en la actividad del estudiante, no en consumir contenido.' },
+        { ok: syncOk, label: `Balance s\u00edncrono/as\u00edncrono para ${profileLabels[c.profile]}`, desc: c.profile === 'postgrado' ? 'Profesionales adultos: m\u00e1s autonom\u00eda, menos sincr\u00f3nico.' : 'Estudiantes j\u00f3venes: necesitan acompa\u00f1amiento sincr\u00f3nico.' },
+      ];
+      document.getElementById('checklist').innerHTML = checks.map(ch => {
+        const noData = addedActivities.length === 0;
+        const color = noData ? '#9CA3AF' : (ch.ok ? '#059669' : '#D97706');
+        const icon = noData ? 'M12 8v4m0 4h.01' : (ch.ok ? 'M5 13l4 4L19 7' : 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z');
+        return `<div class="check-item"><svg class="check-icon" fill="none" stroke="${color}" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${icon}"/></svg><div><span style="color:${noData?'#9CA3AF':'#374151'}">${ch.label}</span>${!noData && !ch.ok ? `<p class="text-xs text-amber-600 mt-0.5">${ch.desc}</p>` : ''}</div></div>`;
+      }).join('');
+    }
+    function renderWeeklyBars() {
+      const c = getConfig(), totalMin = addedActivities.reduce((s, a) => s + a.subtotalMin, 0);
+      const section = document.getElementById('weeklyBarsSection');
+      if (addedActivities.length === 0) { section.style.display = 'none'; return; }
+      section.style.display = '';
+      const weeklyHrs = totalMin / 60 / c.weeks, maxBar = Math.max(weeklyHrs, 12) * 1.1;
+      let rows = '';
+      for (let w = 1; w <= Math.min(c.weeks, 20); w++) {
+        const pct = (weeklyHrs / maxBar) * 100;
+        const color = weeklyHrs <= 10 ? '#4ADE80' : (weeklyHrs <= 12 ? '#FACC15' : '#F87171');
+        rows += `<div class="flex items-center gap-3"><span class="text-xs text-gray-400 w-8 text-right">S${w}</span><div class="flex-1 bg-gray-200 rounded-sm h-5 overflow-hidden"><div class="weekly-bar" style="width:${pct}%; background:${color};"></div></div><span class="text-xs font-semibold w-12 text-right">${weeklyHrs.toFixed(1)}h</span></div>`;
+      }
+      if (c.weeks > 20) rows += `<div class="text-xs text-gray-400 text-center pt-1">... ${c.weeks} semanas total</div>`;
+      document.getElementById('weeklyBars').innerHTML = rows;
+    }
+
+    // === ACTIONS ===
+    window.exportPDF = function() { alert('La exportaci\u00f3n a PDF se implementar\u00e1 pr\u00f3ximamente. Por ahora puedes usar Ctrl+P / Cmd+P para imprimir.'); };
+    window.resetCalculator = function() {
+      addedActivities = []; selectedCat = null; maxStepReached = 1;
+      document.getElementById('moduleName').value = '';
+      document.getElementById('sctCredits').value = 3;
+      document.getElementById('weeks').value = 18;
+      document.querySelectorAll('#profileSelector .radio-card').forEach((c,i) => { c.classList.toggle('selected', i===0); c.querySelector('input').checked = i===0; });
+      document.querySelectorAll('#unitSelector .radio-card').forEach((c,i) => { c.classList.toggle('selected', i===0); c.querySelector('input').checked = i===0; });
+      document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+      document.getElementById('catDescription').classList.add('hidden');
+      document.getElementById('activityCards').innerHTML = '<div class="text-gray-400 text-sm col-span-2 text-center py-8 border-2 border-dashed border-gray-200 rounded-xl"><svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>Selecciona una categor\u00eda arriba para ver las actividades disponibles</div>';
+      renderAdded(); updateStats(); goToStep(1);
+    };
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+# Articulación de los productos de Mesa 1 bajo el modelo ADDIE
+## Una propuesta integrada para la virtualización institucional de la UMCE
+
+*Documento de trabajo — Borrador v0.2 — Abril 2026*
+*David Reyes Jofré, Coordinador Mesa 1*
+
+---
+
+## El problema de fondo
+
+La Universidad Metropolitana de Ciencias de la Educación enfrenta un desafío que comparten muchas instituciones de educación superior en América Latina: la virtualización de programas académicos ha avanzado de manera desigual, reactiva y, en muchos casos, sin un marco metodológico que garantice coherencia entre lo que se planifica, lo que se construye y lo que finalmente experimentan los estudiantes. La decisión institucional de 2025 y la conformación de tres mesas de trabajo durante 2026 responden precisamente a esa necesidad de pasar de la virtualización como respuesta circunstancial a la virtualización como proceso institucional.
+
+La Mesa 1 — Modelo Instruccional, Calidad y Aprendizaje — asumió la tarea de construir los instrumentos que sustenten ese proceso. No se trata de redactar una política (eso corresponde al segundo semestre de 2026), sino de proponer productos concretos que puedan operar desde ya. En la práctica, la universidad ha enfrentado problemas recurrentes: cursos donde la carga de trabajo no corresponde a los créditos declarados, diseños instruccionales que replican la lógica presencial sin adaptarse a la virtualidad, y plataformas virtuales usadas como repositorios de archivos más que como entornos activos de aprendizaje. Los cuatro productos que la Mesa 1 está construyendo para mayo de 2026 buscan dar respuesta a esos problemas.
+
+Lo que distingue a esta propuesta es que los cuatro productos no son piezas aisladas. Se articulan bajo un mismo paraguas metodológico — el modelo ADDIE — y siguen una lógica de flujo institucional que hemos denominado "los cinco momentos de la virtualización". Este texto explica cómo proponemos que se sostenga esa articulación.
+
+## ADDIE como paraguas: un marco conocido, una adaptación propia
+
+El modelo ADDIE (Analysis, Design, Development, Implementation, Evaluation) es probablemente el marco de diseño instruccional más utilizado en educación superior a nivel mundial. Su fortaleza no reside en la novedad — tiene más de cuatro décadas — sino en su capacidad de organizar un proceso complejo en fases secuenciales con entregables verificables.
+
+La UDFV ha venido utilizando ADDIE como base de su trabajo de diseño instruccional, y lo que se propone a la Mesa 1 es formalizar esa práctica en un proceso institucional documentado. La propuesta busca organizar el proceso en cinco fases con pasos definidos, puntos de decisión entre fases, responsabilidades claras y documentos de salida identificados. Pero la adopción no es literal: siguiendo la propuesta de Caballero (2022), se integran al ciclo ADDIE elementos de Experience Design (EXD), un enfoque que pone el foco en la experiencia del estudiante como criterio de diseño, no solo en los objetivos de aprendizaje.
+
+Esto es particularmente relevante en el contexto de la UMCE, donde la Propuesta de Modelo para la Virtualidad (DIDOC, 2025) y los Lineamientos de Diseño Tecnopedagógico de la UDFV definen el modelo educativo virtual desde tres pilares: interacción, colaboración y flexibilidad. En este modelo, la actividad del estudiante desplaza a la clase expositiva como eje del proceso formativo (Salmon, 2013), y las e-actividades con propósito pedagógico son el vehículo principal del aprendizaje.
+
+Por otra parte, la Dirección de Docencia ya cuenta con procesos SGIC institucionales que regulan la apertura y virtualización de programas. Los documentos elaborados por la Unidad de Procesos de Gestión Académica — que cubren la apertura de programas a modalidad virtual en pregrado, la virtualización operativa de actividades curriculares, y el ajuste de modalidad en planes de estudio de postgrado — definen el flujo administrativo-institucional: quién solicita, quién evalúa, quién aprueba, cómo se emite la resolución exenta. Lo que proponemos con el ADDIE adaptado es el complemento pedagógico-técnico de esos procesos: una vez que la institución autoriza virtualizar, el ADDIE guía cómo se diseña, construye y evalúa el curso.
+
+## La modularización como horizonte institucional
+
+La virtualización institucional que propone este documento no ocurre en un vacío curricular. La UMCE ya tomó una decisión de fondo que condiciona — y da sentido — a los productos de Mesa 1: la modularización de sus programas académicos. Las Resoluciones Exentas N° 100062 (enero 2019) y N° 100241 (marzo 2019) aprobaron un rediseño curricular basado en competencias, modularizado, con créditos SCT declarados. No es una aspiración ni una línea de desarrollo: es una decisión institucional vigente, ratificada en la sesión de Mesa 1 de marzo de 2026, donde se constató que lo que falta no es la voluntad política sino la definición operativa. La pregunta ya no es si la UMCE modulariza, sino qué significa modularizar en la práctica y qué instrumentos se necesitan para hacerlo con rigor.
+
+La respuesta a esa pregunta tiene un horizonte de implementación en tres fases. En una **primera fase (2026)**, la estructura semestral vigente se mantiene, pero cada actividad curricular completada genera una certificación propia — un reconocimiento formal de la competencia lograda, no solo una calificación en el acta. En una **segunda fase (2027-2028)**, los programas transitan hacia módulos de ocho semanas apilables, con microcredenciales como salidas intermedias y electivos compartidos entre programas. En una **tercera fase (2029 en adelante)**, la modularización habilita movilidad interna entre programas de la UMCE, movilidad interinstitucional en el marco del Consorcio de Universidades del Estado de Chile (CUECH) — cuyo Programa Súbete ya ofrece más de 90 cursos virtuales de 2 SCT entre 18 universidades estatales —, y el reconocimiento de aprendizajes previos (RAP) como mecanismo de flexibilización curricular.
+
+Es la modularización la que hace que los productos de Mesa 1 sean necesarios, no al revés. Si un módulo de ocho semanas será la unidad mínima de reconocimiento entre universidades, su carga horaria debe ser verificable: de ahí la necesidad del sistema de cálculo SCT. Si cada módulo requiere un diseño instruccional autónomo y coherente en sí mismo, no basta con fraccionar un semestre en dos: de ahí la necesidad del planificador de diseño instruccional, que ya contempla cuatro unidades de cálculo — semestral, módulo de ocho semanas, microcredencial y curso CUECH Súbete de 2 SCT — precisamente porque el horizonte modular exige esa flexibilidad. Si los módulos deben ser comparables en calidad independientemente de quién los diseñe, se necesita un estándar operativo: de ahí la rúbrica QA. Y si la institución va a certificar competencias módulo a módulo, necesita evidencia de que los estudiantes efectivamente las alcanzaron: de ahí el tablero de indicadores.
+
+Conviene señalar que la Guía de Cálculo SCT de la UGCI — sobre la cual se construye el Producto 2a — no menciona la modularización. Es un documento de cálculo de carga, no de diseño curricular. La conexión entre ambos procesos es precisamente lo que aportan los productos de Mesa 1: las herramientas que permiten que la decisión curricular de modularizar se traduzca en diseños instruccionales con carga verificable y calidad asegurable.
+
+Una nota sobre las microcredenciales. Chile no cuenta aún con un marco regulatorio para microcredenciales en educación superior. Sin embargo, la Agenda de Modernización del MINEDUC (2024) las promueve explícitamente como mecanismo de flexibilización y reconocimiento de aprendizajes. La UMCE tiene la oportunidad de avanzar en su definición operativa sin necesidad de esperar regulación — los instrumentos que construimos en Mesa 1 ya contemplan ese horizonte —, pero con la cautela de quien innova en un terreno donde las reglas del juego aún se están escribiendo.
+
+## Los cinco momentos: el flujo institucional de virtualización
+
+Para entender cómo se articulan los productos, es necesario describir el flujo de virtualización tal como opera — o debería operar — en la UMCE. Lo hemos organizado en cinco momentos que van desde la definición de créditos y horas hasta el monitoreo con datos reales. En versiones anteriores de este documento trabajábamos con cuatro momentos, pero la experiencia nos mostró que era necesario distinguir con claridad dos instancias de diseño que suelen confundirse: el PAC y el PIAC.
+
+Antes de describir los momentos, conviene precisar ambas siglas:
+
+- El **PAC** (Programa de Actividad Curricular) es el documento institucional que declara créditos, horas, resultados de aprendizaje, metodología general y sistema de evaluación. Es lo que aprueba la UGCI y lo que queda en la resolución exenta. El PAC dice *qué* se va a enseñar, con *cuánto* tiempo y bajo *qué* enfoque general.
+
+- El **PIAC** (Plan Instruccional de Actividad Curricular) es el diseño instruccional detallado que traduce el PAC en actividades concretas semana a semana, con herramientas, tiempos y recursos específicos. El PIAC dice *cómo* se va a enseñar: qué actividad va en cada semana, con qué herramienta, cuánto tiempo debería tomar al estudiante. Lo construye el diseñador instruccional en conjunto con el docente.
+
+Dicho de otro modo: el PAC es la carta de navegación institucional; el PIAC es el plan de ruta operativo. Confundir ambos lleva a situaciones donde se construyen cursos en la plataforma directamente desde el PAC, sin mediación del diseño detallado, o donde se elabora un PIAC que no es coherente con los créditos y horas aprobados.
+
+Con esa distinción clara, los cinco momentos del flujo son los siguientes.
+
+**Momento 1: Definir créditos y horas.** Toda actividad curricular virtualizada requiere una resolución exenta que fija los créditos SCT y la distribución de horas. Este es, paradójicamente, el momento más crítico y el menos atendido: las horas se definen frecuentemente sin criterio formal, reproduciendo distribuciones presenciales sin contrastar con instrumentos de estimación. Es aquí donde proponemos que opere la Guía de cálculo SCT, que aplica la fórmula institucional — SCT = ((HP + HA) x NS) / 27 — y la complementa con encuestas a estudiantes y docentes, tal como recomienda el Manual SCT-Chile del CRUCH. El objetivo es que los números que llegan a la resolución exenta tengan respaldo técnico. La Guía también alimenta el momento siguiente, porque los créditos y horas validados aquí son los datos de entrada del PAC.
+
+**Momento 2: Diseñar el PAC.** Una vez definidos los créditos y las horas, corresponde elaborar el Programa de Actividad Curricular. En este momento se establecen los resultados de aprendizaje, la metodología general, la distribución macro de horas presenciales o sincrónicas versus autónomas, y el sistema de evaluación. Es el documento que aprueba la UGCI y que fija el marco dentro del cual se diseñará el curso. El PAC opera a nivel de grandes decisiones — cuántas horas sincrónicas tendrá el curso, qué peso tendrá el trabajo autónomo, cuáles son los resultados de aprendizaje comprometidos — pero no entra en el detalle de qué actividad va en cada semana ni con qué herramienta.
+
+**Momento 3: Diseñar el PIAC.** Aquí el diseño instruccional se vuelve concreto. El diseñador instruccional, trabajando con el docente, toma el PAC aprobado y lo traduce en un plan detallado: qué actividades van en cada semana, con qué herramienta, cuánto tiempo demanda cada una. Es en este momento donde proponemos que opere el planificador web que estamos construyendo, con su catálogo de 37 tipos de e-actividades, tiempos referenciales basados en fuentes internacionales y validación automática contra los pilares pedagógicos del modelo virtual UMCE. El PIAC resultante guía directamente la implementación en la plataforma: si está bien hecho, el paso al Momento 4 es una traducción técnica, no una reinvención.
+
+**Momento 4: Implementar en la plataforma LMS.** El PIAC debe traducirse en un curso real dentro del entorno virtual de aprendizaje institucional: estructurar secciones, disponer recursos, configurar actividades, establecer evaluaciones y verificar que todo funcione antes de la apertura. Este momento está cubierto procedimentalmente por los procesos SGIC institucionales ya existentes, que describen paso a paso la construcción, configuración y prueba del curso virtual. Lo que aún no existe — y constituye una línea de trabajo en desarrollo — es un criterio de configuración adaptativa que oriente cómo ajustar la estructura del curso según el perfil de los estudiantes y el contexto pedagógico. Estamos trabajando en un marco que denominamos MOCA (Modelo de Configuración Adaptativa), cuya fundamentación teórica está avanzada pero pendiente de validación empírica, por lo que no se presenta como producto de Mesa 1 sino como una proyección a futuro.
+
+**Momento 5: Monitorear y retroalimentar.** Una vez que el curso está en marcha, se necesitan datos reales — participación, completitud de actividades, calificaciones, carga efectiva — para verificar si lo planificado se cumple y para retroalimentar el diseño del próximo ciclo. Es aquí donde opera el tablero piloto de indicadores. Y es aquí donde el ciclo se cierra: los datos del Momento 5 deberían alimentar las decisiones del Momento 1 del siguiente periodo. Si un curso muestra que los estudiantes dedicaron significativamente más horas de las planificadas, esa información vuelve a la Guía SCT. Si las métricas revelan baja participación en ciertas actividades, eso interpela tanto al PIAC (la selección de actividades) como al PAC (la distribución general de horas). El monitoreo no es un control externo: es la evidencia que permite que el ciclo mejore.
+
+## Los cuatro productos y su función en el ciclo
+
+Cada uno de los cuatro productos que estamos construyendo en Mesa 1 responde a un problema concreto del flujo de virtualización. Ninguno fue concebido como pieza aislada: cada uno opera en momentos específicos del ciclo y genera insumos que alimentan a los demás. Lo que proponemos es que, articulados bajo el paraguas ADDIE, configuren un proceso institucional verificable de principio a fin.
+
+### Producto 1: El modelo ADDIE como propuesta de proceso institucional
+
+El primer producto es, en cierto sentido, el que contiene a los demás. No se trata de crear un modelo nuevo sino de proponer la formalización del proceso de diseño instruccional que la UDFV ha venido aplicando informalmente en su trabajo con programas virtuales. La propuesta organiza el proceso en cinco fases — Análisis, Diseño, Desarrollo, Implementación y Evaluación — con pasos definidos, puntos de decisión y entregables que permitan verificar si cada fase se completó adecuadamente.
+
+La articulación con los procesos SGIC institucionales existentes es clave. Los procesos de la Dirección de Docencia cubren la apertura administrativa y la virtualización como acto institucional (solicitud, comité, factibilidad, resolución exenta). La propuesta ADDIE que estamos construyendo cubre el diseño pedagógico y la construcción técnica que viene después. No son procesos que compitan sino que se complementan: uno autoriza, el otro ejecuta. Lo que proponemos es que ambos queden articulados en un flujo continuo, de modo que el marco ADDIE funcione como el hilo conductor que conecta los cinco momentos del ciclo de virtualización.
+
+En la práctica, esto significa que el modelo ADDIE opera transversalmente: su fase de Análisis corresponde al Momento 1 (definir créditos y horas) y alimenta el Momento 2 (diseñar el PAC); su fase de Diseño se despliega en el Momento 3 (diseñar el PIAC con el planificador web); su fase de Desarrollo e Implementación coincide con el Momento 4 (implementar en la plataforma LMS, donde los procesos SGIC ya establecen el procedimiento); y su fase de Evaluación alimenta el Momento 5 (monitorear y retroalimentar con datos reales). Es el marco que da sentido al conjunto.
+
+### Producto 2: Dos sistemas para dos momentos del flujo
+
+El segundo producto de Mesa 1 comprende dos sistemas digitales distintos pero conectados, cada uno diseñado para operar en un momento específico del ciclo de virtualización. Aunque comparten el propósito general de asegurar coherencia entre créditos y diseño instruccional, responden a problemas diferentes, tienen usuarios diferentes y operan en momentos diferentes del flujo. Lo que los une es que el output del primero, pasando por la aprobación institucional del PAC, se convierte en el dato de entrada del segundo.
+
+#### Producto 2a: Sistema de cálculo SCT (Momento 1)
+
+La UGCI cuenta con una Guía de Cálculo SCT-Chile que establece el procedimiento institucional para determinar créditos y distribuir horas en las actividades curriculares. Su fundamento normativo es la Resolución Exenta N° 002140 (2011) de la UMCE, que fija la equivalencia de 1 crédito SCT = 27 horas cronológicas de trabajo estudiantil, y se complementa con las orientaciones del Manual SCT-Chile del CRUCH. La Guía es un documento -- un procedimiento con criterios e instrumentos. Lo que proponemos es construir una herramienta digital que operacionalice ese documento: un sistema de cálculo SCT que permita aplicar la Guía de manera estandarizada, trazable y verificable.
+
+El sistema que proponemos digitaliza las cuatro etapas que estructura la Guía. Primero, la estimación de carga mediante los instrumentos de levantamiento que la propia Guía define -- una encuesta a estudiantes (9 reactivos) y una encuesta a docentes (3 reactivos con tabla de actividades) -- que permiten contrastar la carga planificada con la percibida y la efectiva. Luego, el cálculo SCT propiamente tal, aplicando la fórmula institucional: SCT = ((HP + HA) x NS) / 27, donde HP son las horas presenciales o sincrónicas, HA las horas de trabajo autónomo y NS el número de semanas. Después, la presentación del valor final con criterio de redondeo. Y finalmente, la verificación de consistencia en cuatro niveles: actividad individual, semestre, año académico y trayectoria completa del programa.
+
+Un principio central del sistema es la trazabilidad: cada decisión de ajuste queda registrada con sus datos de entrada, el procedimiento aplicado, el resultado exacto y el valor final presentado. En términos de actores, la secuencia es clara: la unidad académica o carrera prepara la ficha de estimación y cálculo, la UGCI revisa la consistencia metodológica, y la carrera consolida la carga semestral y anual. La UDFV no participa en este flujo -- su aporte viene después, en el Momento 3.
+
+Este sistema opera en el Momento 1 del ciclo: definir créditos y horas antes de la resolución exenta. Su importancia radica en que transforma una decisión que hoy es frecuentemente discrecional en un proceso verificable y documentado. Los créditos y horas validados aquí son los datos de entrada del PAC que se elabora en el Momento 2 y que aprueba la UGCI. Hoy el sistema es una propuesta -- la Guía existe como documento, pero la herramienta digital para operacionalizarla aún no se ha construido.
+
+#### Producto 2b: Planificador de diseño instruccional (Momento 3)
+
+El segundo sistema opera en un momento posterior y con otros actores. Una vez que los créditos han sido calculados y validados (Momento 1) y el PAC ha sido aprobado por la UGCI (Momento 2), el diseñador instruccional de la UDFV trabaja con el docente para traducir esa distribución macro en un diseño detallado: el PIAC. Estamos construyendo un planificador web que asiste en ese proceso.
+
+El planificador toma como dato de entrada el SCT aprobado en el PAC y permite distribuir las horas en actividades concretas. Incluye un catálogo de 37 tipos de e-actividades organizadas en siete categorías segun la tipología de Guardia et al. (2004) -- análisis y síntesis, investigación, interacción, colaboración, reflexión, insumos y evaluación --, con tiempos referenciales basados en fuentes internacionales (Penn State, Wake Forest, FAU, Massey University). Valida que el diseño cumpla con los pilares pedagógicos del modelo virtual UMCE -- interacción, colaboración, reflexión y evaluación formativa -- y diferencia entre tres perfiles de estudiantes (pregrado, postgrado y educación continua), con porcentajes de sincronía diferenciados según la autonomía esperada en cada caso. Un semáforo de carga alerta cuando la distribución de horas se desvía mas de un 10% del valor aprobado.
+
+Este planificador ya cuenta con un prototipo funcional archivado. Su foco no es que los números sean correctos -- eso lo resuelve el Sistema de cálculo SCT en el Momento 1 --, sino que el diseño sea pedagógicamente coherente: que las actividades seleccionadas, sus tiempos y su secuencia respondan a los resultados de aprendizaje comprometidos en el PAC.
+
+#### La conexión entre ambos sistemas
+
+Los dos sistemas son complementarios y cubren momentos distintos del flujo institucional. El Sistema de cálculo SCT (Momento 1) produce créditos y horas validados que alimentan el PAC. El PAC aprobado por la UGCI (Momento 2) es el dato de entrada del Planificador de diseño instruccional (Momento 3). La secuencia es: Sistema 1 produce los números, el PAC los formaliza institucionalmente, el Sistema 2 los traduce en actividades concretas. Son herramientas distintas, con usuarios distintos, en momentos distintos, pero el output de uno alimenta al otro. Lo que estamos trabajando es que ese flujo sea continuo, de modo que los créditos calculados con el primer sistema se traduzcan -- pasando por la aprobación institucional del PAC -- en un diseño de PIAC verificable sin perder coherencia en el camino.
+
+### Producto 3: La rúbrica QA operativa
+
+La rúbrica de aseguramiento de calidad se construye sobre dos bases complementarias. La primera es el Marco Evaluativo Virtual desarrollado por Sepúlveda (2024) en el contexto del proyecto UMC20992, que organiza la calidad de un curso virtual en seis dimensiones: experiencia de interacción con la plataforma (funcionalidad, usabilidad, confiabilidad, estética accesible), accesibilidad (DUA, multimodalidad, privacidad), coherencia didáctica (contenidos, evaluación, estructura del cursado), competencias para la docencia virtual, perspectiva de género y equidad, y corresponsabilidad social y cuidados digitales.
+
+La segunda base son los estándares internacionales. El framework OSCQR (Online Learning Course Design Review Scorecard) de la State University of New York es open source (Creative Commons), incluye 50 estándares en 6 categorías, y está orientado a la mejora continua del diseño de cursos, no a la certificación punitiva. Se complementa con elementos de Quality Matters, adaptados al contexto institucional chileno. La decisión de priorizar OSCQR responde a la orientación de la Mesa 1 de favorecer recursos abiertos por sobre los propietarios cuando la calidad es equivalente.
+
+La rúbrica que proponemos integra ambas bases en un instrumento operativo que el equipo de diseño instruccional pueda aplicar en dos puntos del ciclo: como filtro de calidad al final del Momento 4, antes de liberar el curso a los estudiantes, y como herramienta de revisión periódica durante el Momento 5, cuando el curso ya está en operación y se dispone de datos reales de uso. La perspectiva de género e inclusión — resguardada en Mesa 1 por Angélica Marín — está integrada transversalmente: lenguaje sin sesgo, imágenes no discriminatorias, avisos de contenido sensible, protección de la privacidad en grabaciones y gobernanza de datos personales.
+
+### Producto 4: El tablero piloto de indicadores
+
+El tablero de indicadores es el único de los cuatro productos que ya está operativo con datos reales (dashboard.udfv.cloud, versión 4.1.1). Extrae métricas directamente de las plataformas Moodle de la UMCE — participación de estudiantes, completitud de actividades, calificaciones — y las presenta en una interfaz que permite monitorear el comportamiento de los cursos virtualizados.
+
+La propuesta analítica que sustenta el tablero distingue tres niveles progresivos (Rojas y Reyes, "Propuesta de extracción de datos y análisis", documento de trabajo): un nivel descriptivo, que responde a qué está pasando; un nivel analítico, que busca por qué está pasando; y un nivel interpretativo-crítico, que orienta qué hacer al respecto. No todos los niveles están implementados aún — el tablero actual opera principalmente en el nivel descriptivo —, pero la propuesta define el horizonte hacia el cual debería evolucionar.
+
+El tablero opera en el Momento 5: monitorear y retroalimentar. Es la pieza que cierra el ciclo de los cinco momentos, y la que lo convierte en un ciclo genuino y no en una secuencia lineal. Los datos reales del Momento 5 deberían retroalimentar las decisiones del Momento 1 del siguiente periodo. Si un curso muestra que los estudiantes dedicaron significativamente más horas de las planificadas, esa información vuelve a la Guía SCT para ajustar la distribución de carga. Si las métricas revelan problemas de participación o completitud, la rúbrica QA provee criterios concretos para diagnosticar dónde está la falla. Si el PIAC diseñado en el Momento 3 no se refleja en el comportamiento real de los estudiantes, el planificador necesita recalibrarse. Es retroalimentación con evidencia, no con impresiones.
+
+## Cómo proponemos que se conecten
+
+La articulación de los productos sigue la lógica de los cinco momentos del ciclo de virtualización:
+
+En el **Momento 1**, el **sistema de cálculo SCT** operacionaliza la Guía de la UGCI para que los créditos y horas tengan respaldo técnico antes de la resolución exenta. En el **Momento 2**, esos números validados se formalizan en el PAC que aprueba la UGCI. En el **Momento 3**, el **planificador de diseño instruccional** toma el PAC aprobado y lo traduce en un PIAC con actividades concretas, tiempos y validación pedagógica. En el **Momento 4**, los procesos SGIC institucionales guían la implementación técnica del curso en la plataforma LMS, y la **rúbrica QA** actúa como filtro de calidad antes de la apertura. En el **Momento 5**, el **tablero de indicadores** provee evidencia empírica sobre lo que efectivamente ocurre, y la rúbrica QA puede aplicarse como instrumento de revisión periódica.
+
+La propuesta de **proceso ADDIE** es el marco que atraviesa y conecta los cinco momentos. Lo que distingue esta articulación es que no depende de la voluntad individual de cada diseñador instruccional: proponemos un flujo documentado donde los insumos de un momento alimentan al siguiente, y donde la evidencia del Momento 5 retroalimenta al Momento 1 del periodo siguiente, cerrando el ciclo.
+
+Entre los Momentos 3 y 4 existe una zona que hoy queda a criterio del diseñador instruccional: cómo configurar el curso en la plataforma según las características del contexto — el grado de autonomía esperado del estudiante, la modalidad de entrega, la experiencia digital del equipo docente. La UDFV está desarrollando un marco de configuración adaptativa que busca sistematizar esas decisiones, pero se encuentra en fase de fundamentación teórica y pendiente de validación empírica. No es un producto de Mesa 1 para mayo; es una línea de trabajo que podría madurar durante el segundo semestre.
+
+## Pendientes y próximos pasos
+
+**Para la entrega preliminar de fines de abril:**
+- Preparar una versión del proceso ADDIE legible para académicos y directivos, no solo para el equipo de diseño instruccional.
+- Articular la Guía SCT de la UGCI con el planificador web, resolviendo las diferencias de enfoque (la Guía calcula SCT como resultado; el planificador lo toma como dato de entrada — ambos flujos son necesarios).
+- Definir la versión operativa de la rúbrica QA como instrumento aplicable.
+- Seleccionar los cursos piloto para demostrar el tablero de indicadores.
+
+**Para la presentación de mayo:**
+- Mostrar la articulación de los cuatro productos con al menos un caso concreto.
+- Preparar la vitrina en umce.online donde se visualicen los productos de las tres mesas.
+- Articular con Mesa 2 (infraestructura) y Mesa 3 (formación docente) los puntos de conexión entre productos.
+
+**Para el segundo semestre (redacción de política):**
+- Los cuatro productos de Mesa 1 deberían traducirse en secciones de la política de virtualización institucional.
+- Las encuestas de la Guía SCT, aplicadas durante el primer semestre, proveerán los primeros datos empíricos de carga real.
+- Los datos acumulados por el tablero fundamentarán las decisiones de política con evidencia, no solo con diseño.
+
+---
+
+*Documento de trabajo — Mesa 1: Modelo Instruccional, Calidad y Aprendizaje*
+*Proceso de Virtualización Institucional UMCE 2026*
