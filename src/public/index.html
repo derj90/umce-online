@@ -115,7 +115,8 @@
       </div>
     </div>
 
-    <!-- Bottom fade now drawn by p5.js canvas directly (no CSS overlay needed) -->
+    <!-- Bottom fade — sits above all hero layers (canvas z-0, overlay z-5, content z-10) -->
+    <div class="absolute bottom-0 left-0 right-0 pointer-events-none" style="z-index: 15; height: 33%; background: linear-gradient(to bottom, transparent, #F9FAFB);"></div>
   </section>
 
 
