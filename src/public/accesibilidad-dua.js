@@ -259,49 +259,62 @@
       flex: 1;
     }
 
-    /* Toggle switch */
+    /* Toggle switch — reset all to prevent Tailwind/framework conflicts */
     .a11y-toggle {
-      position: relative;
-      width: 40px;
-      height: 22px;
-      flex-shrink: 0;
-      display: block;
-      cursor: pointer;
+      all: initial !important;
+      position: relative !important;
+      width: 34px !important;
+      height: 18px !important;
+      min-width: 34px !important;
+      max-width: 34px !important;
+      flex-shrink: 0 !important;
+      display: block !important;
+      cursor: pointer !important;
     }
     .a11y-toggle input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-      position: absolute;
+      opacity: 0 !important;
+      width: 0 !important;
+      height: 0 !important;
+      position: absolute !important;
     }
     .a11y-toggle .slider {
-      position: absolute;
-      inset: 0;
-      background: #d1d5db;
-      border-radius: 22px;
-      cursor: pointer;
-      transition: background 0.2s;
+      all: initial !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 34px !important;
+      height: 18px !important;
+      background: #d1d5db !important;
+      border-radius: 18px !important;
+      cursor: pointer !important;
+      transition: background 0.2s !important;
+      display: block !important;
+      border: none !important;
+      outline: none !important;
     }
     .a11y-toggle .slider::before {
-      content: '';
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      left: 3px;
-      bottom: 3px;
-      background: white;
-      border-radius: 50%;
-      transition: transform 0.2s;
+      content: '' !important;
+      position: absolute !important;
+      width: 14px !important;
+      height: 14px !important;
+      left: 2px !important;
+      top: 2px !important;
+      background: white !important;
+      border-radius: 50% !important;
+      transition: transform 0.2s !important;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15) !important;
     }
     .a11y-toggle input:checked + .slider {
-      background: #0033A1;
+      background: #0033A1 !important;
     }
     .a11y-toggle input:checked + .slider::before {
-      transform: translateX(18px);
+      transform: translateX(16px) !important;
     }
     .a11y-toggle input:focus-visible + .slider {
-      outline: 2px solid #FF9E18;
-      outline-offset: 2px;
+      outline: 2px solid #FF9E18 !important;
+      outline-offset: 2px !important;
     }
 
     /* Font size control */
