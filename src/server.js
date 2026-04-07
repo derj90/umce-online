@@ -2179,6 +2179,66 @@ async function searchKnowledgeBase(query) {
   }
 }
 
+// Update user profile after each interaction (async, non-blocking)
+function updateUserProfile(email, message, role) {
+  if (!email) return;
+  const now = new Date().toISOString();
+  // Classify topic from message keywords
+  const topicMap = {
+    acceso: /acceso|ingresar|entrar|login|contraseña|clave|password/i,
+    cursos: /curso|inscri|matricul|inscripcion/i,
+    calificaciones: /nota|calificacion|grade|evaluacion|promedio/i,
+    tareas: /tarea|entrega|submission|assign|plazo|fecha/i,
+    plataforma: /plataforma|moodle|virtual|evirtual|estado|caido|error/i,
+    soporte: /ayuda|soporte|problema|no puedo|no funciona/i,
+    docente: /docente|profesor|horario|atencion/i,
+  };
+  const detectedTopics = [];
+  for (const [topic, regex] of Object.entries(topicMap)) {
+    if (regex.test(message)) detectedTopics.push(topic);
+  }
+  if (detectedTopics.length === 0) detectedTopics.push('general');
+
+  // Upsert profile via Supabase REST
+  const profileData = {
+    email,
+    role: role || 'public',
+    interaction_count: 1,
+    topics: JSON.stringify(detectedTopics),
+    last_query: message.substring(0, 500),
+    last_interaction: now,
+  };
+
+  const sbUrl = process.env.SUPABASE_URL || 'https://supabase.udfv.cloud';
+  const sbKey = process.env.SUPABASE_SERVICE_KEY;
+  fetch(`${sbUrl}/rest/v1/assistant_user_profiles`, {
+    method: 'POST',
+    headers: {
+      apikey: sbKey,
+      Authorization: `Bearer ${sbKey}`,
+      'Content-Type': 'application/json',
+      'Content-Profile': 'portal',
+      Prefer: 'resolution=merge-duplicates',
+    },
+    body: JSON.stringify(profileData),
+    signal: AbortSignal.timeout(5000),
+  }).then(async res => {
+    if (res.ok && email) {
+      // Increment interaction_count and accumulate topics
+      await fetch(`${sbUrl}/rest/v1/rpc/increment_interaction`, {
+        method: 'POST',
+        headers: {
+          apikey: sbKey,
+          Authorization: `Bearer ${sbKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user_email: email, new_topics: JSON.stringify(detectedTopics) }),
+        signal: AbortSignal.timeout(5000),
+      }).catch(() => {});
+    }
+  }).catch(() => {});
+}
+
 // System prompt with portal context — built on startup
 let chatSystemPrompt = '';
 async function buildChatSystemPrompt() {
@@ -2439,9 +2499,27 @@ app.post('/api/chat/message', async (req, res) => {
     // RAG: search knowledge base for relevant context
     const ragContext = await searchKnowledgeBase(message);
 
+    // Load user profile for personalization
+    let userProfileContext = '';
+    if (chatUserEmail) {
+      try {
+        const profiles = await portalQuery('assistant_user_profiles', `email=eq.${encodeURIComponent(chatUserEmail)}&limit=1`);
+        if (profiles.length > 0) {
+          const p = profiles[0];
+          const topics = Array.isArray(p.topics) ? p.topics.join(', ') : '';
+          userProfileContext = `\nPerfil del usuario: ${p.interaction_count} interacciones previas. Nivel: ${p.expertise_level}. Temas frecuentes: ${topics || 'ninguno aún'}.`;
+          if (p.expertise_level === 'basico') {
+            userProfileContext += ' Adapta tu lenguaje para un usuario con poca experiencia digital. Sé más detallado en las instrucciones.';
+          } else if (p.expertise_level === 'avanzado') {
+            userProfileContext += ' Este usuario tiene experiencia. Sé conciso y directo.';
+          }
+        }
+      } catch { /* profile not found — first interaction */ }
+    }
+
     // Build system prompt — use virtualizacion specialist prompt if context param provided
     const chatContext = req.body.context;
-    let systemPrompt = (chatContext === 'virtualizacion' ? virtSystemPrompt : chatSystemPrompt) + ragContext;
+    let systemPrompt = (chatContext === 'virtualizacion' ? virtSystemPrompt : chatSystemPrompt) + ragContext + userProfileContext;
 
     // Add role context (server-verified identity, not modifiable by user)
     const roleContext = chatUserRole === 'admin'
@@ -2530,6 +2608,9 @@ app.post('/api/chat/message', async (req, res) => {
     // Update message count
     await portalMutate('chat_sessions', 'PATCH', { message_count: session.message_count + 2 },
       `session_token=eq.${encodeURIComponent(session_token)}`);
+
+    // Update user profile (async, non-blocking)
+    updateUserProfile(chatUserEmail, message, chatUserRole);
 
     res.json({ response: assistantMessage });
   } catch (err) {
