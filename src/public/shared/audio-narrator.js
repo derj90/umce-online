@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Build the floating button
   container.innerHTML = '';
-  container.style.cssText = 'position:fixed;bottom:6rem;right:1.5rem;z-index:9999;display:flex;align-items:center;gap:0.75rem;';
+  container.style.cssText = 'position:fixed;bottom:9.5rem;right:1.5rem;z-index:9996;display:flex;align-items:center;gap:0.75rem;';
 
   // Progress ring + button
   var btn = document.createElement('button');
