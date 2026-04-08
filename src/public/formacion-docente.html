@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Formaci&oacute;n Docente en Competencias Digitales | UMCE.online</title>
+  <meta name="description" content="Cursos, talleres y certificaci&oacute;n para integrar tecnolog&iacute;as en tu docencia. Avanza a tu ritmo: cada hora cuenta. Plan de Formaci&oacute;n Primer Semestre 2026.">
+  <meta name="author" content="Unidad de Desarrollo y Formaci&oacute;n Virtual &mdash; UMCE">
+  <link rel="canonical" href="https://umce.online/formacion-docente">
+  <meta property="og:title" content="Formaci&oacute;n Docente en Competencias Digitales &mdash; UMCE.online">
+  <meta property="og:description" content="11 cursos, 98 horas y una certificaci&oacute;n institucional para docentes UMCE. Primer Semestre 2026.">
+  <meta property="og:image" content="https://umce.online/assets/og-default.png">
+  <meta property="og:site_name" content="UMCE.online">
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+  <link rel="stylesheet" href="/shared/shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js" defer></script>
+  <style>
+    /* ---- Hero canvas ---- */
+    #fd-hero-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    #fd-hero-canvas canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* ---- Eyebrow label ---- */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--palette-primary);
+      margin-bottom: 1rem;
+    }
+    .eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 1.5rem;
+      height: 2px;
+      background: var(--palette-accent);
+      flex-shrink: 0;
+    }
+
+    /* ---- Tabs de &aacute;reas ---- */
+    .area-tab {
+      padding: 0.5rem 1.25rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1.5px solid #E5E7EB;
+      background: white;
+      color: #6B7280;
+      white-space: nowrap;
+    }
+    .area-tab:hover {
+      border-color: var(--palette-primary);
+      color: var(--palette-primary);
+    }
+    .area-tab.active {
+      background: var(--palette-primary);
+      color: white;
+      border-color: var(--palette-primary);
+    }
+
+    /* ---- Course card ---- */
+    .fd-course-card {
+      border: 1.5px solid #E5E7EB;
+      border-radius: 1rem;
+      background: #fff;
+      overflow: hidden;
+      transition: all 0.25s ease;
+    }
+    .fd-course-card:hover {
+      box-shadow: 0 12px 32px -8px rgba(0, 29, 92, 0.13);
+      transform: translateY(-3px);
+    }
+    .fd-course-card.hidden-card {
+      display: none;
+    }
+
+    /* ---- Badge de horas ---- */
+    .hours-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.65rem;
+      border-radius: 9999px;
+      background: #EFF6FF;
+      color: #1D4ED8;
+    }
+
+    /* ---- CTA final section ---- */
+    .cta-final {
+      background: linear-gradient(135deg, #001233 0%, #001D5C 60%, #002A80 100%);
+    }
+
+    /* ---- Stepper de niveles ---- */
+    .nivel-stepper {
+      position: relative;
+    }
+    .nivel-stepper::before {
+      content: '';
+      position: absolute;
+      left: 1.25rem;
+      top: 2.5rem;
+      bottom: 2.5rem;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--palette-primary), var(--palette-accent));
+    }
+    .nivel-dot {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9375rem;
+      color: white;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ---- Dominio pill ---- */
+    .dominio-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.4rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      border: 1.5px solid;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .dominio-pill:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* ---- Progreso sección ---- */
+    .progress-bar-track {
+      height: 0.625rem;
+      background: #E5E7EB;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--palette-primary), #4A90D9);
+      border-radius: 9999px;
+      transition: width 1s ease-out;
+    }
+
+    /* ---- Stat card progreso ---- */
+    .stat-progress-card {
+      background: white;
+      border: 1.5px solid #E5E7EB;
+      border-radius: 0.875rem;
+      padding: 1.25rem;
+      text-align: center;
+    }
+    .stat-progress-number {
+      font-family: 'Trebuchet MS', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--palette-primary);
+    }
+
+    /* ---- Marco colapsable ---- */
+    .marco-details summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.875rem 1.25rem;
+      border-radius: 0.5rem;
+      background: white;
+      border: 1.5px solid #E5E7EB;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--palette-primary);
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .marco-details summary::-webkit-details-marker { display: none; }
+    .marco-details summary:hover { background: #F0F4FF; }
+    .marco-details[open] summary {
+      border-radius: 0.5rem 0.5rem 0 0;
+      border-bottom: none;
+      background: #F0F4FF;
+    }
+    .marco-details-body {
+      border: 1.5px solid #E5E7EB;
+      border-top: none;
+      border-radius: 0 0 0.5rem 0.5rem;
+      padding: 1.25rem;
+      background: white;
+    }
+    .marco-chevron {
+      width: 1rem;
+      height: 1rem;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .marco-details[open] .marco-chevron {
+      transform: rotate(180deg);
+    }
+
+    /* ---- Tabla cronol&oacute;gica ---- */
+    .timeline-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+    }
+    .timeline-table th {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      background: #F3F4F6;
+      color: #374151;
+      font-weight: 700;
+      border-bottom: 1.5px solid #E5E7EB;
+    }
+    .timeline-table td {
+      padding: 0.625rem 0.75rem;
+      border-bottom: 1px solid #F3F4F6;
+      color: #4B5563;
+      vertical-align: top;
+    }
+    .timeline-table tr:last-child td {
+      border-bottom: none;
+    }
+    .timeline-table td:first-child {
+      font-weight: 700;
+      color: var(--palette-primary);
+      white-space: nowrap;
+    }
+
+    /* ---- Breadcrumb ---- */
+    .breadcrumb a { transition: color 0.15s; }
+    .breadcrumb a:hover { color: rgba(255,255,255,0.9); }
+
+    /* ---- Section stats strip ---- */
+    .stats-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.5rem;
+      align-items: center;
+    }
+    .stats-strip span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--palette-primary);
+    }
+    .stats-strip .dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #CBD5E1;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+
+  <div id="nav-placeholder"></div>
+
+  <!-- ============================================================ -->
+  <!-- HERO                                                         -->
+  <!-- ============================================================ -->
+  <section class="pt-32 pb-24 text-white relative overflow-hidden" style="background: #001D5C; min-height: 24rem;">
+    <!-- p5 generativo: red de nodos/sin&aacute;psis -->
+    <div id="fd-hero-canvas"></div>
+    <!-- Overlay para legibilidad -->
+    <div class="absolute inset-0 pointer-events-none" style="z-index:1; background: rgba(0,10,45,0.58);"></div>
+    <!-- Fade inferior -->
+    <div class="absolute left-0 right-0 bottom-0 pointer-events-none" style="z-index:2; height: 120px; background: linear-gradient(to bottom, transparent, #ffffff);"></div>
+
+    <div class="max-w-7xl mx-auto px-6 relative" style="z-index:3;">
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb text-sm mb-6 flex items-center gap-1" aria-label="Breadcrumb">
+        <a href="/" class="text-white/55 hover:text-white">Inicio</a>
+        <svg class="w-3.5 h-3.5 text-white/25 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+        <span class="text-white/85">Formaci&oacute;n Docente</span>
+      </nav>
+
+      <h1 class="fade-up font-heading text-4xl md:text-5xl lg:text-6xl font-extrabold mb-5 max-w-3xl leading-tight">
+        Formaci&oacute;n en Competencias Digitales para la Docencia
+      </h1>
+      <p class="fade-up text-white/75 text-lg md:text-xl max-w-2xl leading-relaxed">
+        Cursos, talleres y certificaci&oacute;n para integrar tecnolog&iacute;as en tu docencia. Avanza a tu ritmo: cada hora cuenta.
+      </p>
+
+      <div class="fade-up flex flex-wrap gap-3 mt-8">
+        <a href="#cursos"
+           class="inline-flex items-center gap-2 font-heading font-bold text-sm px-6 py-3 rounded-lg transition-all hover:-translate-y-0.5"
+           style="background: var(--palette-accent); color: #001D5C;">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+          </svg>
+          Ver cursos del semestre
+        </a>
+        <a href="#certificacion"
+           class="inline-flex items-center gap-2 font-heading font-bold text-sm px-6 py-3 rounded-lg border-2 border-white/30 text-white hover:bg-white/10 transition-colors">
+          C&oacute;mo funciona la certificaci&oacute;n
+        </a>
+      </div>
+
+      <!-- Arte caption -->
+      <div class="absolute bottom-6 right-6 hidden sm:block pointer-events-none">
+        <div class="text-white/30 text-[10px] italic tracking-wide">Red de competencias</div>
+        <div class="text-white/20 text-[9px] mt-0.5">Gr&aacute;fica generativa &middot; p5.js</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- S1: CURSOS DEL SEMESTRE                                      -->
+  <!-- ============================================================ -->
+  <section class="py-16 md:py-24 bg-white" id="cursos">
+    <div class="max-w-7xl mx-auto px-6">
+
+      <div class="fade-up mb-10">
+        <p class="eyebrow">Plan de Formaci&oacute;n &middot; Primer Semestre 2026</p>
+        <h2 class="font-heading text-3xl md:text-4xl font-extrabold mb-4 max-w-2xl">
+          Cursos disponibles este semestre
+        </h2>
+        <p class="text-gray-500 text-lg max-w-2xl mb-5">
+          Cada semestre ofrecemos cursos y talleres en competencias digitales. Las horas que completes se acumulan hacia tu certificaci&oacute;n.
+        </p>
+        <!-- Stats strip -->
+        <div class="stats-strip">
+          <span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            11 cursos
+          </span>
+          <span class="dot"></span>
+          <span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            98 horas
+          </span>
+          <span class="dot"></span>
+          <span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10"/></svg>
+            3 &aacute;reas
+          </span>
+        </div>
+      </div>
+
+      <!-- Tabs de &aacute;reas -->
+      <div class="fade-up flex flex-wrap gap-2 mb-8" id="area-tabs" role="tablist">
+        <button class="area-tab active" data-area="todos" role="tab" aria-selected="true">Todos</button>
+        <button class="area-tab" data-area="ensenanza" role="tab" aria-selected="false">Ense&ntilde;anza con tecnolog&iacute;a</button>
+        <button class="area-tab" data-area="crecimiento" role="tab" aria-selected="false">Crecimiento profesional</button>
+        <button class="area-tab" data-area="herramientas" role="tab" aria-selected="false">Herramientas y ciudadan&iacute;a digital</button>
+      </div>
+
+      <!-- Grid de cursos -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="cursos-grid">
+
+        <!-- === &Aacute;rea 1: Ense&ntilde;anza con tecnolog&iacute;a === -->
+
+        <!-- Curso 1: Canva -->
+        <div class="fade-up fd-course-card" data-area="ensenanza">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #0033A1, #4A90D9);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">Elaboraci&oacute;n de materiales educativos digitales (Canva)</h3>
+              <span class="hours-badge flex-shrink-0">10 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                2 grupos
+              </span>
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                2 h sinc. + 8 h aut.
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Dise&ntilde;o y personalizaci&oacute;n de recursos educativos digitales con herramientas accesibles.</p>
+          </div>
+        </div>
+
+        <!-- Curso 2: Moodle evaluaci&oacute;n -->
+        <div class="fade-up fd-course-card" data-area="ensenanza">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #0033A1, #4A90D9);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">Evaluaci&oacute;n y retroalimentaci&oacute;n asistida por tecnolog&iacute;a (Moodle)</h3>
+              <span class="hours-badge flex-shrink-0">8 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs bg-green-50 text-green-700 rounded-md px-2 py-0.5 font-medium">
+                100 % asincr&oacute;nico
+              </span>
+              <span class="inline-flex items-center text-xs bg-blue-50 text-blue-700 rounded-md px-2 py-0.5 font-medium">
+                Inicia 4 de mayo
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Instrumentos de evaluaci&oacute;n y retroalimentaci&oacute;n personalizada en Moodle.</p>
+          </div>
+        </div>
+
+        <!-- Curso 3: Multimedia con IA -->
+        <div class="fade-up fd-course-card" data-area="ensenanza">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #0033A1, #4A90D9);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">Elaboraci&oacute;n de material educativo multimedia con IA</h3>
+              <span class="hours-badge flex-shrink-0">8 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                3 grupos
+              </span>
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                3 h sinc. + 5 h aut.
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Creaci&oacute;n de contenido digital &mdash; audio, video, imagen &mdash; con apoyo de inteligencia artificial.</p>
+          </div>
+        </div>
+
+        <!-- === &Aacute;rea 2: Crecimiento profesional === -->
+
+        <!-- Curso 4: IA Generativa -->
+        <div class="fade-up fd-course-card" data-area="crecimiento">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #7C3AED, #A78BFA);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">Introducci&oacute;n a la IA generativa y principios fundamentales</h3>
+              <span class="hours-badge flex-shrink-0" style="background:#F5F3FF; color:#5B21B6;">19 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                4 grupos
+              </span>
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                3 h sinc. + 13 h aut.
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Conceptos esenciales de inteligencia artificial, aprendizaje autom&aacute;tico y herramientas generativas de uso general.</p>
+          </div>
+        </div>
+
+        <!-- Curso 5: Ciudadan&iacute;a &eacute;tica -->
+        <div class="fade-up fd-course-card" data-area="crecimiento">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #7C3AED, #A78BFA);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">Ciudadan&iacute;a y &eacute;tica digital en el aula</h3>
+              <span class="hours-badge flex-shrink-0" style="background:#F5F3FF; color:#5B21B6;">12 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                3 grupos
+              </span>
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                3 h sinc. + 9 h aut.
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Uso seguro, responsable y reflexivo de las tecnolog&iacute;as. Huella digital, derechos digitales y convivencia en l&iacute;nea.</p>
+          </div>
+        </div>
+
+        <!-- Curso 6: NotebookLM -->
+        <div class="fade-up fd-course-card" data-area="crecimiento">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #7C3AED, #A78BFA);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">Herramientas de IA para docencia e investigaci&oacute;n: NotebookLM</h3>
+              <span class="hours-badge flex-shrink-0" style="background:#F5F3FF; color:#5B21B6;">8 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                3 grupos
+              </span>
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                2 h sinc. + 6 h aut.
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">An&aacute;lisis de documentos acad&eacute;micos y creaci&oacute;n de materiales did&aacute;cticos con NotebookLM.</p>
+          </div>
+        </div>
+
+        <!-- Curso 7: Portafolios digitales -->
+        <div class="fade-up fd-course-card" data-area="crecimiento">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #7C3AED, #A78BFA);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">Portafolios digitales para pr&aacute;ctica reflexiva</h3>
+              <span class="hours-badge flex-shrink-0" style="background:#F5F3FF; color:#5B21B6;">4 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs bg-green-50 text-green-700 rounded-md px-2 py-0.5 font-medium">
+                100 % asincr&oacute;nico
+              </span>
+              <span class="inline-flex items-center text-xs bg-blue-50 text-blue-700 rounded-md px-2 py-0.5 font-medium">
+                Inicia 4 de mayo
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Elaboraci&oacute;n de portafolios con Google Sites que integren perfil profesional y evidencias de pr&aacute;ctica.</p>
+          </div>
+        </div>
+
+        <!-- === &Aacute;rea 3: Herramientas y ciudadan&iacute;a digital === -->
+
+        <!-- Curso 8: Gemini -->
+        <div class="fade-up fd-course-card" data-area="herramientas">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #EA580C, #FBBF24);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">Herramientas de IA para la labor docente: Gemini</h3>
+              <span class="hours-badge flex-shrink-0" style="background:#FFF7ED; color:#C2410C;">8 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                4 grupos
+              </span>
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                2 h sinc. + 6 h aut.
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Aplicaci&oacute;n pr&aacute;ctica de Google Gemini para la generaci&oacute;n de contenidos did&aacute;cticos.</p>
+          </div>
+        </div>
+
+        <!-- Curso 9: Zoom -->
+        <div class="fade-up fd-course-card" data-area="herramientas">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #EA580C, #FBBF24);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">S&aacute;cale provecho a Zoom</h3>
+              <span class="hours-badge flex-shrink-0" style="background:#FFF7ED; color:#C2410C;">2 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                3 grupos
+              </span>
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                Sincr&oacute;nico
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Aplicaciones y recursos de Zoom para las clases en l&iacute;nea.</p>
+          </div>
+        </div>
+
+        <!-- Curso 10: Tutor&iacute;a virtual -->
+        <div class="fade-up fd-course-card" data-area="herramientas">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #EA580C, #FBBF24);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">Formaci&oacute;n para la tutor&iacute;a virtual</h3>
+              <span class="hours-badge flex-shrink-0" style="background:#FFF7ED; color:#C2410C;">15 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs bg-green-50 text-green-700 rounded-md px-2 py-0.5 font-medium">
+                100 % asincr&oacute;nico
+              </span>
+              <span class="inline-flex items-center text-xs bg-blue-50 text-blue-700 rounded-md px-2 py-0.5 font-medium">
+                Inicia 20 de abril
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Competencias para el desempe&ntilde;o como tutor virtual: estrategias pedag&oacute;gicas, comunicaci&oacute;n, tecnolog&iacute;as y evaluaci&oacute;n en entornos en l&iacute;nea.</p>
+          </div>
+        </div>
+
+        <!-- Curso 11: Automatizaciones -->
+        <div class="fade-up fd-course-card" data-area="herramientas">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #EA580C, #FBBF24);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">Automatizaciones con IA en el proceso docente</h3>
+              <span class="hours-badge flex-shrink-0" style="background:#FFF7ED; color:#C2410C;">4 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                2 grupos
+              </span>
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                1 h sinc. + 3 h aut.
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Funciones avanzadas de herramientas de IA para la automatizaci&oacute;n de tareas acad&eacute;micas.</p>
+          </div>
+        </div>
+
+      </div><!-- /cursos-grid -->
+
+      <!-- Organizaci&oacute;n + CTAs -->
+      <div class="fade-up mt-8 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <p class="text-xs text-gray-400">
+          Organiza: Unidad de Desarrollo y Formaci&oacute;n Virtual (UDFV) / Unidad de Desarrollo Acad&eacute;mico (UDA), Direcci&oacute;n de Docencia.
+        </p>
+        <div class="flex flex-wrap gap-3 flex-shrink-0">
+          <a href="/formacion-docente/plan"
+             class="inline-flex items-center gap-1.5 text-sm font-semibold transition-colors hover:underline"
+             style="color: var(--palette-primary);">
+            Ver calendario completo con fechas
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#mi-progreso"
+             class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg font-heading font-bold text-sm transition-all hover:-translate-y-0.5"
+             style="background: var(--palette-accent); color: #001D5C;">
+            Quiero inscribirme
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- S2: CERTIFICACI&Oacute;N                                    -->
+  <!-- ============================================================ -->
+  <section class="py-16 md:py-24 bg-gray-50" id="certificacion">
+    <div class="max-w-4xl mx-auto px-6">
+
+      <!-- Frase puente -->
+      <div class="fade-up text-center mb-12">
+        <p class="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed italic">
+          &ldquo;Cada curso que completes no es solo formaci&oacute;n: es un paso concreto hacia una certificaci&oacute;n institucional.&rdquo;
+        </p>
+      </div>
+
+      <div class="fade-up mb-10">
+        <p class="eyebrow">Reconocimiento oficial</p>
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <h2 class="font-heading text-3xl md:text-4xl font-extrabold">
+            Certificaci&oacute;n de la Competencia Digital para la Docencia
+          </h2>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold" style="background:#FFFBEB; color:#92400E; border:1px solid #FDE68A;">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+            Res. Exenta 2025-00-1545
+          </span>
+        </div>
+        <p class="text-gray-500 text-base max-w-2xl">
+          Cada nivel requiere dos cosas: <strong>horas de formaci&oacute;n</strong> y una <strong>evidencia pedag&oacute;gica</strong> que demuestre lo aprendido.
+        </p>
+      </div>
+
+      <!-- Stepper de niveles -->
+      <div class="fade-up nivel-stepper space-y-0 mb-10">
+
+        <!-- Nivel Inicial -->
+        <div class="flex gap-5 pb-8">
+          <div class="flex flex-col items-center">
+            <div class="nivel-dot" style="background: var(--palette-primary);">1</div>
+            <div class="flex-1 w-0.5 mt-2" style="background: linear-gradient(to bottom, var(--palette-primary), #7C3AED);"></div>
+          </div>
+          <div class="flex-1 pb-2">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Nivel Inicial</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold" style="background:#EFF6FF; color:#1D4ED8;">Desde 2025</span>
+            </div>
+            <h3 class="font-heading font-bold text-lg mb-3">Conoce las herramientas y reflexiona sobre su uso</h3>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div class="bg-white rounded-xl p-4 border border-gray-200">
+                <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1.5">Formaci&oacute;n</p>
+                <p class="text-2xl font-extrabold" style="color:var(--palette-primary);">27 h</p>
+                <p class="text-xs text-gray-500 mt-1">cronol&oacute;gicas &mdash; 1 cr&eacute;dito transferible</p>
+              </div>
+              <div class="bg-white rounded-xl p-4 border border-gray-200">
+                <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1.5">Evidencia</p>
+                <p class="text-sm text-gray-600 leading-relaxed">Informe de reflexi&oacute;n cr&iacute;tica sobre el dominio del conocimiento tecnopedagog&oacute;gico del contenido (TPACK).</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nivel Intermedio -->
+        <div class="flex gap-5 pb-8">
+          <div class="flex flex-col items-center">
+            <div class="nivel-dot" style="background: #7C3AED;">2</div>
+            <div class="flex-1 w-0.5 mt-2" style="background: linear-gradient(to bottom, #7C3AED, var(--palette-accent));"></div>
+          </div>
+          <div class="flex-1 pb-2">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Nivel Intermedio</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold" style="background:#F5F3FF; color:#5B21B6;">Desde 2026</span>
+            </div>
+            <h3 class="font-heading font-bold text-lg mb-3">Integra tecnolog&iacute;a en tus cursos y evaluaciones</h3>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div class="bg-white rounded-xl p-4 border border-gray-200">
+                <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1.5">Formaci&oacute;n</p>
+                <p class="text-2xl font-extrabold" style="color:#7C3AED;">54 h</p>
+                <p class="text-xs text-gray-500 mt-1">acumuladas &mdash; 2 cr&eacute;ditos transferibles</p>
+              </div>
+              <div class="bg-white rounded-xl p-4 border border-gray-200">
+                <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1.5">Evidencia</p>
+                <p class="text-sm text-gray-600 leading-relaxed">Portafolio digital con recursos elaborados, planificaciones, instrumentos de evaluaci&oacute;n y evidencias de retroalimentaci&oacute;n mediadas por TIC.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nivel Avanzado -->
+        <div class="flex gap-5">
+          <div class="flex flex-col items-center">
+            <div class="nivel-dot" style="background: var(--palette-accent);">3</div>
+          </div>
+          <div class="flex-1">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Nivel Avanzado</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold" style="background:#FFFBEB; color:#92400E;">Desde 2027</span>
+            </div>
+            <h3 class="font-heading font-bold text-lg mb-3">Lidera proyectos de innovaci&oacute;n y mentor&iacute;a entre pares</h3>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div class="bg-white rounded-xl p-4 border border-gray-200">
+                <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1.5">Formaci&oacute;n</p>
+                <p class="text-2xl font-extrabold" style="color:#D97706;">81 h</p>
+                <p class="text-xs text-gray-500 mt-1">acumuladas &mdash; 3 cr&eacute;ditos transferibles</p>
+              </div>
+              <div class="bg-white rounded-xl p-4 border border-gray-200">
+                <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1.5">Evidencia</p>
+                <p class="text-sm text-gray-600 leading-relaxed">Trayectoria documentada con proyectos de innovaci&oacute;n educativa, publicaciones, mentor&iacute;as, asesor&iacute;as o liderazgo en iniciativas de transformaci&oacute;n digital.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /stepper -->
+
+      <!-- Nota acumulativa -->
+      <div class="fade-up bg-blue-50 border border-blue-200 rounded-xl p-4 mb-10 flex gap-3">
+        <svg class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p class="text-sm text-blue-800">
+          <strong>Las horas son acumulativas:</strong> si ya certificaste el nivel inicial con 27 horas, necesitas 27 horas adicionales para alcanzar las 54 del nivel intermedio.
+        </p>
+      </div>
+
+      <!-- Dominios -->
+      <div class="fade-up mb-8">
+        <p class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">La certificaci&oacute;n se organiza en tres dominios</p>
+        <div class="flex flex-wrap gap-3">
+          <a href="/formacion-docente/marco"
+             class="dominio-pill"
+             style="background:#EFF6FF; color:#1D4ED8; border-color:#BFDBFE;">
+            Ense&ntilde;anza y aprendizaje mediados por TIC
+          </a>
+          <a href="/formacion-docente/marco"
+             class="dominio-pill"
+             style="background:#F5F3FF; color:#5B21B6; border-color:#DDD6FE;">
+            Desarrollo profesional TIC
+          </a>
+          <a href="/formacion-docente/marco"
+             class="dominio-pill"
+             style="background:#FFF7ED; color:#C2410C; border-color:#FED7AA;">
+            Plataformas, recursos y ciudadan&iacute;a digital
+          </a>
+        </div>
+        <p class="text-xs text-gray-400 mt-3">Cada dominio tiene cuatro &aacute;mbitos de desarrollo con descriptores diferenciados por nivel.</p>
+      </div>
+
+      <!-- CTAs certificaci&oacute;n -->
+      <div class="fade-up flex flex-wrap gap-3">
+        <a href="#mi-progreso"
+           class="inline-flex items-center gap-2 font-heading font-bold text-sm px-6 py-3 rounded-lg transition-all hover:-translate-y-0.5"
+           style="background: var(--palette-primary); color: white;">
+          Consulta tu avance
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </a>
+        <a href="/formacion-docente/marco"
+           class="inline-flex items-center gap-2 font-heading font-bold text-sm px-6 py-3 rounded-lg border-2 transition-colors hover:bg-gray-50"
+           style="border-color: var(--palette-primary); color: var(--palette-primary);">
+          Ver el Marco de Competencias
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- S3: TU AVANCE                                               -->
+  <!-- ============================================================ -->
+  <section class="py-16 md:py-20 bg-white" id="mi-progreso">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="fade-up mb-8">
+        <p class="eyebrow">Panel personal</p>
+        <h2 class="font-heading text-3xl font-extrabold mb-2">Tu avance en la certificaci&oacute;n</h2>
+      </div>
+
+      <!-- Estado: no autenticado -->
+      <div id="progreso-no-auth" class="fade-up text-center py-16 px-8 border-2 border-dashed border-gray-200 rounded-2xl">
+        <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+          <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+        </div>
+        <h3 class="font-heading font-bold text-lg mb-2 text-gray-700">Inicia sesi&oacute;n para ver tu progreso</h3>
+        <p class="text-gray-500 text-sm max-w-sm mx-auto mb-6">
+          Para ver tus horas acumuladas y tu avance hacia la certificaci&oacute;n, inicia sesi&oacute;n con tu correo @umce.cl.
+        </p>
+        <a href="/auth/login?redirect=/formacion-docente%23mi-progreso"
+           class="inline-flex items-center gap-2 font-heading font-bold text-sm px-6 py-3 rounded-lg transition-all hover:-translate-y-0.5"
+           style="background: var(--palette-primary); color: white;">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
+          Iniciar sesi&oacute;n con @umce.cl
+        </a>
+      </div>
+
+      <!-- Estado: autenticado (oculto por defecto, JS lo muestra) -->
+      <div id="progreso-auth" class="fade-up hidden">
+
+        <!-- Skeleton mientras carga -->
+        <div id="progreso-loading">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+            <div class="skeleton h-24 rounded-xl"></div>
+            <div class="skeleton h-24 rounded-xl"></div>
+            <div class="skeleton h-24 rounded-xl"></div>
+            <div class="skeleton h-24 rounded-xl"></div>
+          </div>
+          <div class="skeleton h-6 rounded-full mb-8"></div>
+          <div class="skeleton h-40 rounded-xl"></div>
+        </div>
+
+        <!-- Contenido real (oculto hasta que cargue la API) -->
+        <div id="progreso-content" class="hidden">
+
+          <!-- Stat cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6" id="progreso-stats">
+            <!-- Generado por JS -->
+          </div>
+
+          <!-- Barra de progreso al siguiente nivel -->
+          <div class="bg-gray-50 rounded-xl p-5 mb-6" id="progreso-barra-wrap">
+            <div class="flex items-center justify-between mb-2">
+              <p class="text-sm font-semibold text-gray-600" id="progreso-barra-label">Progreso al Nivel Inicial</p>
+              <p class="text-sm font-bold" id="progreso-barra-pct" style="color:var(--palette-primary);">0 %</p>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="progreso-bar" style="width:0%"></div>
+            </div>
+            <p class="text-xs text-gray-400 mt-2" id="progreso-barra-sub"></p>
+          </div>
+
+          <!-- Cursos completados -->
+          <div id="progreso-cursos-wrap">
+            <h3 class="font-heading font-bold text-base mb-3">Cursos completados</h3>
+            <div id="progreso-cursos-lista" class="space-y-2"></div>
+          </div>
+
+        </div><!-- /progreso-content -->
+      </div><!-- /progreso-auth -->
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- S4: MARCO INSTITUCIONAL                                     -->
+  <!-- ============================================================ -->
+  <section class="py-16 md:py-20 bg-gray-50" id="marco">
+    <div class="max-w-4xl mx-auto px-6">
+
+      <div class="fade-up mb-8">
+        <p class="eyebrow">Contexto institucional</p>
+        <h2 class="font-heading text-3xl font-extrabold mb-2">Marco institucional</h2>
+      </div>
+
+      <!-- Visible siempre: 2 p&aacute;rrafos -->
+      <div class="fade-up prose-umce mb-6">
+        <p class="text-gray-600 leading-relaxed mb-4">
+          La formaci&oacute;n en competencias digitales es parte del <strong>Sistema de Desarrollo Profesional Acad&eacute;mico (SDPA)</strong> de la UMCE, un marco institucional con antecedentes desde 2017, sustentado en la <strong>Pol&iacute;tica de Desarrollo de la Docencia Universitaria</strong> (Res. Exenta 101034, 2019). Esta pol&iacute;tica, elaborada con participaci&oacute;n de las cuatro facultades y aprobada por la Junta Directiva, establece que la docencia en la UMCE debe ser pertinente, actualizada, innovadora e inclusiva.
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+          En noviembre de 2025, el SDPA incorpor&oacute; una l&iacute;nea espec&iacute;fica dedicada a la <strong>Integraci&oacute;n Pedag&oacute;gica de Tecnolog&iacute;as Digitales</strong>, que reconoce que la competencia digital docente no es saber usar herramientas, sino integrar el conocimiento tecnol&oacute;gico con el pedag&oacute;gico y el disciplinar &mdash; lo que la literatura denomina TPACK (Mishra &amp; Koehler, 2006). Los cursos del Plan de Formaci&oacute;n operan dentro de esta l&iacute;nea.
+        </p>
+      </div>
+
+      <!-- Secci&oacute;n colapsable -->
+      <div class="fade-up">
+        <details class="marco-details">
+          <summary>
+            <span>Ver detalle institucional</span>
+            <svg class="marco-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </summary>
+          <div class="marco-details-body">
+
+            <h3 class="font-heading font-bold text-sm uppercase tracking-widest text-gray-500 mb-4">Cadena institucional</h3>
+            <div class="overflow-x-auto mb-6">
+              <table class="timeline-table">
+                <thead>
+                  <tr>
+                    <th>A&ntilde;o</th>
+                    <th>Hito</th>
+                    <th>Respaldo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>2017</td>
+                    <td>Perfil Acad&eacute;mico UMCE</td>
+                    <td class="text-gray-400">Res. 100127</td>
+                  </tr>
+                  <tr>
+                    <td>2019</td>
+                    <td>Pol&iacute;tica de Desarrollo de la Docencia</td>
+                    <td class="text-gray-400">Res. Exenta 101034 (Acuerdo JD 989)</td>
+                  </tr>
+                  <tr>
+                    <td>2019</td>
+                    <td>Creaci&oacute;n de la Unidad de Desarrollo Acad&eacute;mico (UDA)</td>
+                    <td class="text-gray-400">Res. Exenta 100899</td>
+                  </tr>
+                  <tr>
+                    <td>2022</td>
+                    <td>Sistema de Desarrollo Profesional Acad&eacute;mico (SDPA)</td>
+                    <td class="text-gray-400">Documento UDA</td>
+                  </tr>
+                  <tr>
+                    <td>2025</td>
+                    <td>L&iacute;nea de Integraci&oacute;n Pedag&oacute;gica TIC incorporada al SDPA</td>
+                    <td class="text-gray-400">Actualizaci&oacute;n nov 2025</td>
+                  </tr>
+                  <tr>
+                    <td>2025</td>
+                    <td>Certificaci&oacute;n de Competencias Digitales para la Docencia</td>
+                    <td class="text-gray-400">Res. Exenta 2025-00-1545</td>
+                  </tr>
+                  <tr>
+                    <td>2026</td>
+                    <td>Plan de Formaci&oacute;n &mdash; primer semestre en ejecuci&oacute;n</td>
+                    <td class="text-gray-400">En curso</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 class="font-heading font-bold text-sm uppercase tracking-widest text-gray-500 mb-3">El SDPA en s&iacute;ntesis</h3>
+            <p class="text-sm text-gray-600 leading-relaxed mb-4">
+              El sistema organiza el desarrollo profesional en dos &aacute;reas (desarrollo acad&eacute;mico y proyectos de innovaci&oacute;n) a trav&eacute;s de seis l&iacute;neas: Docencia, Investigaci&oacute;n, Vinculaci&oacute;n con el Medio, Tem&aacute;ticas Transversales, Gesti&oacute;n Acad&eacute;mica e <strong>Integraci&oacute;n Pedag&oacute;gica de TIC</strong>. Estas l&iacute;neas se implementan mediante cuatro programas: Inducci&oacute;n al Modelo Educativo, Actualizaci&oacute;n y Desarrollo Profesional, Acompa&ntilde;amiento Focalizado y Difusi&oacute;n de Buenas Pr&aacute;cticas. El SDPA distingue entre acad&eacute;micos noveles (menos de tres a&ntilde;os) y experimentados (m&aacute;s de cinco), ofreciendo acompa&ntilde;amiento diferenciado.
+            </p>
+
+            <h3 class="font-heading font-bold text-sm uppercase tracking-widest text-gray-500 mb-3">Principios de la Pol&iacute;tica de Docencia (2019)</h3>
+            <div class="flex flex-wrap gap-2">
+              <span class="inline-block text-xs bg-white border border-gray-200 rounded-md px-3 py-1 text-gray-600 font-medium">Responsabilidad social con enfoque de derecho</span>
+              <span class="inline-block text-xs bg-white border border-gray-200 rounded-md px-3 py-1 text-gray-600 font-medium">Sostenida en el tiempo</span>
+              <span class="inline-block text-xs bg-white border border-gray-200 rounded-md px-3 py-1 text-gray-600 font-medium">Prospectividad</span>
+              <span class="inline-block text-xs bg-white border border-gray-200 rounded-md px-3 py-1 text-gray-600 font-medium">Inclusi&oacute;n y equidad</span>
+              <span class="inline-block text-xs bg-white border border-gray-200 rounded-md px-3 py-1 text-gray-600 font-medium">Colaboraci&oacute;n</span>
+              <span class="inline-block text-xs bg-white border border-gray-200 rounded-md px-3 py-1 text-gray-600 font-medium">Compromiso con la calidad</span>
+            </div>
+
+          </div>
+        </details>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- S5: PROYECCI&Oacute;N                                      -->
+  <!-- ============================================================ -->
+  <section class="py-14 md:py-18 bg-gray-50">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="fade-up">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold" style="background:#FFFBEB; color:#92400E; border:1px solid #FDE68A;">
+            En evaluaci&oacute;n institucional
+          </span>
+        </div>
+        <h2 class="font-heading text-2xl md:text-3xl font-extrabold mb-4">Proyecci&oacute;n</h2>
+        <p class="text-gray-600 leading-relaxed mb-4">
+          La ruta formativa de tres niveles se proyecta hacia un <strong>reconocimiento de car&aacute;cter diplomado</strong> al completar la certificaci&oacute;n avanzada. Esta posibilidad est&aacute; actualmente en evaluaci&oacute;n institucional.
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+          El SDPA contempla adem&aacute;s un <strong>Diplomado en Docencia Universitaria</strong> de car&aacute;cter general, actualmente en proceso de actualizaci&oacute;n. Ambos reconocimientos operan en carriles distintos: la certificaci&oacute;n en competencias digitales tiene su propia ruta; el diplomado general abarca el conjunto de l&iacute;neas del SDPA.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- CTA FINAL                                                    -->
+  <!-- ============================================================ -->
+  <section class="py-20 cta-final">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <div class="fade-up">
+        <h2 class="font-heading text-3xl md:text-4xl font-extrabold mb-5 text-white">
+          Comienza tu desarrollo profesional
+        </h2>
+        <p class="text-white/70 text-lg leading-relaxed mb-10 max-w-xl mx-auto">
+          No importa si es tu primer acercamiento a la tecnolog&iacute;a o si ya la usas en tus cursos. La ruta tiene un lugar para ti.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 flex-wrap">
+          <a href="#cursos"
+             class="inline-flex items-center gap-2 font-heading font-bold text-sm px-7 py-3.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg"
+             style="background: var(--palette-accent); color: #001D5C;">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            Ver cursos del semestre
+          </a>
+          <a href="#mi-progreso"
+             class="inline-flex items-center gap-2 font-heading font-bold text-sm px-7 py-3.5 rounded-lg border-2 border-white/30 text-white transition-all hover:bg-white/10">
+            Consulta tu avance
+          </a>
+          <a href="/formacion-docente/marco"
+             class="inline-flex items-center gap-2 font-heading font-bold text-sm px-7 py-3.5 rounded-lg border-2 border-white/20 text-white/80 transition-all hover:bg-white/10">
+            Marco de Competencias
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+  <div id="chatbot-placeholder"></div>
+
+  <!-- ============================================================ -->
+  <!-- SCRIPTS                                                      -->
+  <!-- ============================================================ -->
+  <script src="/shared/shared.js"></script>
+
+  <!-- p5.js: Red de nodos/sin&aacute;psis en el hero -->
+  <script>
+  (function initHeroSketch() {
+    'use strict';
+
+    var AZUL_DARK  = [0, 29, 92];
+    var AZUL_MID   = [0, 51, 161];
+    var AZUL_LIGHT = [100, 149, 237];
+    var AMARILLO   = [255, 158, 24]; /* palette-accent */
+
+    function waitForP5(cb) {
+      if (typeof p5 !== 'undefined') { cb(); }
+      else { setTimeout(function() { waitForP5(cb); }, 50); }
+    }
+
+    waitForP5(function() {
+      var containerEl = document.getElementById('fd-hero-canvas');
+      if (!containerEl) return;
+
+      new p5(function(p) {
+        var nodes = [];
+        var NUM_NODES = 85;
+        var CONNECTION_DIST = 140;
+        var w, h;
+
+        p.setup = function() {
+          w = containerEl.offsetWidth || window.innerWidth;
+          h = containerEl.offsetHeight || 400;
+          var canvas = p.createCanvas(w, h);
+          canvas.parent('fd-hero-canvas');
+          p.pixelDensity(1);
+
+          for (var i = 0; i < NUM_NODES; i++) {
+            nodes.push({
+              x:  p.random(w),
+              y:  p.random(h),
+              vx: p.random(-0.30, 0.30),
+              vy: p.random(-0.30, 0.30),
+              r:  p.random(1.5, 3.5),
+              isGold: p.random() < 0.10,
+              pulse: p.random(0, Math.PI * 2)
+            });
+          }
+        };
+
+        p.draw = function() {
+          p.clear();
+
+          for (var i = 0; i < nodes.length; i++) {
+            var nd = nodes[i];
+            nd.x += nd.vx;
+            nd.y += nd.vy;
+            nd.pulse += 0.025;
+            if (nd.x < 0 || nd.x > w) nd.vx *= -1;
+            if (nd.y < 0 || nd.y > h) nd.vy *= -1;
+          }
+
+          /* Conexiones */
+          for (var i = 0; i < nodes.length; i++) {
+            for (var j = i + 1; j < nodes.length; j++) {
+              var d = p.dist(nodes[i].x, nodes[i].y, nodes[j].x, nodes[j].y);
+              if (d < CONNECTION_DIST) {
+                var alpha = p.map(d, 0, CONNECTION_DIST, 50, 0);
+                var useGold = nodes[i].isGold || nodes[j].isGold;
+                var col = useGold ? AMARILLO : AZUL_LIGHT;
+                p.stroke(col[0], col[1], col[2], alpha);
+                p.strokeWeight(p.map(d, 0, CONNECTION_DIST, 1.1, 0.15));
+                p.line(nodes[i].x, nodes[i].y, nodes[j].x, nodes[j].y);
+              }
+            }
+          }
+
+          /* Nodos */
+          p.noStroke();
+          for (var i = 0; i < nodes.length; i++) {
+            var nd = nodes[i];
+            var col = nd.isGold ? AMARILLO : AZUL_LIGHT;
+            var pulseFactor = 1 + 0.15 * Math.sin(nd.pulse);
+            /* Halo */
+            p.fill(col[0], col[1], col[2], 10);
+            p.circle(nd.x, nd.y, nd.r * 12 * pulseFactor);
+            /* N&uacute;cleo */
+            p.fill(col[0], col[1], col[2], nd.isGold ? 80 : 48);
+            p.circle(nd.x, nd.y, nd.r * 2.2);
+          }
+        };
+
+        p.windowResized = function() {
+          w = containerEl.offsetWidth || window.innerWidth;
+          h = containerEl.offsetHeight || 400;
+          p.resizeCanvas(w, h);
+        };
+
+        document.addEventListener('visibilitychange', function() {
+          if (document.hidden) { p.noLoop(); } else { p.loop(); }
+        });
+      });
+    });
+  })();
+  </script>
+
+  <!-- Tabs de &aacute;reas -->
+  <script>
+  (function initAreaTabs() {
+    'use strict';
+
+    var tabs = document.querySelectorAll('.area-tab');
+    var cards = document.querySelectorAll('.fd-course-card');
+
+    function filterCards(area) {
+      cards.forEach(function(card) {
+        if (area === 'todos' || card.dataset.area === area) {
+          card.classList.remove('hidden-card');
+        } else {
+          card.classList.add('hidden-card');
+        }
+      });
+    }
+
+    tabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        tabs.forEach(function(t) {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        this.classList.add('active');
+        this.setAttribute('aria-selected', 'true');
+        filterCards(this.dataset.area);
+
+        /* Re-animar fade-up en las cards visibles */
+        if (window._umceObserver) {
+          document.querySelectorAll('.fd-course-card:not(.hidden-card).fade-up:not(.visible)').forEach(function(el) {
+            window._umceObserver.observe(el);
+          });
+        }
+      });
+    });
+  })();
+  </script>
+
+  <!-- Tu avance: l&oacute;gica de autenticaci&oacute;n y fetch API -->
+  <script>
+  (function initProgreso() {
+    'use strict';
+
+    var noAuthEl  = document.getElementById('progreso-no-auth');
+    var authEl    = document.getElementById('progreso-auth');
+    var loadingEl = document.getElementById('progreso-loading');
+    var contentEl = document.getElementById('progreso-content');
+
+    function formatHours(h) { return (h || 0) + ' h'; }
+
+    function buildStatCard(label, value, sub) {
+      return '<div class="stat-progress-card">' +
+        '<div class="stat-progress-number">' + value + '</div>' +
+        '<p class="text-xs font-semibold text-gray-500 mt-1">' + label + '</p>' +
+        (sub ? '<p class="text-xs text-gray-400 mt-0.5">' + sub + '</p>' : '') +
+        '</div>';
+    }
+
+    function renderProgreso(data) {
+      var statsEl  = document.getElementById('progreso-stats');
+      var barEl    = document.getElementById('progreso-bar');
+      var pctEl    = document.getElementById('progreso-barra-pct');
+      var labelEl  = document.getElementById('progreso-barra-label');
+      var subEl    = document.getElementById('progreso-barra-sub');
+      var cursosEl = document.getElementById('progreso-cursos-lista');
+
+      var horas          = data.horasCompletadas || 0;
+      var cursosCount    = data.cursosCompletados || 0;
+      var nivelActual    = data.nivelActual || 'Sin nivel';
+      var evidenciaPend  = data.evidenciaPendiente ? 'Pendiente' : 'Al d&iacute;a';
+
+      /* Stats */
+      statsEl.innerHTML =
+        buildStatCard('Horas acumuladas', formatHours(horas), 'hacia certificaci&oacute;n') +
+        buildStatCard('Cursos completados', cursosCount, 'este y semestres anteriores') +
+        buildStatCard('Nivel actual', nivelActual, '') +
+        buildStatCard('Evidencia', evidenciaPend, '');
+
+      /* Barra de progreso */
+      var meta = horas < 27 ? 27 : (horas < 54 ? 54 : 81);
+      var label = horas < 27 ? 'Progreso al Nivel Inicial'
+                : (horas < 54 ? 'Progreso al Nivel Intermedio'
+                : (horas < 81 ? 'Progreso al Nivel Avanzado'
+                : 'Certificaci&oacute;n completa'));
+      var pct = Math.min(100, Math.round((horas / meta) * 100));
+
+      labelEl.textContent = label.replace(/&aacute;/g, '\u00e1').replace(/&oacute;/g, '\u00f3');
+      pctEl.textContent = pct + ' %';
+      subEl.textContent = horas + ' de ' + meta + ' horas';
+      setTimeout(function() { barEl.style.width = pct + '%'; }, 100);
+
+      /* Cursos completados */
+      if (data.cursos && data.cursos.length > 0) {
+        cursosEl.innerHTML = data.cursos.map(function(c) {
+          return '<div class="flex items-center gap-3 py-2.5 border-b border-gray-100 last:border-0">' +
+            '<div class="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center" style="background:#D1FAE5;">' +
+              '<svg class="w-3.5 h-3.5" style="color:#059669;" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>' +
+              '</svg>' +
+            '</div>' +
+            '<div class="flex-1 min-w-0">' +
+              '<p class="text-sm font-medium text-gray-700 truncate">' + (c.nombre || c.name || 'Curso') + '</p>' +
+              (c.horas ? '<p class="text-xs text-gray-400">' + c.horas + ' h &middot; ' + (c.semestre || '') + '</p>' : '') +
+            '</div>' +
+          '</div>';
+        }).join('');
+      } else {
+        cursosEl.innerHTML = '<p class="text-sm text-gray-400 py-4">A&uacute;n no tienes cursos completados registrados.</p>';
+      }
+
+      /* Mostrar contenido */
+      loadingEl.classList.add('hidden');
+      contentEl.classList.remove('hidden');
+    }
+
+    function showError() {
+      loadingEl.innerHTML =
+        '<div class="text-center py-10 text-gray-400">' +
+          '<p class="text-sm">No se pudo cargar la informaci&oacute;n de tu avance.</p>' +
+          '<button onclick="location.reload()" class="mt-3 text-xs underline" style="color:var(--palette-primary);">Reintentar</button>' +
+        '</div>';
+    }
+
+    function checkAuth() {
+      /* shared.js expone window._umceAuth cuando el usuario est&aacute; autenticado */
+      var auth = window._umceAuth || null;
+      if (!auth) {
+        /* Intentar desde cookie decodificada que shared.js puede haber seteado */
+        auth = window.umceUser || null;
+      }
+      return auth;
+    }
+
+    function init() {
+      var auth = checkAuth();
+
+      if (!auth) {
+        /* No autenticado: mostrar bloque de login */
+        noAuthEl.classList.remove('hidden');
+        authEl.classList.add('hidden');
+        return;
+      }
+
+      /* Autenticado: ocultar bloque de login, mostrar panel */
+      noAuthEl.classList.add('hidden');
+      authEl.classList.remove('hidden');
+
+      /* Fetch al endpoint SDPA */
+      fetch('/api/docente/sdpa/resumen', {
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' }
+      })
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function(data) {
+        renderProgreso(data);
+      })
+      .catch(function(err) {
+        console.error('[formacion-docente] Error cargando progreso SDPA:', err);
+        showError();
+      });
+    }
+
+    /* Esperar a que shared.js haya inicializado el estado de auth */
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(init, 200);
+      });
+    } else {
+      setTimeout(init, 200);
+    }
+
+    /* Escuchar evento custom que shared.js puede emitir al resolver auth */
+    document.addEventListener('umce:auth-ready', init);
+
+  })();
+  </script>
+
+</body>
+</html>
