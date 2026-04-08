@@ -28,26 +28,45 @@
     <div id="chat-role-badge" class="px-4 py-1.5 text-[11px] text-center hidden"></div>
 
     <!-- Beta consent screen (shown before first use) -->
-    <div id="chat-beta-consent" class="flex-1 overflow-y-auto px-5 py-6">
-      <div class="mb-4">
+    <div id="chat-beta-consent" class="flex-1 overflow-y-auto px-5 py-5">
+      <div class="mb-3">
         <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: #FEF3C7; color: #92400E;">Beta</span>
       </div>
-      <h4 class="font-heading font-bold text-base text-gray-900 mb-3">Antes de comenzar</h4>
-      <div class="space-y-3 text-xs text-gray-600 leading-relaxed">
-        <p>Este es un <strong>asistente automatizado con inteligencia artificial</strong> en fase de prueba. No es una persona.</p>
-        <p>Las respuestas se generan autom&aacute;ticamente y <strong>pueden contener errores</strong>. Para decisiones acad&eacute;micas importantes, consulta con tu docente o la secretar&iacute;a de tu departamento.</p>
+      <h4 class="font-heading font-bold text-base text-gray-900 mb-3">Asistente con IA</h4>
+      <div class="space-y-2.5 text-xs text-gray-600 leading-relaxed">
+        <p>Este asistente usa <strong>inteligencia artificial y una base de conocimiento de m&aacute;s de 58.000 fragmentos</strong> extra&iacute;dos de las 5 plataformas Moodle, gu&iacute;as institucionales y documentaci&oacute;n acad&eacute;mica de la UMCE.</p>
+
         <div class="bg-gray-50 rounded-lg p-3 space-y-2">
-          <p class="font-semibold text-gray-700">Sobre tus datos:</p>
-          <ul class="space-y-1.5 text-gray-500">
-            <li>Las conversaciones se registran para mejorar el servicio.</li>
-            <li>No se recopilan datos personales sensibles.</li>
-            <li>Los datos se procesan en servidores de la UDFV-UMCE.</li>
-            <li>Puedes solicitar la eliminaci&oacute;n de tu historial en cualquier momento escribiendo a <a href="mailto:udfv@umce.cl" class="text-umce-azul underline">udfv@umce.cl</a>.</li>
-          </ul>
+          <div class="flex items-start gap-2">
+            <svg class="w-3.5 h-3.5 text-umce-azul flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <div>
+              <p class="font-semibold text-gray-700 text-[11px]">Infraestructura propia</p>
+              <p class="text-gray-500">Tus datos se procesan en servidores de la UDFV-UMCE, no en servicios externos. Cumplimiento Ley 21.719.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-2">
+            <svg class="w-3.5 h-3.5 text-umce-azul flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <div>
+              <p class="font-semibold text-gray-700 text-[11px]">Identidad verificada</p>
+              <p class="text-gray-500">Si inicias sesi&oacute;n con @umce.cl, el asistente personaliza las respuestas a tu perfil sin exponer datos de otros.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-2">
+            <svg class="w-3.5 h-3.5 text-umce-azul flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            <div>
+              <p class="font-semibold text-gray-700 text-[11px]">Aprende de tus consultas</p>
+              <p class="text-gray-500">El sistema se adapta a tu nivel de experiencia para darte respuestas m&aacute;s &uacute;tiles con el tiempo.</p>
+            </div>
+          </div>
         </div>
-        <p class="text-[10px] text-gray-400">Al continuar, aceptas estos t&eacute;rminos. <a href="/privacidad" class="underline">Pol&iacute;tica de privacidad</a>.</p>
+
+        <div class="bg-amber-50 rounded-lg p-3">
+          <p class="text-[11px] text-amber-800"><strong>Fase de prueba:</strong> Las respuestas pueden contener errores. Para decisiones acad&eacute;micas, consulta con tu docente. Puedes solicitar eliminar tu historial en <a href="mailto:udfv@umce.cl" class="underline">udfv@umce.cl</a>.</p>
+        </div>
+
+        <p class="text-[10px] text-gray-400">Al continuar, aceptas estos t&eacute;rminos. <a href="/privacidad" class="underline hover:text-gray-500">Pol&iacute;tica de privacidad</a> &mdash; <a href="/ayuda" class="underline hover:text-gray-500">M&aacute;s sobre el asistente</a>.</p>
       </div>
-      <button id="chat-accept-beta" class="mt-4 w-full bg-umce-azul text-white font-heading font-bold text-sm py-2.5 rounded-xl hover:opacity-90 transition-opacity">
+      <button id="chat-accept-beta" class="mt-3 w-full bg-umce-azul text-white font-heading font-bold text-sm py-2.5 rounded-xl hover:opacity-90 transition-opacity">
         Entendido, comenzar
       </button>
     </div>
