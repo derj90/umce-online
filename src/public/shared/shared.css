@@ -13,6 +13,27 @@
 body { font-family: 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif; }
 h1, h2, h3, h4, h5, h6 { font-family: 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif; }
 
+/* Content protection — discourage casual copying */
+body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+/* Allow selection in form inputs and code elements */
+input, textarea, select, code, pre, .selectable {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+/* Allow selection in chatbot input and messages */
+#chat-input, #chat-messages, #chat-messages * {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
+}
+
 /* Scroll animations — visible by default for crawlers/print, animated as enhancement */
 .fade-up {
   opacity: 1;

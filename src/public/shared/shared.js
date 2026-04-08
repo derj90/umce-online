@@ -597,4 +597,33 @@
     initAppLinkInterceptor();
     initNativeAppMode();
   }
+
+  // ==========================================
+  // Content Protection
+  // ==========================================
+  // Disable right-click context menu (except on inputs)
+  document.addEventListener('contextmenu', function (e) {
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+    e.preventDefault();
+  });
+
+  // Disable common copy shortcuts on page content (allow in inputs)
+  document.addEventListener('keydown', function (e) {
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
+    // Ctrl+C, Ctrl+U (view source), Ctrl+S (save), Ctrl+A (select all)
+    if ((e.ctrlKey || e.metaKey) && ['c', 'u', 's', 'a'].includes(e.key.toLowerCase())) {
+      // Allow Ctrl+C in chat messages (user might want to copy a response)
+      if (e.key.toLowerCase() === 'c' && e.target.closest('#chat-messages')) return;
+      e.preventDefault();
+    }
+    // F12 (dev tools) — light deterrent, not bulletproof
+    if (e.key === 'F12') e.preventDefault();
+  });
+
+  // Disable image dragging
+  document.addEventListener('dragstart', function (e) {
+    if (e.target.tagName === 'IMG') e.preventDefault();
+  });
 })();
