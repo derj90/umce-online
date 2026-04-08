@@ -202,6 +202,12 @@
       const user = await res.json();
       if (!user || !user.email) return;
 
+      // Expose auth state globally so other page scripts can detect login
+      window._umceAuth = user;
+      window.umceUser = user;
+      // Dispatch event so pages listening for auth resolution can react
+      document.dispatchEvent(new CustomEvent('umce:auth-ready', { detail: user }));
+
       const initial = (user.name || user.email)[0].toUpperCase();
       const firstName = (user.name || user.email.split('@')[0]).split(' ')[0];
 
@@ -599,31 +605,50 @@
   }
 
   // ==========================================
-  // Content Protection
+  // Content Protection (skip for admins)
   // ==========================================
-  // Disable right-click context menu (except on inputs)
-  document.addEventListener('contextmenu', function (e) {
-    var tag = (e.target.tagName || '').toLowerCase();
-    if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
-    e.preventDefault();
-  });
-
-  // Disable common copy shortcuts on page content (allow in inputs)
-  document.addEventListener('keydown', function (e) {
-    var tag = (e.target.tagName || '').toLowerCase();
-    if (tag === 'input' || tag === 'textarea') return;
-    // Ctrl+C, Ctrl+U (view source), Ctrl+S (save), Ctrl+A (select all)
-    if ((e.ctrlKey || e.metaKey) && ['c', 'u', 's', 'a'].includes(e.key.toLowerCase())) {
-      // Allow Ctrl+C in chat messages (user might want to copy a response)
-      if (e.key.toLowerCase() === 'c' && e.target.closest('#chat-messages')) return;
-      e.preventDefault();
+  function initContentProtection() {
+    // Wait for auth check — if admin, skip protection entirely
+    function isAdmin() {
+      var u = window._umceAuth || window.umceUser;
+      return u && u.email && (
+        u.email === 'david.reyes_j@umce.cl' ||
+        u.email === 'udfv@umce.cl'
+      );
     }
-    // F12 (dev tools) — light deterrent, not bulletproof
-    if (e.key === 'F12') e.preventDefault();
-  });
 
-  // Disable image dragging
-  document.addEventListener('dragstart', function (e) {
-    if (e.target.tagName === 'IMG') e.preventDefault();
-  });
+    // Delay to let checkAuthState() resolve first
+    setTimeout(function () {
+      if (isAdmin()) {
+        // Remove CSS protection for admin
+        document.body.style.userSelect = 'auto';
+        document.body.style.webkitUserSelect = 'auto';
+        return;
+      }
+
+      // Disable right-click context menu (except on inputs)
+      document.addEventListener('contextmenu', function (e) {
+        var tag = (e.target.tagName || '').toLowerCase();
+        if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+        e.preventDefault();
+      });
+
+      // Disable common copy shortcuts on page content (allow in inputs)
+      document.addEventListener('keydown', function (e) {
+        var tag = (e.target.tagName || '').toLowerCase();
+        if (tag === 'input' || tag === 'textarea') return;
+        if ((e.ctrlKey || e.metaKey) && ['c', 'u', 's', 'a'].includes(e.key.toLowerCase())) {
+          if (e.key.toLowerCase() === 'c' && e.target.closest('#chat-messages')) return;
+          e.preventDefault();
+        }
+        if (e.key === 'F12') e.preventDefault();
+      });
+
+      // Disable image dragging
+      document.addEventListener('dragstart', function (e) {
+        if (e.target.tagName === 'IMG') e.preventDefault();
+      });
+    }, 1500); // wait for auth check
+  }
+  initContentProtection();
 })();
