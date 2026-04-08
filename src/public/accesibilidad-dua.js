@@ -160,12 +160,12 @@
     /* ---- Widget UI ---- */
     #a11y-fab {
       position: fixed;
-      bottom: 24px;
+      bottom: 92px;
       right: 24px;
-      z-index: 99999;
-      width: 52px;
-      height: 52px;
-      border-radius: 16px;
+      z-index: 99997;
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
       background: #0033A1;
       color: white;
       border: none;
@@ -186,9 +186,9 @@
 
     #a11y-panel {
       position: fixed;
-      bottom: 88px;
+      bottom: 150px;
       right: 24px;
-      z-index: 99999;
+      z-index: 99997;
       width: 320px;
       max-height: calc(100vh - 120px);
       overflow-y: auto;

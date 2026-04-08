@@ -17,11 +17,11 @@
   })();
 
   // ==========================================
-  // Accessibility widget — carga en todas las páginas
+  // Accessibility widget (accesibilidad-dua.js) — carga en todas las páginas
   // ==========================================
   (function loadAccessibility() {
     var s = document.createElement('script');
-    s.src = '/shared/accessibility-widget.js';
+    s.src = '/accesibilidad-dua.js';
     s.defer = true;
     document.body.appendChild(s);
   })();
