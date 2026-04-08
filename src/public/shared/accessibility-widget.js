@@ -78,7 +78,7 @@
 
     /* Resaltar enlaces */
     'html.a11y-links a { text-decoration: underline !important; text-decoration-thickness: 2px !important; text-underline-offset: 3px !important; color: #0033A1 !important; }',
-    "html.a11y-links a:not([class*='bg-']):not([class*='btn']) { outline: 3px solid #FF9E18 !important; outline-offset: 3px !important; border-radius: 2px !important; box-shadow: 0 0 0 3px #FF9E18 !important; }",
+    "html.a11y-links a:not([class*='bg-']):not([class*='btn']) { outline: 3px solid #0047CC !important; outline-offset: 3px !important; border-radius: 2px !important; box-shadow: 0 0 0 3px #0047CC !important; }",
 
     /* Cursor grande */
     "html.a11y-cursor, html.a11y-cursor * { cursor: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M5 2l20 14-10 2-4 10z' fill='%23000' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E\") 4 2, auto !important; }",
@@ -95,13 +95,13 @@
     'html.a11y-no-animations, html.a11y-no-animations * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }',
 
     /* FAB */
-    '#a11y-fab { position: fixed; bottom: 24px; right: 24px; z-index: 99999; width: 52px; height: 52px; border-radius: 16px; background: #15803D; color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(21,128,61,0.35); transition: transform 0.2s, box-shadow 0.2s; }',
+    '#a11y-fab { position: fixed; bottom: 96px; right: 24px; z-index: 99997; width: 44px; height: 44px; border-radius: 12px; background: #0033A1; color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 12px rgba(0,51,161,0.3); transition: transform 0.2s, box-shadow 0.2s; }',
     '#a11y-fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(21,128,61,0.45); }',
-    '#a11y-fab:focus-visible { outline: 3px solid #FF9E18; outline-offset: 3px; }',
+    '#a11y-fab:focus-visible { outline: 3px solid #0047CC; outline-offset: 3px; }',
     '#a11y-fab svg { width: 26px; height: 26px; pointer-events: none; }',
 
     /* Panel */
-    "#a11y-panel { position: fixed; bottom: 88px; right: 24px; z-index: 99999; width: 320px; max-height: calc(100vh - 120px); overflow-y: auto; background: white; border-radius: 20px; box-shadow: 0 12px 48px rgba(0,0,0,0.18); border: 1px solid #e5e7eb; padding: 20px; display: none; font-family: 'Inter', system-ui, sans-serif; }",
+    "#a11y-panel { position: fixed; bottom: 150px; right: 24px; z-index: 99997; width: 320px; max-height: calc(100vh - 120px); overflow-y: auto; background: white; border-radius: 20px; box-shadow: 0 12px 48px rgba(0,0,0,0.18); border: 1px solid #e5e7eb; padding: 20px; display: none; font-family: 'Inter', system-ui, sans-serif; }",
     '#a11y-panel.open { display: block; }',
     '@media (max-width: 400px) { #a11y-panel { right: 8px; left: 8px; width: auto; bottom: 84px; } #a11y-fab { bottom: 16px; right: 16px; } }',
 
@@ -122,21 +122,21 @@
     '.a11y-toggle input { opacity: 0 !important; width: 0 !important; height: 0 !important; position: absolute !important; }',
     '.a11y-toggle .slider { all: initial !important; position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 34px !important; height: 18px !important; background: #d1d5db !important; border-radius: 18px !important; cursor: pointer !important; transition: background 0.2s !important; display: block !important; border: none !important; outline: none !important; }',
     ".a11y-toggle .slider::before { content: '' !important; position: absolute !important; width: 14px !important; height: 14px !important; left: 2px !important; top: 2px !important; background: white !important; border-radius: 50% !important; transition: transform 0.2s !important; box-shadow: 0 1px 2px rgba(0,0,0,0.15) !important; }",
-    '.a11y-toggle input:checked + .slider { background: #15803D !important; }',
+    '.a11y-toggle input:checked + .slider { background: #0033A1 !important; }',
     '.a11y-toggle input:checked + .slider::before { transform: translateX(16px) !important; }',
-    '.a11y-toggle input:focus-visible + .slider { outline: 2px solid #FF9E18 !important; outline-offset: 2px !important; }',
+    '.a11y-toggle input:focus-visible + .slider { outline: 2px solid #0047CC !important; outline-offset: 2px !important; }',
 
     /* Tamaño de texto buttons */
     '.a11y-fontsize { display: flex; align-items: center; gap: 8px; }',
     '.a11y-fontsize button { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #e5e7eb; background: white; color: #374151; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }',
-    '.a11y-fontsize button:hover { background: #f3f4f6; border-color: #15803D; color: #15803D; }',
+    '.a11y-fontsize button:hover { background: #EFF6FF; border-color: #0033A1; color: #0033A1; }',
     '.a11y-fontsize button:disabled { opacity: 0.3; cursor: not-allowed; }',
 
     /* Contraste buttons */
     '.a11y-contrast-btns { display: flex; gap: 6px; }',
     '.a11y-contrast-btns button { flex: 1; padding: 6px; border-radius: 8px; border: 2px solid #e5e7eb; background: white; font-size: 11px; font-weight: 600; color: #6b7280; cursor: pointer; transition: all 0.15s; }',
-    '.a11y-contrast-btns button:hover { border-color: #15803D; }',
-    '.a11y-contrast-btns button.active { border-color: #15803D; background: #f0fdf4; color: #15803D; }',
+    '.a11y-contrast-btns button:hover { border-color: #0033A1; }',
+    '.a11y-contrast-btns button.active { border-color: #0033A1; background: #EFF6FF; color: #0033A1; }',
 
     /* Reset */
     '.a11y-reset { width: 100%; padding: 8px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; font-size: 12px; font-weight: 600; color: #6b7280; cursor: pointer; transition: all 0.15s; margin-top: 4px; }',
@@ -159,7 +159,7 @@
   panel.setAttribute('aria-label', 'Opciones de accesibilidad DUA');
   panel.innerHTML = [
     '<h3>',
-      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0033A1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
         '<circle cx="12" cy="4.5" r="2"/>',
         '<path d="M12 7.5v4m0 0l-4 7m4-7l4 7"/>',
         '<path d="M7 11.5h10"/>',
