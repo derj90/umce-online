@@ -1212,34 +1212,46 @@
       var subEl    = document.getElementById('progreso-barra-sub');
       var cursosEl = document.getElementById('progreso-cursos-lista');
 
-      var horas          = data.horasCompletadas || 0;
-      var cursosCount    = data.cursosCompletados || 0;
-      var nivelActual    = data.nivelActual || 'Sin nivel';
-      var evidenciaPend  = data.evidenciaPendiente ? 'Pendiente' : 'Al d&iacute;a';
+      /* El endpoint /api/docente/sdpa/resumen devuelve:
+         total_horas, total_actividades, actividades (array), progreso_certificaciones */
+      var horas       = parseFloat(data.total_horas || 0);
+      var actCount    = data.total_actividades || 0;
+      /* Derivar nivel actual desde progreso_certificaciones si est&aacute; disponible */
+      var nivelActual = 'Sin nivel';
+      if (data.progreso_certificaciones && data.progreso_certificaciones.length > 0) {
+        var certAprobada = data.progreso_certificaciones.filter(function(c) { return c.aprobada || c.estado === 'aprobada'; });
+        nivelActual = certAprobada.length > 0 ? certAprobada[certAprobada.length - 1].nombre || 'Certificado' : 'En progreso';
+      } else if (horas >= 27) {
+        nivelActual = horas >= 54 ? (horas >= 81 ? 'Avanzado' : 'Intermedio') : 'Inicial';
+      }
 
       /* Stats */
       statsEl.innerHTML =
         buildStatCard('Horas acumuladas', formatHours(horas), 'hacia certificaci&oacute;n') +
-        buildStatCard('Cursos completados', cursosCount, 'este y semestres anteriores') +
+        buildStatCard('Actividades completadas', actCount, 'este y semestres anteriores') +
         buildStatCard('Nivel actual', nivelActual, '') +
-        buildStatCard('Evidencia', evidenciaPend, '');
+        buildStatCard('Horas TIC', formatHours(data.horas_tic || 0), 'integraci&oacute;n pedag&oacute;gica');
 
       /* Barra de progreso */
       var meta = horas < 27 ? 27 : (horas < 54 ? 54 : 81);
       var label = horas < 27 ? 'Progreso al Nivel Inicial'
                 : (horas < 54 ? 'Progreso al Nivel Intermedio'
                 : (horas < 81 ? 'Progreso al Nivel Avanzado'
-                : 'Certificaci&oacute;n completa'));
+                : 'Certificaci\u00f3n completa'));
       var pct = Math.min(100, Math.round((horas / meta) * 100));
 
-      labelEl.textContent = label.replace(/&aacute;/g, '\u00e1').replace(/&oacute;/g, '\u00f3');
+      labelEl.textContent = label;
       pctEl.textContent = pct + ' %';
       subEl.textContent = horas + ' de ' + meta + ' horas';
       setTimeout(function() { barEl.style.width = pct + '%'; }, 100);
 
-      /* Cursos completados */
-      if (data.cursos && data.cursos.length > 0) {
-        cursosEl.innerHTML = data.cursos.map(function(c) {
+      /* Actividades completadas (equivalente a "cursos") */
+      var actividades = data.actividades || [];
+      if (actividades.length > 0) {
+        cursosEl.innerHTML = actividades.map(function(c) {
+          var nombre = c.nombre_actividad || c.nombre || c.name || 'Actividad';
+          var hActiv = parseFloat(c.horas_cronologicas || c.horas || 0);
+          var sem    = c.semestre || c.periodo || '';
           return '<div class="flex items-center gap-3 py-2.5 border-b border-gray-100 last:border-0">' +
             '<div class="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center" style="background:#D1FAE5;">' +
               '<svg class="w-3.5 h-3.5" style="color:#059669;" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
@@ -1247,13 +1259,13 @@
               '</svg>' +
             '</div>' +
             '<div class="flex-1 min-w-0">' +
-              '<p class="text-sm font-medium text-gray-700 truncate">' + (c.nombre || c.name || 'Curso') + '</p>' +
-              (c.horas ? '<p class="text-xs text-gray-400">' + c.horas + ' h &middot; ' + (c.semestre || '') + '</p>' : '') +
+              '<p class="text-sm font-medium text-gray-700 truncate">' + nombre + '</p>' +
+              (hActiv ? '<p class="text-xs text-gray-400">' + hActiv + ' h' + (sem ? ' &middot; ' + sem : '') + '</p>' : '') +
             '</div>' +
           '</div>';
         }).join('');
       } else {
-        cursosEl.innerHTML = '<p class="text-sm text-gray-400 py-4">A&uacute;n no tienes cursos completados registrados.</p>';
+        cursosEl.innerHTML = '<p class="text-sm text-gray-400 py-4">A&uacute;n no tienes actividades completadas registradas.</p>';
       }
 
       /* Mostrar contenido */
@@ -1269,26 +1281,36 @@
         '</div>';
     }
 
-    function checkAuth() {
-      /* shared.js expone window._umceAuth cuando el usuario est&aacute; autenticado */
-      var auth = window._umceAuth || null;
-      if (!auth) {
-        /* Intentar desde cookie decodificada que shared.js puede haber seteado */
-        auth = window.umceUser || null;
+    var _initRan = false;
+    function init() {
+      /* Evitar doble ejecuci&oacute;n si el evento umce:auth-ready llega despu&eacute;s del timeout */
+      if (_initRan) return;
+      _initRan = true;
+
+      /* Verificar auth llamando directamente a /auth/me si window._umceAuth aun no esta disponible */
+      var authCached = window._umceAuth || window.umceUser || null;
+      if (authCached) {
+        runWithAuth();
+      } else {
+        fetch('/auth/me', { credentials: 'include' })
+          .then(function(r) { return r.ok ? r.json() : null; })
+          .then(function(user) {
+            if (user && user.email) {
+              window._umceAuth = user;
+              runWithAuth();
+            } else {
+              noAuthEl.classList.remove('hidden');
+              authEl.classList.add('hidden');
+            }
+          })
+          .catch(function() {
+            noAuthEl.classList.remove('hidden');
+            authEl.classList.add('hidden');
+          });
       }
-      return auth;
     }
 
-    function init() {
-      var auth = checkAuth();
-
-      if (!auth) {
-        /* No autenticado: mostrar bloque de login */
-        noAuthEl.classList.remove('hidden');
-        authEl.classList.add('hidden');
-        return;
-      }
-
+    function runWithAuth() {
       /* Autenticado: ocultar bloque de login, mostrar panel */
       noAuthEl.classList.add('hidden');
       authEl.classList.remove('hidden');
@@ -1311,17 +1333,19 @@
       });
     }
 
-    /* Esperar a que shared.js haya inicializado el estado de auth */
+    /* Escuchar evento custom que shared.js emite al resolver auth */
+    document.addEventListener('umce:auth-ready', function() {
+      if (!_initRan) init();
+    });
+
+    /* Fallback: ejecutar despu&eacute;s de que shared.js haya tenido tiempo de correr */
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(init, 200);
+        setTimeout(init, 600);
       });
     } else {
-      setTimeout(init, 200);
+      setTimeout(init, 600);
     }
-
-    /* Escuchar evento custom que shared.js puede emitir al resolver auth */
-    document.addEventListener('umce:auth-ready', init);
 
   })();
   </script>
