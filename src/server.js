@@ -2536,9 +2536,8 @@ app.post('/api/chat/message', async (req, res) => {
       } catch { /* profile not found — first interaction */ }
     }
 
-    // Build system prompt — use virtualizacion specialist prompt if context param provided
-    const chatContext = req.body.context;
-    let systemPrompt = (chatContext === 'virtualizacion' ? virtSystemPrompt : chatSystemPrompt) + ragContext + userProfileContext;
+    // Build system prompt — unified assistant with RAG + roles + profile
+    let systemPrompt = chatSystemPrompt + ragContext + userProfileContext;
 
     // Add role context (server-verified identity, not modifiable by user)
     const roleContext = chatUserRole === 'admin'

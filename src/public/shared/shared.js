@@ -57,26 +57,13 @@
     // Update nav for logged-in users
     checkAuthState();
 
-    // Set chatbot mode: inline on /ayuda, floating FAB everywhere else
-    // On /virtualizacion/* pages, redirect FAB click to the dedicated asistente page
+    // Set chatbot mode: inline on /ayuda and /virtualizacion/asistente, floating FAB everywhere else
     const chatContainer = document.getElementById('umce-chatbot');
     if (chatContainer) {
       const path = window.location.pathname;
-      const isAyuda = path === '/ayuda' || path === '/ayuda/';
-      const isVirtualizacion = path.startsWith('/virtualizacion');
-      chatContainer.setAttribute('data-mode', isAyuda ? 'inline' : 'floating');
-
-      if (isVirtualizacion) {
-        const fab = document.getElementById('chat-fab');
-        if (fab) {
-          fab.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            window.location.href = '/virtualizacion/asistente';
-          }, true);
-        }
-      }
+      const isInline = path === '/ayuda' || path === '/ayuda/' ||
+                       path === '/virtualizacion/asistente' || path === '/virtualizacion/asistente/';
+      chatContainer.setAttribute('data-mode', isInline ? 'inline' : 'floating');
     }
   }
 

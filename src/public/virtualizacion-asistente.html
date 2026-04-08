@@ -299,55 +299,8 @@
           Herramientas y avisos
         </button>
 
-        <div class="chat-container">
-          <!-- Header -->
-          <div class="chat-header">
-            <div class="chat-header-icon">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-            </div>
-            <div class="flex-1 min-w-0">
-              <h2 class="font-heading font-bold text-base leading-tight">Asistente de Virtualizaci&oacute;n</h2>
-              <p class="text-white/65 text-xs mt-0.5">UDFV &mdash; UMCE</p>
-            </div>
-            <div class="flex-shrink-0 text-right">
-              <span class="inline-flex items-center gap-1 text-xs text-green-300 font-medium">
-                <span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span>
-                En l&iacute;nea
-              </span>
-            </div>
-          </div>
-
-          <!-- Messages -->
-          <div id="virt-chat-messages" class="chat-messages">
-            <div class="msg-row assistant">
-              <div class="msg-bubble">
-                Hola, soy el asistente de virtualizaci&oacute;n de la UMCE. Puedo ayudarte a entender el proceso de virtualizaci&oacute;n, explicarte c&oacute;mo funcionan las herramientas, o gu&iacute;arte seg&uacute;n tu rol.<br><br>&iquest;En qu&eacute; te puedo ayudar?
-              </div>
-            </div>
-          </div>
-
-          <!-- Quick actions -->
-          <div id="virt-quick-actions" class="quick-actions">
-            <button class="quick-chip" data-query="Soy coordinador de programa, ¿qué debo hacer para virtualizar un curso?">Soy coordinador de programa</button>
-            <button class="quick-chip" data-query="Soy docente y quiero virtualizar mi asignatura, ¿por dónde empiezo?">Soy docente</button>
-            <button class="quick-chip" data-query="¿Qué son los créditos SCT y cómo se calculan las horas de trabajo?">¿Qu&eacute; son los cr&eacute;ditos SCT?</button>
-            <button class="quick-chip" data-query="¿Cómo se evalúa la calidad de un curso virtual en la UMCE?">¿C&oacute;mo se eval&uacute;a la calidad?</button>
-            <button class="quick-chip" data-query="¿Qué es ADDIE y cómo se aplica en la UMCE?">¿Qu&eacute; es ADDIE?</button>
-          </div>
-
-          <!-- Input -->
-          <div class="chat-input-bar">
-            <form id="virt-chat-form" class="chat-form">
-              <input id="virt-chat-input" type="text" class="chat-input"
-                placeholder="Escribe tu pregunta sobre virtualizaci&oacute;n..."
-                maxlength="2000" autocomplete="off" spellcheck="true">
-              <button type="submit" id="virt-chat-send" class="chat-send" disabled>
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
-              </button>
-            </form>
-            <p class="chat-disclaimer">Asistente IA &mdash; Puede cometer errores. Las decisiones pedag&oacute;gicas las toma el equipo UDFV.</p>
-          </div>
-        </div>
+        <!-- Unified chatbot (loaded by shared.js in inline mode) -->
+        <div id="chatbot-placeholder"></div>
       </div>
 
       <!-- Sidebar -->
@@ -411,173 +364,19 @@
   <div id="footer-placeholder"></div>
 
   <script src="/shared/shared.js"></script>
+  <script src="/shared/chatbot.js" defer></script>
   <script src="/shared/generative-header.js"></script>
 
   <script>
+  // Mobile sidebar toggle
   (function () {
-    'use strict';
-
-    var SESSION_KEY = 'umce_virt_chat_session';
-    var sessionToken = null;
-    var sending = false;
-
-    var messagesEl = document.getElementById('virt-chat-messages');
-    var form = document.getElementById('virt-chat-form');
-    var input = document.getElementById('virt-chat-input');
-    var sendBtn = document.getElementById('virt-chat-send');
-    var quickActions = document.getElementById('virt-quick-actions');
     var sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
     var sidebar = document.getElementById('asistente-sidebar');
-
-    // Mobile sidebar toggle
-    if (sidebarToggleBtn) {
+    if (sidebarToggleBtn && sidebar) {
       sidebarToggleBtn.addEventListener('click', function () {
         sidebar.classList.toggle('mobile-open');
       });
     }
-
-    // ── Session management ──
-    async function ensureSession() {
-      if (sessionToken) return;
-      var saved = localStorage.getItem(SESSION_KEY);
-      if (saved) { sessionToken = saved; return; }
-      try {
-        var resp = await fetch('/api/chat/session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({})
-        });
-        if (!resp.ok) throw new Error('session error');
-        var data = await resp.json();
-        sessionToken = data.session_token;
-        localStorage.setItem(SESSION_KEY, sessionToken);
-      } catch (err) {
-        console.warn('Virt chat session error:', err.message);
-      }
-    }
-
-    // ── Message rendering ──
-    function formatText(text) {
-      if (!text) return '';
-      return text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\n- /g, '\n&#8226; ')
-        .replace(/\n/g, '<br>')
-        .replace(/`(.+?)`/g, '<code style="background:#F3F4F6;padding:1px 4px;border-radius:3px;font-size:12px;">$1</code>');
-    }
-
-    function appendMessage(role, text) {
-      var row = document.createElement('div');
-      row.className = 'msg-row ' + role;
-      var bubble = document.createElement('div');
-      bubble.className = 'msg-bubble';
-      bubble.innerHTML = formatText(text);
-      row.appendChild(bubble);
-      messagesEl.appendChild(row);
-      scrollBottom();
-      return bubble;
-    }
-
-    function showTyping() {
-      var row = document.createElement('div');
-      row.className = 'msg-row assistant';
-      row.id = 'virt-typing';
-      row.innerHTML = '<div class="msg-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>';
-      messagesEl.appendChild(row);
-      scrollBottom();
-    }
-
-    function hideTyping() {
-      var el = document.getElementById('virt-typing');
-      if (el) el.remove();
-    }
-
-    function scrollBottom() {
-      requestAnimationFrame(function () {
-        messagesEl.scrollTop = messagesEl.scrollHeight;
-      });
-    }
-
-    function hideQuickActions() {
-      if (quickActions) quickActions.style.display = 'none';
-    }
-
-    // ── Send message ──
-    async function sendMessage(text) {
-      text = (text || '').trim();
-      if (!text || sending) return;
-      sending = true;
-      input.disabled = true;
-      sendBtn.disabled = true;
-
-      await ensureSession();
-      hideQuickActions();
-      appendMessage('user', text);
-      input.value = '';
-      showTyping();
-
-      try {
-        var resp = await fetch('/api/chat/message', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            session_token: sessionToken,
-            message: text,
-            context: 'virtualizacion'
-          })
-        });
-
-        hideTyping();
-
-        if (!resp.ok) {
-          var err = await resp.json().catch(function () { return {}; });
-          if (resp.status === 429) {
-            appendMessage('assistant', 'Has alcanzado el l\u00edmite de mensajes por hora. Intenta de nuevo m\u00e1s tarde.');
-          } else {
-            appendMessage('assistant', err.error || 'Ocurri\u00f3 un error. Intenta de nuevo.');
-          }
-          return;
-        }
-
-        var data = await resp.json();
-        appendMessage('assistant', data.response || 'No pude generar una respuesta.');
-      } catch (e) {
-        hideTyping();
-        appendMessage('assistant', 'Error de conexi\u00f3n. Verifica tu internet e intenta de nuevo.');
-      } finally {
-        sending = false;
-        input.disabled = false;
-        sendBtn.disabled = !input.value.trim();
-        input.focus();
-      }
-    }
-
-    // ── Events ──
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      sendMessage(input.value);
-    });
-
-    input.addEventListener('input', function () {
-      sendBtn.disabled = !input.value.trim() || sending;
-    });
-
-    if (quickActions) {
-      quickActions.addEventListener('click', function (e) {
-        var chip = e.target.closest('.quick-chip');
-        if (chip) {
-          var query = chip.getAttribute('data-query') || chip.textContent;
-          sendMessage(query);
-        }
-      });
-    }
-
-    // Init session on load
-    ensureSession();
-
   })();
   </script>
 </body>
