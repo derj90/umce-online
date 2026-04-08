@@ -326,14 +326,14 @@
   }
 
   // ==========================================
-  // Initialize
+  // Initialize (with retry — chatbot HTML loads async via shared.js)
   // ==========================================
-  function init() {
+  function init(attempt) {
+    attempt = attempt || 0;
     if (!initDom()) {
-      setTimeout(function () {
-        if (!initDom()) return;
-        setup();
-      }, 500);
+      if (attempt < 15) { // retry up to 15 times (3 seconds total)
+        setTimeout(function () { init(attempt + 1); }, 200);
+      }
       return;
     }
     setup();

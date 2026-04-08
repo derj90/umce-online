@@ -16,6 +16,16 @@
     document.head.appendChild(s);
   })();
 
+  // ==========================================
+  // Accessibility widget — carga en todas las páginas
+  // ==========================================
+  (function loadAccessibility() {
+    var s = document.createElement('script');
+    s.src = '/shared/accessibility-widget.js';
+    s.defer = true;
+    document.body.appendChild(s);
+  })();
+
   // Enable fade-up animations (content visible by default for crawlers/print)
   document.documentElement.classList.add('js-loaded');
 
