@@ -81,8 +81,7 @@
     </div>
 
     <!-- Quick actions (hidden until consent) -->
-    <div id="chat-quick-actions" class="px-4 pb-2 flex flex-wrap gap-1.5 flex-shrink-0" style="display:none;"
-      <!-- Default chips — updated dynamically based on role -->
+    <div id="chat-quick-actions" class="px-4 pb-2 flex flex-wrap gap-1.5 flex-shrink-0" style="display:none;">
       <button class="chat-chip" data-role="public">&iquest;Qu&eacute; cursos hay?</button>
       <button class="chat-chip" data-role="public">&iquest;C&oacute;mo me inscribo?</button>
       <button class="chat-chip" data-role="public">No puedo ingresar</button>
@@ -90,7 +89,7 @@
     </div>
 
     <!-- Input (hidden until consent) -->
-    <div id="chat-input-area" class="px-4 pb-4 flex-shrink-0" style="display:none;"
+    <div id="chat-input-area" class="px-4 pb-4 flex-shrink-0" style="display:none;">
       <form id="chat-form" class="flex gap-2">
         <input id="chat-input" type="text" placeholder="Escribe tu consulta..." maxlength="2000" autocomplete="off"
           class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-umce-azul focus:ring-1 focus:ring-umce-azul/20 transition-colors">
@@ -149,22 +148,37 @@
     transform: scale(1.08);
     box-shadow: 0 6px 20px rgba(0,51,161,0.45);
   }
+  #umce-chatbot[data-mode="floating"] #chat-fab {
+    animation: fabPulse 3s ease-in-out 2s 3; /* pulse 3 times after 2s delay */
+  }
+  @keyframes fabPulse {
+    0%, 100% { box-shadow: 0 4px 16px rgba(0,51,161,0.35); }
+    50% { box-shadow: 0 4px 24px rgba(0,51,161,0.55), 0 0 0 8px rgba(0,51,161,0.1); }
+  }
 
   #umce-chatbot[data-mode="floating"] #chat-panel {
     position: fixed;
     bottom: 5.5rem;
     right: 1.5rem;
-    width: 380px;
-    height: 520px;
-    max-height: calc(100vh - 8rem);
+    width: 400px;
+    height: 580px;
+    max-height: calc(100vh - 7rem);
     z-index: 9999;
     border-radius: 1rem;
     box-shadow: 0 8px 32px rgba(0,0,0,0.18);
     border: 1px solid #e5e7eb;
-    display: none; /* hidden until opened */
+    display: flex;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    visibility: hidden;
   }
   #umce-chatbot[data-mode="floating"] #chat-panel.open {
-    display: flex;
+    pointer-events: auto;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    visibility: visible;
   }
   #umce-chatbot[data-mode="floating"] #chat-close { display: block; }
 
