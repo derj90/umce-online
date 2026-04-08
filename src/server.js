@@ -6414,7 +6414,7 @@ app.get('/formacion-docente', (req, res) => res.sendFile(path.join(__dirname, 'p
 app.get('/formacion-docente/marco', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente-marco.html')));
 app.get('/formacion-docente/plan', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente-plan.html')));
 
-app.get('/formacion', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion.html')));
+app.get('/formacion', (req, res) => res.redirect(301, '/formacion-docente'));
 app.get('/demo', (req, res) => res.sendFile(path.join(__dirname, 'public', 'demo-curso.html')));
 app.get('/mis-cursos', (req, res) => res.sendFile(path.join(__dirname, 'public', 'mis-cursos.html')));
 app.get('/privacidad', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacidad.html')));

@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Formaci&oacute;n &mdash; Programas y cursos virtuales | UMCE.online</title>
+  <meta name="description" content="Explora los programas, magísteres, prosecuciones y cursos de formación continua de la UMCE en modalidad virtual. Diseñados con un modelo adaptativo según el contexto de cada programa.">
+  <meta name="author" content="Unidad de Desarrollo y Formaci&oacute;n Virtual &mdash; UMCE">
+  <link rel="canonical" href="https://umce.online/formacion">
+  <meta property="og:title" content="Formaci&oacute;n Virtual &mdash; UMCE.online">
+  <meta property="og:description" content="Una plataforma, múltiples formas de aprender. Magísteres, prosecuciones, autoformación y talleres con diseño instruccional adaptativo.">
+  <meta property="og:image" content="https://umce.online/assets/og-default.png">
+  <meta property="og:site_name" content="UMCE.online">
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+  <link rel="stylesheet" href="/shared/shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js" defer></script>
+  <style>
+    /* ---- Hero canvas ---- */
+    #formacion-hero-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    #formacion-hero-canvas canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* ---- Eyebrow label ---- */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--palette-primary);
+      margin-bottom: 1rem;
+    }
+    .eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 1.5rem;
+      height: 2px;
+      background: var(--palette-accent);
+      flex-shrink: 0;
+    }
+
+    /* ---- Section H2 accent line ---- */
+    .section-h2 {
+      position: relative;
+      display: inline-block;
+    }
+
+    /* ---- Modalidad card ---- */
+    .modalidad-card {
+      border: 1.5px solid #E5E7EB;
+      border-radius: 1rem;
+      padding: 1.75rem 1.5rem;
+      background: #fff;
+      transition: all 0.25s ease;
+      cursor: default;
+    }
+    .modalidad-card:hover {
+      box-shadow: 0 12px 32px -8px rgba(0, 29, 92, 0.13);
+      transform: translateY(-4px);
+    }
+    .modalidad-icon-wrap {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      flex-shrink: 0;
+    }
+    .modalidad-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 0.2rem 0.65rem;
+      border-radius: 9999px;
+      letter-spacing: 0.01em;
+    }
+
+    /* ---- Course card ---- */
+    .course-card {
+      border: 1.5px solid #E5E7EB;
+      border-radius: 1rem;
+      background: #fff;
+      overflow: hidden;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .course-card:hover {
+      box-shadow: 0 12px 32px -8px rgba(0, 29, 92, 0.13);
+      transform: translateY(-3px);
+    }
+    .course-card-header {
+      height: 6rem;
+      display: flex;
+      align-items: flex-end;
+      padding: 1.25rem 1.25rem 0.75rem;
+    }
+    .course-card-body {
+      padding: 1.25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .course-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 0.2rem 0.65rem;
+      border-radius: 9999px;
+      letter-spacing: 0.01em;
+    }
+    .course-meta-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.6875rem;
+      color: #9CA3AF;
+      background: #F3F4F6;
+      border-radius: 0.375rem;
+      padding: 0.2rem 0.5rem;
+      font-weight: 500;
+    }
+
+    /* ---- MOCA section ---- */
+    .moca-section {
+      background: #001D5C;
+    }
+    .moca-pillar {
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 0.875rem;
+      padding: 1.75rem;
+      background: rgba(255,255,255,0.04);
+      transition: background 0.2s;
+    }
+    .moca-pillar:hover {
+      background: rgba(255,255,255,0.08);
+    }
+    .moca-pillar-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.625rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    /* ---- CTA final ---- */
+    .cta-section {
+      background: linear-gradient(135deg, #001233 0%, #001D5C 60%, #002A80 100%);
+    }
+
+    /* ---- Breadcrumb ---- */
+    .breadcrumb a { transition: color 0.15s; }
+    .breadcrumb a:hover { color: rgba(255,255,255,0.9); }
+
+    /* ---- Loading skeleton ---- */
+    .skeleton {
+      background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.6s infinite;
+      border-radius: 0.5rem;
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+
+  <div id="nav-placeholder"></div>
+
+  <!-- ============================================================ -->
+  <!-- 1. HERO                                                      -->
+  <!-- ============================================================ -->
+  <section class="pt-32 pb-24 text-white relative overflow-hidden" style="background: #001D5C; min-height: 22rem;">
+    <!-- p5 generative art: red de nodos/conexiones -->
+    <div id="formacion-hero-canvas"></div>
+
+    <!-- Overlay: mejora legibilidad del texto -->
+    <div class="absolute inset-0 pointer-events-none" style="z-index:1; background: rgba(0,10,40,0.62);"></div>
+    <!-- Fade inferior hacia blanco -->
+    <div class="absolute left-0 right-0 bottom-0 pointer-events-none" style="z-index:2; height: 120px; background: linear-gradient(to bottom, transparent, #ffffff);"></div>
+
+    <div class="max-w-7xl mx-auto px-6 relative" style="z-index:3;">
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb text-sm mb-6 flex items-center gap-1" aria-label="Breadcrumb">
+        <a href="/" class="text-white/55 hover:text-white">Inicio</a>
+        <svg class="w-3.5 h-3.5 text-white/25 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+        <span class="text-white/85">Formaci&oacute;n</span>
+      </nav>
+
+      <h1 class="fade-up font-heading text-4xl md:text-5xl lg:text-6xl font-extrabold mb-5 max-w-3xl leading-tight">
+        Una plataforma,<br>m&uacute;ltiples formas de aprender
+      </h1>
+      <p class="fade-up text-white/75 text-lg md:text-xl max-w-2xl leading-relaxed">
+        Cada programa tiene necesidades distintas. El dise&ntilde;o de su experiencia virtual tambi&eacute;n.
+      </p>
+
+      <!-- Art caption -->
+      <div class="absolute bottom-6 right-6 hidden sm:block pointer-events-none" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+        <div class="text-white/30 text-[10px] italic tracking-wide">Red de aprendizaje</div>
+        <div class="text-white/20 text-[9px] mt-0.5">Gr&aacute;fica generativa &middot; p5.js</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 2. TIPOS DE EXPERIENCIA                                      -->
+  <!-- ============================================================ -->
+  <section class="py-16 md:py-24 bg-white" id="modalidades">
+    <div class="max-w-7xl mx-auto px-6">
+
+      <div class="fade-up mb-14">
+        <p class="eyebrow">Modalidades</p>
+        <h2 class="font-heading text-3xl md:text-4xl font-extrabold mb-4 max-w-2xl">
+          Experiencias dise&ntilde;adas para cada contexto
+        </h2>
+        <p class="text-gray-500 text-lg max-w-2xl">
+          El mismo ecosistema tecnol&oacute;gico, configurado seg&uacute;n las necesidades pedag&oacute;gicas de cada programa.
+        </p>
+      </div>
+
+      <div class="stagger grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+
+        <!-- Card 1: Autoformación -->
+        <div class="fade-up modalidad-card">
+          <div class="modalidad-icon-wrap" style="background: #D1FAE5;">
+            <!-- icono libro -->
+            <svg class="w-6 h-6" style="color: #059669;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+          </div>
+          <h3 class="font-heading font-bold text-base mb-2">Autoformaci&oacute;n</h3>
+          <p class="text-sm text-gray-500 mb-4 leading-relaxed">Cursos abiertos, a tu ritmo, sin instructor. Evaluaci&oacute;n automatizada con banco de preguntas aleatorio.</p>
+          <div class="mt-auto">
+            <span class="modalidad-badge" style="background: #D1FAE5; color: #065F46;">2 cursos</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Cursos con tutoría -->
+        <div class="fade-up modalidad-card">
+          <div class="modalidad-icon-wrap" style="background: #DBEAFE;">
+            <!-- icono grupo -->
+            <svg class="w-6 h-6" style="color: #3B82F6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <h3 class="font-heading font-bold text-base mb-2">Cursos con tutor&iacute;a</h3>
+          <p class="text-sm text-gray-500 mb-4 leading-relaxed">Programas con docente, cohorte definida, calendario de entregas y retroalimentaci&oacute;n directa.</p>
+          <div class="mt-auto">
+            <span class="modalidad-badge" style="background: #DBEAFE; color: #1E40AF;">8 programas activos</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Diplomados y certificaciones -->
+        <div class="fade-up modalidad-card">
+          <div class="modalidad-icon-wrap" style="background: #EDE9FE;">
+            <!-- icono certificado -->
+            <svg class="w-6 h-6" style="color: #7C3AED;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+            </svg>
+          </div>
+          <h3 class="font-heading font-bold text-base mb-2">Diplomados y certificaciones</h3>
+          <p class="text-sm text-gray-500 mb-4 leading-relaxed">Formaci&oacute;n modular con credenciales verificables. Rutas con salidas intermedias y Open Badges.</p>
+          <div class="mt-auto">
+            <span class="modalidad-badge" style="background: #EDE9FE; color: #5B21B6;">En desarrollo</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Talleres prácticos -->
+        <div class="fade-up modalidad-card">
+          <div class="modalidad-icon-wrap" style="background: #FFEDD5;">
+            <!-- icono herramientas -->
+            <svg class="w-6 h-6" style="color: #F97316;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <h3 class="font-heading font-bold text-base mb-2">Talleres pr&aacute;cticos</h3>
+          <p class="text-sm text-gray-500 mb-4 leading-relaxed">Experiencias cortas, intensivas, con componente sincr&oacute;nico. Zoom integrado, acompa&ntilde;amiento en vivo.</p>
+          <div class="mt-auto">
+            <span class="modalidad-badge" style="background: #FFEDD5; color: #9A3412;">1 taller activo</span>
+          </div>
+        </div>
+
+        <!-- Card 5: Inducción institucional -->
+        <div class="fade-up modalidad-card">
+          <div class="modalidad-icon-wrap" style="background: #CCFBF1;">
+            <!-- icono rocket -->
+            <svg class="w-6 h-6" style="color: #14B8A6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <h3 class="font-heading font-bold text-base mb-2">Inducci&oacute;n institucional</h3>
+          <p class="text-sm text-gray-500 mb-4 leading-relaxed">Onboarding para nuevos integrantes de la comunidad. Tracking granular con xAPI.</p>
+          <div class="mt-auto">
+            <span class="modalidad-badge" style="background: #CCFBF1; color: #0F766E;">En dise&ntilde;o</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 3. CURSOS DISPONIBLES                                        -->
+  <!-- ============================================================ -->
+  <section class="py-16 md:py-24 bg-gray-50" id="cursos">
+    <div class="max-w-7xl mx-auto px-6">
+
+      <div class="fade-up mb-14">
+        <p class="eyebrow">Oferta formativa</p>
+        <h2 class="font-heading text-3xl md:text-4xl font-extrabold mb-4 max-w-2xl">
+          Programas y cursos activos
+        </h2>
+        <p class="text-gray-500 text-lg max-w-2xl">
+          Autoformaci&oacute;n abierta, prosecuciones, magísteres y talleres. Todos con dise&ntilde;o instruccional y seguimiento.
+        </p>
+      </div>
+
+      <!-- Grid de cursos -->
+      <div id="courses-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- === CURSOS DE AUTOFORMACIÓN (cargados dinámicamente) === -->
+        <!-- Se insertan via JS desde los JSON de /autoformacion/courses/ -->
+
+        <!-- === PROSECUCIONES === -->
+        <div class="fade-up course-card">
+          <div class="course-card-header" style="background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%);">
+            <span class="course-status-badge" style="background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25);">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-300 inline-block"></span>
+              Programa activo
+            </span>
+          </div>
+          <div class="course-card-body">
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <h3 class="font-heading font-bold text-base leading-snug">PROBAS &mdash; Prosecuci&oacute;n en Licenciatura en Educaci&oacute;n y Pedagog&iacute;a B&aacute;sica</h3>
+            </div>
+            <p class="text-sm text-gray-500 mb-4 leading-relaxed flex-1">3 cohortes activas (2024, 2025, 2026). Aproximadamente 117 estudiantes. Plataforma virtual.umce.cl.</p>
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              <span class="course-meta-tag">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                3 cohortes
+              </span>
+              <span class="course-meta-tag">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                virtual.umce.cl
+              </span>
+            </div>
+            <div class="mt-auto pt-3 border-t border-gray-100">
+              <a href="https://virtual.umce.cl" target="_blank" rel="noopener"
+                 class="inline-flex items-center gap-1.5 text-sm font-semibold text-umce-azul hover:underline">
+                Ir a la plataforma
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- === MCAMC === -->
+        <div class="fade-up course-card">
+          <div class="course-card-header" style="background: linear-gradient(135deg, #1E3A8A 0%, #0033A1 100%);">
+            <span class="course-status-badge" style="background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25);">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-300 inline-block"></span>
+              Programa activo
+            </span>
+          </div>
+          <div class="course-card-body">
+            <div class="mb-2">
+              <h3 class="font-heading font-bold text-base leading-snug">MCAMC &mdash; Mag&iacute;ster en Ciencias Aplicadas al Movimiento y Cognici&oacute;n</h3>
+            </div>
+            <p class="text-sm text-gray-500 mb-4 leading-relaxed flex-1">2 cohortes activas. Plataforma virtual.umce.cl.</p>
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              <span class="course-meta-tag">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                Mag&iacute;ster
+              </span>
+              <span class="course-meta-tag">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                virtual.umce.cl
+              </span>
+            </div>
+            <div class="mt-auto pt-3 border-t border-gray-100">
+              <a href="https://virtual.umce.cl" target="_blank" rel="noopener"
+                 class="inline-flex items-center gap-1.5 text-sm font-semibold text-umce-azul hover:underline">
+                Ir a la plataforma
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- === MEI === -->
+        <div class="fade-up course-card">
+          <div class="course-card-header" style="background: linear-gradient(135deg, #374151 0%, #4B5563 100%);">
+            <span class="course-status-badge" style="background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.75); border: 1px solid rgba(255,255,255,0.18);">
+              <span class="w-1.5 h-1.5 rounded-full bg-gray-400 inline-block"></span>
+              En dise&ntilde;o
+            </span>
+          </div>
+          <div class="course-card-body">
+            <div class="mb-2">
+              <h3 class="font-heading font-bold text-base leading-snug">MEI &mdash; Mag&iacute;ster en Educaci&oacute;n Intercultural</h3>
+            </div>
+            <p class="text-sm text-gray-500 mb-4 leading-relaxed flex-1">En proceso de dise&ntilde;o instruccional. Plataforma evirtual.umce.cl.</p>
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              <span class="course-meta-tag">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                Mag&iacute;ster
+              </span>
+              <span class="course-meta-tag">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                evirtual.umce.cl
+              </span>
+            </div>
+            <div class="mt-auto pt-3 border-t border-gray-100">
+              <span class="text-sm text-gray-400 italic">Disponible pr&oacute;ximamente</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- === TRAMPOLÍN === -->
+        <div class="fade-up course-card">
+          <div class="course-card-header" style="background: linear-gradient(135deg, #C2410C 0%, #EA580C 100%);">
+            <span class="course-status-badge" style="background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25);">
+              <span class="w-1.5 h-1.5 rounded-full bg-orange-300 inline-block"></span>
+              En cierre
+            </span>
+          </div>
+          <div class="course-card-body">
+            <div class="mb-2">
+              <h3 class="font-heading font-bold text-base leading-snug">Trampol&iacute;n 2.0 &mdash; Formaci&oacute;n de Facilitadores</h3>
+            </div>
+            <p class="text-sm text-gray-500 mb-4 leading-relaxed flex-1">5 cursos con componente sincr&oacute;nico. Certificaci&oacute;n de facilitadores en proceso de cierre. Plataforma virtual.umce.cl.</p>
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              <span class="course-meta-tag">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                Taller
+              </span>
+              <span class="course-meta-tag">5 cursos</span>
+              <span class="course-meta-tag">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                virtual.umce.cl
+              </span>
+            </div>
+            <div class="mt-auto pt-3 border-t border-gray-100">
+              <a href="https://virtual.umce.cl" target="_blank" rel="noopener"
+                 class="inline-flex items-center gap-1.5 text-sm font-semibold text-umce-azul hover:underline">
+                Ir a la plataforma
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Placeholder para cursos de autoformación (JS los inserta antes de las cards estáticas) -->
+        <!-- El JS prepende las cards de autoformación al comienzo del grid -->
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 4. EL MODELO DETRÁS (MOCA simplificado)                      -->
+  <!-- ============================================================ -->
+  <section class="py-16 md:py-24 moca-section" id="modelo">
+    <div class="max-w-6xl mx-auto px-6">
+
+      <div class="fade-up text-center mb-14">
+        <p class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-4" style="color: #FFC72C;">
+          <span style="display:inline-block;width:1.5rem;height:2px;background:#FFC72C;"></span>
+          Modelo de dise&ntilde;o
+          <span style="display:inline-block;width:1.5rem;height:2px;background:#FFC72C;"></span>
+        </p>
+        <h2 class="font-heading text-3xl md:text-4xl font-extrabold mb-5 text-white max-w-2xl mx-auto">
+          Cada curso se configura seg&uacute;n su contexto
+        </h2>
+        <p class="text-white/65 text-lg max-w-2xl mx-auto leading-relaxed">
+          No es lo mismo un mag&iacute;ster con 30 estudiantes que un curso abierto a 18 universidades. El dise&ntilde;o instruccional, la tecnolog&iacute;a y la organizaci&oacute;n se adaptan.
+        </p>
+      </div>
+
+      <div class="stagger grid md:grid-cols-3 gap-5 mb-12">
+
+        <!-- Pilar 1: Dimensión pedagógica -->
+        <div class="fade-up moca-pillar">
+          <div class="moca-pillar-icon" style="background: rgba(255,199,44,0.12);">
+            <svg class="w-5 h-5" style="color: #FFC72C;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
+          </div>
+          <h3 class="font-heading font-bold text-base text-white mb-2">Dimensi&oacute;n pedag&oacute;gica</h3>
+          <p class="text-white/60 text-sm leading-relaxed">Metodolog&iacute;as activas, evaluaci&oacute;n aut&eacute;ntica, progresi&oacute;n de competencias. Cada tipo de curso activa distintas estrategias.</p>
+        </div>
+
+        <!-- Pilar 2: Dimensión tecnológica -->
+        <div class="fade-up moca-pillar">
+          <div class="moca-pillar-icon" style="background: rgba(59,130,246,0.15);">
+            <svg class="w-5 h-5" style="color: #60A5FA;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
+            </svg>
+          </div>
+          <h3 class="font-heading font-bold text-base text-white mb-2">Dimensi&oacute;n tecnol&oacute;gica</h3>
+          <p class="text-white/60 text-sm leading-relaxed">Moodle, xAPI, analytics, quizzes adaptativos. La tecnolog&iacute;a se configura seg&uacute;n la complejidad del programa.</p>
+        </div>
+
+        <!-- Pilar 3: Dimensión organizacional -->
+        <div class="fade-up moca-pillar">
+          <div class="moca-pillar-icon" style="background: rgba(20,184,166,0.12);">
+            <svg class="w-5 h-5" style="color: #2DD4BF;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+          </div>
+          <h3 class="font-heading font-bold text-base text-white mb-2">Dimensi&oacute;n organizacional</h3>
+          <p class="text-white/60 text-sm leading-relaxed">SCT-Chile, r&uacute;brica QA, est&aacute;ndares de calidad. El marco institucional asegura consistencia sin rigidez.</p>
+        </div>
+
+      </div>
+
+      <div class="fade-up text-center">
+        <a href="/virtualizacion" class="inline-flex items-center gap-2 text-sm font-semibold transition-colors" style="color: #FFC72C;">
+          Conoce nuestras herramientas de virtualizaci&oacute;n
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 5. CTA FINAL                                                 -->
+  <!-- ============================================================ -->
+  <section class="py-16 md:py-24 cta-section" id="cta">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <div class="fade-up">
+        <h2 class="font-heading text-3xl md:text-4xl font-extrabold mb-5 text-white">
+          Explora la experiencia por ti mismo
+        </h2>
+        <p class="text-white/70 text-lg leading-relaxed mb-10">
+          El curso de Sustentabilidad est&aacute; abierto. Navega los m&oacute;dulos, responde los quizzes, ve c&oacute;mo funciona.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="/autoformacion/sustentabilidad/curso"
+             class="inline-flex items-center gap-2 font-heading font-bold text-sm px-7 py-3.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-lg"
+             style="background: #FFC72C; color: #001D5C;">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Probar el curso de Sustentabilidad &rarr;
+          </a>
+          <a href="/virtualizacion"
+             class="inline-flex items-center gap-2 font-heading font-bold text-sm px-7 py-3.5 rounded-lg border-2 text-white transition-all hover:bg-white/10"
+             style="border-color: rgba(255,255,255,0.3);">
+            Ver herramientas de virtualizaci&oacute;n &rarr;
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 6. FOOTER                                                    -->
+  <!-- ============================================================ -->
+  <div id="footer-placeholder"></div>
+
+  <!-- ============================================================ -->
+  <!-- SCRIPTS                                                      -->
+  <!-- ============================================================ -->
+  <script src="/shared/shared.js"></script>
+
+  <script>
+  // =====================================================================
+  // p5.js — Red de nodos animada en el hero (constellation/network)
+  // Se ejecuta solo cuando p5 está cargado
+  // =====================================================================
+  (function initHeroSketch() {
+    'use strict';
+
+    var AZUL       = [0, 29, 92];
+    var AZUL_MID   = [0, 51, 161];
+    var AZUL_LIGHT = [100, 149, 237];
+    var AMARILLO   = [255, 199, 44];
+
+    function waitForP5(cb) {
+      if (typeof p5 !== 'undefined') { cb(); }
+      else { setTimeout(function() { waitForP5(cb); }, 50); }
+    }
+
+    waitForP5(function() {
+      var containerEl = document.getElementById('formacion-hero-canvas');
+      if (!containerEl) return;
+
+      new p5(function(p) {
+        var nodes = [];
+        var NUM_NODES = 90;
+        var CONNECTION_DIST = 150;
+        var w, h;
+
+        p.setup = function() {
+          w = containerEl.offsetWidth;
+          h = containerEl.offsetHeight || 380;
+          var canvas = p.createCanvas(w, h);
+          canvas.parent('formacion-hero-canvas');
+          p.pixelDensity(1);
+
+          // Crear nodos
+          for (var i = 0; i < NUM_NODES; i++) {
+            nodes.push({
+              x:  p.random(w),
+              y:  p.random(h),
+              vx: p.random(-0.35, 0.35),
+              vy: p.random(-0.35, 0.35),
+              r:  p.random(1.5, 3.5),
+              isGold: p.random() < 0.12
+            });
+          }
+        };
+
+        p.draw = function() {
+          p.clear();
+
+          // Mover nodos
+          for (var i = 0; i < nodes.length; i++) {
+            var nd = nodes[i];
+            nd.x += nd.vx;
+            nd.y += nd.vy;
+            // Bounce en bordes
+            if (nd.x < 0 || nd.x > w) nd.vx *= -1;
+            if (nd.y < 0 || nd.y > h) nd.vy *= -1;
+          }
+
+          // Dibujar conexiones
+          for (var i = 0; i < nodes.length; i++) {
+            for (var j = i + 1; j < nodes.length; j++) {
+              var d = p.dist(nodes[i].x, nodes[i].y, nodes[j].x, nodes[j].y);
+              if (d < CONNECTION_DIST) {
+                var alpha = p.map(d, 0, CONNECTION_DIST, 55, 0);
+                var useGold = nodes[i].isGold || nodes[j].isGold;
+                var col = useGold ? AMARILLO : AZUL_LIGHT;
+                p.stroke(col[0], col[1], col[2], alpha);
+                p.strokeWeight(p.map(d, 0, CONNECTION_DIST, 1.2, 0.2));
+                p.line(nodes[i].x, nodes[i].y, nodes[j].x, nodes[j].y);
+              }
+            }
+          }
+
+          // Dibujar nodos
+          p.noStroke();
+          for (var i = 0; i < nodes.length; i++) {
+            var nd = nodes[i];
+            var col = nd.isGold ? AMARILLO : AZUL_LIGHT;
+            // Halo suave
+            p.fill(col[0], col[1], col[2], 12);
+            p.circle(nd.x, nd.y, nd.r * 10);
+            // Núcleo
+            p.fill(col[0], col[1], col[2], nd.isGold ? 75 : 50);
+            p.circle(nd.x, nd.y, nd.r * 2.2);
+          }
+        };
+
+        // Pausar si el tab no está visible (ahorra CPU)
+        document.addEventListener('visibilitychange', function() {
+          if (document.hidden) { p.noLoop(); } else { p.loop(); }
+        });
+
+      });
+    });
+  })();
+  </script>
+
+  <script>
+  // =====================================================================
+  // Carga dinámica de cursos de autoformación desde JSON
+  // Inserta las cards al principio del grid (antes de las cards estáticas)
+  // =====================================================================
+  (function loadAutoformacionCourses() {
+    'use strict';
+
+    var KNOWN_SLUGS = ['sustentabilidad', 'modelo-educativo'];
+
+    var STATUS_MAP = {
+      'active':   { label: 'Disponible ahora', dotColor: 'bg-green-400', style: 'background:#D1FAE5;color:#065F46;' },
+      'upcoming': { label: 'Pr&oacute;ximamente', dotColor: 'bg-yellow-400', style: 'background:#FEF9C3;color:#713F12;' },
+      'draft':    { label: 'En dise&ntilde;o',    dotColor: 'bg-gray-400',   style: 'background:#F3F4F6;color:#374151;' }
+    };
+
+    var HEADER_GRADIENTS = {
+      'green':  'linear-gradient(135deg, #064e3b 0%, #059669 100%)',
+      'indigo': 'linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%)',
+      'blue':   'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)'
+    };
+
+    function buildCard(data) {
+      var slug    = data.slug;
+      var title   = data.title || slug;
+      var desc    = data.subtitle || data.description || '';
+      var status  = data.status || (data.comingSoon ? 'upcoming' : 'active');
+      var duration= data.duration || '';
+      var level   = data.level || '';
+      var price   = data.price || '';
+      var accent  = data.accent || 'blue';
+      var url     = data.comingSoon ? null : '/autoformacion/' + slug;
+
+      var statusInfo = STATUS_MAP[status] || STATUS_MAP['active'];
+      var headerGradient = HEADER_GRADIENTS[accent] || HEADER_GRADIENTS['blue'];
+
+      // Meta tags
+      var metaTags = '';
+      if (duration) {
+        metaTags += '<span class="course-meta-tag">' +
+          '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+          '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' +
+          duration + '</span>';
+      }
+      if (level) {
+        metaTags += '<span class="course-meta-tag">' + level + '</span>';
+      }
+      if (price) {
+        metaTags += '<span class="course-meta-tag">' + price + '</span>';
+      }
+
+      // CTA
+      var cta = url
+        ? '<a href="' + url + '" class="inline-flex items-center gap-1.5 text-sm font-semibold transition-colors hover:underline" style="color:var(--palette-primary);">' +
+          'Ver curso <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></a>'
+        : '<span class="text-sm text-gray-400 italic">Disponible pr&oacute;ximamente</span>';
+
+      var card = document.createElement('div');
+      card.className = 'fade-up course-card';
+      card.innerHTML =
+        '<div class="course-card-header" style="background:' + headerGradient + ';">' +
+          '<span class="course-status-badge" style="' + statusInfo.style + '">' +
+            '<span class="w-1.5 h-1.5 rounded-full inline-block ' + statusInfo.dotColor + '"></span>' +
+            statusInfo.label +
+          '</span>' +
+        '</div>' +
+        '<div class="course-card-body">' +
+          '<h3 class="font-heading font-bold text-base leading-snug mb-2">' + title + '</h3>' +
+          '<p class="text-sm text-gray-500 mb-4 leading-relaxed flex-1">' + desc + '</p>' +
+          '<div class="flex flex-wrap gap-1.5 mb-4">' + metaTags + '</div>' +
+          '<div class="mt-auto pt-3 border-t border-gray-100">' + cta + '</div>' +
+        '</div>';
+
+      return card;
+    }
+
+    async function loadAll() {
+      var grid = document.getElementById('courses-grid');
+      if (!grid) return;
+
+      var fragment = document.createDocumentFragment();
+      var loadedCount = 0;
+
+      for (var i = 0; i < KNOWN_SLUGS.length; i++) {
+        var slug = KNOWN_SLUGS[i];
+        try {
+          var resp = await fetch('/autoformacion/courses/' + slug + '.json');
+          if (!resp.ok) throw new Error('Not found');
+          var data = await resp.json();
+          // Inferir status desde moodle.courseId si no viene explícito
+          if (!data.status) {
+            var hasMoodle = data.moodle && data.moodle.courseId;
+            data.status = hasMoodle ? 'active' : 'upcoming';
+          }
+          fragment.appendChild(buildCard(data));
+          loadedCount++;
+        } catch (e) {
+          console.warn('No se pudo cargar course JSON para: ' + slug);
+        }
+      }
+
+      if (loadedCount > 0) {
+        // Insertar al comienzo del grid (antes de las cards estáticas)
+        grid.insertBefore(fragment, grid.firstChild);
+        // Re-observar los nuevos elementos para fade-up
+        if (window._umceObserver) {
+          grid.querySelectorAll('.fade-up:not(.visible)').forEach(function(el) {
+            window._umceObserver.observe(el);
+          });
+        }
+      }
+    }
+
+    // Ejecutar después de que el DOM esté listo
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadAll);
+    } else {
+      loadAll();
+    }
+  })();
+  </script>
+
+</body>
+</html>
