@@ -6414,6 +6414,25 @@ app.get('/formacion-docente', (req, res) => res.sendFile(path.join(__dirname, 'p
 app.get('/formacion-docente/marco', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente-marco.html')));
 app.get('/formacion-docente/plan', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente-plan.html')));
 
+// Dynamic course landing pages — Plan de Formación Docente 2026
+app.get('/formacion-docente/curso/:slug', (req, res) => {
+  const slug = req.params.slug;
+  if (slug.includes('.')) return res.status(404).send('Not found');
+  const coursePath = path.join(__dirname, 'public', 'formacion-docente', 'courses', `${slug}.json`);
+  if (!fs.existsSync(coursePath)) {
+    const notFoundPath = path.join(__dirname, 'public', '404.html');
+    if (fs.existsSync(notFoundPath)) return res.status(404).sendFile(notFoundPath);
+    return res.status(404).send('Curso no encontrado');
+  }
+  const templatePath = path.join(__dirname, 'public', 'formacion-docente', 'curso-template.html');
+  if (!fs.existsSync(templatePath)) return res.status(404).send('Template no disponible');
+  let html = fs.readFileSync(templatePath, 'utf8');
+  html = html.replace('<!--CURSO_SLUG_INJECT-->', `<script>window.CURSO_SLUG = ${JSON.stringify(slug)};</script>`);
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-store');
+  res.send(html);
+});
+
 app.get('/formacion', (req, res) => res.redirect(301, '/formacion-docente'));
 app.get('/demo', (req, res) => res.sendFile(path.join(__dirname, 'public', 'demo-curso.html')));
 app.get('/mis-cursos', (req, res) => res.sendFile(path.join(__dirname, 'public', 'mis-cursos.html')));

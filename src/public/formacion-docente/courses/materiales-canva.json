@@ -1,0 +1,38 @@
+{
+  "slug": "materiales-canva",
+  "id": "1.2",
+  "nivel": 1,
+  "type": "Curso",
+  "title": "Creación de materiales educativos con Canva",
+  "category": "Diseño",
+  "hours": 10,
+  "sync": 2,
+  "async": 8,
+  "description": "Aprende a diseñar recursos educativos visualmente atractivos y accesibles usando Canva, desde presentaciones hasta infografías y materiales de apoyo.",
+  "objetivo": "Diseñar materiales educativos digitales de calidad visual y pedagógica usando Canva como herramienta principal.",
+  "nivelCertificacion": {
+    "nombre": "Nivel I: Inicial",
+    "descripcion": "Iniciación y fundamentos",
+    "horasRequeridas": 27
+  },
+  "aprendizajes": [
+    "Fundamentos del diseño visual para la educación: jerarquía, contraste y legibilidad",
+    "Creación de presentaciones, infografías y recursos descargables en Canva",
+    "Uso de plantillas educativas y elementos de marca institucional",
+    "Diseño accesible: contraste de colores, tipografías legibles y textos alternativos",
+    "Exportación y publicación de materiales para Moodle y otras plataformas"
+  ],
+  "metodologia": "Sesiones sincrónicas con demostración en vivo y práctica guiada. Trabajo autónomo centrado en la creación de un material educativo propio para el curso que cada docente imparte.",
+  "requisitos": "Cuenta gratuita en Canva (canva.com). No se requiere experiencia previa en diseño.",
+  "certificacion": "Al completar, se suman 10 horas hacia tu Certificación de Competencias Digitales (Nivel Inicial: 27h requeridas).",
+  "groups": [
+    { "name": "Grupo 1", "schedule": "Jueves 15:00 hrs", "dates": "7 May, 14 May" },
+    { "name": "Grupo 2", "schedule": "Miércoles 11:00 hrs", "dates": "3 Jun, 10 Jun" }
+  ],
+  "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLScVipPmydqHRlHfpkxDXiyTql0IT0N3mdtdBrNH92LRCUUmBA/viewform",
+  "accent": {
+    "primary": "#0033A1",
+    "light": "#DBEAFE",
+    "bg": "#EFF6FF"
+  }
+}

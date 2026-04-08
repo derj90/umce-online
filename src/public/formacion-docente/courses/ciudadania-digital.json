@@ -1,0 +1,39 @@
+{
+  "slug": "ciudadania-digital",
+  "id": "1.3",
+  "nivel": 1,
+  "type": "Curso",
+  "title": "Ciudadanía Digital y Ética en Entornos Virtuales",
+  "category": "Competencias Digitales",
+  "hours": 12,
+  "sync": 3,
+  "async": 9,
+  "description": "Explora los derechos, responsabilidades y habilidades necesarias para participar de forma ética, segura y crítica en los entornos digitales educativos.",
+  "objetivo": "Desarrollar habilidades de ciudadanía digital para el ejercicio docente, promoviendo el uso ético y seguro de las tecnologías en la educación.",
+  "nivelCertificacion": {
+    "nombre": "Nivel I: Inicial",
+    "descripcion": "Iniciación y fundamentos",
+    "horasRequeridas": 27
+  },
+  "aprendizajes": [
+    "Conceptos de identidad digital, huella digital y reputación en línea",
+    "Derechos de autor, licencias Creative Commons y uso ético de contenido digital",
+    "Seguridad básica en línea: contraseñas, phishing y protección de datos personales",
+    "Netiqueta y comunicación respetuosa en entornos virtuales educativos",
+    "Pensamiento crítico frente a la desinformación y los algoritmos de recomendación"
+  ],
+  "metodologia": "Sesiones sincrónicas con análisis de casos reales y debate. Actividades autónomas de reflexión sobre la práctica docente digital propia y propuestas de mejora.",
+  "requisitos": "No requiere conocimientos previos específicos. Experiencia básica navegando internet.",
+  "certificacion": "Al completar, se suman 12 horas hacia tu Certificación de Competencias Digitales (Nivel Inicial: 27h requeridas).",
+  "groups": [
+    { "name": "Grupo 1", "schedule": "Lunes 16:00 hrs", "dates": "4 May, 11 May, 18 May" },
+    { "name": "Grupo 2", "schedule": "Miércoles 17:00 hrs", "dates": "10 Jun, 17 Jun, 24 Jun" },
+    { "name": "Grupo 3", "schedule": "Viernes 10:00 hrs", "dates": "10 Jul, 17 Jul, 24 Jul" }
+  ],
+  "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLScVipPmydqHRlHfpkxDXiyTql0IT0N3mdtdBrNH92LRCUUmBA/viewform",
+  "accent": {
+    "primary": "#0033A1",
+    "light": "#DBEAFE",
+    "bg": "#EFF6FF"
+  }
+}

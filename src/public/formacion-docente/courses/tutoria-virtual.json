@@ -1,0 +1,36 @@
+{
+  "slug": "tutoria-virtual",
+  "id": "2.1",
+  "nivel": 2,
+  "type": "Curso",
+  "title": "Tutoría Virtual y Acompañamiento Estudiantil Online",
+  "category": "Pedagogía Digital",
+  "hours": 15,
+  "sync": 0,
+  "async": 15,
+  "description": "Desarrolla competencias para acompañar y orientar estudiantes en entornos virtuales, con énfasis en la comunicación asertiva, la detección temprana de dificultades y el uso de Moodle como espacio de tutoría.",
+  "objetivo": "Implementar estrategias efectivas de tutoría virtual que promuevan la permanencia, el bienestar y el logro académico de los estudiantes en modalidad online.",
+  "nivelCertificacion": {
+    "nombre": "Nivel II: Intermedio",
+    "descripcion": "Profundización pedagógica",
+    "horasRequeridas": 54
+  },
+  "aprendizajes": [
+    "Modelos de tutoría virtual: acompañamiento proactivo vs. reactivo",
+    "Comunicación efectiva y empática en entornos digitales (mensajería, foros, videollamadas)",
+    "Uso de Moodle para monitorear la actividad y detectar estudiantes en riesgo",
+    "Diseño de protocolos de intervención temprana ante ausentismo o bajo rendimiento",
+    "Técnicas de motivación y gestión emocional en contextos virtuales"
+  ],
+  "metodologia": "Curso 100% autoformativo. Incluye lecturas especializadas, videos de casos, actividades de reflexión sobre la práctica propia y un proyecto final de diseño de plan de tutoría.",
+  "requisitos": "Experiencia docente en modalidad virtual de al menos un semestre. Acceso a Moodle UMCE.",
+  "certificacion": "Al completar, se suman 15 horas hacia tu Certificación de Competencias Digitales (Nivel Intermedio: 54h requeridas).",
+  "groups": [],
+  "autoformativo": true,
+  "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLScVipPmydqHRlHfpkxDXiyTql0IT0N3mdtdBrNH92LRCUUmBA/viewform",
+  "accent": {
+    "primary": "#0033A1",
+    "light": "#DBEAFE",
+    "bg": "#EFF6FF"
+  }
+}

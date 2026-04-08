@@ -1,0 +1,40 @@
+{
+  "slug": "intro-ia-generativa",
+  "id": "1.1",
+  "nivel": 1,
+  "type": "Curso",
+  "title": "Introducción a la IA Generativa y principios fundamentales",
+  "category": "IA",
+  "hours": 19,
+  "sync": 3,
+  "async": 13,
+  "description": "Aborda los conceptos esenciales de la Inteligencia Artificial (IA), el aprendizaje automático y el uso de herramientas generativas de uso general.",
+  "objetivo": "Comprender los fundamentos y aplicaciones de la IA. Conocer herramientas de IA generativa para su uso inicial.",
+  "nivelCertificacion": {
+    "nombre": "Nivel I: Inicial",
+    "descripcion": "Iniciación y fundamentos",
+    "horasRequeridas": 27
+  },
+  "aprendizajes": [
+    "Qué es la Inteligencia Artificial y cómo funciona el aprendizaje automático",
+    "Herramientas de IA generativa de uso general (ChatGPT, Gemini, Claude)",
+    "Aplicaciones prácticas de la IA en el contexto educativo",
+    "Consideraciones éticas en el uso de IA",
+    "Cómo construir instrucciones efectivas (prompting básico)"
+  ],
+  "metodologia": "Sesiones sincrónicas expositivo-participativas con actividades prácticas guiadas. Trabajo autónomo con ejercicios de aplicación y reflexión sobre el uso educativo de herramientas IA.",
+  "requisitos": "No requiere conocimientos previos en IA o tecnología avanzada.",
+  "certificacion": "Al completar, se suman 19 horas hacia tu Certificación de Competencias Digitales (Nivel Inicial: 27h requeridas).",
+  "groups": [
+    { "name": "Grupo 1", "schedule": "Martes 17:00 hrs", "dates": "28 Abr, 5 May, 12 May" },
+    { "name": "Grupo 2", "schedule": "11:00 hrs", "dates": "Lun 18, Mar 19, Mié 20 May", "note": "Semana Autónoma" },
+    { "name": "Grupo 3", "schedule": "Viernes 12:00 hrs", "dates": "29 May, 5 Jun, 12 Jun" },
+    { "name": "Grupo 4", "schedule": "17:00 hrs", "dates": "13, 14, 15 Jul", "note": "Semana Recuperativas" }
+  ],
+  "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLScVipPmydqHRlHfpkxDXiyTql0IT0N3mdtdBrNH92LRCUUmBA/viewform",
+  "accent": {
+    "primary": "#3730A3",
+    "light": "#E0E7FF",
+    "bg": "#EEF2FF"
+  }
+}

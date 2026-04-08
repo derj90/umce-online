@@ -1,0 +1,36 @@
+{
+  "slug": "evaluacion-moodle",
+  "id": "2.2",
+  "nivel": 2,
+  "type": "Curso",
+  "title": "Evaluación en Moodle: cuestionarios, tareas y rúbricas",
+  "category": "Evaluación Digital",
+  "hours": 8,
+  "sync": 0,
+  "async": 8,
+  "description": "Aprende a diseñar y gestionar instrumentos de evaluación en Moodle: cuestionarios con retroalimentación automática, tareas con adjuntos, rúbricas de corrección y gestión del libro de calificaciones.",
+  "objetivo": "Usar las herramientas de evaluación de Moodle para diseñar procesos evaluativos alineados con los resultados de aprendizaje y que provean retroalimentación oportuna.",
+  "nivelCertificacion": {
+    "nombre": "Nivel II: Intermedio",
+    "descripcion": "Profundización pedagógica",
+    "horasRequeridas": 54
+  },
+  "aprendizajes": [
+    "Tipos de preguntas en cuestionarios Moodle: opción múltiple, verdadero/falso, ensayo, etc.",
+    "Configuración de intentos, penalizaciones, retroalimentación y restricciones de tiempo",
+    "Diseño de tareas con adjuntos y criterios de evaluación claramente definidos",
+    "Creación y uso de rúbricas y guías de calificación en Moodle",
+    "Gestión del libro de calificaciones: ponderaciones, categorías y exportación"
+  ],
+  "metodologia": "Curso autoformativo con tutoriales paso a paso, ejercicios prácticos en entorno de prueba de Moodle y guías de referencia rápida descargables.",
+  "requisitos": "Acceso a un curso en Moodle UMCE como editor. Se trabajará en entorno de prueba.",
+  "certificacion": "Al completar, se suman 8 horas hacia tu Certificación de Competencias Digitales (Nivel Intermedio: 54h requeridas).",
+  "groups": [],
+  "autoformativo": true,
+  "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLScVipPmydqHRlHfpkxDXiyTql0IT0N3mdtdBrNH92LRCUUmBA/viewform",
+  "accent": {
+    "primary": "#0033A1",
+    "light": "#DBEAFE",
+    "bg": "#EFF6FF"
+  }
+}

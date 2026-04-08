@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cargando curso... &mdash; Formación Docente UMCE</title>
+  <meta name="description" content="Curso del Plan de Formación Docente UMCE 2026">
+  <meta property="og:site_name" content="UMCE.online">
+  <meta property="og:type" content="website">
+  <link rel="canonical" id="canonical-link" href="https://umce.online/formacion-docente">
+
+  <!-- Inject slug from server -->
+  <!--CURSO_SLUG_INJECT-->
+
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+  <link rel="stylesheet" href="/shared/shared.css">
+
+  <style>
+    :root {
+      --accent-primary: #0033A1;
+      --accent-light: #DBEAFE;
+      --accent-bg: #EFF6FF;
+    }
+
+    /* Header compacto */
+    .curso-header {
+      background: var(--accent-primary);
+      position: relative;
+      overflow: hidden;
+      padding: 7rem 0 3.5rem;
+    }
+
+    #p5-header { position: absolute; inset: 0; z-index: 0; }
+    #p5-header canvas { display: block; width: 100% !important; height: 100% !important; }
+
+    .curso-header-content { position: relative; z-index: 10; }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.3rem 0.8rem;
+      border-radius: 9999px;
+      letter-spacing: 0.03em;
+    }
+    .badge-white { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+    .badge-ia { background: rgba(255,255,255,0.95); color: var(--accent-primary); }
+    .badge-nivel { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.25); }
+
+    /* Stats bar */
+    .stat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 9999px;
+      padding: 0.4rem 1rem;
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.9);
+      font-weight: 600;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb a { color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.2s; }
+    .breadcrumb a:hover { color: #fff; }
+    .breadcrumb span.sep { color: rgba(255,255,255,0.3); margin: 0 0.35rem; }
+    .breadcrumb span.current { color: rgba(255,255,255,0.85); }
+
+    /* Sections */
+    section { padding: 4rem 0; }
+    section:nth-child(even) { background: #F9FAFB; }
+
+    /* Learning items */
+    .learning-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #F3F4F6;
+    }
+    .learning-item:last-child { border-bottom: none; }
+    .check-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    /* Objetivo callout */
+    .objetivo-card {
+      background: var(--accent-bg);
+      border-left: 4px solid var(--accent-primary);
+      border-radius: 0 0.75rem 0.75rem 0;
+      padding: 1.25rem 1.5rem;
+    }
+
+    /* Group cards */
+    .group-card {
+      border: 1.5px solid #E5E7EB;
+      border-radius: 0.875rem;
+      padding: 1.5rem;
+      background: #fff;
+      transition: all 0.2s ease;
+    }
+    .group-card:hover {
+      border-color: var(--accent-primary);
+      box-shadow: 0 8px 24px -6px rgba(0, 51, 161, 0.12);
+      transform: translateY(-2px);
+    }
+    .group-number {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: var(--accent-light);
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* Certificación bar */
+    .cert-bar-track {
+      height: 0.625rem;
+      background: #E5E7EB;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .cert-bar-fill {
+      height: 100%;
+      background: var(--accent-primary);
+      border-radius: 9999px;
+      transition: width 1s ease;
+    }
+
+    /* Autoformativo badge */
+    .badge-auto {
+      background: #F0FDF4;
+      color: #15803D;
+      border: 1px solid #BBF7D0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.3rem 0.8rem;
+      border-radius: 9999px;
+    }
+
+    /* CTA final */
+    .cta-section {
+      background: var(--accent-primary);
+      color: #fff;
+      text-align: center;
+      padding: 4rem 0;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #FF9E18;
+      color: #001D5C;
+      font-weight: 800;
+      font-size: 1rem;
+      padding: 0.875rem 2rem;
+      border-radius: 0.625rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary:hover { background: #ffb340; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(255,158,24,0.35); }
+
+    .btn-outline-white {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: transparent;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.9375rem;
+      padding: 0.75rem 1.75rem;
+      border-radius: 0.625rem;
+      text-decoration: none;
+      border: 2px solid rgba(255,255,255,0.4);
+      transition: all 0.2s ease;
+    }
+    .btn-outline-white:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.7); }
+
+    .btn-group-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--accent-primary);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.875rem;
+      padding: 0.625rem 1.25rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn-group-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    /* No groups notice */
+    .notice-auto {
+      background: #F0F9FF;
+      border: 1.5px solid #BAE6FD;
+      border-radius: 0.875rem;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* Loading state */
+    #loading-state { display: flex; align-items: center; justify-content: center; min-height: 60vh; flex-direction: column; gap: 1rem; }
+    #page-content { display: none; }
+    .spinner { width: 2.5rem; height: 2.5rem; border: 3px solid #E5E7EB; border-top-color: #0033A1; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 640px) {
+      .curso-header { padding: 6rem 0 2.5rem; }
+      .stat-pill { font-size: 0.8125rem; }
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+  <div id="nav-placeholder"></div>
+
+  <!-- Loading state -->
+  <div id="loading-state" aria-live="polite">
+    <div class="spinner" role="status"></div>
+    <p class="text-gray-400 text-sm">Cargando curso...</p>
+  </div>
+
+  <!-- Page content (hidden until loaded) -->
+  <div id="page-content">
+
+    <!-- ===== HERO / HEADER ===== -->
+    <header class="curso-header" id="curso-header">
+      <div id="p5-header" data-variant="3"></div>
+      <div class="curso-header-content max-w-5xl mx-auto px-6">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb text-sm mb-5" id="breadcrumb">
+          <a href="/">Inicio</a>
+          <span class="sep">/</span>
+          <a href="/formacion-docente">Formación Docente</a>
+          <span class="sep">/</span>
+          <span class="current" id="bc-nivel">Nivel I</span>
+          <span class="sep">/</span>
+          <span class="current" id="bc-title">Curso</span>
+        </nav>
+
+        <!-- Badges -->
+        <div class="flex flex-wrap gap-2 mb-4" id="badges-container">
+          <span class="badge badge-white" id="badge-id">Curso 1.1</span>
+          <span class="badge badge-nivel" id="badge-nivel">Nivel I: Inicial</span>
+        </div>
+
+        <!-- Title -->
+        <h1 class="fade-up text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-4 max-w-3xl leading-tight" id="course-title">
+          Cargando...
+        </h1>
+
+        <!-- Description -->
+        <p class="fade-up text-white/80 text-lg max-w-2xl leading-relaxed mb-6" id="course-description"></p>
+
+        <!-- Stats -->
+        <div class="fade-up flex flex-wrap gap-3 mb-7" id="stats-bar">
+          <span class="stat-pill" id="stat-hours">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span id="stat-hours-text">--</span>
+          </span>
+          <span class="stat-pill" id="stat-modality">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.361a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            <span id="stat-modality-text">--</span>
+          </span>
+          <span class="stat-pill" id="stat-groups" style="display:none">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <span id="stat-groups-text">--</span>
+          </span>
+        </div>
+
+        <!-- CTA -->
+        <div class="fade-up flex flex-wrap gap-3">
+          <a id="hero-cta" href="#" class="btn-primary" target="_blank" rel="noopener">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            Inscribirme
+          </a>
+          <a href="/formacion-docente" class="btn-outline-white">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Ver plan completo
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== QUÉ VAS A APRENDER ===== -->
+    <section id="aprendizajes">
+      <div class="max-w-5xl mx-auto px-6">
+        <div class="grid md:grid-cols-2 gap-12 items-start">
+          <!-- Lista aprendizajes -->
+          <div>
+            <p class="text-sm font-bold uppercase tracking-wider mb-2" id="aprendizajes-label" style="color: var(--accent-primary);">Lo que aprenderás</p>
+            <h2 class="text-2xl md:text-3xl font-extrabold mb-6">Contenidos del curso</h2>
+            <div id="aprendizajes-list"></div>
+          </div>
+
+          <!-- Objetivo -->
+          <div>
+            <p class="text-sm font-bold uppercase tracking-wider mb-2" style="color: var(--accent-primary);">Objetivo</p>
+            <h2 class="text-2xl md:text-3xl font-extrabold mb-6">¿Qué lograré al terminar?</h2>
+            <div class="objetivo-card" id="objetivo-card">
+              <p class="text-gray-700 leading-relaxed" id="objetivo-text"></p>
+            </div>
+
+            <!-- Autoformativo notice -->
+            <div id="autoformativo-notice" class="mt-4" style="display:none">
+              <span class="badge-auto">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                Modalidad autoformativa
+              </span>
+              <p class="text-sm text-gray-500 mt-2">Puedes avanzar a tu propio ritmo, sin horarios fijos. El acceso está disponible durante todo el semestre.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== METODOLOGÍA Y REQUISITOS ===== -->
+    <section id="metodologia">
+      <div class="max-w-5xl mx-auto px-6">
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Metodología -->
+          <div class="md:col-span-2">
+            <p class="text-sm font-bold uppercase tracking-wider mb-2" style="color: var(--accent-primary);">Cómo funciona</p>
+            <h2 class="text-2xl md:text-3xl font-extrabold mb-4">Metodología</h2>
+            <p class="text-gray-600 leading-relaxed" id="metodologia-text"></p>
+          </div>
+
+          <!-- Aside: requisitos + certificación intro -->
+          <div class="space-y-5">
+            <!-- Requisitos -->
+            <div class="bg-white border border-gray-200 rounded-xl p-5">
+              <div class="flex items-center gap-2 mb-3">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span class="font-bold text-sm text-gray-700">Requisitos</span>
+              </div>
+              <p class="text-sm text-gray-600 leading-relaxed" id="requisitos-text"></p>
+            </div>
+
+            <!-- Certificación mini -->
+            <div class="rounded-xl p-5" id="cert-mini" style="background: var(--accent-bg);">
+              <div class="flex items-center gap-2 mb-3">
+                <svg class="w-5 h-5" style="color: var(--accent-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                <span class="font-bold text-sm" style="color: var(--accent-primary)">Certificación</span>
+              </div>
+              <p class="text-sm leading-relaxed" id="cert-mini-text" style="color: var(--accent-primary); opacity: 0.85;"></p>
+              <a href="/formacion-docente#certificacion" class="inline-block mt-3 text-xs font-bold underline" style="color: var(--accent-primary)">Ver ruta completa &rarr;</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FECHAS Y GRUPOS ===== -->
+    <section id="fechas">
+      <div class="max-w-5xl mx-auto px-6">
+        <div class="text-center mb-10">
+          <p class="text-sm font-bold uppercase tracking-wider mb-2" style="color: var(--accent-primary);">Disponibilidad</p>
+          <h2 class="text-2xl md:text-3xl font-extrabold">Fechas y grupos</h2>
+          <p class="text-gray-500 mt-2" id="grupos-subtitle"></p>
+        </div>
+
+        <!-- Groups grid -->
+        <div id="groups-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8"></div>
+
+        <!-- Notice if autoformativo -->
+        <div id="groups-auto-notice" class="notice-auto" style="display:none">
+          <div class="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center" style="background: var(--accent-bg);">
+            <svg class="w-6 h-6" style="color: var(--accent-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="font-bold text-lg text-gray-800 mb-2">Acceso flexible durante el semestre</h3>
+          <p class="text-gray-500 text-sm max-w-sm mx-auto">Este curso es autoformativo. Una vez inscrito/a recibirás el acceso y podrás completarlo a tu propio ritmo, sin horario fijo.</p>
+          <a id="groups-form-link" href="#" class="btn-primary mt-5 mx-auto" target="_blank" rel="noopener" style="width: fit-content; display: inline-flex;">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            Inscribirme
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CERTIFICACIÓN ===== -->
+    <section id="certificacion">
+      <div class="max-w-4xl mx-auto px-6">
+        <div class="text-center mb-8">
+          <p class="text-sm font-bold uppercase tracking-wider mb-2" style="color: var(--accent-primary);">Ruta de desarrollo</p>
+          <h2 class="text-2xl md:text-3xl font-extrabold">Certificación de Competencias Digitales</h2>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
+          <div class="flex flex-col md:flex-row gap-8 items-center">
+            <!-- Nivel info -->
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-extrabold text-lg" style="background: var(--accent-primary);" id="cert-nivel-badge">I</div>
+                <div>
+                  <p class="font-extrabold text-gray-900" id="cert-nivel-name">Nivel I: Inicial</p>
+                  <p class="text-sm text-gray-500" id="cert-nivel-desc">Iniciación y fundamentos</p>
+                </div>
+              </div>
+
+              <p class="text-gray-600 text-sm leading-relaxed mb-4" id="cert-description-full"></p>
+
+              <!-- Progress bar -->
+              <div class="mb-2">
+                <div class="flex justify-between text-xs text-gray-500 mb-1">
+                  <span id="cert-bar-label">Aporte de este curso</span>
+                  <span id="cert-bar-fraction"></span>
+                </div>
+                <div class="cert-bar-track">
+                  <div class="cert-bar-fill" id="cert-bar-fill" style="width: 0%"></div>
+                </div>
+              </div>
+              <p class="text-xs text-gray-400 mb-5" id="cert-bar-caption"></p>
+
+              <a href="/formacion-docente#certificacion" class="inline-flex items-center gap-1.5 text-sm font-bold" style="color: var(--accent-primary);">
+                Conoce la ruta de certificación completa
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+
+            <!-- Divider -->
+            <div class="hidden md:block w-px bg-gray-200 self-stretch"></div>
+
+            <!-- Niveles resumen -->
+            <div class="flex-shrink-0 w-full md:w-56">
+              <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Niveles del programa</p>
+              <div class="space-y-2">
+                <div class="flex items-center gap-2.5 text-sm" id="nivel-row-1">
+                  <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style="background: #0033A1;">I</div>
+                  <div>
+                    <p class="font-semibold text-gray-800">Nivel Inicial</p>
+                    <p class="text-xs text-gray-400">27h requeridas</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2.5 text-sm" id="nivel-row-2">
+                  <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style="background: #1E40AF;">II</div>
+                  <div>
+                    <p class="font-semibold text-gray-800">Nivel Intermedio</p>
+                    <p class="text-xs text-gray-400">54h requeridas</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2.5 text-sm" id="nivel-row-3">
+                  <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style="background: #E5E7EB; color: #6B7280;">III</div>
+                  <div>
+                    <p class="font-semibold text-gray-400">Nivel Avanzado</p>
+                    <p class="text-xs text-gray-300">Próximamente</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CTA FINAL ===== -->
+    <section class="cta-section" id="cta-final">
+      <div class="max-w-2xl mx-auto px-6">
+        <svg class="w-10 h-10 mx-auto mb-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        <h2 class="text-3xl font-extrabold mb-3" id="cta-title">¿Listo/a para inscribirte?</h2>
+        <p class="text-white/70 mb-7" id="cta-subtitle">Selecciona el grupo que mejor se adapta a tu horario y completa el formulario de inscripción.</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a id="cta-btn" href="#" class="btn-primary" target="_blank" rel="noopener">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            Inscribirme ahora
+          </a>
+        </div>
+        <p class="mt-6 text-white/50 text-sm">¿Tienes dudas? Escríbenos a <a href="mailto:udfv@umce.cl" class="underline text-white/70 hover:text-white">udfv@umce.cl</a></p>
+      </div>
+    </section>
+
+  </div><!-- /page-content -->
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/shared/shared.js"></script>
+  <script src="/shared/generative-header.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    // ----- Helpers -----
+    function qs(sel) { return document.querySelector(sel); }
+    function setText(sel, val) { var el = qs(sel); if (el) el.textContent = val; }
+    function setHTML(sel, val) { var el = qs(sel); if (el) el.innerHTML = val; }
+    function show(sel) { var el = qs(sel); if (el) el.style.display = ''; }
+    function hide(sel) { var el = qs(sel); if (el) el.style.display = 'none'; }
+
+    function applyAccent(accent) {
+      if (!accent) return;
+      document.documentElement.style.setProperty('--accent-primary', accent.primary || '#0033A1');
+      document.documentElement.style.setProperty('--accent-light', accent.light || '#DBEAFE');
+      document.documentElement.style.setProperty('--accent-bg', accent.bg || '#EFF6FF');
+    }
+
+    function renderCourse(c) {
+      // Apply accent colors
+      applyAccent(c.accent);
+
+      // Meta tags
+      document.title = c.title + ' \u2014 Formaci\u00f3n Docente UMCE 2026';
+      var metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute('content', c.description);
+      var metaOgTitle = document.querySelector('meta[property="og:title"]') || createMeta('property', 'og:title');
+      metaOgTitle.setAttribute('content', c.title + ' \u2014 UMCE');
+      var metaOgDesc = document.querySelector('meta[property="og:description"]') || createMeta('property', 'og:description');
+      metaOgDesc.setAttribute('content', c.description);
+      var canonical = document.getElementById('canonical-link');
+      if (canonical) canonical.setAttribute('href', 'https://umce.online/formacion-docente/curso/' + c.slug);
+
+      // Breadcrumb
+      setText('#bc-nivel', 'Nivel ' + (c.nivel === 1 ? 'I' : 'II'));
+      var titleShort = c.title.length > 40 ? c.title.substring(0, 38) + '\u2026' : c.title;
+      setText('#bc-title', titleShort);
+
+      // Badges
+      var typeLabel = c.type === 'Taller' ? 'Taller' : 'Curso';
+      setText('#badge-id', typeLabel + ' ' + c.id);
+      setText('#badge-nivel', c.nivelCertificacion ? c.nivelCertificacion.nombre : 'Nivel I');
+
+      if (c.category === 'IA') {
+        var badgesContainer = document.getElementById('badges-container');
+        var iaTag = document.createElement('span');
+        iaTag.className = 'badge badge-ia';
+        iaTag.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>IA';
+        badgesContainer.appendChild(iaTag);
+      }
+
+      // Title & description
+      setText('#course-title', c.title);
+      setText('#course-description', c.description);
+
+      // Stats
+      setText('#stat-hours-text', c.hours + ' horas totales');
+      var modalityParts = [];
+      if (c.sync > 0) modalityParts.push(c.sync + 'h sincr\u00f3nicas');
+      if (c.async > 0) modalityParts.push(c.async + 'h aut\u00f3nomas');
+      if (modalityParts.length === 0) modalityParts.push('Autoformativo');
+      setText('#stat-modality-text', modalityParts.join(' + '));
+      if (c.groups && c.groups.length > 0) {
+        show('#stat-groups');
+        setText('#stat-groups-text', c.groups.length + ' grupo' + (c.groups.length > 1 ? 's' : '') + ' disponible' + (c.groups.length > 1 ? 's' : ''));
+      }
+
+      // Hero CTA
+      var heroCta = document.getElementById('hero-cta');
+      if (heroCta) heroCta.href = c.formUrl;
+
+      // Aprendizajes
+      var list = document.getElementById('aprendizajes-list');
+      if (list && c.aprendizajes) {
+        list.innerHTML = c.aprendizajes.map(function (item) {
+          return '<div class="learning-item">' +
+            '<div class="check-icon" style="background: var(--accent-light);">' +
+            '<svg class="w-3.5 h-3.5" style="color: var(--accent-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>' +
+            '</div>' +
+            '<p class="text-gray-700 text-sm leading-relaxed">' + escapeHtml(item) + '</p>' +
+            '</div>';
+        }).join('');
+      }
+
+      // Objetivo
+      setText('#objetivo-text', c.objetivo);
+
+      // Autoformativo
+      if (c.autoformativo) {
+        show('#autoformativo-notice');
+      }
+
+      // Metodología
+      setText('#metodologia-text', c.metodologia);
+
+      // Requisitos
+      setText('#requisitos-text', c.requisitos);
+
+      // Cert mini
+      setText('#cert-mini-text', c.certificacion);
+
+      // Groups section
+      var horasRequeridas = (c.nivelCertificacion && c.nivelCertificacion.horasRequeridas) || (c.nivel === 1 ? 27 : 54);
+      var grupos = c.groups || [];
+      setText('#grupos-subtitle', grupos.length > 0
+        ? 'Elige el grupo que mejor se adapta a tu disponibilidad.'
+        : 'Este curso tiene disponibilidad flexible durante el semestre.');
+
+      var grid = document.getElementById('groups-grid');
+      if (grupos.length > 0) {
+        grid.innerHTML = grupos.map(function (g, i) {
+          return '<div class="group-card fade-up">' +
+            '<div class="flex items-start gap-3 mb-3">' +
+            '<div class="group-number">' + (i + 1) + '</div>' +
+            '<div><p class="font-bold text-gray-900">' + escapeHtml(g.name) + '</p>' +
+            (g.note ? '<span class="text-xs px-2 py-0.5 rounded-full font-semibold" style="background: var(--accent-light); color: var(--accent-primary);">' + escapeHtml(g.note) + '</span>' : '') +
+            '</div></div>' +
+            '<div class="space-y-1.5 mb-4">' +
+            '<div class="flex items-center gap-2 text-sm text-gray-600">' +
+            '<svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' +
+            escapeHtml(g.schedule) + '</div>' +
+            '<div class="flex items-start gap-2 text-sm text-gray-600">' +
+            '<svg class="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>' +
+            escapeHtml(g.dates) + '</div>' +
+            '</div>' +
+            '<a href="' + escapeHtml(c.formUrl) + '" class="btn-group-cta w-full justify-center" target="_blank" rel="noopener">' +
+            '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>' +
+            'Inscribirme en este grupo</a>' +
+            '</div>';
+        }).join('');
+      } else {
+        grid.style.display = 'none';
+        show('#groups-auto-notice');
+        var autoLink = document.getElementById('groups-form-link');
+        if (autoLink) autoLink.href = c.formUrl;
+      }
+
+      // Certificación section
+      var certNivel = c.nivelCertificacion || {};
+      var nivelRomano = c.nivel === 1 ? 'I' : 'II';
+      setText('#cert-nivel-badge', nivelRomano);
+      setText('#cert-nivel-name', certNivel.nombre || ('Nivel ' + nivelRomano));
+      setText('#cert-nivel-desc', certNivel.descripcion || '');
+      setText('#cert-description-full', c.certificacion);
+      var pct = Math.round((c.hours / horasRequeridas) * 100);
+      if (pct > 100) pct = 100;
+      setText('#cert-bar-fraction', c.hours + ' de ' + horasRequeridas + 'h');
+      setText('#cert-bar-caption', 'Necesitas completar cursos por un total de ' + horasRequeridas + ' horas para obtener la certificaci\u00f3n de ' + (certNivel.nombre || 'este nivel') + '.');
+      // Animate bar after paint
+      requestAnimationFrame(function () {
+        setTimeout(function () {
+          var bar = document.getElementById('cert-bar-fill');
+          if (bar) bar.style.width = pct + '%';
+        }, 300);
+      });
+
+      // CTA final
+      var ctaTitle = c.autoformativo
+        ? '\u00bfListo/a para comenzar?'
+        : '\u00bfListo/a para inscribirte?';
+      setText('#cta-title', ctaTitle);
+      var ctaSubtitle = c.autoformativo
+        ? 'Completa el formulario y recibe el acceso al curso autoformativo en tu correo institucional.'
+        : 'Selecciona el grupo que mejor se adapta a tu horario y completa el formulario de inscripci\u00f3n.';
+      setText('#cta-subtitle', ctaSubtitle);
+      var ctaBtn = document.getElementById('cta-btn');
+      if (ctaBtn) ctaBtn.href = c.formUrl;
+
+      // Show page
+      hide('#loading-state');
+      show('#page-content');
+      document.getElementById('page-content').style.display = 'block';
+
+      // Trigger fade-ups
+      setTimeout(function () {
+        var fadeEls = document.querySelectorAll('.fade-up');
+        fadeEls.forEach(function (el) { el.classList.add('visible'); });
+      }, 100);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function createMeta(attr, val) {
+      var m = document.createElement('meta');
+      m.setAttribute(attr, val);
+      document.head.appendChild(m);
+      return m;
+    }
+
+    function showError(msg) {
+      var ls = document.getElementById('loading-state');
+      if (ls) ls.innerHTML = '<div style="text-align:center;padding:2rem;color:#6B7280;"><p style="font-size:1.25rem;font-weight:700;color:#111827;margin-bottom:0.5rem;">Curso no encontrado</p><p style="font-size:0.875rem;">' + msg + '</p><a href="/formacion-docente" style="margin-top:1rem;display:inline-block;color:#0033A1;font-weight:600;text-decoration:underline;">Ver plan de formaci\u00f3n</a></div>';
+    }
+
+    // ----- Main: fetch JSON -----
+    var slug = window.CURSO_SLUG;
+    if (!slug) {
+      showError('No se especific\u00f3 un curso v\u00e1lido.');
+      return;
+    }
+
+    fetch('/formacion-docente/courses/' + encodeURIComponent(slug) + '.json')
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (data) {
+        renderCourse(data);
+      })
+      .catch(function (err) {
+        console.error('[FormacionDocente] Error cargando curso:', err);
+        showError('No se pudo cargar la informaci\u00f3n del curso. Int\u00e9ntalo m\u00e1s tarde.');
+      });
+
+  })();
+  </script>
+</body>
+</html>

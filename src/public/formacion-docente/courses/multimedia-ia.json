@@ -1,0 +1,39 @@
+{
+  "slug": "multimedia-ia",
+  "id": "2.5",
+  "nivel": 2,
+  "type": "Curso",
+  "title": "Producción Multimedia con apoyo de IA",
+  "category": "IA",
+  "hours": 8,
+  "sync": 3,
+  "async": 5,
+  "description": "Aprende a producir materiales multimedia de calidad —videos explicativos, podcasts, imágenes y presentaciones animadas— con el apoyo de herramientas de IA que simplifican el proceso creativo.",
+  "objetivo": "Producir recursos educativos multimedia usando IA como asistente creativo, mejorando la calidad y reduciendo el tiempo de producción.",
+  "nivelCertificacion": {
+    "nombre": "Nivel II: Intermedio",
+    "descripcion": "Profundización pedagógica",
+    "horasRequeridas": 54
+  },
+  "aprendizajes": [
+    "Producción de videos explicativos con IA: avatares, síntesis de voz y generación de guiones",
+    "Creación de podcasts educativos: grabación, edición y mejora con IA (ElevenLabs, Adobe Podcast)",
+    "Generación y edición de imágenes con IA para materiales educativos",
+    "Diseño de presentaciones animadas con Canva y herramientas de animación IA",
+    "Publicación y alojamiento de recursos multimedia en Moodle y YouTube"
+  ],
+  "metodologia": "Sesiones sincrónicas de demostración con práctica inmediata. Trabajo autónomo centrado en la producción de un recurso multimedia completo para el propio curso.",
+  "requisitos": "Haber completado el curso 1.2 (Canva) o tener experiencia con herramientas digitales de diseño. Se recomienda haber completado algún curso de IA del Nivel I.",
+  "certificacion": "Al completar, se suman 8 horas hacia tu Certificación de Competencias Digitales (Nivel Intermedio: 54h requeridas).",
+  "groups": [
+    { "name": "Grupo 1", "schedule": "Miércoles 16:00 hrs", "dates": "4 Jun, 11 Jun, 18 Jun" },
+    { "name": "Grupo 2", "schedule": "Lunes 15:00 hrs", "dates": "6 Jul, 13 Jul, 20 Jul" },
+    { "name": "Grupo 3", "schedule": "17:00 hrs", "dates": "13, 14, 15 Jul", "note": "Semana Recuperativas" }
+  ],
+  "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLScVipPmydqHRlHfpkxDXiyTql0IT0N3mdtdBrNH92LRCUUmBA/viewform",
+  "accent": {
+    "primary": "#3730A3",
+    "light": "#E0E7FF",
+    "bg": "#EEF2FF"
+  }
+}

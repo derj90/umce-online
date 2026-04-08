@@ -1,0 +1,35 @@
+{
+  "slug": "portafolios-digitales",
+  "id": "2.3",
+  "nivel": 2,
+  "type": "Curso",
+  "title": "Portafolios Digitales como Estrategia de Evaluación Auténtica",
+  "category": "Evaluación Digital",
+  "hours": 4,
+  "sync": 0,
+  "async": 4,
+  "description": "Explora el portafolio digital como instrumento de evaluación auténtica y reflexiva, y aprende a implementarlo en Moodle o en plataformas externas como evidencia del proceso de aprendizaje.",
+  "objetivo": "Diseñar e implementar portafolios digitales como estrategia evaluativa que documente el proceso y los logros de aprendizaje de los estudiantes.",
+  "nivelCertificacion": {
+    "nombre": "Nivel II: Intermedio",
+    "descripcion": "Profundización pedagógica",
+    "horasRequeridas": 54
+  },
+  "aprendizajes": [
+    "Fundamentos del portafolio digital como evaluación auténtica y reflexiva",
+    "Tipos de portafolio: de aprendizaje, de presentación y de evaluación",
+    "Implementación en Moodle (actividad Portfolio) y plataformas externas (Google Sites, Padlet)",
+    "Criterios de evaluación y retroalimentación de portafolios digitales"
+  ],
+  "metodologia": "Módulo autoformativo compacto con lecturas, ejemplos de portafolios reales y una actividad práctica de diseño de la estructura del portafolio para un curso propio.",
+  "requisitos": "Conocimientos básicos de Moodle como editor de curso.",
+  "certificacion": "Al completar, se suman 4 horas hacia tu Certificación de Competencias Digitales (Nivel Intermedio: 54h requeridas).",
+  "groups": [],
+  "autoformativo": true,
+  "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLScVipPmydqHRlHfpkxDXiyTql0IT0N3mdtdBrNH92LRCUUmBA/viewform",
+  "accent": {
+    "primary": "#0033A1",
+    "light": "#DBEAFE",
+    "bg": "#EFF6FF"
+  }
+}

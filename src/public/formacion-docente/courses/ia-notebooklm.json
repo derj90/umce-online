@@ -1,0 +1,39 @@
+{
+  "slug": "ia-notebooklm",
+  "id": "1.5",
+  "nivel": 1,
+  "type": "Curso",
+  "title": "NotebookLM: IA para investigación y gestión del conocimiento",
+  "category": "IA",
+  "hours": 8,
+  "sync": 2,
+  "async": 6,
+  "description": "Aprende a usar NotebookLM de Google para organizar fuentes bibliográficas, generar resúmenes inteligentes, crear podcasts educativos y apoyar procesos de investigación y preparación de clases.",
+  "objetivo": "Usar NotebookLM como herramienta de síntesis y gestión del conocimiento para mejorar la preparación de clases e investigación docente.",
+  "nivelCertificacion": {
+    "nombre": "Nivel I: Inicial",
+    "descripcion": "Iniciación y fundamentos",
+    "horasRequeridas": 27
+  },
+  "aprendizajes": [
+    "Carga y organización de fuentes en NotebookLM (PDF, artículos, videos, URLs)",
+    "Generación de resúmenes, preguntas de estudio y esquemas conceptuales automáticos",
+    "Creación de podcasts educativos a partir de materiales de curso",
+    "Uso de NotebookLM como asistente de investigación: citas y síntesis de literatura",
+    "Aplicaciones pedagógicas para compartir con estudiantes"
+  ],
+  "metodologia": "Sesiones prácticas sincrónicas con demostración en vivo. Trabajo autónomo centrado en aplicar NotebookLM a una unidad temática del propio curso del participante.",
+  "requisitos": "Cuenta Google activa (institucional o personal). No requiere experiencia previa con IA.",
+  "certificacion": "Al completar, se suman 8 horas hacia tu Certificación de Competencias Digitales (Nivel Inicial: 27h requeridas).",
+  "groups": [
+    { "name": "Grupo 1", "schedule": "Miércoles 15:00 hrs", "dates": "21 May, 28 May" },
+    { "name": "Grupo 2", "schedule": "Jueves 16:00 hrs", "dates": "19 Jun, 26 Jun" },
+    { "name": "Grupo 3", "schedule": "Martes 10:00 hrs", "dates": "7 Jul, 14 Jul" }
+  ],
+  "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLScVipPmydqHRlHfpkxDXiyTql0IT0N3mdtdBrNH92LRCUUmBA/viewform",
+  "accent": {
+    "primary": "#3730A3",
+    "light": "#E0E7FF",
+    "bg": "#EEF2FF"
+  }
+}

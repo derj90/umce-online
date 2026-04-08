@@ -1,0 +1,40 @@
+{
+  "slug": "ia-gemini",
+  "id": "1.4",
+  "nivel": 1,
+  "type": "Curso",
+  "title": "IA con Gemini: productividad y diseño instruccional",
+  "category": "IA",
+  "hours": 8,
+  "sync": 2,
+  "async": 6,
+  "description": "Profundiza en el uso de Gemini (Google) como asistente de IA para tareas docentes: planificación, retroalimentación, generación de rúbricas y materiales de estudio.",
+  "objetivo": "Usar Gemini de manera efectiva para optimizar tareas de planificación, diseño instruccional y evaluación en el contexto educativo universitario.",
+  "nivelCertificacion": {
+    "nombre": "Nivel I: Inicial",
+    "descripcion": "Iniciación y fundamentos",
+    "horasRequeridas": 27
+  },
+  "aprendizajes": [
+    "Capacidades específicas de Gemini y diferencias con otros modelos de IA",
+    "Generación de rúbricas, guías de estudio y esquemas de clase con IA",
+    "Técnicas de prompting avanzado para tareas docentes concretas",
+    "Integración de Gemini con Google Workspace (Docs, Slides, Classroom)",
+    "Validación crítica de los outputs de IA: cuándo confiar y cuándo revisar"
+  ],
+  "metodologia": "Taller práctico con sesiones sincrónicas centradas en casos de uso docente reales. Trabajo autónomo con ejercicios aplicados a la asignatura propia de cada participante.",
+  "requisitos": "Haber completado el curso 1.1 (Introducción a la IA Generativa) o tener experiencia básica con herramientas de IA.",
+  "certificacion": "Al completar, se suman 8 horas hacia tu Certificación de Competencias Digitales (Nivel Inicial: 27h requeridas).",
+  "groups": [
+    { "name": "Grupo 1", "schedule": "Martes 16:00 hrs", "dates": "20 May, 27 May" },
+    { "name": "Grupo 2", "schedule": "Jueves 17:00 hrs", "dates": "18 Jun, 25 Jun" },
+    { "name": "Grupo 3", "schedule": "Lunes 10:00 hrs", "dates": "6 Jul, 13 Jul" },
+    { "name": "Grupo 4", "schedule": "17:00 hrs", "dates": "14, 15 Jul", "note": "Semana Recuperativas" }
+  ],
+  "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLScVipPmydqHRlHfpkxDXiyTql0IT0N3mdtdBrNH92LRCUUmBA/viewform",
+  "accent": {
+    "primary": "#3730A3",
+    "light": "#E0E7FF",
+    "bg": "#EEF2FF"
+  }
+}

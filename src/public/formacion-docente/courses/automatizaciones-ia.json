@@ -1,0 +1,38 @@
+{
+  "slug": "automatizaciones-ia",
+  "id": "2.4",
+  "nivel": 2,
+  "type": "Curso",
+  "title": "Automatizaciones con IA para la gestión docente",
+  "category": "IA",
+  "hours": 4,
+  "sync": 1,
+  "async": 3,
+  "description": "Aprende a crear flujos de trabajo automatizados con herramientas de IA para reducir tareas repetitivas: respuestas automáticas, generación de informes, organización de información y más.",
+  "objetivo": "Implementar automatizaciones con IA que reduzcan la carga administrativa docente y liberen tiempo para actividades de mayor valor pedagógico.",
+  "nivelCertificacion": {
+    "nombre": "Nivel II: Intermedio",
+    "descripcion": "Profundización pedagógica",
+    "horasRequeridas": 54
+  },
+  "aprendizajes": [
+    "Identificación de tareas docentes repetitivas susceptibles de automatización",
+    "Uso de IA para generar plantillas reutilizables: correos, rúbricas, retroalimentaciones",
+    "Automatización con Google Workspace: macros, Scripts y formularios inteligentes",
+    "Integración básica de herramientas IA (ChatGPT, Gemini) con flujos de trabajo cotidianos",
+    "Consideraciones éticas de la automatización en contextos educativos"
+  ],
+  "metodologia": "Una sesión sincrónica introductoria y de definición del proyecto personal. Trabajo autónomo con guías paso a paso para implementar al menos una automatización en el contexto docente propio.",
+  "requisitos": "Haber completado algún curso de IA del Nivel I (1.1, 1.4 o 1.5). Cuenta Google institucional activa.",
+  "certificacion": "Al completar, se suman 4 horas hacia tu Certificación de Competencias Digitales (Nivel Intermedio: 54h requeridas).",
+  "groups": [
+    { "name": "Grupo 1", "schedule": "Martes 16:00 hrs", "dates": "3 Jun" },
+    { "name": "Grupo 2", "schedule": "Jueves 15:00 hrs", "dates": "10 Jul" }
+  ],
+  "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLScVipPmydqHRlHfpkxDXiyTql0IT0N3mdtdBrNH92LRCUUmBA/viewform",
+  "accent": {
+    "primary": "#3730A3",
+    "light": "#E0E7FF",
+    "bg": "#EEF2FF"
+  }
+}

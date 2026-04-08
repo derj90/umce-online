@@ -1,0 +1,39 @@
+{
+  "slug": "zoom",
+  "id": "1.6",
+  "nivel": 1,
+  "type": "Taller",
+  "title": "Zoom avanzado para clases sincrónicas efectivas",
+  "category": "Herramientas",
+  "hours": 2,
+  "sync": 2,
+  "async": 0,
+  "description": "Taller intensivo para dominar las funcionalidades avanzadas de Zoom REUNA en el contexto de clases universitarias: salas paralelas, pizarras, encuestas, grabación y gestión de participantes.",
+  "objetivo": "Usar con confianza las funciones avanzadas de Zoom REUNA para conducir sesiones sincrónicas dinámicas, interactivas y bien gestionadas.",
+  "nivelCertificacion": {
+    "nombre": "Nivel I: Inicial",
+    "descripcion": "Iniciación y fundamentos",
+    "horasRequeridas": 27
+  },
+  "aprendizajes": [
+    "Configuración óptima de Zoom para clases: audio, video, fondo y pantalla compartida",
+    "Uso de salas paralelas (breakout rooms) para trabajo grupal",
+    "Encuestas, Q&A y reacciones para aumentar la participación",
+    "Grabación, transcripción automática y gestión de grabaciones en la nube",
+    "Roles de co-anfitrión y gestión de participantes en sesiones grandes"
+  ],
+  "metodologia": "Taller 100% práctico en sesión sincrónica. Se simulan situaciones reales de clase para que cada participante practique las funciones en vivo.",
+  "requisitos": "Cuenta Zoom REUNA UMCE activa. Haber realizado al menos una clase virtual por Zoom.",
+  "certificacion": "Al completar, se suman 2 horas hacia tu Certificación de Competencias Digitales (Nivel Inicial: 27h requeridas).",
+  "groups": [
+    { "name": "Grupo 1", "schedule": "Martes 15:00 hrs", "dates": "6 May" },
+    { "name": "Grupo 2", "schedule": "Jueves 10:00 hrs", "dates": "12 Jun" },
+    { "name": "Grupo 3", "schedule": "Miércoles 16:00 hrs", "dates": "8 Jul" }
+  ],
+  "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLScVipPmydqHRlHfpkxDXiyTql0IT0N3mdtdBrNH92LRCUUmBA/viewform",
+  "accent": {
+    "primary": "#0033A1",
+    "light": "#DBEAFE",
+    "bg": "#EFF6FF"
+  }
+}
