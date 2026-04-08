@@ -6,6 +6,7 @@
   'use strict';
 
   const SESSION_KEY = 'umce_chat_session';
+  const CONSENT_KEY = 'umce_chat_beta_consent';
   let sessionToken = null;
   let sending = false;
   let userRole = 'public';
@@ -13,6 +14,7 @@
   let userName = null;
   let isFloating = true;
   let isOpen = false;
+  let hasConsent = false;
 
   // DOM refs
   let fab, fabOpen, fabClose, panel, messages, form, input, sendBtn, quickActions, closeBtn, roleBadge, subtitle;
@@ -62,8 +64,10 @@
     if (fab) fab.setAttribute('aria-label', isOpen ? 'Cerrar asistente' : 'Abrir asistente');
 
     if (isOpen) {
-      input.focus();
-      ensureSession();
+      if (hasConsent) {
+        input.focus();
+        ensureSession();
+      }
     }
   }
 
@@ -339,10 +343,50 @@
     detectMode();
     bindEvents();
     detectUserRole();
+    checkBetaConsent();
 
-    // Auto-init session for inline mode
-    if (!isFloating) {
+    // Auto-init session for inline mode (only if consent given)
+    if (!isFloating && hasConsent) {
       ensureSession();
+    }
+  }
+
+  // ==========================================
+  // Beta Consent Gate
+  // ==========================================
+  function checkBetaConsent() {
+    hasConsent = localStorage.getItem(CONSENT_KEY) === 'accepted';
+    var consentScreen = document.getElementById('chat-beta-consent');
+    var messagesEl = document.getElementById('chat-messages');
+    var quickActionsEl = document.getElementById('chat-quick-actions');
+    var inputArea = document.getElementById('chat-input-area');
+    var acceptBtn = document.getElementById('chat-accept-beta');
+
+    if (hasConsent) {
+      // Already consented — show chat, hide consent
+      if (consentScreen) consentScreen.style.display = 'none';
+      if (messagesEl) messagesEl.style.display = '';
+      if (quickActionsEl) quickActionsEl.style.display = '';
+      if (inputArea) inputArea.style.display = '';
+    } else {
+      // Show consent screen
+      if (consentScreen) consentScreen.style.display = '';
+      if (messagesEl) messagesEl.style.display = 'none';
+      if (quickActionsEl) quickActionsEl.style.display = 'none';
+      if (inputArea) inputArea.style.display = 'none';
+    }
+
+    if (acceptBtn) {
+      acceptBtn.addEventListener('click', function () {
+        localStorage.setItem(CONSENT_KEY, 'accepted');
+        hasConsent = true;
+        if (consentScreen) consentScreen.style.display = 'none';
+        if (messagesEl) messagesEl.style.display = '';
+        if (quickActionsEl) quickActionsEl.style.display = '';
+        if (inputArea) inputArea.style.display = '';
+        ensureSession();
+        if (input) input.focus();
+      });
     }
   }
 

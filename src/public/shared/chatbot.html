@@ -27,8 +27,33 @@
     <!-- User role badge (shown when logged in) -->
     <div id="chat-role-badge" class="px-4 py-1.5 text-[11px] text-center hidden"></div>
 
-    <!-- Messages -->
-    <div id="chat-messages" class="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+    <!-- Beta consent screen (shown before first use) -->
+    <div id="chat-beta-consent" class="flex-1 overflow-y-auto px-5 py-6">
+      <div class="mb-4">
+        <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: #FEF3C7; color: #92400E;">Beta</span>
+      </div>
+      <h4 class="font-heading font-bold text-base text-gray-900 mb-3">Antes de comenzar</h4>
+      <div class="space-y-3 text-xs text-gray-600 leading-relaxed">
+        <p>Este es un <strong>asistente automatizado con inteligencia artificial</strong> en fase de prueba. No es una persona.</p>
+        <p>Las respuestas se generan autom&aacute;ticamente y <strong>pueden contener errores</strong>. Para decisiones acad&eacute;micas importantes, consulta con tu docente o la secretar&iacute;a de tu departamento.</p>
+        <div class="bg-gray-50 rounded-lg p-3 space-y-2">
+          <p class="font-semibold text-gray-700">Sobre tus datos:</p>
+          <ul class="space-y-1.5 text-gray-500">
+            <li>Las conversaciones se registran para mejorar el servicio.</li>
+            <li>No se recopilan datos personales sensibles.</li>
+            <li>Los datos se procesan en servidores de la UDFV-UMCE.</li>
+            <li>Puedes solicitar la eliminaci&oacute;n de tu historial en cualquier momento escribiendo a <a href="mailto:udfv@umce.cl" class="text-umce-azul underline">udfv@umce.cl</a>.</li>
+          </ul>
+        </div>
+        <p class="text-[10px] text-gray-400">Al continuar, aceptas estos t&eacute;rminos. <a href="/privacidad" class="underline">Pol&iacute;tica de privacidad</a>.</p>
+      </div>
+      <button id="chat-accept-beta" class="mt-4 w-full bg-umce-azul text-white font-heading font-bold text-sm py-2.5 rounded-xl hover:opacity-90 transition-opacity">
+        Entendido, comenzar
+      </button>
+    </div>
+
+    <!-- Messages (hidden until consent accepted) -->
+    <div id="chat-messages" class="flex-1 overflow-y-auto px-4 py-4 space-y-3" style="display:none;">
       <div class="chat-msg assistant">
         <div class="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-gray-700 max-w-[85%]">
           &iexcl;Hola! Soy el asistente virtual de la UDFV. Puedo ayudarte con informaci&oacute;n sobre cursos, programas, plataformas Moodle y servicios. &iquest;En qu&eacute; te puedo ayudar?
@@ -36,8 +61,8 @@
       </div>
     </div>
 
-    <!-- Quick actions -->
-    <div id="chat-quick-actions" class="px-4 pb-2 flex flex-wrap gap-1.5 flex-shrink-0">
+    <!-- Quick actions (hidden until consent) -->
+    <div id="chat-quick-actions" class="px-4 pb-2 flex flex-wrap gap-1.5 flex-shrink-0" style="display:none;"
       <!-- Default chips — updated dynamically based on role -->
       <button class="chat-chip" data-role="public">&iquest;Qu&eacute; cursos hay?</button>
       <button class="chat-chip" data-role="public">&iquest;C&oacute;mo me inscribo?</button>
@@ -45,8 +70,8 @@
       <button class="chat-chip" data-role="public">Estado plataformas</button>
     </div>
 
-    <!-- Input -->
-    <div class="px-4 pb-4 flex-shrink-0">
+    <!-- Input (hidden until consent) -->
+    <div id="chat-input-area" class="px-4 pb-4 flex-shrink-0" style="display:none;"
       <form id="chat-form" class="flex gap-2">
         <input id="chat-input" type="text" placeholder="Escribe tu consulta..." maxlength="2000" autocomplete="off"
           class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-umce-azul focus:ring-1 focus:ring-umce-azul/20 transition-colors">
