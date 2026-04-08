@@ -363,30 +363,56 @@
           <span class="dot"></span>
           <span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10"/></svg>
-            3 &aacute;reas
+            2 niveles
           </span>
         </div>
       </div>
 
-      <!-- Tabs de &aacute;reas -->
+      <!-- Tabs de niveles -->
       <div class="fade-up flex flex-wrap gap-2 mb-8" id="area-tabs" role="tablist">
         <button class="area-tab active" data-area="todos" role="tab" aria-selected="true">Todos</button>
-        <button class="area-tab" data-area="ensenanza" role="tab" aria-selected="false">Ense&ntilde;anza con tecnolog&iacute;a</button>
-        <button class="area-tab" data-area="crecimiento" role="tab" aria-selected="false">Crecimiento profesional</button>
-        <button class="area-tab" data-area="herramientas" role="tab" aria-selected="false">Herramientas y ciudadan&iacute;a digital</button>
+        <button class="area-tab" data-area="nivel1" role="tab" aria-selected="false">Nivel I: Inicial</button>
+        <button class="area-tab" data-area="nivel2" role="tab" aria-selected="false">Nivel II: Intermedio</button>
       </div>
 
       <!-- Grid de cursos -->
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="cursos-grid">
 
-        <!-- === &Aacute;rea 1: Ense&ntilde;anza con tecnolog&iacute;a === -->
+        <!-- === Nivel I: Inicial === -->
 
-        <!-- Curso 1: Canva -->
-        <div class="fade-up fd-course-card" data-area="ensenanza">
+        <!-- 1.1 Introducci&oacute;n a la IA Generativa -->
+        <div class="fade-up fd-course-card" data-area="nivel1">
           <div class="h-2 w-full" style="background: linear-gradient(90deg, #0033A1, #4A90D9);"></div>
           <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-blue-400">1.1 &mdash; Nivel I</span>
+            </div>
             <div class="flex items-start justify-between gap-3 mb-3">
-              <h3 class="font-heading font-bold text-base leading-snug">Elaboraci&oacute;n de materiales educativos digitales (Canva)</h3>
+              <h3 class="font-heading font-bold text-base leading-snug">Introducci&oacute;n a la IA Generativa y principios fundamentales</h3>
+              <span class="hours-badge flex-shrink-0">19 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                4 grupos
+              </span>
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                3 h sinc. + 13 h aut.
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Conceptos esenciales de inteligencia artificial, aprendizaje autom&aacute;tico y herramientas generativas de uso general.</p>
+          </div>
+        </div>
+
+        <!-- 1.2 Canva -->
+        <div class="fade-up fd-course-card" data-area="nivel1">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #0033A1, #4A90D9);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-blue-400">1.2 &mdash; Nivel I</span>
+            </div>
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">Elaboraci&oacute;n de materiales educativos digitales &mdash; Canva</h3>
               <span class="hours-badge flex-shrink-0">10 h</span>
             </div>
             <div class="flex flex-wrap gap-1.5 mb-3">
@@ -402,77 +428,16 @@
           </div>
         </div>
 
-        <!-- Curso 2: Moodle evaluaci&oacute;n -->
-        <div class="fade-up fd-course-card" data-area="ensenanza">
+        <!-- 1.3 Ciudadan&iacute;a y &eacute;tica digital -->
+        <div class="fade-up fd-course-card" data-area="nivel1">
           <div class="h-2 w-full" style="background: linear-gradient(90deg, #0033A1, #4A90D9);"></div>
           <div class="p-5">
-            <div class="flex items-start justify-between gap-3 mb-3">
-              <h3 class="font-heading font-bold text-base leading-snug">Evaluaci&oacute;n y retroalimentaci&oacute;n asistida por tecnolog&iacute;a (Moodle)</h3>
-              <span class="hours-badge flex-shrink-0">8 h</span>
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-blue-400">1.3 &mdash; Nivel I</span>
             </div>
-            <div class="flex flex-wrap gap-1.5 mb-3">
-              <span class="inline-flex items-center text-xs bg-green-50 text-green-700 rounded-md px-2 py-0.5 font-medium">
-                100 % asincr&oacute;nico
-              </span>
-              <span class="inline-flex items-center text-xs bg-blue-50 text-blue-700 rounded-md px-2 py-0.5 font-medium">
-                Inicia 4 de mayo
-              </span>
-            </div>
-            <p class="text-sm text-gray-500 leading-relaxed">Instrumentos de evaluaci&oacute;n y retroalimentaci&oacute;n personalizada en Moodle.</p>
-          </div>
-        </div>
-
-        <!-- Curso 3: Multimedia con IA -->
-        <div class="fade-up fd-course-card" data-area="ensenanza">
-          <div class="h-2 w-full" style="background: linear-gradient(90deg, #0033A1, #4A90D9);"></div>
-          <div class="p-5">
-            <div class="flex items-start justify-between gap-3 mb-3">
-              <h3 class="font-heading font-bold text-base leading-snug">Elaboraci&oacute;n de material educativo multimedia con IA</h3>
-              <span class="hours-badge flex-shrink-0">8 h</span>
-            </div>
-            <div class="flex flex-wrap gap-1.5 mb-3">
-              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
-                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                3 grupos
-              </span>
-              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
-                3 h sinc. + 5 h aut.
-              </span>
-            </div>
-            <p class="text-sm text-gray-500 leading-relaxed">Creaci&oacute;n de contenido digital &mdash; audio, video, imagen &mdash; con apoyo de inteligencia artificial.</p>
-          </div>
-        </div>
-
-        <!-- === &Aacute;rea 2: Crecimiento profesional === -->
-
-        <!-- Curso 4: IA Generativa -->
-        <div class="fade-up fd-course-card" data-area="crecimiento">
-          <div class="h-2 w-full" style="background: linear-gradient(90deg, #7C3AED, #A78BFA);"></div>
-          <div class="p-5">
-            <div class="flex items-start justify-between gap-3 mb-3">
-              <h3 class="font-heading font-bold text-base leading-snug">Introducci&oacute;n a la IA generativa y principios fundamentales</h3>
-              <span class="hours-badge flex-shrink-0" style="background:#F5F3FF; color:#5B21B6;">19 h</span>
-            </div>
-            <div class="flex flex-wrap gap-1.5 mb-3">
-              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
-                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                4 grupos
-              </span>
-              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
-                3 h sinc. + 13 h aut.
-              </span>
-            </div>
-            <p class="text-sm text-gray-500 leading-relaxed">Conceptos esenciales de inteligencia artificial, aprendizaje autom&aacute;tico y herramientas generativas de uso general.</p>
-          </div>
-        </div>
-
-        <!-- Curso 5: Ciudadan&iacute;a &eacute;tica -->
-        <div class="fade-up fd-course-card" data-area="crecimiento">
-          <div class="h-2 w-full" style="background: linear-gradient(90deg, #7C3AED, #A78BFA);"></div>
-          <div class="p-5">
             <div class="flex items-start justify-between gap-3 mb-3">
               <h3 class="font-heading font-bold text-base leading-snug">Ciudadan&iacute;a y &eacute;tica digital en el aula</h3>
-              <span class="hours-badge flex-shrink-0" style="background:#F5F3FF; color:#5B21B6;">12 h</span>
+              <span class="hours-badge flex-shrink-0">12 h</span>
             </div>
             <div class="flex flex-wrap gap-1.5 mb-3">
               <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
@@ -487,13 +452,40 @@
           </div>
         </div>
 
-        <!-- Curso 6: NotebookLM -->
-        <div class="fade-up fd-course-card" data-area="crecimiento">
-          <div class="h-2 w-full" style="background: linear-gradient(90deg, #7C3AED, #A78BFA);"></div>
+        <!-- 1.4 Gemini -->
+        <div class="fade-up fd-course-card" data-area="nivel1">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #0033A1, #4A90D9);"></div>
           <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-blue-400">1.4 &mdash; Nivel I</span>
+            </div>
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">Herramientas de IA para la labor docente: Gemini</h3>
+              <span class="hours-badge flex-shrink-0">8 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                4 grupos
+              </span>
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                2 h sinc. + 6 h aut.
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Aplicaci&oacute;n pr&aacute;ctica de Google Gemini para la generaci&oacute;n de contenidos did&aacute;cticos.</p>
+          </div>
+        </div>
+
+        <!-- 1.5 NotebookLM -->
+        <div class="fade-up fd-course-card" data-area="nivel1">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #0033A1, #4A90D9);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-blue-400">1.5 &mdash; Nivel I</span>
+            </div>
             <div class="flex items-start justify-between gap-3 mb-3">
               <h3 class="font-heading font-bold text-base leading-snug">Herramientas de IA para docencia e investigaci&oacute;n: NotebookLM</h3>
-              <span class="hours-badge flex-shrink-0" style="background:#F5F3FF; color:#5B21B6;">8 h</span>
+              <span class="hours-badge flex-shrink-0">8 h</span>
             </div>
             <div class="flex flex-wrap gap-1.5 mb-3">
               <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
@@ -508,10 +500,85 @@
           </div>
         </div>
 
-        <!-- Curso 7: Portafolios digitales -->
-        <div class="fade-up fd-course-card" data-area="crecimiento">
+        <!-- 1.6 Zoom -->
+        <div class="fade-up fd-course-card" data-area="nivel1">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #0033A1, #4A90D9);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-blue-400">1.6 &mdash; Nivel I</span>
+            </div>
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">S&aacute;cale provecho a Zoom</h3>
+              <span class="hours-badge flex-shrink-0">2 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                3 grupos
+              </span>
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                Sincr&oacute;nico
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Aplicaciones y recursos de Zoom para las clases en l&iacute;nea.</p>
+          </div>
+        </div>
+
+        <!-- === Nivel II: Intermedio === -->
+
+        <!-- 2.1 Tutor&iacute;a virtual -->
+        <div class="fade-up fd-course-card" data-area="nivel2">
           <div class="h-2 w-full" style="background: linear-gradient(90deg, #7C3AED, #A78BFA);"></div>
           <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-purple-400">2.1 &mdash; Nivel II</span>
+            </div>
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">Formaci&oacute;n para la tutor&iacute;a virtual</h3>
+              <span class="hours-badge flex-shrink-0" style="background:#F5F3FF; color:#5B21B6;">15 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs bg-green-50 text-green-700 rounded-md px-2 py-0.5 font-medium">
+                100 % asincr&oacute;nico
+              </span>
+              <span class="inline-flex items-center text-xs bg-blue-50 text-blue-700 rounded-md px-2 py-0.5 font-medium">
+                Inicia 20 de abril
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Competencias para el desempe&ntilde;o como tutor virtual: estrategias pedag&oacute;gicas, comunicaci&oacute;n, tecnolog&iacute;as y evaluaci&oacute;n en entornos en l&iacute;nea.</p>
+          </div>
+        </div>
+
+        <!-- 2.2 Moodle evaluaci&oacute;n -->
+        <div class="fade-up fd-course-card" data-area="nivel2">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #7C3AED, #A78BFA);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-purple-400">2.2 &mdash; Nivel II</span>
+            </div>
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">Evaluaci&oacute;n y retroalimentaci&oacute;n asistida por tecnolog&iacute;a &mdash; Moodle</h3>
+              <span class="hours-badge flex-shrink-0" style="background:#F5F3FF; color:#5B21B6;">8 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs bg-green-50 text-green-700 rounded-md px-2 py-0.5 font-medium">
+                100 % asincr&oacute;nico
+              </span>
+              <span class="inline-flex items-center text-xs bg-blue-50 text-blue-700 rounded-md px-2 py-0.5 font-medium">
+                Inicia 4 de mayo
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Instrumentos de evaluaci&oacute;n y retroalimentaci&oacute;n personalizada en Moodle.</p>
+          </div>
+        </div>
+
+        <!-- 2.3 Portafolios digitales -->
+        <div class="fade-up fd-course-card" data-area="nivel2">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #7C3AED, #A78BFA);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-purple-400">2.3 &mdash; Nivel II</span>
+            </div>
             <div class="flex items-start justify-between gap-3 mb-3">
               <h3 class="font-heading font-bold text-base leading-snug">Portafolios digitales para pr&aacute;ctica reflexiva</h3>
               <span class="hours-badge flex-shrink-0" style="background:#F5F3FF; color:#5B21B6;">4 h</span>
@@ -528,77 +595,16 @@
           </div>
         </div>
 
-        <!-- === &Aacute;rea 3: Herramientas y ciudadan&iacute;a digital === -->
-
-        <!-- Curso 8: Gemini -->
-        <div class="fade-up fd-course-card" data-area="herramientas">
-          <div class="h-2 w-full" style="background: linear-gradient(90deg, #EA580C, #FBBF24);"></div>
+        <!-- 2.4 Automatizaciones -->
+        <div class="fade-up fd-course-card" data-area="nivel2">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #7C3AED, #A78BFA);"></div>
           <div class="p-5">
-            <div class="flex items-start justify-between gap-3 mb-3">
-              <h3 class="font-heading font-bold text-base leading-snug">Herramientas de IA para la labor docente: Gemini</h3>
-              <span class="hours-badge flex-shrink-0" style="background:#FFF7ED; color:#C2410C;">8 h</span>
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-purple-400">2.4 &mdash; Nivel II</span>
             </div>
-            <div class="flex flex-wrap gap-1.5 mb-3">
-              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
-                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                4 grupos
-              </span>
-              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
-                2 h sinc. + 6 h aut.
-              </span>
-            </div>
-            <p class="text-sm text-gray-500 leading-relaxed">Aplicaci&oacute;n pr&aacute;ctica de Google Gemini para la generaci&oacute;n de contenidos did&aacute;cticos.</p>
-          </div>
-        </div>
-
-        <!-- Curso 9: Zoom -->
-        <div class="fade-up fd-course-card" data-area="herramientas">
-          <div class="h-2 w-full" style="background: linear-gradient(90deg, #EA580C, #FBBF24);"></div>
-          <div class="p-5">
-            <div class="flex items-start justify-between gap-3 mb-3">
-              <h3 class="font-heading font-bold text-base leading-snug">S&aacute;cale provecho a Zoom</h3>
-              <span class="hours-badge flex-shrink-0" style="background:#FFF7ED; color:#C2410C;">2 h</span>
-            </div>
-            <div class="flex flex-wrap gap-1.5 mb-3">
-              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
-                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                3 grupos
-              </span>
-              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
-                Sincr&oacute;nico
-              </span>
-            </div>
-            <p class="text-sm text-gray-500 leading-relaxed">Aplicaciones y recursos de Zoom para las clases en l&iacute;nea.</p>
-          </div>
-        </div>
-
-        <!-- Curso 10: Tutor&iacute;a virtual -->
-        <div class="fade-up fd-course-card" data-area="herramientas">
-          <div class="h-2 w-full" style="background: linear-gradient(90deg, #EA580C, #FBBF24);"></div>
-          <div class="p-5">
-            <div class="flex items-start justify-between gap-3 mb-3">
-              <h3 class="font-heading font-bold text-base leading-snug">Formaci&oacute;n para la tutor&iacute;a virtual</h3>
-              <span class="hours-badge flex-shrink-0" style="background:#FFF7ED; color:#C2410C;">15 h</span>
-            </div>
-            <div class="flex flex-wrap gap-1.5 mb-3">
-              <span class="inline-flex items-center text-xs bg-green-50 text-green-700 rounded-md px-2 py-0.5 font-medium">
-                100 % asincr&oacute;nico
-              </span>
-              <span class="inline-flex items-center text-xs bg-blue-50 text-blue-700 rounded-md px-2 py-0.5 font-medium">
-                Inicia 20 de abril
-              </span>
-            </div>
-            <p class="text-sm text-gray-500 leading-relaxed">Competencias para el desempe&ntilde;o como tutor virtual: estrategias pedag&oacute;gicas, comunicaci&oacute;n, tecnolog&iacute;as y evaluaci&oacute;n en entornos en l&iacute;nea.</p>
-          </div>
-        </div>
-
-        <!-- Curso 11: Automatizaciones -->
-        <div class="fade-up fd-course-card" data-area="herramientas">
-          <div class="h-2 w-full" style="background: linear-gradient(90deg, #EA580C, #FBBF24);"></div>
-          <div class="p-5">
             <div class="flex items-start justify-between gap-3 mb-3">
               <h3 class="font-heading font-bold text-base leading-snug">Automatizaciones con IA en el proceso docente</h3>
-              <span class="hours-badge flex-shrink-0" style="background:#FFF7ED; color:#C2410C;">4 h</span>
+              <span class="hours-badge flex-shrink-0" style="background:#F5F3FF; color:#5B21B6;">4 h</span>
             </div>
             <div class="flex flex-wrap gap-1.5 mb-3">
               <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
@@ -610,6 +616,30 @@
               </span>
             </div>
             <p class="text-sm text-gray-500 leading-relaxed">Funciones avanzadas de herramientas de IA para la automatizaci&oacute;n de tareas acad&eacute;micas.</p>
+          </div>
+        </div>
+
+        <!-- 2.5 Multimedia con IA -->
+        <div class="fade-up fd-course-card" data-area="nivel2">
+          <div class="h-2 w-full" style="background: linear-gradient(90deg, #7C3AED, #A78BFA);"></div>
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-purple-400">2.5 &mdash; Nivel II</span>
+            </div>
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-heading font-bold text-base leading-snug">Elaboraci&oacute;n de material educativo multimedia con IA</h3>
+              <span class="hours-badge flex-shrink-0" style="background:#F5F3FF; color:#5B21B6;">8 h</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                3 grupos
+              </span>
+              <span class="inline-flex items-center text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5 font-medium">
+                3 h sinc. + 5 h aut.
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Creaci&oacute;n de contenido digital &mdash; audio, video, imagen &mdash; con apoyo de inteligencia artificial.</p>
           </div>
         </div>
 
@@ -693,6 +723,34 @@
                 <p class="text-sm text-gray-600 leading-relaxed">Informe de reflexi&oacute;n cr&iacute;tica sobre el dominio del conocimiento tecnopedagog&oacute;gico del contenido (TPACK).</p>
               </div>
             </div>
+            <!-- Bloque expandible: gu&iacute;a de evidencia Inicial -->
+            <details class="mt-3 bg-blue-50/50 border border-blue-100 rounded-xl overflow-hidden">
+              <summary class="px-4 py-3 cursor-pointer text-sm font-semibold text-[#0033A1] flex items-center gap-2 hover:bg-blue-50 list-none">
+                <svg class="w-4 h-4 flex-shrink-0 transition-transform" style="transform: rotate(0deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+                &iquest;C&oacute;mo presento mi evidencia?
+              </summary>
+              <div class="px-4 pb-4 pt-1 text-sm text-gray-600 space-y-3">
+                <div>
+                  <p class="font-semibold text-gray-700 mb-1">&iquest;Qu&eacute; es?</p>
+                  <p>Un documento breve (1&ndash;2 p&aacute;ginas) donde reflexionas sobre c&oacute;mo has integrado las herramientas digitales aprendidas en tu pr&aacute;ctica docente. El informe debe dar cuenta de la articulaci&oacute;n entre tu conocimiento pedag&oacute;gico, disciplinar y tecnol&oacute;gico (TPACK).</p>
+                </div>
+                <div>
+                  <p class="font-semibold text-gray-700 mb-1">&iquest;Qu&eacute; debe contener?</p>
+                  <ul class="list-disc list-inside space-y-1 text-gray-500">
+                    <li><strong>Contexto:</strong> en qu&eacute; asignatura y con qu&eacute; estudiantes trabajas</li>
+                    <li><strong>Herramientas:</strong> qu&eacute; tecnolog&iacute;as integraste y por qu&eacute; las elegiste</li>
+                    <li><strong>Reflexi&oacute;n:</strong> c&oacute;mo cambi&oacute; tu pr&aacute;ctica docente, qu&eacute; resultados observaste</li>
+                    <li><strong>Proyecci&oacute;n:</strong> qu&eacute; har&iacute;as diferente o qu&eacute; quieres seguir explorando</li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="font-semibold text-gray-700 mb-1">&iquest;C&oacute;mo se presenta?</p>
+                  <p>Formato libre (documento Word, PDF o publicaci&oacute;n en portafolio digital). Se entrega a la UDA al solicitar la certificaci&oacute;n.</p>
+                </div>
+              </div>
+            </details>
           </div>
         </div>
 
@@ -719,6 +777,34 @@
                 <p class="text-sm text-gray-600 leading-relaxed">Portafolio digital con recursos elaborados, planificaciones, instrumentos de evaluaci&oacute;n y evidencias de retroalimentaci&oacute;n mediadas por TIC.</p>
               </div>
             </div>
+            <!-- Bloque expandible: gu&iacute;a de evidencia Intermedio -->
+            <details class="mt-3 bg-purple-50/50 border border-purple-100 rounded-xl overflow-hidden">
+              <summary class="px-4 py-3 cursor-pointer text-sm font-semibold text-purple-700 flex items-center gap-2 hover:bg-purple-50 list-none">
+                <svg class="w-4 h-4 flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+                &iquest;C&oacute;mo presento mi evidencia?
+              </summary>
+              <div class="px-4 pb-4 pt-1 text-sm text-gray-600 space-y-3">
+                <div>
+                  <p class="font-semibold text-gray-700 mb-1">&iquest;Qu&eacute; es?</p>
+                  <p>Una colecci&oacute;n organizada de evidencias que demuestren c&oacute;mo integras tecnolog&iacute;as en tu docencia. Puede elaborarse en Google Sites, un blog u otra plataforma digital.</p>
+                </div>
+                <div>
+                  <p class="font-semibold text-gray-700 mb-1">&iquest;Qu&eacute; debe contener?</p>
+                  <ul class="list-disc list-inside space-y-1 text-gray-500">
+                    <li>Recursos educativos digitales que hayas creado (presentaciones, infograf&iacute;as, videos)</li>
+                    <li>Planificaciones de ense&ntilde;anza que integren TIC</li>
+                    <li>Instrumentos de evaluaci&oacute;n mediados por tecnolog&iacute;a</li>
+                    <li>Ejemplos de retroalimentaci&oacute;n entregada a estudiantes mediante plataformas digitales</li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="font-semibold text-gray-700 mb-1">&iquest;C&oacute;mo se presenta?</p>
+                  <p>Enlace p&uacute;blico al portafolio digital. Se entrega a la UDA al solicitar la certificaci&oacute;n.</p>
+                </div>
+              </div>
+            </details>
           </div>
         </div>
 
@@ -744,6 +830,34 @@
                 <p class="text-sm text-gray-600 leading-relaxed">Trayectoria documentada con proyectos de innovaci&oacute;n educativa, publicaciones, mentor&iacute;as, asesor&iacute;as o liderazgo en iniciativas de transformaci&oacute;n digital.</p>
               </div>
             </div>
+            <!-- Bloque expandible: gu&iacute;a de evidencia Avanzado -->
+            <details class="mt-3 bg-amber-50/50 border border-amber-100 rounded-xl overflow-hidden">
+              <summary class="px-4 py-3 cursor-pointer text-sm font-semibold text-amber-700 flex items-center gap-2 hover:bg-amber-50 list-none">
+                <svg class="w-4 h-4 flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+                &iquest;C&oacute;mo presento mi evidencia?
+              </summary>
+              <div class="px-4 pb-4 pt-1 text-sm text-gray-600 space-y-3">
+                <div>
+                  <p class="font-semibold text-gray-700 mb-1">&iquest;Qu&eacute; es?</p>
+                  <p>Un documento o portafolio que acredite tu rol como referente en integraci&oacute;n de tecnolog&iacute;as digitales en la docencia universitaria.</p>
+                </div>
+                <div>
+                  <p class="font-semibold text-gray-700 mb-1">&iquest;Qu&eacute; debe contener? <span class="font-normal text-gray-400">(al menos dos de los siguientes)</span></p>
+                  <ul class="list-disc list-inside space-y-1 text-gray-500">
+                    <li>Proyectos de innovaci&oacute;n educativa implementados</li>
+                    <li>Publicaciones o presentaciones sobre uso de TIC en docencia</li>
+                    <li>Mentor&iacute;as o asesor&iacute;as a colegas en integraci&oacute;n digital</li>
+                    <li>Liderazgo en iniciativas institucionales de transformaci&oacute;n digital</li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="font-semibold text-gray-700 mb-1">&iquest;C&oacute;mo se presenta?</p>
+                  <p>Documento consolidado o portafolio digital con evidencias verificables. Se entrega a la UDA al solicitar la certificaci&oacute;n.</p>
+                </div>
+              </div>
+            </details>
           </div>
         </div>
 
