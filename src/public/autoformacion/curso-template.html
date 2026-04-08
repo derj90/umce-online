@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cargando curso... — UMCE.online</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/shared/tailwind.min.css">
   <style>
     :root {
@@ -24,6 +24,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', system-ui, sans-serif; background: var(--accent-bg); color: var(--text); }
     .font-heading { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    .font-display { font-family: 'Archivo', system-ui, sans-serif; }
 
     /* ============================================================
        LAYOUT
@@ -112,7 +113,7 @@
       transition: background 0.15s;
     }
     .sidebar-item:hover { background: var(--accent-50); }
-    .sidebar-item.active { background: var(--accent-100); color: var(--accent-900); font-weight: 600; }
+    .sidebar-item.active { background: var(--accent-100); color: var(--accent-900); font-weight: 600; border-left: 3px solid var(--accent-600); }
     .sidebar-item.completed { color: var(--accent-600); }
 
     .check {
@@ -145,6 +146,19 @@
     .sidebar-footer a:hover { color: var(--accent-700); }
 
     /* ============================================================
+       SIDEBAR COLLAPSIBLE MODULES
+    ============================================================ */
+    .sidebar-module-group { margin-bottom: 0.25rem; }
+    .sidebar-module-toggle { display: flex; align-items: center; gap: 0.5rem; width: 100%; padding: 0.5rem 0.75rem; border: none; background: transparent; cursor: pointer; border-radius: 8px; transition: background 0.15s; }
+    .sidebar-module-toggle:hover { background: var(--accent-50); }
+    .sidebar-module-toggle-label { font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-secondary); flex: 1; text-align: left; }
+    .sidebar-module-toggle-chevron { width: 14px; height: 14px; color: #9ca3af; transition: transform 0.2s; }
+    .sidebar-module-group.is-open .sidebar-module-toggle-chevron { transform: rotate(180deg); }
+    .sidebar-module-toggle-progress { font-size: 0.625rem; font-weight: 600; color: var(--accent-600); background: var(--accent-50); padding: 0.1rem 0.375rem; border-radius: 999px; }
+    .sidebar-module-items { overflow: hidden; transition: max-height 0.25s ease, opacity 0.2s; max-height: 0; opacity: 0; }
+    .sidebar-module-group.is-open .sidebar-module-items { max-height: 2000px; opacity: 1; }
+
+    /* ============================================================
        PROGRESS BAR
     ============================================================ */
     .progress-meta {
@@ -155,7 +169,7 @@
       margin-bottom: 0.25rem;
     }
     .progress-bar { height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden; }
-    .progress-bar-fill { height: 100%; background: var(--accent-600); border-radius: 2px; transition: width 0.3s ease; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-600), var(--accent-700)); border-radius: 2px; transition: width 0.5s ease; }
 
     /* ============================================================
        MOBILE HEADER
@@ -203,6 +217,24 @@
     .slide-body img { max-width: 100%; height: auto; border-radius: 8px; margin: 1rem 0; }
     .slide-body .video-embed { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; margin: 1rem 0; }
     .slide-body .video-embed iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+
+    /* ============================================================
+       PROSE-EDU
+    ============================================================ */
+    .prose-edu {
+      font-size: 17px;
+      line-height: 1.75;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .prose-edu h2 { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--accent-900); margin: 2rem 0 0.75rem; }
+    .prose-edu h3 { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 1.125rem; font-weight: 700; color: var(--accent-900); margin: 1.5rem 0 0.5rem; }
+    .prose-edu p { margin-bottom: 1.125rem; }
+    .prose-edu ul, .prose-edu ol { padding-left: 1.5rem; margin-bottom: 1.125rem; }
+    .prose-edu li { margin-bottom: 0.5rem; }
+    .prose-edu strong { color: var(--accent-900); font-weight: 600; }
+    .prose-edu blockquote { border-left: 3px solid var(--accent-600); padding: 0.75rem 1rem; background: var(--accent-50); border-radius: 0 8px 8px 0; font-style: italic; margin: 1.25rem 0; }
+    .prose-edu img { max-width: 100%; border-radius: 10px; margin: 1.25rem 0; }
 
     /* ============================================================
        NAV BUTTONS
@@ -355,6 +387,54 @@
       font-size: 0.8125rem;
       color: var(--text-secondary);
     }
+
+    /* ============================================================
+       QUIZ DOTS & OPTION LETTERS
+    ============================================================ */
+    .quiz-dots { display: flex; gap: 0.3rem; margin-bottom: 1rem; }
+    .quiz-dot { width: 8px; height: 8px; border-radius: 50%; background: #e5e7eb; transition: all 0.2s; }
+    .quiz-dot.is-active { background: var(--accent-600); transform: scale(1.3); }
+    .quiz-dot.is-correct { background: #22c55e; }
+    .quiz-dot.is-incorrect { background: #ef4444; }
+
+    .quiz-option { display: flex; align-items: flex-start; gap: 0.75rem; }
+    .quiz-option-letter { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #d1d5db; display: flex; align-items: center; justify-content: center; font-size: 0.6875rem; font-weight: 700; flex-shrink: 0; transition: all 0.15s; }
+    .quiz-option.selected .quiz-option-letter { background: var(--accent-600); border-color: var(--accent-600); color: white; }
+    .quiz-option.correct .quiz-option-letter { background: #22c55e; border-color: #22c55e; color: white; }
+    .quiz-option.incorrect .quiz-option-letter { background: #ef4444; border-color: #ef4444; color: white; }
+
+    .quiz-result-score { font-family: 'Archivo', system-ui, sans-serif; font-size: 2.5rem; font-weight: 800; line-height: 1; margin-bottom: 0.25rem; }
+
+    /* ============================================================
+       SLIDE HEADER CONTEXT
+    ============================================================ */
+    .slide-header { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: #9ca3af; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+    .slide-header-module { color: var(--accent-600); font-weight: 600; }
+    .slide-header-sep { opacity: 0.5; }
+    .slide-header-counter { background: #f3f4f6; padding: 0.125rem 0.5rem; border-radius: 999px; }
+    .slide-header-time { display: flex; align-items: center; gap: 0.25rem; color: var(--accent-600); background: var(--accent-50); padding: 0.125rem 0.5rem; border-radius: 999px; border: 1px solid var(--accent-100); }
+
+    /* ============================================================
+       COMPLETION SCREEN ANIMATION
+    ============================================================ */
+    .completion-screen .big-check { animation: badge-pop 0.5s cubic-bezier(.34,1.56,.64,1) both; }
+    @keyframes badge-pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .confetti-strip { position: fixed; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, var(--accent-600), var(--accent-700), var(--accent-600)); background-size: 200% 100%; animation: shimmer 1.5s ease-in-out; z-index: 9999; pointer-events: none; }
+    @keyframes shimmer { 0% { background-position: -200% 0; opacity: 1; } 70% { background-position: 200% 0; opacity: 1; } 100% { background-position: 200% 0; opacity: 0; } }
+
+    /* ============================================================
+       CALLOUTS
+    ============================================================ */
+    .callout { display: flex; gap: 0.875rem; padding: 1rem 1.125rem; border-radius: 10px; margin: 1.5rem 0; border-left: 4px solid; }
+    .callout-icon { font-size: 1.125rem; flex-shrink: 0; }
+    .callout-body { flex: 1; }
+    .callout-title { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.35rem; }
+    .callout-text { font-size: 0.9375rem; line-height: 1.65; }
+    .callout-info { background: #eff6ff; border-left-color: #3b82f6; color: #1e3a5f; }
+    .callout-tip { background: #f0fdf4; border-left-color: #22c55e; color: #14532d; }
+    .callout-warning { background: #fff7ed; border-left-color: #f97316; color: #7c2d12; }
+    .callout-concept { background: #faf5ff; border-left-color: #a855f7; color: #3b0764; }
+    .callout-example { background: #f8fafc; border-left-color: #94a3b8; color: #334155; }
   </style>
 </head>
 <body>
@@ -412,6 +492,10 @@
 
   <!-- xAPI tracker (reutilizable, ya existe) -->
   <script src="/autoformacion/js/xapi-tracker-autoformacion.js"></script>
+  <!-- Shared canvas & accessibility widget -->
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js" defer></script>
+  <script src="/shared/watercolor-canvas.js" defer></script>
+  <script src="/shared/accessibility-widget.js" defer></script>
   <!-- Accesibilidad DUA (portal-wide) -->
   <script src="/accesibilidad-dua.js" defer></script>
 
@@ -572,34 +656,45 @@
         var mod = getModule(mKey);
         if (!mod) return;
 
-        // Encabezado del módulo (solo el label corto: "Módulo 1")
-        var shortLabel = mod.fullTitle
-          ? mod.fullTitle.split(':')[0].trim()
-          : (mod.title || mKey);
-        html += '<div class="sidebar-module-title">' + escHtml(shortLabel) + '</div>';
+        var shortLabel = mod.fullTitle ? mod.fullTitle.split(':')[0].trim() : (mod.title || mKey);
+        var isCurrentModule = (mKey === currentModule);
+        var moduleProgress = calculateModuleProgress(mKey, mod);
+
+        html += '<div class="sidebar-module-group' + (isCurrentModule ? ' is-open' : '') + '" data-module-group="' + mKey + '">';
+        html += '<button class="sidebar-module-toggle" onclick="toggleModuleGroup(\'' + mKey + '\')">';
+        html += '<span class="sidebar-module-toggle-label">' + escHtml(shortLabel) + '</span>';
+        html += '<span class="sidebar-module-toggle-progress">' + moduleProgress + '%</span>';
+        html += '<svg class="sidebar-module-toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>';
+        html += '</button>';
+        html += '<div class="sidebar-module-items">';
 
         mod.slides.forEach(function(slide, idx) {
           var slideKey = mKey + '_' + idx;
           var isViewed = !!progress[slideKey];
           var isActive = (mKey === currentModule && idx === currentSlideIndex);
-
-          var classes = 'sidebar-item';
-          if (isActive)  classes += ' active';
-          if (isViewed)  classes += ' completed';
-
-          html += '<div class="' + classes + '"'
-               + ' data-module="' + mKey + '" data-slide="' + idx + '"'
-               + ' onclick="navigateTo(\'' + mKey + '\',' + idx + ')"'
-               + ' role="button" tabindex="0"'
-               + ' onkeydown="if(event.key===\'Enter\'||event.key===\' \')navigateTo(\'' + mKey + '\',' + idx + ')"'
-               + '>';
+          var classes = 'sidebar-item' + (isActive ? ' active' : '') + (isViewed ? ' completed' : '');
+          html += '<div class="' + classes + '" onclick="navigateTo(\'' + mKey + '\',' + idx + ')" role="button" tabindex="0" onkeydown="if(event.key===\'Enter\'||event.key===\' \')navigateTo(\'' + mKey + '\',' + idx + ')">';
           html += '<div class="check">' + (isViewed ? '&#10003;' : '') + '</div>';
           html += '<span>' + escHtml(slide.title) + '</span>';
           html += '</div>';
         });
+
+        html += '</div></div>';
       });
 
       nav.innerHTML = html;
+    }
+
+    window.toggleModuleGroup = function(mKey) {
+      var group = document.querySelector('[data-module-group="' + mKey + '"]');
+      if (group) group.classList.toggle('is-open');
+    };
+
+    function calculateModuleProgress(mKey, mod) {
+      var total = mod.slides.length;
+      var viewed = 0;
+      mod.slides.forEach(function(s, idx) { if (progress[mKey + '_' + idx]) viewed++; });
+      return total > 0 ? Math.round((viewed / total) * 100) : 0;
     }
 
     // ============================================================
@@ -627,7 +722,15 @@
       if (slide.type === 'quiz') {
         html += renderQuiz(moduleKey);
       } else {
-        html += '<div class="slide-body">' + (slide.html || '') + '</div>';
+        var slideHeaderHtml = '<div class="slide-header">'
+          + '<span class="slide-header-module">' + escHtml(mod.title) + '</span>'
+          + '<span class="slide-header-sep">&middot;</span>'
+          + '<span class="slide-header-counter">Slide ' + (slideIndex + 1) + ' de ' + mod.slides.length + '</span>'
+          + '<span class="slide-header-sep">&middot;</span>'
+          + '<span class="slide-header-time">~' + (mod.slides.length * 3) + ' min</span>'
+          + '</div>';
+        html += slideHeaderHtml;
+        html += '<div class="prose-edu">' + (slide.html || '') + '</div>';
       }
 
       // Navegación inferior
@@ -714,12 +817,28 @@
         quizState[moduleKey] = qs;
       }
 
+      var letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+
       var html = '<div class="quiz-container">';
       html += '<div class="quiz-header">';
       html += '<h2>Evaluaci&oacute;n &mdash; ' + escHtml(mod.title) + '</h2>';
       html += '<p>' + questionsPerQuiz + ' preguntas seleccionadas aleatoriamente. '
             + 'Necesitas ' + passingScore + '% para aprobar. Puedes reintentar.</p>';
       html += '</div>';
+
+      // Quiz dots
+      var dotsHtml = '<div class="quiz-dots">';
+      qs.questions.forEach(function(q, i) {
+        var dotClass = 'quiz-dot';
+        if (qs.submitted) {
+          var ansIdx = qs.answers[q.id];
+          var isCorrect = ansIdx !== undefined && q.options[ansIdx] && q.options[ansIdx].correct;
+          dotClass += isCorrect ? ' is-correct' : ' is-incorrect';
+        }
+        dotsHtml += '<div class="' + dotClass + '"></div>';
+      });
+      dotsHtml += '</div>';
+      html += dotsHtml;
 
       qs.questions.forEach(function(q, qIdx) {
         html += '<div class="quiz-question">';
@@ -740,7 +859,8 @@
           html += '<button class="' + classes + '" '
                + disabled + ' '
                + 'onclick="selectAnswer(\'' + moduleKey + '\',\'' + q.id + '\',' + oIdx + ')">'
-               + escHtml(opt.text)
+               + '<span class="quiz-option-letter">' + (letters[oIdx] || oIdx) + '</span>'
+               + '<span>' + escHtml(opt.text) + '</span>'
                + '</button>';
         });
 
@@ -761,8 +881,8 @@
         var resultClass = qs.passed ? 'passed' : 'failed';
         var correct = Math.round(qs.score / 100 * qs.questions.length);
         html += '<div class="quiz-result ' + resultClass + '">';
-        html += '<strong>' + qs.score + '% &mdash; ' + (qs.passed ? 'Aprobado' : 'No aprobado') + '</strong>';
-        html += '<span>' + correct + ' de ' + qs.questions.length + ' correctas</span>';
+        html += '<div class="quiz-result-score">' + qs.score + '%</div>';
+        html += '<div>' + (qs.passed ? 'Aprobado' : 'No aprobado') + ' &mdash; ' + correct + ' de ' + qs.questions.length + ' correctas</div>';
         html += '</div>';
 
         if (qs.passed) {
@@ -852,6 +972,11 @@
     // COMPLETION SCREEN
     // ============================================================
     function showCompletion() {
+      var strip = document.createElement('div');
+      strip.className = 'confetti-strip';
+      document.body.appendChild(strip);
+      setTimeout(function() { strip.remove(); }, 2000);
+
       var cfg = courseConfig;
       var completion = cfg.completion || {};
 
