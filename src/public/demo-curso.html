@@ -1,0 +1,2015 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Dise&ntilde;o Instruccional para Entornos Virtuales: El Modelo UMCE &mdash; Curso Demo</title>
+  <meta name="description" content="Curso demo dise&ntilde;ado con el Planificador Curricular UMCE. 3 SCT, 81 hrs, 18 semanas. Postgrado. QA Preventivo 8/8.">
+  <meta name="author" content="Unidad de Desarrollo y Formaci&oacute;n Virtual &mdash; UMCE">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://umce.online/demo-curso">
+  <meta property="og:title" content="Curso Demo &mdash; Dise&ntilde;o Instruccional para Entornos Virtuales">
+  <meta property="og:description" content="Demuestra el flujo M1-M5 de virtualizaci&oacute;n UMCE con un curso real verificable.">
+  <meta property="og:site_name" content="UMCE.online">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+
+  <style>
+    /* ── Design System: Tutoreado palette ── */
+    :root {
+      --c-950: #0f0d2e;
+      --c-900: #1e1b4b;
+      --c-800: #312e81;
+      --c-700: #4338ca;
+      --c-600: #4f46e5;
+      --c-500: #6366f1;
+      --c-400: #818cf8;
+      --c-300: #a5b4fc;
+      --c-200: #c7d2fe;
+      --c-100: #e0e7ff;
+      --c-50:  #eef2ff;
+      --c-bg:  #f3f2ff;
+      --c-accent: #7c3aed;
+      --c-accent-light: #ede9fe;
+
+      /* Category colors */
+      --cat-EC: #0033A1;
+      --cat-IN: #6B7280;
+      --cat-EV: #DC2626;
+      --cat-EA: #7C3AED;
+      --cat-EB: #059669;
+      --cat-ED: #D97706;
+      --cat-EE: #DB2777;
+
+      /* Phase colors */
+      --phase-antes: #DBEAFE;
+      --phase-durante: #FEF3C7;
+      --phase-despues: #D1FAE5;
+      --phase-antes-text: #1E40AF;
+      --phase-durante-text: #92400E;
+      --phase-despues-text: #065F46;
+    }
+
+    /* ── Typography ── */
+    body {
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      background: var(--c-bg);
+      margin: 0;
+      color: #1e1b4b;
+    }
+    .font-display { font-family: 'Archivo', system-ui, sans-serif; }
+    .font-heading { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+
+    /* ── Prose (content area) ── */
+    .prose-edu {
+      font-size: 1.0625rem;
+      line-height: 1.75;
+      max-width: 680px;
+      color: #374151;
+    }
+    .prose-edu h2 { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight: 800; color: var(--c-900); margin-top: 2rem; margin-bottom: 0.75rem; }
+    .prose-edu h3 { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight: 700; color: var(--c-800); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+    .prose-edu p { margin-bottom: 1rem; }
+    .prose-edu ul { list-style: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+    .prose-edu li { margin-bottom: 0.375rem; }
+
+    /* ── Layout ── */
+    .dc-layout { display: flex; min-height: 100vh; }
+    .dc-sidebar {
+      width: 280px;
+      background: #fff;
+      border-right: 1px solid #e5e7eb;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 30;
+      overflow-y: auto;
+      overflow-x: hidden;
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .dc-main {
+      flex: 1;
+      margin-left: 280px;
+      min-height: 100vh;
+      overflow-x: hidden;
+      max-width: calc(100vw - 280px);
+    }
+    .dc-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .dc-content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* ── Sidebar items ── */
+    .sb-header {
+      padding: 1.25rem 1rem;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .sb-item {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.5rem 0.875rem;
+      margin: 0.125rem 0.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.8125rem;
+      color: #4b5563;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+      border: none;
+      background: none;
+      width: calc(100% - 1rem);
+      text-align: left;
+      line-height: 1.3;
+      min-height: 36px;
+    }
+    .sb-item:hover { background: var(--c-50); color: var(--c-700); }
+    .sb-item.active { background: var(--c-100); color: var(--c-700); font-weight: 700; }
+    .sb-item .sb-icon {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8125rem;
+      flex-shrink: 0;
+    }
+    .sb-module-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.875rem;
+      margin: 0.25rem 0.5rem 0;
+      border-radius: 0.5rem;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--c-800);
+      cursor: pointer;
+      transition: all 0.15s;
+      min-height: 36px;
+    }
+    .sb-module-header:hover { background: var(--c-50); }
+    .sb-module-weeks {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .sb-module-weeks.open { max-height: 600px; }
+    .sb-week-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.375rem 0.875rem 0.375rem 2.25rem;
+      margin: 0 0.5rem;
+      border-radius: 0.375rem;
+      font-size: 0.75rem;
+      color: #6b7280;
+      cursor: pointer;
+      transition: all 0.15s;
+      min-height: 32px;
+    }
+    .sb-week-item:hover { background: var(--c-50); color: var(--c-700); }
+    .sb-week-item.active { background: var(--c-100); color: var(--c-700); font-weight: 600; }
+    .sb-status {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .sb-status.done { background: #059669; }
+    .sb-status.current { background: var(--c-500); box-shadow: 0 0 0 3px rgba(99,102,241,0.2); }
+    .sb-status.pending { background: #d1d5db; }
+    .sb-divider { height: 1px; background: #f3f4f6; margin: 0.5rem 1rem; }
+    .sb-footer {
+      margin-top: auto;
+      padding: 1rem;
+      border-top: 1px solid #f3f4f6;
+      font-size: 0.6875rem;
+      color: #9ca3af;
+    }
+
+    /* ── Cards ── */
+    .dc-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .dc-card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+    .dc-card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(99,102,241,0.1); }
+
+    /* ── Pills ── */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.125rem 0.625rem;
+      border-radius: 9999px;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .pill-EC { background: #E8F0FE; color: var(--cat-EC); }
+    .pill-IN { background: #F3F4F6; color: var(--cat-IN); }
+    .pill-EV { background: #FEE2E2; color: var(--cat-EV); }
+    .pill-EA { background: #EDE9FE; color: var(--cat-EA); }
+    .pill-EB { background: #D1FAE5; color: var(--cat-EB); }
+    .pill-ED { background: #FEF3C7; color: var(--cat-ED); }
+    .pill-EE { background: #FCE7F3; color: var(--cat-EE); }
+    .pill-obligatorio { background: var(--c-100); color: var(--c-700); }
+    .pill-complementario { background: #f3f4f6; color: #6b7280; }
+
+    /* ── Phase blocks ── */
+    .phase-block {
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .phase-antes { background: var(--phase-antes); border-left: 4px solid var(--phase-antes-text); }
+    .phase-durante { background: var(--phase-durante); border-left: 4px solid var(--phase-durante-text); }
+    .phase-despues { background: var(--phase-despues); border-left: 4px solid var(--phase-despues-text); }
+    .phase-label {
+      font-size: 0.6875rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+    .phase-antes .phase-label { color: var(--phase-antes-text); }
+    .phase-durante .phase-label { color: var(--phase-durante-text); }
+    .phase-despues .phase-label { color: var(--phase-despues-text); }
+
+    /* ── Activity row ── */
+    .act-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      transition: background 0.15s;
+      min-height: 44px;
+    }
+    .act-row:hover { background: rgba(255,255,255,0.5); }
+    .act-row + .act-row { border-top: 1px solid rgba(255,255,255,0.5); }
+    .act-name { font-size: 0.875rem; font-weight: 500; color: #1e1b4b; flex: 1; }
+    .act-time { font-size: 0.75rem; color: #6b7280; white-space: nowrap; }
+    .act-check {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      border: 2px solid #d1d5db;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .act-check.checked { background: #059669; border-color: #059669; }
+    .act-check.checked::after { content: ''; display: block; width: 6px; height: 6px; background: #fff; border-radius: 50%; }
+
+    /* ── Module hero strip ── */
+    .module-strip {
+      border-radius: 16px;
+      padding: 2rem;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .module-strip::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .module-strip-1 { background: linear-gradient(135deg, var(--c-800), var(--c-600)); }
+    .module-strip-2 { background: linear-gradient(135deg, #7c3aed, #a78bfa); }
+    .module-strip-3 { background: linear-gradient(135deg, #059669, #34d399); }
+
+    /* ── QA panel ── */
+    .qa-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      background: #D1FAE5;
+      color: #065F46;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+    }
+    .qa-check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.375rem 0;
+      font-size: 0.8125rem;
+    }
+    .qa-check-icon {
+      width: 18px; height: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── Progress bar ── */
+    .progress-track {
+      height: 6px;
+      background: #e5e7eb;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--c-500), var(--c-accent));
+      transition: width 0.4s ease;
+    }
+
+    /* ── Category bar chart ── */
+    .cat-bar-track { height: 24px; background: #f3f4f6; border-radius: 6px; overflow: hidden; position: relative; }
+    .cat-bar-fill { height: 100%; border-radius: 6px; transition: width 0.4s ease; display: flex; align-items: center; justify-content: flex-end; padding-right: 0.5rem; }
+    .cat-bar-label { font-size: 0.6875rem; font-weight: 700; color: rgba(255,255,255,0.9); }
+
+    /* ── Breadcrumb ── */
+    .dc-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.8125rem;
+      color: #6b7280;
+    }
+    .dc-breadcrumb a { color: #6b7280; text-decoration: none; transition: color 0.15s; }
+    .dc-breadcrumb a:hover { color: var(--c-700); }
+    .dc-breadcrumb .bc-sep { color: #d1d5db; }
+
+    /* ── Section transitions ── */
+    .dc-section { display: none; animation: fadeSection 0.3s ease; }
+    .dc-section.active { display: block; }
+    @keyframes fadeSection { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── Hero canvas ── */
+    #hero-canvas-wrap {
+      position: relative;
+      width: 100%;
+      min-height: 340px;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    #hero-canvas-wrap .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 2.5rem 2rem;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .dc-sidebar { transform: translateX(-100%); }
+      .dc-sidebar.mobile-open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.15); }
+      .dc-main { margin-left: 0; max-width: 100vw; }
+      .dc-content { padding: 1rem; }
+      #hero-canvas-wrap { min-height: 280px; border-radius: 0; }
+      .module-strip { border-radius: 12px; padding: 1.5rem; }
+    }
+
+    /* ── Mobile overlay ── */
+    .mobile-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 29;
+    }
+    .mobile-overlay.visible { display: block; }
+
+    /* ── Focus visible ── */
+    *:focus-visible {
+      outline: 2px solid var(--c-500);
+      outline-offset: 2px;
+    }
+
+    /* ── Expandable ── */
+    .expandable-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .expandable-content.open { max-height: 2000px; }
+    .expand-toggle { cursor: pointer; user-select: none; }
+    .expand-toggle .expand-icon { transition: transform 0.2s; display: inline-block; }
+    .expand-toggle.open .expand-icon { transform: rotate(180deg); }
+
+    /* ── Timeline M1-M5 ── */
+    .timeline-step {
+      display: flex; flex-direction: column; align-items: center; gap: 0.375rem; text-align: center; flex: 1;
+    }
+    .timeline-dot {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 800; color: #fff;
+    }
+    .timeline-dot.done { background: #059669; }
+    .timeline-dot.active { background: var(--c-600); box-shadow: 0 0 0 4px rgba(99,102,241,0.2); }
+    .timeline-dot.pending { background: #d1d5db; }
+    .timeline-line { flex: 1; height: 3px; border-radius: 2px; min-width: 20px; }
+    .timeline-line.done { background: #059669; }
+    .timeline-line.pending { background: #e5e7eb; }
+
+    /* ── Donut SVG ── */
+    .donut-ring { fill: none; stroke: #e5e7eb; stroke-width: 3; }
+    .donut-segment { fill: none; stroke-width: 3; stroke-linecap: round; transition: stroke-dasharray 0.6s ease, stroke-dashoffset 0.6s ease; }
+
+    /* ── Rubrica table ── */
+    .rubrica-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.8125rem; }
+    .rubrica-table th { background: var(--c-50); padding: 0.625rem 0.75rem; text-align: left; font-weight: 700; color: var(--c-800); border-bottom: 2px solid var(--c-200); }
+    .rubrica-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
+    .rubrica-table tr:hover td { background: #fafafe; }
+
+    /* ── Print ── */
+    @media print {
+      .dc-sidebar, .dc-topbar, #a11y-fab, #a11y-panel { display: none !important; }
+      .dc-main { margin-left: 0; }
+      .dc-section { display: block !important; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+
+<body class="antialiased">
+
+  <!-- Mobile overlay -->
+  <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()" role="presentation"></div>
+
+  <div class="dc-layout">
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="dc-sidebar" id="sidebar" role="navigation" aria-label="Navegaci&oacute;n del curso">
+      <!-- Sidebar header -->
+      <div class="sb-header">
+        <div class="font-heading text-sm font-bold text-gray-900 leading-tight mb-2">DI Entornos Virtuales</div>
+        <div class="text-xs text-gray-500 mb-2">El Modelo UMCE</div>
+        <div class="progress-track" title="Progreso global del curso">
+          <div class="progress-fill" style="width: 8%" id="globalProgress"></div>
+        </div>
+        <div class="text-xs text-gray-400 mt-1">8% completado</div>
+      </div>
+
+      <!-- Nav items -->
+      <nav class="flex-1 py-2" aria-label="Secciones del curso">
+        <button class="sb-item active" onclick="navigate('inicio')" tabindex="0">
+          <span class="sb-icon" style="background: var(--c-100); color: var(--c-600);" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </span>
+          Inicio
+        </button>
+
+        <div class="sb-divider"></div>
+
+        <!-- Module 1 -->
+        <div class="sb-module-header" onclick="toggleModule(1)" tabindex="0" role="button" aria-expanded="true" aria-controls="mod1-weeks">
+          <span class="flex items-center gap-2">
+            <span class="sb-icon" style="background: #e0e7ff; color: var(--c-700);" aria-hidden="true">1</span>
+            M&oacute;dulo 1
+          </span>
+          <svg class="expand-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform:rotate(180deg)"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="sb-module-weeks open" id="mod1-weeks">
+          <button class="sb-week-item" onclick="navigate('m1-portada')"><span class="sb-status done" aria-label="Completada"></span> Portada</button>
+          <button class="sb-week-item active" onclick="navigate('s1')"><span class="sb-status current" aria-label="Semana actual"></span> Semana 1</button>
+          <button class="sb-week-item" onclick="navigate('s2')"><span class="sb-status pending" aria-label="Pendiente"></span> Semana 2</button>
+          <button class="sb-week-item" onclick="navigate('s3')"><span class="sb-status pending" aria-label="Pendiente"></span> Semana 3</button>
+          <button class="sb-week-item" onclick="navigate('s4')"><span class="sb-status pending" aria-label="Pendiente"></span> Semana 4</button>
+          <button class="sb-week-item" onclick="navigate('s5')"><span class="sb-status pending" aria-label="Pendiente"></span> Semana 5</button>
+          <button class="sb-week-item" onclick="navigate('s6')"><span class="sb-status pending" aria-label="Pendiente"></span> Semana 6</button>
+        </div>
+
+        <!-- Module 2 -->
+        <div class="sb-module-header" onclick="toggleModule(2)" tabindex="0" role="button" aria-expanded="false" aria-controls="mod2-weeks">
+          <span class="flex items-center gap-2">
+            <span class="sb-icon" style="background: #ede9fe; color: #7c3aed;" aria-hidden="true">2</span>
+            M&oacute;dulo 2
+          </span>
+          <svg class="expand-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="sb-module-weeks" id="mod2-weeks">
+          <button class="sb-week-item" onclick="navigate('m2-portada')"><span class="sb-status pending"></span> Portada</button>
+          <button class="sb-week-item" onclick="navigate('s7')"><span class="sb-status pending"></span> Semana 7</button>
+          <button class="sb-week-item" onclick="navigate('s8')"><span class="sb-status pending"></span> Semana 8</button>
+          <button class="sb-week-item" onclick="navigate('s9')"><span class="sb-status pending"></span> Semana 9</button>
+          <button class="sb-week-item" onclick="navigate('s10')"><span class="sb-status pending"></span> Semana 10</button>
+          <button class="sb-week-item" onclick="navigate('s11')"><span class="sb-status pending"></span> Semana 11</button>
+          <button class="sb-week-item" onclick="navigate('s12')"><span class="sb-status pending"></span> Semana 12</button>
+        </div>
+
+        <!-- Module 3 -->
+        <div class="sb-module-header" onclick="toggleModule(3)" tabindex="0" role="button" aria-expanded="false" aria-controls="mod3-weeks">
+          <span class="flex items-center gap-2">
+            <span class="sb-icon" style="background: #d1fae5; color: #059669;" aria-hidden="true">3</span>
+            M&oacute;dulo 3
+          </span>
+          <svg class="expand-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="sb-module-weeks" id="mod3-weeks">
+          <button class="sb-week-item" onclick="navigate('m3-portada')"><span class="sb-status pending"></span> Portada</button>
+          <button class="sb-week-item" onclick="navigate('s13')"><span class="sb-status pending"></span> Semana 13</button>
+          <button class="sb-week-item" onclick="navigate('s14')"><span class="sb-status pending"></span> Semana 14</button>
+          <button class="sb-week-item" onclick="navigate('s15')"><span class="sb-status pending"></span> Semana 15</button>
+          <button class="sb-week-item" onclick="navigate('s16')"><span class="sb-status pending"></span> Semana 16</button>
+          <button class="sb-week-item" onclick="navigate('s17')"><span class="sb-status pending"></span> Semana 17</button>
+          <button class="sb-week-item" onclick="navigate('s18')"><span class="sb-status pending"></span> Semana 18</button>
+        </div>
+
+        <div class="sb-divider"></div>
+
+        <button class="sb-item" onclick="navigate('evaluaciones')" tabindex="0">
+          <span class="sb-icon" style="background: #FEE2E2; color: #DC2626;" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </span>
+          Evaluaciones
+        </button>
+        <button class="sb-item" onclick="navigate('bibliografia')" tabindex="0">
+          <span class="sb-icon" style="background: #FEF3C7; color: #D97706;" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+          </span>
+          Bibliograf&iacute;a
+        </button>
+        <button class="sb-item" onclick="navigate('info')" tabindex="0">
+          <span class="sb-icon" style="background: #F3F4F6; color: #6B7280;" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          </span>
+          Info del curso
+        </button>
+        <button class="sb-item" onclick="navigate('qa')" tabindex="0">
+          <span class="sb-icon" style="background: #D1FAE5; color: #059669;" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </span>
+          Panel QA
+        </button>
+      </nav>
+
+      <!-- Sidebar footer -->
+      <div class="sb-footer">
+        <div class="flex items-center gap-1 mb-1">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span class="qa-badge" style="font-size: 0.625rem; padding: 0.125rem 0.5rem;">QA 8/8</span>
+        </div>
+        <div>Dise&ntilde;ado con herramientas UMCE</div>
+        <a href="/virtualizacion" class="text-indigo-500 hover:text-indigo-700 text-xs block mt-1" style="text-decoration: underline;">Ver proceso de virtualizaci&oacute;n</a>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN ==================== -->
+    <div class="dc-main">
+
+      <!-- Topbar -->
+      <div class="dc-topbar">
+        <div class="flex items-center gap-3">
+          <!-- Hamburger mobile -->
+          <button class="md:hidden flex items-center justify-content-center w-10 h-10 rounded-lg hover:bg-gray-100 transition" onclick="toggleSidebar()" aria-label="Abrir men&uacute; de navegaci&oacute;n" style="min-width:44px;min-height:44px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <!-- Breadcrumb -->
+          <nav class="dc-breadcrumb" id="breadcrumb" aria-label="Ruta de navegaci&oacute;n">
+            <a href="#" onclick="navigate('inicio');return false;">Curso</a>
+            <span class="bc-sep" aria-hidden="true">/</span>
+            <span id="bc-current">Inicio</span>
+          </nav>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="qa-badge hidden sm:inline-flex">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            QA 8/8
+          </span>
+        </div>
+      </div>
+
+      <!-- Content area -->
+      <div class="dc-content">
+
+        <!-- ==================== SECTION: INICIO ==================== -->
+        <section class="dc-section active" id="sec-inicio" role="main" aria-label="Inicio del curso">
+
+          <!-- Hero with watercolor -->
+          <div id="hero-canvas-wrap">
+            <div class="hero-content">
+              <div class="mb-3">
+                <span class="pill" style="background: rgba(255,255,255,0.2); color: #fff; font-size: 0.6875rem; backdrop-filter: blur(4px);">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  Dise&ntilde;ado con el Planificador Curricular UMCE
+                </span>
+              </div>
+              <h1 class="font-display text-3xl md:text-4xl font-black text-white leading-tight mb-2">
+                Dise&ntilde;o Instruccional para<br>Entornos Virtuales
+              </h1>
+              <p class="font-heading text-lg text-white/80 mb-4">El Modelo UMCE</p>
+              <div class="flex flex-wrap gap-3 mb-4">
+                <span class="pill" style="background: rgba(255,255,255,0.15); color: #fff;">3 SCT</span>
+                <span class="pill" style="background: rgba(255,255,255,0.15); color: #fff;">81 horas</span>
+                <span class="pill" style="background: rgba(255,255,255,0.15); color: #fff;">18 semanas</span>
+                <span class="pill" style="background: rgba(255,255,255,0.15); color: #fff;">Postgrado</span>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <span class="qa-badge" style="font-size: 0.6875rem;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  QA Preventivo 8/8
+                </span>
+                <a href="/virtualizacion" class="pill" style="background: rgba(255,255,255,0.15); color: #fff; text-decoration: none; font-size: 0.6875rem;">
+                  Ver trazabilidad M1&rarr;M5 &rarr;
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Welcome video placeholder -->
+          <div class="dc-card mb-6">
+            <div class="flex items-start gap-4 flex-wrap md:flex-nowrap">
+              <div class="w-full md:w-1/2">
+                <div class="bg-gray-100 rounded-lg flex items-center justify-center" style="height: 220px;" role="img" aria-label="Video de bienvenida del o la docente (pr&oacute;ximamente)">
+                  <div class="text-center text-gray-400">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto mb-2" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    <div class="text-sm font-medium">Video de bienvenida</div>
+                    <div class="text-xs">Pr&oacute;ximamente</div>
+                  </div>
+                </div>
+              </div>
+              <div class="w-full md:w-1/2 prose-edu">
+                <h2 class="text-xl font-bold mt-0">Bienvenida al curso</h2>
+                <p>Este curso forma parte del proceso de virtualizaci&oacute;n de la UMCE. Est&aacute; dise&ntilde;ado para que las y los profesionales que participan en la creaci&oacute;n de programas virtuales adquieran las competencias necesarias para dise&ntilde;ar experiencias de aprendizaje efectivas.</p>
+                <p>A lo largo de 18 semanas, trabajar&aacute;s con el modelo pedag&oacute;gico UMCE, dise&ntilde;ar&aacute;s secuencias did&aacute;cticas y aprender&aacute;s a evaluar la calidad de cursos virtuales.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- What you will achieve -->
+          <div class="dc-card mb-6">
+            <h2 class="font-heading text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--c-600)" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Qu&eacute; vas a lograr
+            </h2>
+            <div class="grid md:grid-cols-3 gap-4">
+              <div class="p-4 rounded-xl border border-indigo-100 bg-indigo-50/50">
+                <div class="font-heading text-sm font-bold text-indigo-800 mb-1">M&oacute;dulo 1 &mdash; Fundamentos</div>
+                <p class="text-sm text-gray-600">Analizar cr&iacute;ticamente los fundamentos te&oacute;ricos del dise&ntilde;o instruccional virtual, identificando los principios pedag&oacute;gicos que sostienen el modelo UMCE.</p>
+              </div>
+              <div class="p-4 rounded-xl border border-purple-100 bg-purple-50/50">
+                <div class="font-heading text-sm font-bold text-purple-800 mb-1">M&oacute;dulo 2 &mdash; DI Aplicado</div>
+                <p class="text-sm text-gray-600">Dise&ntilde;ar una secuencia did&aacute;ctica virtual completa aplicando el modelo UMCE con coherencia entre resultados de aprendizaje, actividades y evaluaciones.</p>
+              </div>
+              <div class="p-4 rounded-xl border border-emerald-100 bg-emerald-50/50">
+                <div class="font-heading text-sm font-bold text-emerald-800 mb-1">M&oacute;dulo 3 &mdash; Calidad</div>
+                <p class="text-sm text-gray-600">Evaluar cursos virtuales utilizando el marco QA UDFV-UMCE y proponer mejoras basadas en evidencia para la mejora continua.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- How this course works -->
+          <div class="dc-card mb-6">
+            <h2 class="font-heading text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--c-600)" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              C&oacute;mo funciona este curso
+            </h2>
+            <p class="text-sm text-gray-600 mb-4">Cada semana sigue una secuencia de tres momentos pedag&oacute;gicos que organizan tu aprendizaje:</p>
+            <div class="grid md:grid-cols-3 gap-4">
+              <div class="phase-block phase-antes">
+                <div class="phase-label">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+                  Antes de la sesi&oacute;n
+                </div>
+                <p class="text-sm" style="color: var(--phase-antes-text);">Lectura, video o actividad preparatoria. Llegas a la sesi&oacute;n con una base com&uacute;n.</p>
+              </div>
+              <div class="phase-block phase-durante">
+                <div class="phase-label">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                  Durante la sesi&oacute;n
+                </div>
+                <p class="text-sm" style="color: var(--phase-durante-text);">Clase sincr&oacute;nica con discusi&oacute;n, trabajo colaborativo y resoluci&oacute;n de dudas.</p>
+              </div>
+              <div class="phase-block phase-despues">
+                <div class="phase-label">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  Despu&eacute;s de la sesi&oacute;n
+                </div>
+                <p class="text-sm" style="color: var(--phase-despues-text);">Profundizaci&oacute;n individual: reflexi&oacute;n, pr&aacute;ctica y productos de aprendizaje.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Course info compact -->
+          <div class="dc-card mb-6">
+            <h2 class="font-heading text-lg font-bold text-gray-900 mb-4">Informaci&oacute;n del curso</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              <div>
+                <div class="font-display text-2xl font-black text-indigo-600">3</div>
+                <div class="text-xs text-gray-500 font-medium uppercase tracking-wider">Cr&eacute;ditos SCT</div>
+              </div>
+              <div>
+                <div class="font-display text-2xl font-black text-indigo-600">81</div>
+                <div class="text-xs text-gray-500 font-medium uppercase tracking-wider">Horas totales</div>
+              </div>
+              <div>
+                <div class="font-display text-2xl font-black text-indigo-600">18</div>
+                <div class="text-xs text-gray-500 font-medium uppercase tracking-wider">Semanas</div>
+              </div>
+              <div>
+                <div class="font-display text-2xl font-black text-indigo-600">~4.5</div>
+                <div class="text-xs text-gray-500 font-medium uppercase tracking-wider">Hrs/semana</div>
+              </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+              <div><span class="text-gray-500">Modalidad:</span> <span class="font-medium">Virtual con sesiones sincr&oacute;nicas</span></div>
+              <div><span class="text-gray-500">Nivel:</span> <span class="font-medium">Postgrado</span></div>
+              <div><span class="text-gray-500">Plataforma:</span> <span class="font-medium">Moodle UMCE</span></div>
+              <div><span class="text-gray-500">Sincr&oacute;nico:</span> <span class="font-medium">~20% (Zoom REUNA)</span></div>
+              <div><span class="text-gray-500">Asincr&oacute;nico:</span> <span class="font-medium">~80%</span></div>
+              <div><span class="text-gray-500">Herramientas:</span> <span class="font-medium">Moodle, Zoom, H5P, Miro</span></div>
+            </div>
+          </div>
+
+          <!-- Tu docente -->
+          <div class="dc-card mb-6">
+            <h2 class="font-heading text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--c-600)" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Tu docente
+            </h2>
+            <div class="flex items-start gap-4 flex-wrap md:flex-nowrap">
+              <div class="w-20 h-20 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0" role="img" aria-label="Foto de perfil del o la docente">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.5" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div>
+                <div class="font-heading font-bold text-gray-900">Docente por confirmar</div>
+                <div class="text-sm text-gray-500 mb-3">Unidad de Desarrollo y Formaci&oacute;n Virtual &mdash; UMCE</div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
+                  <div class="p-2 rounded-lg bg-blue-50 text-center">
+                    <div class="font-bold text-blue-700">48 hrs</div>
+                    <div class="text-xs text-blue-600">Respuesta email</div>
+                  </div>
+                  <div class="p-2 rounded-lg bg-orange-50 text-center">
+                    <div class="font-bold text-orange-700">72 hrs</div>
+                    <div class="text-xs text-orange-600">Respuesta foro</div>
+                  </div>
+                  <div class="p-2 rounded-lg bg-green-50 text-center">
+                    <div class="font-bold text-green-700">7 d&iacute;as</div>
+                    <div class="text-xs text-green-600">Retroalimentaci&oacute;n tareas</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Module roadmap -->
+          <div class="dc-card mb-6">
+            <h2 class="font-heading text-lg font-bold text-gray-900 mb-4">Mapa de m&oacute;dulos</h2>
+            <div class="space-y-3">
+              <button class="w-full text-left p-4 rounded-xl border-2 border-indigo-200 bg-indigo-50/50 hover:border-indigo-400 transition" onclick="navigate('m1-portada')">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-heading font-bold text-indigo-800">M&oacute;dulo 1 &mdash; Fundamentos del DI Virtual</span>
+                  <span class="pill pill-obligatorio">Sem 1&ndash;6</span>
+                </div>
+                <p class="text-sm text-gray-600 mb-2">Los 3 pilares, teor&iacute;as del aprendizaje, modelos instruccionales y el marco UMCE.</p>
+                <div class="progress-track"><div class="progress-fill" style="width: 12%"></div></div>
+              </button>
+              <button class="w-full text-left p-4 rounded-xl border-2 border-purple-200 bg-purple-50/50 hover:border-purple-400 transition" onclick="navigate('m2-portada')">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-heading font-bold text-purple-800">M&oacute;dulo 2 &mdash; Dise&ntilde;o Instruccional Aplicado</span>
+                  <span class="pill pill-obligatorio">Sem 7&ndash;12</span>
+                </div>
+                <p class="text-sm text-gray-600 mb-2">Backward design, secuencias did&aacute;cticas, e-actividades y evaluaci&oacute;n aut&eacute;ntica.</p>
+                <div class="progress-track"><div class="progress-fill" style="width: 0%"></div></div>
+              </button>
+              <button class="w-full text-left p-4 rounded-xl border-2 border-emerald-200 bg-emerald-50/50 hover:border-emerald-400 transition" onclick="navigate('m3-portada')">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-heading font-bold text-emerald-800">M&oacute;dulo 3 &mdash; Calidad y Mejora Continua</span>
+                  <span class="pill pill-obligatorio">Sem 13&ndash;18</span>
+                </div>
+                <p class="text-sm text-gray-600 mb-2">Marco QA, r&uacute;bricas, an&aacute;lisis de datos y plan de mejora.</p>
+                <div class="progress-track"><div class="progress-fill" style="width: 0%"></div></div>
+              </button>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ==================== SECTION: MODULE 1 PORTADA ==================== -->
+        <section class="dc-section" id="sec-m1-portada" aria-label="M&oacute;dulo 1: Fundamentos del Dise&ntilde;o Instruccional Virtual">
+
+          <div class="module-strip module-strip-1 mb-6">
+            <div class="relative z-10">
+              <div class="pill mb-3" style="background: rgba(255,255,255,0.2); color: #fff;">Semanas 1&ndash;6 &middot; 27 horas</div>
+              <h1 class="font-display text-2xl md:text-3xl font-black mb-2">M&oacute;dulo 1: Fundamentos del DI Virtual</h1>
+              <p class="text-white/80 text-sm max-w-xl">Bases te&oacute;ricas y conceptuales del dise&ntilde;o instruccional para entornos virtuales de aprendizaje.</p>
+            </div>
+          </div>
+
+          <!-- RF -->
+          <div class="dc-card mb-4 border-l-4" style="border-left-color: var(--c-600);">
+            <div class="text-xs font-bold uppercase tracking-wider text-indigo-500 mb-1">Resultado de Formaci&oacute;n</div>
+            <p class="font-heading font-bold text-gray-900">Analizar cr&iacute;ticamente los fundamentos te&oacute;ricos del dise&ntilde;o instruccional virtual, identificando los principios pedag&oacute;gicos que sostienen el modelo UMCE y su relaci&oacute;n con la calidad de los entornos de aprendizaje en l&iacute;nea.</p>
+          </div>
+
+          <!-- CE expandibles -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 mb-3 text-sm">Criterios de Evaluaci&oacute;n</h3>
+            <div class="space-y-2">
+              <div class="expand-toggle p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open');">
+                <div class="flex items-center gap-2">
+                  <span class="expand-icon text-gray-400">&#9660;</span>
+                  <span class="text-sm font-medium text-gray-800">CE 1.1: Identificar al menos 3 teor&iacute;as del aprendizaje relevantes para la virtualidad</span>
+                </div>
+              </div>
+              <div class="expandable-content">
+                <div class="px-3 pb-3 text-sm text-gray-600">Demostrar comprensi&oacute;n de constructivismo, conectivismo y aprendizaje situado y c&oacute;mo cada una informa el dise&ntilde;o de actividades virtuales.</div>
+              </div>
+              <div class="expand-toggle p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open');">
+                <div class="flex items-center gap-2">
+                  <span class="expand-icon text-gray-400">&#9660;</span>
+                  <span class="text-sm font-medium text-gray-800">CE 1.2: Comparar modelos instruccionales (ADDIE, SAM, Backward Design)</span>
+                </div>
+              </div>
+              <div class="expandable-content">
+                <div class="px-3 pb-3 text-sm text-gray-600">Analizar ventajas, limitaciones y contextos de aplicaci&oacute;n de cada modelo en educaci&oacute;n superior virtual.</div>
+              </div>
+              <div class="expand-toggle p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open');">
+                <div class="flex items-center gap-2">
+                  <span class="expand-icon text-gray-400">&#9660;</span>
+                  <span class="text-sm font-medium text-gray-800">CE 1.3: Explicar los 3 pilares del modelo virtual UMCE</span>
+                </div>
+              </div>
+              <div class="expandable-content">
+                <div class="px-3 pb-3 text-sm text-gray-600">Articular c&oacute;mo la interacci&oacute;n, la colaboraci&oacute;n y la reflexi&oacute;n operan como ejes del modelo UMCE.</div>
+              </div>
+              <div class="expand-toggle p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open');">
+                <div class="flex items-center gap-2">
+                  <span class="expand-icon text-gray-400">&#9660;</span>
+                  <span class="text-sm font-medium text-gray-800">CE 1.4: Fundamentar decisiones de dise&ntilde;o con evidencia te&oacute;rica</span>
+                </div>
+              </div>
+              <div class="expandable-content">
+                <div class="px-3 pb-3 text-sm text-gray-600">Justificar elecciones de dise&ntilde;o instruccional citando fuentes acad&eacute;micas pertinentes.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category distribution -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 mb-3 text-sm">Distribuci&oacute;n de categor&iacute;as de actividad</h3>
+            <div class="space-y-2">
+              <div class="flex items-center gap-3"><span class="pill pill-EC text-xs w-8 justify-center">EC</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:25%; background: var(--cat-EC);"><span class="cat-bar-label">25%</span></div></div><span class="text-xs text-gray-500">Interacci&oacute;n</span></div>
+              <div class="flex items-center gap-3"><span class="pill pill-IN text-xs w-8 justify-center">IN</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:30%; background: var(--cat-IN);"><span class="cat-bar-label">30%</span></div></div><span class="text-xs text-gray-500">Insumos</span></div>
+              <div class="flex items-center gap-3"><span class="pill pill-EA text-xs w-8 justify-center">EA</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:15%; background: var(--cat-EA);"><span class="cat-bar-label">15%</span></div></div><span class="text-xs text-gray-500">An&aacute;lisis</span></div>
+              <div class="flex items-center gap-3"><span class="pill pill-EV text-xs w-8 justify-center">EV</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:15%; background: var(--cat-EV);"><span class="cat-bar-label">15%</span></div></div><span class="text-xs text-gray-500">Evaluaci&oacute;n</span></div>
+              <div class="flex items-center gap-3"><span class="pill pill-EE text-xs w-8 justify-center">EE</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:10%; background: var(--cat-EE);"><span class="cat-bar-label">10%</span></div></div><span class="text-xs text-gray-500">Reflexi&oacute;n</span></div>
+              <div class="flex items-center gap-3"><span class="pill pill-ED text-xs w-8 justify-center">ED</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:5%; background: var(--cat-ED);"><span class="cat-bar-label">5%</span></div></div><span class="text-xs text-gray-500">Colaboraci&oacute;n</span></div>
+            </div>
+          </div>
+
+          <!-- Weeks list -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 mb-3 text-sm">Semanas del m&oacute;dulo</h3>
+            <div class="space-y-2">
+              <button class="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition" onclick="navigate('s1')">
+                <span class="sb-status current"></span>
+                <span class="font-medium text-sm flex-1">Semana 1 &mdash; Introducci&oacute;n: por qu&eacute; dise&ntilde;o instruccional</span>
+                <span class="text-xs text-gray-400">4.5 hrs</span>
+              </button>
+              <button class="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition" onclick="navigate('s2')">
+                <span class="sb-status pending"></span>
+                <span class="font-medium text-sm flex-1">Semana 2 &mdash; Teor&iacute;as del aprendizaje para la virtualidad</span>
+                <span class="text-xs text-gray-400">4.5 hrs</span>
+              </button>
+              <button class="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition" onclick="navigate('s3')">
+                <span class="sb-status pending"></span>
+                <span class="font-medium text-sm flex-1">Semana 3 &mdash; Los 3 pilares del modelo UMCE</span>
+                <span class="text-xs text-gray-400">4.5 hrs</span>
+              </button>
+              <button class="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition" onclick="navigate('s4')">
+                <span class="sb-status pending"></span>
+                <span class="font-medium text-sm flex-1">Semana 4 &mdash; Modelos instruccionales comparados</span>
+                <span class="text-xs text-gray-400">4.5 hrs</span>
+              </button>
+              <button class="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition" onclick="navigate('s5')">
+                <span class="sb-status pending"></span>
+                <span class="font-medium text-sm flex-1">Semana 5 &mdash; El rol del o la dise&ntilde;adora instruccional</span>
+                <span class="text-xs text-gray-400">4.5 hrs</span>
+              </button>
+              <button class="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition" onclick="navigate('s6')">
+                <span class="sb-status pending"></span>
+                <span class="font-medium text-sm flex-1">Semana 6 &mdash; Integraci&oacute;n y evaluaci&oacute;n del m&oacute;dulo</span>
+                <span class="text-xs text-gray-400">4.5 hrs</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Evaluaciones del modulo -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 mb-3 text-sm">Evaluaciones del m&oacute;dulo</h3>
+            <div class="overflow-x-auto">
+              <table class="rubrica-table" role="table">
+                <thead><tr><th>Evaluaci&oacute;n</th><th>Tipo</th><th>Peso</th><th>Semana</th></tr></thead>
+                <tbody>
+                  <tr><td>Quiz formativo semanal (sem 1-5)</td><td><span class="pill pill-EV">Formativa</span></td><td>&mdash;</td><td>1&ndash;5</td></tr>
+                  <tr><td>Ensayo: Fundamentos del DI para mi contexto</td><td><span class="pill" style="background: #FEE2E2; color: #991B1B;">Sumativa</span></td><td>30%</td><td>6</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ==================== SECTION: SEMANA 1 ==================== -->
+        <section class="dc-section" id="sec-s1" aria-label="Semana 1: Introducci&oacute;n al Dise&ntilde;o Instruccional">
+
+          <div class="mb-6">
+            <div class="flex items-center justify-between flex-wrap gap-2 mb-1">
+              <h1 class="font-heading text-xl font-bold text-gray-900">Semana 1 &mdash; Introducci&oacute;n: por qu&eacute; dise&ntilde;o instruccional</h1>
+              <span class="pill" style="background: var(--c-100); color: var(--c-700);">4.5 hrs esta semana</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-gray-500">
+              <span>M&oacute;dulo 1</span>
+              <span class="text-gray-300">|</span>
+              <span>Carga semanal recomendada: 4&ndash;5 hrs</span>
+            </div>
+          </div>
+
+          <!-- ANTES -->
+          <div class="phase-block phase-antes">
+            <div class="phase-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+              Antes de la sesi&oacute;n
+            </div>
+            <div class="act-row">
+              <span class="pill pill-IN">IN1</span>
+              <span class="act-name">Lectura: &laquo;Por qu&eacute; importa el DI en educaci&oacute;n virtual&raquo; (Garrido, 2024, cap. 1)</span>
+              <span class="act-time">30 min</span>
+              <span class="pill pill-obligatorio">Obligatoria</span>
+              <span class="act-check" tabindex="0" role="checkbox" aria-checked="false" aria-label="Marcar como completada" onclick="this.classList.toggle('checked'); this.setAttribute('aria-checked', this.classList.contains('checked'))"></span>
+            </div>
+            <div class="act-row">
+              <span class="pill pill-IN">IN3</span>
+              <span class="act-name">Video: &laquo;Dise&ntilde;o instruccional en 10 minutos&raquo;</span>
+              <span class="act-time">15 min</span>
+              <span class="pill pill-obligatorio">Obligatoria</span>
+              <span class="act-check" tabindex="0" role="checkbox" aria-checked="false" aria-label="Marcar como completada" onclick="this.classList.toggle('checked'); this.setAttribute('aria-checked', this.classList.contains('checked'))"></span>
+            </div>
+            <div class="act-row">
+              <span class="pill pill-EV">EV1</span>
+              <span class="act-name">Quiz diagn&oacute;stico: &iquest;qu&eacute; sabes sobre DI?</span>
+              <span class="act-time">15 min</span>
+              <span class="pill pill-complementario">Formativa</span>
+              <span class="act-check" tabindex="0" role="checkbox" aria-checked="false" aria-label="Marcar como completada" onclick="this.classList.toggle('checked'); this.setAttribute('aria-checked', this.classList.contains('checked'))"></span>
+            </div>
+          </div>
+
+          <!-- DURANTE -->
+          <div class="phase-block phase-durante">
+            <div class="phase-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+              Durante la sesi&oacute;n sincr&oacute;nica
+            </div>
+            <div class="act-row">
+              <span class="pill pill-EC">EC3</span>
+              <span class="act-name">Sesi&oacute;n sincr&oacute;nica: Bienvenida y presentaci&oacute;n del curso</span>
+              <span class="act-time">90 min</span>
+              <span class="pill pill-obligatorio">Obligatoria</span>
+              <span class="act-check" tabindex="0" role="checkbox" aria-checked="false" aria-label="Marcar como completada" onclick="this.classList.toggle('checked'); this.setAttribute('aria-checked', this.classList.contains('checked'))"></span>
+            </div>
+            <div class="mt-2 ml-12 text-sm text-gray-500">
+              <div class="flex items-center gap-2 mb-1">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span>Jueves 18:00 &mdash; 19:30 (hora Chile)</span>
+              </div>
+              <a href="#" class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 font-medium" aria-label="Acceder a la sesi&oacute;n Zoom (pr&oacute;ximamente)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14V10z"/><rect x="1" y="6" width="14" height="12" rx="2" ry="2"/></svg>
+                Acceder a Zoom (pr&oacute;ximamente)
+              </a>
+            </div>
+          </div>
+
+          <!-- DESPUES -->
+          <div class="phase-block phase-despues">
+            <div class="phase-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Despu&eacute;s de la sesi&oacute;n
+            </div>
+            <div class="act-row">
+              <span class="pill pill-EC">EC1</span>
+              <span class="act-name">Foro: &laquo;Mi experiencia con el DI&raquo; (post original)</span>
+              <span class="act-time">30 min</span>
+              <span class="pill pill-obligatorio">Obligatoria</span>
+              <span class="act-check" tabindex="0" role="checkbox" aria-checked="false" aria-label="Marcar como completada" onclick="this.classList.toggle('checked'); this.setAttribute('aria-checked', this.classList.contains('checked'))"></span>
+            </div>
+            <div class="act-row">
+              <span class="pill pill-EE">EE1</span>
+              <span class="act-name">Diario reflexivo: &laquo;&iquest;Qu&eacute; me motiva a estar aqu&iacute;?&raquo;</span>
+              <span class="act-time">15 min</span>
+              <span class="pill pill-obligatorio">Obligatoria</span>
+              <span class="act-check" tabindex="0" role="checkbox" aria-checked="false" aria-label="Marcar como completada" onclick="this.classList.toggle('checked'); this.setAttribute('aria-checked', this.classList.contains('checked'))"></span>
+            </div>
+            <div class="act-row">
+              <span class="pill pill-IN">IN4</span>
+              <span class="act-name">Grabaci&oacute;n de la sesi&oacute;n (repaso)</span>
+              <span class="act-time">45 min</span>
+              <span class="pill pill-complementario">Complementaria</span>
+              <span class="act-check" tabindex="0" role="checkbox" aria-checked="false" aria-label="Marcar como completada" onclick="this.classList.toggle('checked'); this.setAttribute('aria-checked', this.classList.contains('checked'))"></span>
+            </div>
+          </div>
+
+          <!-- Week summary -->
+          <div class="dc-card mt-4 mb-6">
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-gray-500">Total semana 1</span>
+              <span class="font-bold text-indigo-700">~4.0 hrs obligatorias + 1.0 hr complementaria</span>
+            </div>
+            <div class="progress-track mt-2"><div class="progress-fill" style="width: 90%"></div></div>
+            <div class="text-xs text-gray-400 mt-1">Dentro del rango recomendado (4&ndash;5 hrs/semana)</div>
+          </div>
+
+        </section>
+
+        <!-- ==================== SECTION: SEMANA 2 ==================== -->
+        <section class="dc-section" id="sec-s2" aria-label="Semana 2: Teor&iacute;as del aprendizaje para la virtualidad">
+
+          <div class="mb-6">
+            <div class="flex items-center justify-between flex-wrap gap-2 mb-1">
+              <h1 class="font-heading text-xl font-bold text-gray-900">Semana 2 &mdash; Teor&iacute;as del aprendizaje para la virtualidad</h1>
+              <span class="pill" style="background: var(--c-100); color: var(--c-700);">4.5 hrs esta semana</span>
+            </div>
+          </div>
+
+          <div class="phase-block phase-antes">
+            <div class="phase-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Antes de la sesi&oacute;n</div>
+            <div class="act-row"><span class="pill pill-IN">IN1</span><span class="act-name">Lectura: Constructivismo y conectivismo en educaci&oacute;n virtual (Siemens, 2005)</span><span class="act-time">40 min</span><span class="pill pill-obligatorio">Obligatoria</span></div>
+            <div class="act-row"><span class="pill pill-IN">IN7</span><span class="act-name">Presentaci&oacute;n interactiva H5P: Las 5 teor&iacute;as clave</span><span class="act-time">20 min</span><span class="pill pill-obligatorio">Obligatoria</span></div>
+          </div>
+          <div class="phase-block phase-durante">
+            <div class="phase-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Durante la sesi&oacute;n sincr&oacute;nica</div>
+            <div class="act-row"><span class="pill pill-EC">EC3</span><span class="act-name">Sesi&oacute;n sincr&oacute;nica: Debate sobre teor&iacute;as del aprendizaje</span><span class="act-time">90 min</span><span class="pill pill-obligatorio">Obligatoria</span></div>
+          </div>
+          <div class="phase-block phase-despues">
+            <div class="phase-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Despu&eacute;s de la sesi&oacute;n</div>
+            <div class="act-row"><span class="pill pill-EA">EA1</span><span class="act-name">Mapa conceptual: Relaci&oacute;n entre teor&iacute;as y virtualidad</span><span class="act-time">60 min</span><span class="pill pill-obligatorio">Obligatoria</span></div>
+            <div class="act-row"><span class="pill pill-EC">EC2</span><span class="act-name">Foro: Responder a 2 compa&ntilde;eros/as sobre sus mapas</span><span class="act-time">20 min</span><span class="pill pill-obligatorio">Obligatoria</span></div>
+            <div class="act-row"><span class="pill pill-EV">EV1</span><span class="act-name">Quiz formativo: Teor&iacute;as del aprendizaje</span><span class="act-time">10 min</span><span class="pill pill-complementario">Formativa</span></div>
+          </div>
+
+          <div class="dc-card mt-4 mb-6">
+            <div class="flex items-center justify-between text-sm"><span class="text-gray-500">Total semana 2</span><span class="font-bold text-indigo-700">~4.0 hrs obligatorias + 0.5 hr complementaria</span></div>
+          </div>
+        </section>
+
+        <!-- ==================== SECTION: SEMANA 3 ==================== -->
+        <section class="dc-section" id="sec-s3" aria-label="Semana 3: Los 3 pilares del modelo UMCE">
+
+          <div class="mb-6">
+            <div class="flex items-center justify-between flex-wrap gap-2 mb-1">
+              <h1 class="font-heading text-xl font-bold text-gray-900">Semana 3 &mdash; Los 3 pilares del modelo UMCE</h1>
+              <span class="pill" style="background: var(--c-100); color: var(--c-700);">4.5 hrs esta semana</span>
+            </div>
+          </div>
+
+          <div class="phase-block phase-antes">
+            <div class="phase-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Antes de la sesi&oacute;n</div>
+            <div class="act-row"><span class="pill pill-IN">IN1</span><span class="act-name">Lectura: Sangr&agrave; (2020) &laquo;Educaci&oacute;n en l&iacute;nea: principios de interacci&oacute;n&raquo;, cap. 3</span><span class="act-time">30 min</span><span class="pill pill-obligatorio">Obligatoria</span></div>
+            <div class="act-row"><span class="pill pill-IN">IN3</span><span class="act-name">Video: &laquo;Interacci&oacute;n, colaboraci&oacute;n y reflexi&oacute;n: el modelo UMCE en acci&oacute;n&raquo;</span><span class="act-time">20 min</span><span class="pill pill-obligatorio">Obligatoria</span></div>
+          </div>
+          <div class="phase-block phase-durante">
+            <div class="phase-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Durante la sesi&oacute;n sincr&oacute;nica</div>
+            <div class="act-row"><span class="pill pill-EC">EC3</span><span class="act-name">Sesi&oacute;n sincr&oacute;nica: Taller &mdash; Identificar los 3 pilares en un curso real</span><span class="act-time">90 min</span><span class="pill pill-obligatorio">Obligatoria</span></div>
+          </div>
+          <div class="phase-block phase-despues">
+            <div class="phase-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Despu&eacute;s de la sesi&oacute;n</div>
+            <div class="act-row"><span class="pill pill-ED">ED2</span><span class="act-name">Muro colaborativo (Miro): An&aacute;lisis de un curso de tu departamento</span><span class="act-time">40 min</span><span class="pill pill-obligatorio">Obligatoria</span></div>
+            <div class="act-row"><span class="pill pill-EE">EE1</span><span class="act-name">Diario reflexivo: &laquo;&iquest;C&oacute;mo se reflejan los pilares en mi pr&aacute;ctica?&raquo;</span><span class="act-time">15 min</span><span class="pill pill-obligatorio">Obligatoria</span></div>
+            <div class="act-row"><span class="pill pill-EV">EV1</span><span class="act-name">Quiz formativo: Los 3 pilares</span><span class="act-time">10 min</span><span class="pill pill-complementario">Formativa</span></div>
+          </div>
+
+          <div class="dc-card mt-4 mb-6">
+            <div class="flex items-center justify-between text-sm"><span class="text-gray-500">Total semana 3</span><span class="font-bold text-indigo-700">~3.5 hrs obligatorias + 0.5 hr complementaria</span></div>
+          </div>
+        </section>
+
+        <!-- ==================== SECTIONS: SEMANAS 4-18 placeholder ==================== -->
+        <section class="dc-section" id="sec-s4" aria-label="Semana 4"><div class="dc-card p-8 text-center"><div class="text-gray-400 mb-2"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg></div><h2 class="font-heading text-lg font-bold text-gray-700 mb-1">Semana 4 &mdash; Modelos instruccionales comparados</h2><p class="text-sm text-gray-500">Contenido en desarrollo. Estructura antes/durante/despu&eacute;s disponible pr&oacute;ximamente.</p></div></section>
+        <section class="dc-section" id="sec-s5" aria-label="Semana 5"><div class="dc-card p-8 text-center"><div class="text-gray-400 mb-2"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg></div><h2 class="font-heading text-lg font-bold text-gray-700 mb-1">Semana 5 &mdash; El rol del o la dise&ntilde;adora instruccional</h2><p class="text-sm text-gray-500">Contenido en desarrollo.</p></div></section>
+        <section class="dc-section" id="sec-s6" aria-label="Semana 6"><div class="dc-card p-8 text-center"><div class="text-gray-400 mb-2"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg></div><h2 class="font-heading text-lg font-bold text-gray-700 mb-1">Semana 6 &mdash; Integraci&oacute;n y evaluaci&oacute;n del m&oacute;dulo</h2><p class="text-sm text-gray-500">Semana de integraci&oacute;n. Incluye evaluaci&oacute;n sumativa del M&oacute;dulo 1 y espacio de pausa activa.</p></div></section>
+        <section class="dc-section" id="sec-s7" aria-label="Semana 7"><div class="dc-card p-8 text-center"><div class="text-gray-400 mb-2"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg></div><h2 class="font-heading text-lg font-bold text-gray-700 mb-1">Semana 7 &mdash; Backward Design: partir del fin</h2><p class="text-sm text-gray-500">Contenido en desarrollo.</p></div></section>
+        <section class="dc-section" id="sec-s8" aria-label="Semana 8"><div class="dc-card p-8 text-center"><div class="text-gray-400 mb-2"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg></div><h2 class="font-heading text-lg font-bold text-gray-700 mb-1">Semana 8 &mdash; Dise&ntilde;o de e-actividades</h2><p class="text-sm text-gray-500">Contenido en desarrollo.</p></div></section>
+        <section class="dc-section" id="sec-s9" aria-label="Semana 9"><div class="dc-card p-8 text-center"><div class="text-gray-400 mb-2"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg></div><h2 class="font-heading text-lg font-bold text-gray-700 mb-1">Semana 9 &mdash; Secuencias did&aacute;cticas virtuales</h2><p class="text-sm text-gray-500">Contenido en desarrollo.</p></div></section>
+        <section class="dc-section" id="sec-s10" aria-label="Semana 10"><div class="dc-card p-8 text-center"><div class="text-gray-400 mb-2"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg></div><h2 class="font-heading text-lg font-bold text-gray-700 mb-1">Semana 10 &mdash; Evaluaci&oacute;n aut&eacute;ntica y r&uacute;bricas</h2><p class="text-sm text-gray-500">Contenido en desarrollo.</p></div></section>
+        <section class="dc-section" id="sec-s11" aria-label="Semana 11"><div class="dc-card p-8 text-center"><div class="text-gray-400 mb-2"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg></div><h2 class="font-heading text-lg font-bold text-gray-700 mb-1">Semana 11 &mdash; Carga estudiantil y SCT</h2><p class="text-sm text-gray-500">Contenido en desarrollo.</p></div></section>
+        <section class="dc-section" id="sec-s12" aria-label="Semana 12"><div class="dc-card p-8 text-center"><div class="text-gray-400 mb-2"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg></div><h2 class="font-heading text-lg font-bold text-gray-700 mb-1">Semana 12 &mdash; Integraci&oacute;n y evaluaci&oacute;n del m&oacute;dulo</h2><p class="text-sm text-gray-500">Semana de integraci&oacute;n. Incluye evaluaci&oacute;n sumativa del M&oacute;dulo 2 y pausa activa.</p></div></section>
+        <section class="dc-section" id="sec-s13" aria-label="Semana 13"><div class="dc-card p-8 text-center"><div class="text-gray-400 mb-2"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg></div><h2 class="font-heading text-lg font-bold text-gray-700 mb-1">Semana 13 &mdash; Introducci&oacute;n al Marco QA</h2><p class="text-sm text-gray-500">Contenido en desarrollo.</p></div></section>
+        <section class="dc-section" id="sec-s14" aria-label="Semana 14"><div class="dc-card p-8 text-center"><div class="text-gray-400 mb-2"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg></div><h2 class="font-heading text-lg font-bold text-gray-700 mb-1">Semana 14 &mdash; Las 6 dimensiones QA</h2><p class="text-sm text-gray-500">Contenido en desarrollo.</p></div></section>
+        <section class="dc-section" id="sec-s15" aria-label="Semana 15"><div class="dc-card p-8 text-center"><div class="text-gray-400 mb-2"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg></div><h2 class="font-heading text-lg font-bold text-gray-700 mb-1">Semana 15 &mdash; Evaluaci&oacute;n QA con r&uacute;bricas</h2><p class="text-sm text-gray-500">Contenido en desarrollo.</p></div></section>
+        <section class="dc-section" id="sec-s16" aria-label="Semana 16"><div class="dc-card p-8 text-center"><div class="text-gray-400 mb-2"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg></div><h2 class="font-heading text-lg font-bold text-gray-700 mb-1">Semana 16 &mdash; An&aacute;lisis de datos y learning analytics</h2><p class="text-sm text-gray-500">Contenido en desarrollo.</p></div></section>
+        <section class="dc-section" id="sec-s17" aria-label="Semana 17"><div class="dc-card p-8 text-center"><div class="text-gray-400 mb-2"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg></div><h2 class="font-heading text-lg font-bold text-gray-700 mb-1">Semana 17 &mdash; Plan de mejora continua</h2><p class="text-sm text-gray-500">Contenido en desarrollo.</p></div></section>
+        <section class="dc-section" id="sec-s18" aria-label="Semana 18"><div class="dc-card p-8 text-center"><div class="text-gray-400 mb-2"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg></div><h2 class="font-heading text-lg font-bold text-gray-700 mb-1">Semana 18 &mdash; Cierre, integraci&oacute;n y presentaciones finales</h2><p class="text-sm text-gray-500">Semana de cierre. Incluye evaluaci&oacute;n sumativa final del M&oacute;dulo 3 y reflexi&oacute;n integradora.</p></div></section>
+
+
+        <!-- ==================== SECTION: MODULE 2 PORTADA ==================== -->
+        <section class="dc-section" id="sec-m2-portada" aria-label="M&oacute;dulo 2: Dise&ntilde;o Instruccional Aplicado">
+
+          <div class="module-strip module-strip-2 mb-6">
+            <div class="relative z-10">
+              <div class="pill mb-3" style="background: rgba(255,255,255,0.2); color: #fff;">Semanas 7&ndash;12 &middot; 27 horas</div>
+              <h1 class="font-display text-2xl md:text-3xl font-black mb-2">M&oacute;dulo 2: Dise&ntilde;o Instruccional Aplicado</h1>
+              <p class="text-white/80 text-sm max-w-xl">Del conocimiento a la pr&aacute;ctica: dise&ntilde;a secuencias did&aacute;cticas, e-actividades y evaluaciones aut&eacute;nticas.</p>
+            </div>
+          </div>
+
+          <div class="dc-card mb-4 border-l-4" style="border-left-color: #7c3aed;">
+            <div class="text-xs font-bold uppercase tracking-wider text-purple-500 mb-1">Resultado de Formaci&oacute;n</div>
+            <p class="font-heading font-bold text-gray-900">Dise&ntilde;ar una secuencia did&aacute;ctica virtual completa aplicando el modelo UMCE, demostrando coherencia entre resultados de aprendizaje, actividades formativas y evaluaciones aut&eacute;nticas con r&uacute;brica.</p>
+          </div>
+
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 mb-3 text-sm">Criterios de Evaluaci&oacute;n</h3>
+            <div class="space-y-2">
+              <div class="expand-toggle p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open');">
+                <div class="flex items-center gap-2"><span class="expand-icon text-gray-400">&#9660;</span><span class="text-sm font-medium text-gray-800">CE 2.1: Aplicar backward design en un m&oacute;dulo virtual</span></div>
+              </div>
+              <div class="expandable-content"><div class="px-3 pb-3 text-sm text-gray-600">Definir primero los resultados de aprendizaje, luego las evidencias de logro y finalmente las actividades formativas.</div></div>
+              <div class="expand-toggle p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open');">
+                <div class="flex items-center gap-2"><span class="expand-icon text-gray-400">&#9660;</span><span class="text-sm font-medium text-gray-800">CE 2.2: Dise&ntilde;ar al menos 3 tipos de e-actividades diferentes</span></div>
+              </div>
+              <div class="expandable-content"><div class="px-3 pb-3 text-sm text-gray-600">Incluir actividades de interacci&oacute;n, colaboraci&oacute;n y reflexi&oacute;n que cubran los pilares del modelo.</div></div>
+              <div class="expand-toggle p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open');">
+                <div class="flex items-center gap-2"><span class="expand-icon text-gray-400">&#9660;</span><span class="text-sm font-medium text-gray-800">CE 2.3: Construir r&uacute;bricas de evaluaci&oacute;n alineadas con los RF</span></div>
+              </div>
+              <div class="expandable-content"><div class="px-3 pb-3 text-sm text-gray-600">Crear r&uacute;bricas anal&iacute;ticas con niveles de desempe&ntilde;o, criterios claros y descriptores observables.</div></div>
+              <div class="expand-toggle p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open');">
+                <div class="flex items-center gap-2"><span class="expand-icon text-gray-400">&#9660;</span><span class="text-sm font-medium text-gray-800">CE 2.4: Validar la carga estudiantil con el Planificador Curricular</span></div>
+              </div>
+              <div class="expandable-content"><div class="px-3 pb-3 text-sm text-gray-600">Utilizar la herramienta del planificador para verificar que la carga semanal est&eacute; dentro de los rangos recomendados.</div></div>
+            </div>
+          </div>
+
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 mb-3 text-sm">Distribuci&oacute;n de categor&iacute;as de actividad</h3>
+            <div class="space-y-2">
+              <div class="flex items-center gap-3"><span class="pill pill-EB text-xs w-8 justify-center">EB</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:25%; background: var(--cat-EB);"><span class="cat-bar-label">25%</span></div></div><span class="text-xs text-gray-500">Investigaci&oacute;n</span></div>
+              <div class="flex items-center gap-3"><span class="pill pill-EC text-xs w-8 justify-center">EC</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:20%; background: var(--cat-EC);"><span class="cat-bar-label">20%</span></div></div><span class="text-xs text-gray-500">Interacci&oacute;n</span></div>
+              <div class="flex items-center gap-3"><span class="pill pill-ED text-xs w-8 justify-center">ED</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:15%; background: var(--cat-ED);"><span class="cat-bar-label">15%</span></div></div><span class="text-xs text-gray-500">Colaboraci&oacute;n</span></div>
+              <div class="flex items-center gap-3"><span class="pill pill-EV text-xs w-8 justify-center">EV</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:15%; background: var(--cat-EV);"><span class="cat-bar-label">15%</span></div></div><span class="text-xs text-gray-500">Evaluaci&oacute;n</span></div>
+              <div class="flex items-center gap-3"><span class="pill pill-IN text-xs w-8 justify-center">IN</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:15%; background: var(--cat-IN);"><span class="cat-bar-label">15%</span></div></div><span class="text-xs text-gray-500">Insumos</span></div>
+              <div class="flex items-center gap-3"><span class="pill pill-EA text-xs w-8 justify-center">EA</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:10%; background: var(--cat-EA);"><span class="cat-bar-label">10%</span></div></div><span class="text-xs text-gray-500">An&aacute;lisis</span></div>
+            </div>
+          </div>
+
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 mb-3 text-sm">Evaluaciones del m&oacute;dulo</h3>
+            <table class="rubrica-table" role="table">
+              <thead><tr><th>Evaluaci&oacute;n</th><th>Tipo</th><th>Peso</th><th>Semana</th></tr></thead>
+              <tbody>
+                <tr><td>Quiz formativo semanal (sem 7-11)</td><td><span class="pill pill-EV">Formativa</span></td><td>&mdash;</td><td>7&ndash;11</td></tr>
+                <tr><td>Secuencia did&aacute;ctica virtual con r&uacute;brica</td><td><span class="pill" style="background: #FEE2E2; color: #991B1B;">Sumativa</span></td><td>40%</td><td>12</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ==================== SECTION: MODULE 3 PORTADA ==================== -->
+        <section class="dc-section" id="sec-m3-portada" aria-label="M&oacute;dulo 3: Calidad y Mejora Continua">
+
+          <div class="module-strip module-strip-3 mb-6">
+            <div class="relative z-10">
+              <div class="pill mb-3" style="background: rgba(255,255,255,0.2); color: #fff;">Semanas 13&ndash;18 &middot; 27 horas</div>
+              <h1 class="font-display text-2xl md:text-3xl font-black mb-2">M&oacute;dulo 3: Calidad y Mejora Continua</h1>
+              <p class="text-white/80 text-sm max-w-xl">Evaluar, monitorear y mejorar cursos virtuales con el Marco QA UDFV-UMCE.</p>
+            </div>
+          </div>
+
+          <div class="dc-card mb-4 border-l-4" style="border-left-color: #059669;">
+            <div class="text-xs font-bold uppercase tracking-wider text-emerald-500 mb-1">Resultado de Formaci&oacute;n</div>
+            <p class="font-heading font-bold text-gray-900">Evaluar cursos virtuales utilizando el marco QA UDFV-UMCE con sus 6 dimensiones y 77 indicadores, y proponer un plan de mejora basado en evidencia para la calidad continua.</p>
+          </div>
+
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 mb-3 text-sm">Criterios de Evaluaci&oacute;n</h3>
+            <div class="space-y-2">
+              <div class="expand-toggle p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open');">
+                <div class="flex items-center gap-2"><span class="expand-icon text-gray-400">&#9660;</span><span class="text-sm font-medium text-gray-800">CE 3.1: Aplicar el Marco QA a un curso virtual real</span></div>
+              </div>
+              <div class="expandable-content"><div class="px-3 pb-3 text-sm text-gray-600">Evaluar un curso con las 6 dimensiones del marco, asignando niveles de logro con evidencia observable.</div></div>
+              <div class="expand-toggle p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open');">
+                <div class="flex items-center gap-2"><span class="expand-icon text-gray-400">&#9660;</span><span class="text-sm font-medium text-gray-800">CE 3.2: Interpretar datos de learning analytics</span></div>
+              </div>
+              <div class="expandable-content"><div class="px-3 pb-3 text-sm text-gray-600">Analizar patrones de uso, participaci&oacute;n y rendimiento para informar decisiones de mejora.</div></div>
+              <div class="expand-toggle p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open');">
+                <div class="flex items-center gap-2"><span class="expand-icon text-gray-400">&#9660;</span><span class="text-sm font-medium text-gray-800">CE 3.3: Elaborar un plan de mejora con acciones priorizadas</span></div>
+              </div>
+              <div class="expandable-content"><div class="px-3 pb-3 text-sm text-gray-600">Producir un documento de mejora con prioridades, responsables, plazos y m&eacute;tricas de &eacute;xito.</div></div>
+            </div>
+          </div>
+
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 mb-3 text-sm">Distribuci&oacute;n de categor&iacute;as de actividad</h3>
+            <div class="space-y-2">
+              <div class="flex items-center gap-3"><span class="pill pill-EB text-xs w-8 justify-center">EB</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:30%; background: var(--cat-EB);"><span class="cat-bar-label">30%</span></div></div><span class="text-xs text-gray-500">Investigaci&oacute;n</span></div>
+              <div class="flex items-center gap-3"><span class="pill pill-EC text-xs w-8 justify-center">EC</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:20%; background: var(--cat-EC);"><span class="cat-bar-label">20%</span></div></div><span class="text-xs text-gray-500">Interacci&oacute;n</span></div>
+              <div class="flex items-center gap-3"><span class="pill pill-EV text-xs w-8 justify-center">EV</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:20%; background: var(--cat-EV);"><span class="cat-bar-label">20%</span></div></div><span class="text-xs text-gray-500">Evaluaci&oacute;n</span></div>
+              <div class="flex items-center gap-3"><span class="pill pill-EE text-xs w-8 justify-center">EE</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:15%; background: var(--cat-EE);"><span class="cat-bar-label">15%</span></div></div><span class="text-xs text-gray-500">Reflexi&oacute;n</span></div>
+              <div class="flex items-center gap-3"><span class="pill pill-IN text-xs w-8 justify-center">IN</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:10%; background: var(--cat-IN);"><span class="cat-bar-label">10%</span></div></div><span class="text-xs text-gray-500">Insumos</span></div>
+              <div class="flex items-center gap-3"><span class="pill pill-ED text-xs w-8 justify-center">ED</span><div class="cat-bar-track flex-1"><div class="cat-bar-fill" style="width:5%; background: var(--cat-ED);"><span class="cat-bar-label">5%</span></div></div><span class="text-xs text-gray-500">Colaboraci&oacute;n</span></div>
+            </div>
+          </div>
+
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 mb-3 text-sm">Evaluaciones del m&oacute;dulo</h3>
+            <table class="rubrica-table" role="table">
+              <thead><tr><th>Evaluaci&oacute;n</th><th>Tipo</th><th>Peso</th><th>Semana</th></tr></thead>
+              <tbody>
+                <tr><td>Quiz formativo semanal (sem 13-17)</td><td><span class="pill pill-EV">Formativa</span></td><td>&mdash;</td><td>13&ndash;17</td></tr>
+                <tr><td>Informe QA + Plan de Mejora (presentaci&oacute;n evaluada)</td><td><span class="pill" style="background: #FEE2E2; color: #991B1B;">Sumativa</span></td><td>30%</td><td>18</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ==================== SECTION: EVALUACIONES ==================== -->
+        <section class="dc-section" id="sec-evaluaciones" aria-label="Evaluaciones del curso">
+
+          <h1 class="font-heading text-2xl font-bold text-gray-900 mb-6">Evaluaciones</h1>
+
+          <!-- Summary table -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 mb-3 text-sm">Tabla de ponderaci&oacute;n</h3>
+            <div class="overflow-x-auto">
+              <table class="rubrica-table" role="table">
+                <thead>
+                  <tr><th>Evaluaci&oacute;n</th><th>Tipo</th><th>Peso</th><th>M&oacute;dulo</th><th>Semana</th><th>Estado</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="font-medium">Ensayo: Fundamentos del DI para mi contexto</td>
+                    <td><span class="pill" style="background: #FEE2E2; color: #991B1B;">Sumativa</span></td>
+                    <td class="font-bold">30%</td>
+                    <td>M&oacute;dulo 1</td>
+                    <td>Semana 6</td>
+                    <td><span class="pill pill-complementario">Pendiente</span></td>
+                  </tr>
+                  <tr>
+                    <td class="font-medium">Secuencia did&aacute;ctica virtual con r&uacute;brica</td>
+                    <td><span class="pill" style="background: #FEE2E2; color: #991B1B;">Sumativa</span></td>
+                    <td class="font-bold">40%</td>
+                    <td>M&oacute;dulo 2</td>
+                    <td>Semana 12</td>
+                    <td><span class="pill pill-complementario">Pendiente</span></td>
+                  </tr>
+                  <tr>
+                    <td class="font-medium">Informe QA + Plan de Mejora (presentaci&oacute;n evaluada)</td>
+                    <td><span class="pill" style="background: #FEE2E2; color: #991B1B;">Sumativa</span></td>
+                    <td class="font-bold">30%</td>
+                    <td>M&oacute;dulo 3</td>
+                    <td>Semana 18</td>
+                    <td><span class="pill pill-complementario">Pendiente</span></td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr class="font-bold"><td colspan="2" class="text-right">Total</td><td>100%</td><td colspan="3"></td></tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <!-- Rubrica: Ensayo -->
+          <div class="dc-card mb-6">
+            <div class="expand-toggle flex items-center justify-between" onclick="this.classList.toggle('open'); document.getElementById('rubrica-1').classList.toggle('open');">
+              <h3 class="font-heading font-bold text-gray-900 text-sm">R&uacute;brica: Ensayo &mdash; Fundamentos del DI (30%)</h3>
+              <span class="expand-icon text-gray-400 text-lg">&#9660;</span>
+            </div>
+            <div class="expandable-content" id="rubrica-1">
+              <div class="mt-3 overflow-x-auto">
+                <table class="rubrica-table" role="table">
+                  <thead><tr><th>Criterio</th><th style="color: #059669;">Logrado (3)</th><th style="color: #D97706;">En desarrollo (2)</th><th style="color: #DC2626;">Inicial (1)</th></tr></thead>
+                  <tbody>
+                    <tr>
+                      <td class="font-medium">Fundamentaci&oacute;n te&oacute;rica</td>
+                      <td>Cita al menos 3 fuentes pertinentes y las articula con su contexto profesional</td>
+                      <td>Cita 1-2 fuentes pero las articula superficialmente</td>
+                      <td>No cita fuentes o las usa sin relaci&oacute;n con su contexto</td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">Comprensi&oacute;n del modelo UMCE</td>
+                      <td>Explica con precisi&oacute;n los 3 pilares y su relaci&oacute;n con el DI</td>
+                      <td>Menciona los pilares pero no los relaciona con el DI</td>
+                      <td>No demuestra comprensi&oacute;n de los pilares del modelo</td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">Argumentaci&oacute;n y escritura</td>
+                      <td>Argumentaci&oacute;n coherente, estructura clara, normas APA</td>
+                      <td>Argumentaci&oacute;n parcial, errores menores de formato</td>
+                      <td>Sin estructura argumentativa clara</td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">Reflexi&oacute;n personal</td>
+                      <td>Vincula s&oacute;lidamente teor&iacute;a con su pr&aacute;ctica profesional</td>
+                      <td>Incluye reflexi&oacute;n superficial sobre su pr&aacute;ctica</td>
+                      <td>Sin reflexi&oacute;n personal</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rubrica: Secuencia didactica -->
+          <div class="dc-card mb-6">
+            <div class="expand-toggle flex items-center justify-between" onclick="this.classList.toggle('open'); document.getElementById('rubrica-2').classList.toggle('open');">
+              <h3 class="font-heading font-bold text-gray-900 text-sm">R&uacute;brica: Secuencia did&aacute;ctica virtual (40%)</h3>
+              <span class="expand-icon text-gray-400 text-lg">&#9660;</span>
+            </div>
+            <div class="expandable-content" id="rubrica-2">
+              <div class="mt-3 overflow-x-auto">
+                <table class="rubrica-table" role="table">
+                  <thead><tr><th>Criterio</th><th style="color: #059669;">Logrado (3)</th><th style="color: #D97706;">En desarrollo (2)</th><th style="color: #DC2626;">Inicial (1)</th></tr></thead>
+                  <tbody>
+                    <tr>
+                      <td class="font-medium">Alineaci&oacute;n RF&ndash;Actividades&ndash;Evaluaci&oacute;n</td>
+                      <td>Coherencia total entre los 3 elementos con justificaci&oacute;n</td>
+                      <td>Coherencia parcial, algunas actividades no alineadas</td>
+                      <td>Sin coherencia visible entre los elementos</td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">Diversidad de e-actividades</td>
+                      <td>3+ tipos distintos cubriendo los 3 pilares del modelo</td>
+                      <td>2 tipos, cobertura parcial de pilares</td>
+                      <td>Solo 1 tipo de actividad (contenido pasivo)</td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">Carga estudiantil</td>
+                      <td>Validada con Planificador, dentro del rango recomendado</td>
+                      <td>Estimada pero no validada con herramienta</td>
+                      <td>Sin estimaci&oacute;n de carga</td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">R&uacute;brica de evaluaci&oacute;n incluida</td>
+                      <td>R&uacute;brica anal&iacute;tica con 3+ niveles y descriptores claros</td>
+                      <td>R&uacute;brica con descriptores ambiguos</td>
+                      <td>Sin r&uacute;brica o solo check-list</td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">Secuencia antes/durante/despu&eacute;s</td>
+                      <td>Los 3 momentos presentes con actividades diferenciadas</td>
+                      <td>Momentos presentes pero sin diferenciaci&oacute;n clara</td>
+                      <td>Sin estructura de momentos</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rubrica: Informe QA -->
+          <div class="dc-card mb-6">
+            <div class="expand-toggle flex items-center justify-between" onclick="this.classList.toggle('open'); document.getElementById('rubrica-3').classList.toggle('open');">
+              <h3 class="font-heading font-bold text-gray-900 text-sm">R&uacute;brica: Informe QA + Plan de Mejora (30%)</h3>
+              <span class="expand-icon text-gray-400 text-lg">&#9660;</span>
+            </div>
+            <div class="expandable-content" id="rubrica-3">
+              <div class="mt-3 overflow-x-auto">
+                <table class="rubrica-table" role="table">
+                  <thead><tr><th>Criterio</th><th style="color: #059669;">Logrado (3)</th><th style="color: #D97706;">En desarrollo (2)</th><th style="color: #DC2626;">Inicial (1)</th></tr></thead>
+                  <tbody>
+                    <tr>
+                      <td class="font-medium">Aplicaci&oacute;n del Marco QA</td>
+                      <td>Eval&uacute;a las 6 dimensiones con evidencia espec&iacute;fica</td>
+                      <td>Eval&uacute;a 3-5 dimensiones con evidencia parcial</td>
+                      <td>Eval&uacute;a menos de 3 dimensiones</td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">An&aacute;lisis de datos</td>
+                      <td>Interpreta datos cuantitativos y cualitativos correctamente</td>
+                      <td>Presenta datos sin interpretaci&oacute;n profunda</td>
+                      <td>No incluye datos o los interpreta err&oacute;neamente</td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">Plan de mejora</td>
+                      <td>Acciones priorizadas con responsable, plazo y m&eacute;trica</td>
+                      <td>Acciones generales sin priorizaci&oacute;n</td>
+                      <td>Sin plan o solo ideas sueltas</td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">Presentaci&oacute;n oral</td>
+                      <td>Clara, dentro del tiempo, responde preguntas con precisi&oacute;n</td>
+                      <td>Razonablemente clara, excede el tiempo</td>
+                      <td>Confusa o no se ajusta al formato</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Promedio parcial -->
+          <div class="dc-card mb-6">
+            <div class="flex items-center justify-between">
+              <span class="font-heading font-bold text-gray-900 text-sm">Promedio parcial</span>
+              <span class="font-display text-2xl font-black text-gray-300">&mdash;</span>
+            </div>
+            <div class="text-xs text-gray-500 mt-1">Se calcular&aacute; al completar al menos una evaluaci&oacute;n sumativa.</div>
+          </div>
+
+          <!-- Integridad academica -->
+          <div class="dc-card mb-6 border-l-4 border-red-200">
+            <h3 class="font-heading font-bold text-gray-900 text-sm mb-2">Pol&iacute;tica de integridad acad&eacute;mica</h3>
+            <div class="prose-edu text-sm">
+              <p>Este curso valora la honestidad intelectual. Los productos de aprendizaje deben ser de autor&iacute;a propia. El uso de herramientas de IA generativa est&aacute; permitido como apoyo al proceso creativo, siempre que se declare su uso y el producto final refleje comprensi&oacute;n personal.</p>
+              <p>El plagio o la entrega de trabajos generados &iacute;ntegramente por terceros (humanos o IA) constituye una falta grave seg&uacute;n el reglamento de postgrado UMCE.</p>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ==================== SECTION: BIBLIOGRAFIA ==================== -->
+        <section class="dc-section" id="sec-bibliografia" aria-label="Bibliograf&iacute;a del curso">
+
+          <h1 class="font-heading text-2xl font-bold text-gray-900 mb-6">Bibliograf&iacute;a</h1>
+
+          <!-- Modulo 1 -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-indigo-800 mb-3 text-sm flex items-center gap-2">
+              <span class="w-6 h-6 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">1</span>
+              M&oacute;dulo 1 &mdash; Fundamentos
+            </h3>
+            <div class="space-y-3">
+              <div class="flex items-start gap-2">
+                <span class="pill pill-obligatorio mt-1" style="font-size: 0.625rem;">Obligatoria</span>
+                <div>
+                  <p class="text-sm text-gray-800">Garrido, C. (2024). <em>Modelo virtual UMCE: Fundamentos y orientaciones para la docencia en l&iacute;nea</em>. Ediciones UMCE.</p>
+                  <span class="pill mt-1" style="background: #D1FAE5; color: #065F46; font-size: 0.625rem;">Acceso abierto</span>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="pill pill-obligatorio mt-1" style="font-size: 0.625rem;">Obligatoria</span>
+                <div>
+                  <p class="text-sm text-gray-800">Sangr&agrave;, A. (2020). <em>Deconstruyendo la educaci&oacute;n a distancia: fundamentos para un modelo futuro</em>. UOC.</p>
+                  <span class="pill mt-1" style="background: #DBEAFE; color: #1E40AF; font-size: 0.625rem;">Biblioteca UMCE</span>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="pill pill-obligatorio mt-1" style="font-size: 0.625rem;">Obligatoria</span>
+                <div>
+                  <p class="text-sm text-gray-800">Siemens, G. (2005). Connectivism: A learning theory for the digital age. <em>International Journal of Instructional Technology and Distance Learning, 2</em>(1), 3&ndash;10.</p>
+                  <span class="pill mt-1" style="background: #D1FAE5; color: #065F46; font-size: 0.625rem;">Acceso abierto</span>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="pill pill-complementario mt-1" style="font-size: 0.625rem;">Complementaria</span>
+                <div>
+                  <p class="text-sm text-gray-800">Maina, M. (2020). E-actividades para un aprendizaje activo en l&iacute;nea. En A. Sangr&agrave; (Coord.), <em>Deconstruyendo la educaci&oacute;n a distancia</em> (pp. 123&ndash;148). UOC.</p>
+                  <span class="pill mt-1" style="background: #DBEAFE; color: #1E40AF; font-size: 0.625rem;">Biblioteca UMCE</span>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="pill pill-complementario mt-1" style="font-size: 0.625rem;">Complementaria</span>
+                <div>
+                  <p class="text-sm text-gray-800">McConnell, D. (2006). <em>E-learning groups and communities</em>. Open University Press.</p>
+                  <span class="pill mt-1" style="background: #DBEAFE; color: #1E40AF; font-size: 0.625rem;">Biblioteca UMCE</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modulo 2 -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-purple-800 mb-3 text-sm flex items-center gap-2">
+              <span class="w-6 h-6 rounded bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold">2</span>
+              M&oacute;dulo 2 &mdash; DI Aplicado
+            </h3>
+            <div class="space-y-3">
+              <div class="flex items-start gap-2">
+                <span class="pill pill-obligatorio mt-1" style="font-size: 0.625rem;">Obligatoria</span>
+                <div>
+                  <p class="text-sm text-gray-800">Wiggins, G. &amp; McTighe, J. (2005). <em>Understanding by design</em> (2nd ed.). ASCD.</p>
+                  <span class="pill mt-1" style="background: #DBEAFE; color: #1E40AF; font-size: 0.625rem;">Biblioteca UMCE</span>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="pill pill-obligatorio mt-1" style="font-size: 0.625rem;">Obligatoria</span>
+                <div>
+                  <p class="text-sm text-gray-800">Guardia, L., Sangrà, A. &amp; Maina, M. (2004). <em>Tipolog&iacute;a de e-actividades</em>. UOC Working Papers.</p>
+                  <span class="pill mt-1" style="background: #D1FAE5; color: #065F46; font-size: 0.625rem;">Acceso abierto</span>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="pill pill-complementario mt-1" style="font-size: 0.625rem;">Complementaria</span>
+                <div>
+                  <p class="text-sm text-gray-800">P&eacute;rez-Mateo, M. &amp; Guitert, M. (2013). <em>Collaborative learning in virtual environments</em>. Springer.</p>
+                  <span class="pill mt-1" style="background: #DBEAFE; color: #1E40AF; font-size: 0.625rem;">Biblioteca UMCE</span>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="pill pill-complementario mt-1" style="font-size: 0.625rem;">Complementaria</span>
+                <div>
+                  <p class="text-sm text-gray-800">Fern&aacute;ndez, A. &amp; For&eacute;s, A. (2018). <em>Evaluaci&oacute;n competencial en educaci&oacute;n superior</em>. Narcea.</p>
+                  <span class="pill mt-1" style="background: #DBEAFE; color: #1E40AF; font-size: 0.625rem;">Biblioteca UMCE</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modulo 3 -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-emerald-800 mb-3 text-sm flex items-center gap-2">
+              <span class="w-6 h-6 rounded bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">3</span>
+              M&oacute;dulo 3 &mdash; Calidad y Mejora
+            </h3>
+            <div class="space-y-3">
+              <div class="flex items-start gap-2">
+                <span class="pill pill-obligatorio mt-1" style="font-size: 0.625rem;">Obligatoria</span>
+                <div>
+                  <p class="text-sm text-gray-800">Prats, M. &Agrave;., Calder&oacute;n, C. &amp; Fuentes, M. (2020). Evaluaci&oacute;n procesual en entornos virtuales. <em>REDU: Revista de Docencia Universitaria, 18</em>(1), 59&ndash;76.</p>
+                  <span class="pill mt-1" style="background: #D1FAE5; color: #065F46; font-size: 0.625rem;">Acceso abierto</span>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="pill pill-obligatorio mt-1" style="font-size: 0.625rem;">Obligatoria</span>
+                <div>
+                  <p class="text-sm text-gray-800">CNA Chile (2022). <em>Criterios de evaluaci&oacute;n para programas de postgrado</em>. Comisi&oacute;n Nacional de Acreditaci&oacute;n.</p>
+                  <span class="pill mt-1" style="background: #D1FAE5; color: #065F46; font-size: 0.625rem;">Acceso abierto</span>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="pill pill-complementario mt-1" style="font-size: 0.625rem;">Complementaria</span>
+                <div>
+                  <p class="text-sm text-gray-800">Siemens, G. &amp; Long, P. (2011). Penetrating the fog: Analytics in learning and education. <em>EDUCAUSE Review, 46</em>(5), 30&ndash;40.</p>
+                  <span class="pill mt-1" style="background: #D1FAE5; color: #065F46; font-size: 0.625rem;">Acceso abierto</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== SECTION: INFO DEL CURSO ==================== -->
+        <section class="dc-section" id="sec-info" aria-label="Informaci&oacute;n del curso">
+
+          <h1 class="font-heading text-2xl font-bold text-gray-900 mb-6">Informaci&oacute;n del curso</h1>
+
+          <!-- Docente -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 text-sm mb-3">Docente y tiempos de respuesta</h3>
+            <div class="flex items-start gap-4 mb-4 flex-wrap md:flex-nowrap">
+              <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0" role="img" aria-label="Foto del o la docente">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.5" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div>
+                <div class="font-heading font-bold text-gray-900">Docente por confirmar</div>
+                <div class="text-sm text-gray-500">Unidad de Desarrollo y Formaci&oacute;n Virtual, UMCE</div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+              <div class="p-3 rounded-lg bg-blue-50 border border-blue-100">
+                <div class="font-bold text-blue-800">Email: 48 horas</div>
+                <div class="text-xs text-blue-600">D&iacute;as h&aacute;biles. Respuesta garantizada.</div>
+              </div>
+              <div class="p-3 rounded-lg bg-orange-50 border border-orange-100">
+                <div class="font-bold text-orange-800">Foro: 72 horas</div>
+                <div class="text-xs text-orange-600">El/la docente participa activamente en los foros.</div>
+              </div>
+              <div class="p-3 rounded-lg bg-green-50 border border-green-100">
+                <div class="font-bold text-green-800">Tareas: 7 d&iacute;as</div>
+                <div class="text-xs text-green-600">Retroalimentaci&oacute;n detallada con r&uacute;brica.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Politicas -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 text-sm mb-3">Pol&iacute;ticas del curso</h3>
+            <div class="prose-edu text-sm space-y-3">
+              <div>
+                <h4 class="font-bold text-gray-800 mb-1">Asistencia a sesiones sincr&oacute;nicas</h4>
+                <p>La asistencia es valorada pero no obligatoria. Todas las sesiones se graban y est&aacute;n disponibles dentro de 48 horas. Quien no asista debe revisar la grabaci&oacute;n y completar la actividad complementaria correspondiente.</p>
+              </div>
+              <div>
+                <h4 class="font-bold text-gray-800 mb-1">Entregas tard&iacute;as</h4>
+                <p>Las evaluaciones sumativas tienen un per&iacute;odo de gracia de 48 horas sin penalizaci&oacute;n. Pasado ese plazo, se descuenta un 10% por cada d&iacute;a adicional (m&aacute;ximo 3 d&iacute;as). Despu&eacute;s del 5to d&iacute;a la tarea se cierra.</p>
+              </div>
+              <div>
+                <h4 class="font-bold text-gray-800 mb-1">Flexibilidad</h4>
+                <p class="p-3 rounded-lg bg-amber-50 border border-amber-100">Si tienes dificultades personales, laborales o de salud que afecten tu participaci&oacute;n, contacta al o la docente <strong>antes del plazo de entrega</strong>. Siempre buscaremos una soluci&oacute;n. Tu bienestar importa.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Soporte tecnico -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 text-sm mb-3">Soporte t&eacute;cnico UDFV</h3>
+            <div class="text-sm text-gray-600 space-y-2">
+              <p>Para problemas t&eacute;cnicos con Moodle, Zoom o herramientas del curso:</p>
+              <div class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span>udfv@umce.cl</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>Lunes a viernes, 9:00 a 18:00 (hora Chile)</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <span>Tiempo de respuesta: 24 horas h&aacute;biles</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Herramientas y privacidad -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 text-sm mb-3">Herramientas y privacidad</h3>
+            <div class="text-sm text-gray-600 space-y-2">
+              <p>Este curso utiliza las siguientes herramientas externas:</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div class="p-2 rounded-lg bg-gray-50"><strong>Moodle</strong> &mdash; Plataforma principal (evirtual.umce.cl)</div>
+                <div class="p-2 rounded-lg bg-gray-50"><strong>Zoom REUNA</strong> &mdash; Sesiones sincr&oacute;nicas</div>
+                <div class="p-2 rounded-lg bg-gray-50"><strong>H5P</strong> &mdash; Actividades interactivas</div>
+                <div class="p-2 rounded-lg bg-gray-50"><strong>Miro</strong> &mdash; Muros colaborativos</div>
+                <div class="p-2 rounded-lg bg-gray-50"><strong>YouTube</strong> &mdash; Videos de clase</div>
+                <div class="p-2 rounded-lg bg-gray-50"><strong>Google Docs</strong> &mdash; Co-construcci&oacute;n</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gobernanza de datos -->
+          <div class="dc-card mb-6 border-l-4 border-indigo-200">
+            <h3 class="font-heading font-bold text-gray-900 text-sm mb-2">Gobernanza de datos</h3>
+            <div class="prose-edu text-sm">
+              <p>Tus datos de actividad en Moodle (accesos, entregas, calificaciones) son utilizados &uacute;nicamente para fines pedag&oacute;gicos: seguimiento de tu progreso y retroalimentaci&oacute;n personalizada.</p>
+              <p>Las grabaciones de sesiones sincr&oacute;nicas se almacenan en la plataforma institucional y est&aacute;n disponibles solo para quienes participan en el curso.</p>
+              <p>Los datos de learning analytics son anonimizados para fines de investigaci&oacute;n y mejora del curso. En ning&uacute;n caso se comparten datos personales identificables con terceros.</p>
+              <p>Para m&aacute;s informaci&oacute;n: <a href="/privacidad" class="text-indigo-600 underline">Pol&iacute;tica de privacidad UMCE.online</a></p>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ==================== SECTION: PANEL QA ==================== -->
+        <section class="dc-section" id="sec-qa" aria-label="Panel de Aseguramiento de Calidad">
+
+          <h1 class="font-heading text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--c-600)" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Panel QA &mdash; Aseguramiento de Calidad
+          </h1>
+
+          <!-- QA Preventivo -->
+          <div class="dc-card mb-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-heading font-bold text-gray-900 text-sm">QA Preventivo</h3>
+              <span class="qa-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                8/8 indicadores cumplidos
+              </span>
+            </div>
+            <div class="space-y-2">
+              <div class="qa-check-row">
+                <svg class="qa-check-icon" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div><span class="font-medium text-gray-800">Resultados de formaci&oacute;n definidos</span><span class="text-gray-500"> &mdash; 3 RF (uno por m&oacute;dulo), verificables y alineados con el perfil de egreso.</span></div>
+              </div>
+              <div class="qa-check-row">
+                <svg class="qa-check-icon" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div><span class="font-medium text-gray-800">Carga estudiantil calibrada</span><span class="text-gray-500"> &mdash; 81 hrs / 18 sem = 4.5 hrs/sem. Dentro del rango postgrado (4&ndash;5 hrs/sem).</span></div>
+              </div>
+              <div class="qa-check-row">
+                <svg class="qa-check-icon" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div><span class="font-medium text-gray-800">Contenido pasivo menor al 40%</span><span class="text-gray-500"> &mdash; 35% insumos, 65% actividades donde el/la estudiante produce.</span></div>
+              </div>
+              <div class="qa-check-row">
+                <svg class="qa-check-icon" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div><span class="font-medium text-gray-800">Interacci&oacute;n presente</span><span class="text-gray-500"> &mdash; Foros, sesiones sincr&oacute;nicas y glosario colaborativo en cada m&oacute;dulo.</span></div>
+              </div>
+              <div class="qa-check-row">
+                <svg class="qa-check-icon" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div><span class="font-medium text-gray-800">Colaboraci&oacute;n presente</span><span class="text-gray-500"> &mdash; Muros colaborativos, co-construcci&oacute;n de documentos, co-evaluaci&oacute;n.</span></div>
+              </div>
+              <div class="qa-check-row">
+                <svg class="qa-check-icon" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div><span class="font-medium text-gray-800">Reflexi&oacute;n presente</span><span class="text-gray-500"> &mdash; Diario reflexivo semanal en los 3 m&oacute;dulos.</span></div>
+              </div>
+              <div class="qa-check-row">
+                <svg class="qa-check-icon" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div><span class="font-medium text-gray-800">Evaluaci&oacute;n formativa presente</span><span class="text-gray-500"> &mdash; Quiz formativo semanal + H5P interactivos.</span></div>
+              </div>
+              <div class="qa-check-row">
+                <svg class="qa-check-icon" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div><span class="font-medium text-gray-800">Secuencia antes/durante/despu&eacute;s en cada semana</span><span class="text-gray-500"> &mdash; Estructura did&aacute;ctica consistente.</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6 Pilares -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 text-sm mb-4">Los 6 pilares del modelo virtual UMCE</h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-100 text-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" class="mx-auto mb-1" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div class="font-heading font-bold text-emerald-800 text-xs">D1 Experiencia</div>
+                <div class="text-xs text-emerald-600">Cumple</div>
+              </div>
+              <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-100 text-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" class="mx-auto mb-1" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div class="font-heading font-bold text-emerald-800 text-xs">D2 Accesibilidad</div>
+                <div class="text-xs text-emerald-600">Cumple</div>
+              </div>
+              <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-100 text-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" class="mx-auto mb-1" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div class="font-heading font-bold text-emerald-800 text-xs">D3 Coherencia</div>
+                <div class="text-xs text-emerald-600">Cumple</div>
+              </div>
+              <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-100 text-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" class="mx-auto mb-1" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div class="font-heading font-bold text-emerald-800 text-xs">D4 Docencia</div>
+                <div class="text-xs text-emerald-600">Cumple</div>
+              </div>
+              <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-100 text-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" class="mx-auto mb-1" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div class="font-heading font-bold text-emerald-800 text-xs">D5 G&eacute;nero</div>
+                <div class="text-xs text-emerald-600">Cumple</div>
+              </div>
+              <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-100 text-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" class="mx-auto mb-1" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div class="font-heading font-bold text-emerald-800 text-xs">D6 Corresponsabilidad</div>
+                <div class="text-xs text-emerald-600">Cumple</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Distribution donut -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 text-sm mb-4">Distribuci&oacute;n por categor&iacute;a</h3>
+            <div class="flex items-center gap-8 flex-wrap md:flex-nowrap">
+              <div class="flex-shrink-0">
+                <svg width="160" height="160" viewBox="0 0 36 36" role="img" aria-label="Gr&aacute;fico de distribuci&oacute;n de actividades por categor&iacute;a">
+                  <circle class="donut-ring" cx="18" cy="18" r="15.91549431"/>
+                  <circle class="donut-segment" cx="18" cy="18" r="15.91549431" stroke="var(--cat-EC)" stroke-dasharray="22 78" stroke-dashoffset="25"/>
+                  <circle class="donut-segment" cx="18" cy="18" r="15.91549431" stroke="var(--cat-IN)" stroke-dasharray="20 80" stroke-dashoffset="3"/>
+                  <circle class="donut-segment" cx="18" cy="18" r="15.91549431" stroke="var(--cat-EB)" stroke-dasharray="18 82" stroke-dashoffset="-17"/>
+                  <circle class="donut-segment" cx="18" cy="18" r="15.91549431" stroke="var(--cat-EV)" stroke-dasharray="16 84" stroke-dashoffset="-35"/>
+                  <circle class="donut-segment" cx="18" cy="18" r="15.91549431" stroke="var(--cat-EA)" stroke-dasharray="10 90" stroke-dashoffset="-51"/>
+                  <circle class="donut-segment" cx="18" cy="18" r="15.91549431" stroke="var(--cat-EE)" stroke-dasharray="8 92" stroke-dashoffset="-61"/>
+                  <circle class="donut-segment" cx="18" cy="18" r="15.91549431" stroke="var(--cat-ED)" stroke-dasharray="6 94" stroke-dashoffset="-69"/>
+                </svg>
+              </div>
+              <div class="flex-1 space-y-2 text-sm">
+                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background: var(--cat-EC);" aria-hidden="true"></span> EC Interacci&oacute;n <span class="text-gray-400 ml-auto">22%</span></div>
+                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background: var(--cat-IN);" aria-hidden="true"></span> IN Insumos <span class="text-gray-400 ml-auto">20%</span></div>
+                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background: var(--cat-EB);" aria-hidden="true"></span> EB Investigaci&oacute;n <span class="text-gray-400 ml-auto">18%</span></div>
+                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background: var(--cat-EV);" aria-hidden="true"></span> EV Evaluaci&oacute;n <span class="text-gray-400 ml-auto">16%</span></div>
+                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background: var(--cat-EA);" aria-hidden="true"></span> EA An&aacute;lisis <span class="text-gray-400 ml-auto">10%</span></div>
+                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background: var(--cat-EE);" aria-hidden="true"></span> EE Reflexi&oacute;n <span class="text-gray-400 ml-auto">8%</span></div>
+                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background: var(--cat-ED);" aria-hidden="true"></span> ED Colaboraci&oacute;n <span class="text-gray-400 ml-auto">6%</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Horas sincronico/asincronico -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 text-sm mb-4">Distribuci&oacute;n de horas</h3>
+            <div class="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <div class="font-display text-2xl font-black text-indigo-600">16</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wider">hrs sincr&oacute;nicas</div>
+                <div class="text-xs text-gray-400">20%</div>
+              </div>
+              <div>
+                <div class="font-display text-2xl font-black text-purple-600">40</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wider">hrs asincr&oacute;nicas</div>
+                <div class="text-xs text-gray-400">49%</div>
+              </div>
+              <div>
+                <div class="font-display text-2xl font-black text-emerald-600">25</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wider">hrs aut&oacute;nomas</div>
+                <div class="text-xs text-gray-400">31%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trazabilidad M1-M5 -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 text-sm mb-4">Trazabilidad M1 &rarr; M5</h3>
+            <p class="text-sm text-gray-600 mb-4">Este curso fue dise&ntilde;ado siguiendo los 5 momentos del proceso de virtualizaci&oacute;n UMCE:</p>
+            <div class="flex items-center gap-1 overflow-x-auto pb-2">
+              <div class="timeline-step">
+                <div class="timeline-dot done" aria-label="Momento 1 completado">1</div>
+                <div class="text-xs font-bold text-gray-700">M1</div>
+                <div class="text-xs text-gray-500" style="max-width: 100px;">Decisi&oacute;n de virtualizar</div>
+              </div>
+              <div class="timeline-line done" aria-hidden="true"></div>
+              <div class="timeline-step">
+                <div class="timeline-dot done" aria-label="Momento 2 completado">2</div>
+                <div class="text-xs font-bold text-gray-700">M2</div>
+                <div class="text-xs text-gray-500" style="max-width: 100px;">Dise&ntilde;o curricular</div>
+              </div>
+              <div class="timeline-line done" aria-hidden="true"></div>
+              <div class="timeline-step">
+                <div class="timeline-dot done" aria-label="Momento 3 completado">3</div>
+                <div class="text-xs font-bold text-gray-700">M3</div>
+                <div class="text-xs text-gray-500" style="max-width: 100px;">Construcci&oacute;n en Moodle</div>
+              </div>
+              <div class="timeline-line done" aria-hidden="true"></div>
+              <div class="timeline-step">
+                <div class="timeline-dot active" aria-label="Momento 4 en progreso">4</div>
+                <div class="text-xs font-bold text-gray-700">M4</div>
+                <div class="text-xs text-gray-500" style="max-width: 100px;">Impartici&oacute;n y apoyo</div>
+              </div>
+              <div class="timeline-line pending" aria-hidden="true"></div>
+              <div class="timeline-step">
+                <div class="timeline-dot pending" aria-label="Momento 5 pendiente">5</div>
+                <div class="text-xs font-bold text-gray-700">M5</div>
+                <div class="text-xs text-gray-500" style="max-width: 100px;">Monitoreo y mejora</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Links -->
+          <div class="dc-card mb-6">
+            <h3 class="font-heading font-bold text-gray-900 text-sm mb-3">Herramientas relacionadas</h3>
+            <div class="space-y-2">
+              <a href="/virtualizacion/qa" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition text-sm text-indigo-600 font-medium" style="text-decoration: none;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Ver Sistema QA completo (77 indicadores) &rarr;
+              </a>
+              <a href="/virtualizacion/planificador" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition text-sm text-indigo-600 font-medium" style="text-decoration: none;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg>
+                Ver Planificador Curricular &rarr;
+              </a>
+              <a href="/virtualizacion" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition text-sm text-indigo-600 font-medium" style="text-decoration: none;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Ver proceso de virtualizaci&oacute;n completo &rarr;
+              </a>
+            </div>
+          </div>
+
+        </section>
+
+      </div><!-- /dc-content -->
+    </div><!-- /dc-main -->
+  </div><!-- /dc-layout -->
+
+
+  <!-- ==================== SCRIPTS ==================== -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <script src="/shared/watercolor-canvas.js"></script>
+  <script src="/shared/accessibility-widget.js"></script>
+  <script src="/accesibilidad-dua.js"></script>
+
+  <script>
+  (function() {
+    'use strict';
+
+    // ── Watercolor Canvas for Hero ──
+    var heroWrap = document.getElementById('hero-canvas-wrap');
+    if (heroWrap && typeof createCourseCanvas === 'function') {
+      var tutoPalette = [
+        [30,  27,  75 ],  // --c-900 indigo oscuro
+        [67,  56, 202 ],  // --c-700
+        [79,  70, 229 ],  // --c-600
+        [99, 102, 241 ],  // --c-500
+        [124, 58, 237 ],  // --c-accent violeta
+        [129, 140, 248],  // --c-400
+        [49,  46, 129 ],  // --c-800
+      ];
+      createCourseCanvas('hero-canvas-wrap', tutoPalette, {
+        fadeBottom: true,
+        bgColor: [30, 27, 75],
+        fadeColor: '#f3f2ff'
+      });
+    }
+
+    // ── Navigation ──
+    var currentSection = 'inicio';
+    var sectionNames = {
+      'inicio': 'Inicio',
+      'm1-portada': 'M\u00F3dulo 1',
+      'm2-portada': 'M\u00F3dulo 2',
+      'm3-portada': 'M\u00F3dulo 3',
+      's1': 'Semana 1', 's2': 'Semana 2', 's3': 'Semana 3',
+      's4': 'Semana 4', 's5': 'Semana 5', 's6': 'Semana 6',
+      's7': 'Semana 7', 's8': 'Semana 8', 's9': 'Semana 9',
+      's10': 'Semana 10', 's11': 'Semana 11', 's12': 'Semana 12',
+      's13': 'Semana 13', 's14': 'Semana 14', 's15': 'Semana 15',
+      's16': 'Semana 16', 's17': 'Semana 17', 's18': 'Semana 18',
+      'evaluaciones': 'Evaluaciones',
+      'bibliografia': 'Bibliograf\u00EDa',
+      'info': 'Info del curso',
+      'qa': 'Panel QA'
+    };
+
+    var breadcrumbMap = {
+      'inicio': 'Inicio',
+      'm1-portada': 'M\u00F3dulo 1',
+      'm2-portada': 'M\u00F3dulo 2',
+      'm3-portada': 'M\u00F3dulo 3',
+      'evaluaciones': 'Evaluaciones',
+      'bibliografia': 'Bibliograf\u00EDa',
+      'info': 'Info del curso',
+      'qa': 'Panel QA'
+    };
+
+    function getBreadcrumb(section) {
+      if (breadcrumbMap[section]) return breadcrumbMap[section];
+      // For weeks, determine module
+      var weekNum = parseInt(section.replace('s', ''));
+      if (weekNum >= 1 && weekNum <= 6) return 'M\u00F3dulo 1 / Semana ' + weekNum;
+      if (weekNum >= 7 && weekNum <= 12) return 'M\u00F3dulo 2 / Semana ' + weekNum;
+      if (weekNum >= 13 && weekNum <= 18) return 'M\u00F3dulo 3 / Semana ' + weekNum;
+      return section;
+    }
+
+    window.navigate = function(section) {
+      // Hide all sections
+      var sections = document.querySelectorAll('.dc-section');
+      for (var i = 0; i < sections.length; i++) {
+        sections[i].classList.remove('active');
+      }
+      // Show target
+      var target = document.getElementById('sec-' + section);
+      if (target) {
+        target.classList.add('active');
+        currentSection = section;
+      }
+
+      // Update breadcrumb
+      document.getElementById('bc-current').textContent = getBreadcrumb(section);
+
+      // Update sidebar active state
+      var allItems = document.querySelectorAll('.sb-item, .sb-week-item');
+      for (var j = 0; j < allItems.length; j++) {
+        allItems[j].classList.remove('active');
+      }
+      // Find matching sidebar item
+      var sbItems = document.querySelectorAll('.sb-item, .sb-week-item');
+      for (var k = 0; k < sbItems.length; k++) {
+        var onclick = sbItems[k].getAttribute('onclick');
+        if (onclick && onclick.indexOf("'" + section + "'") !== -1) {
+          sbItems[k].classList.add('active');
+        }
+      }
+
+      // Close mobile sidebar
+      document.getElementById('sidebar').classList.remove('mobile-open');
+      document.getElementById('mobileOverlay').classList.remove('visible');
+
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // ── Module collapse/expand ──
+    window.toggleModule = function(num) {
+      var weeks = document.getElementById('mod' + num + '-weeks');
+      var header = weeks.previousElementSibling;
+      var icon = header.querySelector('.expand-icon');
+      var isOpen = weeks.classList.contains('open');
+
+      weeks.classList.toggle('open');
+      header.setAttribute('aria-expanded', !isOpen);
+      icon.style.transform = isOpen ? '' : 'rotate(180deg)';
+    };
+
+    // ── Mobile sidebar ──
+    window.toggleSidebar = function() {
+      var sidebar = document.getElementById('sidebar');
+      var overlay = document.getElementById('mobileOverlay');
+      sidebar.classList.toggle('mobile-open');
+      overlay.classList.toggle('visible');
+    };
+
+    // ── Keyboard navigation for sidebar ──
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        var sidebar = document.getElementById('sidebar');
+        if (sidebar.classList.contains('mobile-open')) {
+          window.toggleSidebar();
+        }
+      }
+    });
+
+    // Enter key on module headers
+    var modHeaders = document.querySelectorAll('.sb-module-header');
+    for (var mh = 0; mh < modHeaders.length; mh++) {
+      modHeaders[mh].addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.click();
+        }
+      });
+    }
+
+  })();
+  </script>
+
+</body>
+</html>
