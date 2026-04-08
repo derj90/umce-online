@@ -27,7 +27,7 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://plausible.io; frame-ancestors 'none';");
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' https://plausible.io https://lrs.udfv.cloud; frame-ancestors 'none';");
   next();
 });
 
@@ -6410,8 +6410,8 @@ app.get('/virtualizacion/asistente', (req, res) => res.sendFile(path.join(__dirn
 // app.get('/servicios', ...);
 // app.get('/noticias', ...);
 app.get('/ayuda', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ayuda.html')));
-// app.get('/formacion-docente', ...);
-// app.get('/formacion-docente/marco', ...);
+app.get('/formacion-docente', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente.html')));
+app.get('/formacion-docente/marco', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente-marco.html')));
 app.get('/formacion-docente/plan', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion-docente-plan.html')));
 
 app.get('/formacion', (req, res) => res.sendFile(path.join(__dirname, 'public', 'formacion.html')));
