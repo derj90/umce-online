@@ -76,9 +76,14 @@
                        path === '/virtualizacion/asistente' || path === '/virtualizacion/asistente/';
       chatContainer.setAttribute('data-mode', isInline ? 'inline' : 'floating');
 
-      // Hide the floating FAB — nav icon replaces it
+      // Hide the floating FAB visually — nav icon replaces it, but keep in DOM for toggle logic
       const chatFab = document.getElementById('chat-fab');
-      if (chatFab && !isInline) chatFab.style.display = 'none';
+      if (chatFab && !isInline) {
+        chatFab.style.opacity = '0';
+        chatFab.style.pointerEvents = 'none';
+        chatFab.style.position = 'fixed';
+        chatFab.style.bottom = '-100px';
+      }
     }
 
     // Hide accessibility floating FAB — nav icon replaces it
@@ -101,9 +106,9 @@
         if (path.startsWith('/virtualizacion')) {
           window.location.href = '/virtualizacion/asistente';
         } else {
-          // Toggle the chatbot panel
-          const chatPanel = document.getElementById('chat-panel');
-          if (chatPanel) chatPanel.classList.toggle('open');
+          // Use the chatbot's own toggle function via FAB click
+          const chatFab = document.getElementById('chat-fab');
+          if (chatFab) chatFab.click();
         }
       });
     }
