@@ -106,10 +106,26 @@
         if (path.startsWith('/virtualizacion')) {
           window.location.href = '/virtualizacion/asistente';
         } else {
-          // Use the chatbot's own toggle function via FAB click
-          const chatFab = document.getElementById('chat-fab');
-          if (chatFab) chatFab.click();
+          // Toggle chat panel directly
+          const chatPanel = document.getElementById('chat-panel');
+          if (chatPanel) {
+            const isOpen = chatPanel.classList.toggle('open');
+            // Try to trigger session if opening
+            if (isOpen) {
+              const chatInput = document.getElementById('chat-input');
+              if (chatInput) chatInput.focus();
+            }
+          }
         }
+      });
+    }
+
+    // Close button inside chat panel
+    const chatClose = document.getElementById('chat-close');
+    if (chatClose) {
+      chatClose.addEventListener('click', function () {
+        const chatPanel = document.getElementById('chat-panel');
+        if (chatPanel) chatPanel.classList.remove('open');
       });
     }
   }
