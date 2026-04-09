@@ -67,13 +67,45 @@
     // Update nav for logged-in users
     checkAuthState();
 
-    // Set chatbot mode: inline on /ayuda and /virtualizacion/asistente, floating FAB everywhere else
+    // Chatbot: inline on /ayuda and /virtualizacion/asistente, floating everywhere else
+    // BUT: hide the floating FAB — chat is triggered from nav icon instead
     const chatContainer = document.getElementById('umce-chatbot');
     if (chatContainer) {
       const path = window.location.pathname;
       const isInline = path === '/ayuda' || path === '/ayuda/' ||
                        path === '/virtualizacion/asistente' || path === '/virtualizacion/asistente/';
       chatContainer.setAttribute('data-mode', isInline ? 'inline' : 'floating');
+
+      // Hide the floating FAB — nav icon replaces it
+      const chatFab = document.getElementById('chat-fab');
+      if (chatFab && !isInline) chatFab.style.display = 'none';
+    }
+
+    // Hide accessibility floating FAB — nav icon replaces it
+    const a11yFab = document.getElementById('a11y-fab');
+    if (a11yFab) a11yFab.style.display = 'none';
+
+    // Wire nav icons to existing widget panels
+    const navA11yBtn = document.getElementById('nav-a11y-btn');
+    if (navA11yBtn) {
+      navA11yBtn.addEventListener('click', function () {
+        const panel = document.getElementById('a11y-panel');
+        if (panel) panel.classList.toggle('open');
+      });
+    }
+
+    const navChatBtn = document.getElementById('nav-chat-btn');
+    if (navChatBtn) {
+      navChatBtn.addEventListener('click', function () {
+        const path = window.location.pathname;
+        if (path.startsWith('/virtualizacion')) {
+          window.location.href = '/virtualizacion/asistente';
+        } else {
+          // Toggle the chatbot panel
+          const chatPanel = document.getElementById('chat-panel');
+          if (chatPanel) chatPanel.classList.toggle('open');
+        }
+      });
     }
   }
 
