@@ -63,6 +63,10 @@
     if (fabClose) fabClose.classList.toggle('hidden', !isOpen);
     if (fab) fab.setAttribute('aria-label', isOpen ? 'Cerrar asistente' : 'Abrir asistente');
 
+    // Hide accessibility FAB when chat is open (avoid overlap)
+    var a11yFab = document.getElementById('a11y-fab');
+    if (a11yFab) a11yFab.style.display = isOpen ? 'none' : '';
+
     if (isOpen) {
       if (hasConsent) {
         input.focus();
@@ -78,6 +82,9 @@
     if (fabOpen) fabOpen.classList.remove('hidden');
     if (fabClose) fabClose.classList.add('hidden');
     if (fab) fab.setAttribute('aria-label', 'Abrir asistente');
+    // Restore accessibility FAB
+    var a11yFab = document.getElementById('a11y-fab');
+    if (a11yFab) a11yFab.style.display = '';
   }
 
   // ==========================================
