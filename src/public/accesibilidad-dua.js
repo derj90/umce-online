@@ -160,19 +160,21 @@
     /* ---- Widget UI ---- */
     #a11y-fab {
       position: fixed;
-      bottom: 92px;
-      right: 24px;
+      bottom: 24px;
+      left: 24px;
+      right: auto;
       z-index: 99997;
-      width: 46px;
       height: 46px;
-      border-radius: 14px;
+      width: auto;
+      padding: 0 16px 0 12px;
+      border-radius: 23px;
       background: #0033A1;
       color: white;
       border: none;
       cursor: grab;
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 8px;
       box-shadow: 0 4px 16px rgba(0,51,161,0.35);
       transition: transform 0.2s, box-shadow 0.2s;
       touch-action: none;
@@ -180,14 +182,33 @@
       -webkit-user-select: none;
     }
     #a11y-fab:active { cursor: grabbing; }
-    #a11y-fab:hover { box-shadow: 0 6px 24px rgba(0,51,161,0.45); }
+    #a11y-fab:hover { box-shadow: 0 6px 24px rgba(0,51,161,0.45); transform: scale(1.04); }
     #a11y-fab:focus-visible { outline: 3px solid #FF9E18; outline-offset: 3px; }
-    #a11y-fab svg { width: 26px; height: 26px; pointer-events: none; }
+    #a11y-fab svg { width: 20px; height: 20px; flex-shrink: 0; pointer-events: none; }
+    #a11y-fab-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      color: white;
+      pointer-events: none;
+    }
+
+    /* Mobile: collapse label, keep only icon */
+    @media (max-width: 480px) {
+      #a11y-fab {
+        padding: 0 12px;
+        width: 46px;
+        border-radius: 14px;
+      }
+      #a11y-fab-label { display: none; }
+    }
 
     #a11y-panel {
       position: fixed;
-      bottom: 150px;
-      right: 24px;
+      bottom: 82px;
+      left: 24px;
+      right: auto;
       z-index: 99997;
       width: 320px;
       max-height: calc(100vh - 120px);
@@ -202,16 +223,16 @@
     }
     #a11y-panel.open { display: block; }
 
-    @media (max-width: 400px) {
+    @media (max-width: 480px) {
       #a11y-panel {
-        right: 8px;
         left: 8px;
+        right: 8px;
         width: auto;
-        bottom: 84px;
+        bottom: 68px;
       }
       #a11y-fab {
         bottom: 16px;
-        right: 16px;
+        left: 16px;
       }
     }
 
@@ -398,7 +419,15 @@
   fab.id = 'a11y-fab';
   fab.setAttribute('aria-label', 'Abrir opciones de accesibilidad');
   fab.setAttribute('title', 'Accesibilidad');
-  fab.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="2"/><path d="M12 7.5v4m0 0l-4 7m4-7l4 7"/><path d="M7 11.5h10"/></svg>`;
+  // Sliders/adjustments icon — communicates "visual/reading settings"
+  fab.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <line x1="4" y1="6" x2="20" y2="6"/>
+    <line x1="4" y1="12" x2="20" y2="12"/>
+    <line x1="4" y1="18" x2="20" y2="18"/>
+    <circle cx="8" cy="6" r="2" fill="currentColor" stroke="none"/>
+    <circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/>
+    <circle cx="10" cy="18" r="2" fill="currentColor" stroke="none"/>
+  </svg><span id="a11y-fab-label">Accesibilidad</span>`;
   document.body.appendChild(fab);
 
   // --- Create panel ---
@@ -521,10 +550,10 @@
     fab.style.top = y + 'px';
     fab.style.right = 'auto';
     fab.style.bottom = 'auto';
-    // Position panel relative to fab
-    const onRight = x > window.innerWidth / 2;
-    panel.style.right = onRight ? (window.innerWidth - x - fab.offsetWidth) + 'px' : 'auto';
+    // Position panel above fab, opening left or right depending on space
+    const onRight = (x + fab.offsetWidth + 320) > window.innerWidth;
     panel.style.left = onRight ? 'auto' : x + 'px';
+    panel.style.right = onRight ? (window.innerWidth - x - fab.offsetWidth) + 'px' : 'auto';
     panel.style.bottom = (window.innerHeight - y + 12) + 'px';
     panel.style.top = 'auto';
     // Save position
@@ -582,11 +611,11 @@
     panel.classList.toggle('open', panelOpen);
     fab.setAttribute('aria-expanded', panelOpen);
     if (panelOpen) {
-      // Reposition panel near fab
+      // Reposition panel above fab
       const pos = getFabPos();
-      const onRight = pos.x > window.innerWidth / 2;
-      panel.style.right = onRight ? (window.innerWidth - pos.x - fab.offsetWidth) + 'px' : 'auto';
+      const onRight = (pos.x + fab.offsetWidth + 320) > window.innerWidth;
       panel.style.left = onRight ? 'auto' : pos.x + 'px';
+      panel.style.right = onRight ? (window.innerWidth - pos.x - fab.offsetWidth) + 'px' : 'auto';
       panel.style.bottom = (window.innerHeight - pos.y + 12) + 'px';
       panel.style.top = 'auto';
       panel.querySelector('button, input').focus();

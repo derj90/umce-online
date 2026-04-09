@@ -1,6 +1,8 @@
 /**
- * Audio Narrator — Floating play button for page narration
+ * Audio Narrator — Inline horizontal player for page narration
  * Usage: Add <div id="audio-narrator" data-src="/audio/filename.mp3"></div> to any page
+ * The div should be placed AFTER the hero section and BEFORE the first content section.
+ * The player renders inline (not floating) and flows with the page layout.
  */
 document.addEventListener('DOMContentLoaded', function () {
   'use strict';
@@ -12,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!src) return;
 
   var audio = new Audio();
-  audio.preload = 'auto';
+  audio.preload = 'metadata';
   audio.src = src;
   var isPlaying = false;
   var progressInterval = null;
@@ -21,120 +23,140 @@ document.addEventListener('DOMContentLoaded', function () {
   audio.addEventListener('error', function () {
     console.error('Audio narrator: failed to load', src, audio.error);
   });
-  audio.addEventListener('canplaythrough', function () {
-    console.log('Audio narrator: ready to play', src);
-  });
 
-  // Build the floating button
+  // --- Build inline player ---
   container.innerHTML = '';
-  container.style.cssText = 'position:fixed;bottom:9.5rem;right:1.5rem;z-index:9996;display:flex;align-items:center;gap:0.75rem;';
 
-  // Progress ring + button
+  // Wrapper styles — inline, NOT fixed/floating
+  container.style.cssText = [
+    'display:flex',
+    'align-items:center',
+    'gap:14px',
+    'background:#EFF6FF',
+    'border:1px solid rgba(0,51,161,0.18)',
+    'border-left:4px solid #0033A1',
+    'border-radius:10px',
+    'padding:10px 16px',
+    'max-width:560px',
+    'margin:0 0 0 0',
+    'box-sizing:border-box',
+    'width:100%',
+  ].join(';');
+
+  // --- Play/Pause button ---
   var btn = document.createElement('button');
   btn.setAttribute('aria-label', 'Escuchar narración de esta página');
-  btn.setAttribute('title', 'Escuchar narración');
-  btn.style.cssText = 'width:56px;height:56px;border-radius:50%;background:#0033A1;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,51,161,0.35);transition:all 0.3s ease;position:relative;';
+  btn.style.cssText = [
+    'flex-shrink:0',
+    'width:36px',
+    'height:36px',
+    'border-radius:50%',
+    'background:#0033A1',
+    'color:#fff',
+    'border:none',
+    'cursor:pointer',
+    'display:flex',
+    'align-items:center',
+    'justify-content:center',
+    'transition:background 0.2s',
+    'padding:0',
+  ].join(';');
 
-  // SVG progress ring
-  var ringSize = 64;
-  var ringStroke = 3;
-  var ringRadius = (ringSize - ringStroke) / 2;
-  var ringCircumference = 2 * Math.PI * ringRadius;
+  var playIcon  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+  var pauseIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  btn.innerHTML = playIcon;
 
-  var ring = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  ring.setAttribute('width', ringSize);
-  ring.setAttribute('height', ringSize);
-  ring.style.cssText = 'position:absolute;top:-4px;left:-4px;transform:rotate(-90deg);pointer-events:none;';
+  btn.addEventListener('mouseenter', function () { if (!isPlaying) btn.style.background = '#1a4db3'; });
+  btn.addEventListener('mouseleave', function () { if (!isPlaying) btn.style.background = '#0033A1'; });
 
-  var bgCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-  bgCircle.setAttribute('cx', ringSize / 2);
-  bgCircle.setAttribute('cy', ringSize / 2);
-  bgCircle.setAttribute('r', ringRadius);
-  bgCircle.setAttribute('fill', 'none');
-  bgCircle.setAttribute('stroke', 'rgba(255,255,255,0.2)');
-  bgCircle.setAttribute('stroke-width', ringStroke);
+  // --- Middle section: label + progress bar ---
+  var middle = document.createElement('div');
+  middle.style.cssText = 'flex:1;min-width:0;';
 
-  var progressCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-  progressCircle.setAttribute('cx', ringSize / 2);
-  progressCircle.setAttribute('cy', ringSize / 2);
-  progressCircle.setAttribute('r', ringRadius);
-  progressCircle.setAttribute('fill', 'none');
-  progressCircle.setAttribute('stroke', '#FFB81C');
-  progressCircle.setAttribute('stroke-width', ringStroke);
-  progressCircle.setAttribute('stroke-linecap', 'round');
-  progressCircle.style.strokeDasharray = ringCircumference;
-  progressCircle.style.strokeDashoffset = ringCircumference;
-  progressCircle.style.transition = 'stroke-dashoffset 0.3s ease';
+  var titleRow = document.createElement('div');
+  titleRow.style.cssText = 'font-size:12px;font-weight:600;color:#1e3a5f;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+  titleRow.textContent = 'Escuchar esta página';
 
-  ring.appendChild(bgCircle);
-  ring.appendChild(progressCircle);
-  btn.appendChild(ring);
+  var progressTrack = document.createElement('div');
+  progressTrack.style.cssText = 'height:4px;background:#dbeafe;border-radius:2px;overflow:hidden;cursor:pointer;';
 
-  // Play/pause icon
-  var iconSpan = document.createElement('span');
-  iconSpan.style.cssText = 'position:relative;z-index:1;display:flex;align-items:center;justify-content:center;';
-  var playIcon = '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
-  var pauseIcon = '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
-  iconSpan.innerHTML = playIcon;
-  btn.appendChild(iconSpan);
+  var progressFill = document.createElement('div');
+  progressFill.id = 'audio-progress-bar';
+  progressFill.style.cssText = 'height:100%;width:0%;background:#0033A1;border-radius:2px;transition:width 0.3s linear;';
 
-  // Label tooltip
-  var label = document.createElement('div');
-  label.textContent = 'Escuchar';
-  label.style.cssText = 'background:#0033A1;color:#fff;font-size:0.8125rem;font-weight:600;padding:0.4rem 0.85rem;border-radius:2rem;box-shadow:0 2px 12px rgba(0,0,0,0.15);white-space:nowrap;opacity:1;transition:opacity 0.3s ease;pointer-events:none;';
+  progressTrack.appendChild(progressFill);
+  middle.appendChild(titleRow);
+  middle.appendChild(progressTrack);
 
-  container.appendChild(label);
+  // Seek on click
+  progressTrack.addEventListener('click', function (e) {
+    if (!audio.duration) return;
+    var rect = progressTrack.getBoundingClientRect();
+    var pct = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = pct * audio.duration;
+    updateProgress();
+  });
+
+  // --- Time display ---
+  var timeEl = document.createElement('span');
+  timeEl.id = 'audio-time';
+  timeEl.style.cssText = 'flex-shrink:0;font-size:11px;color:#6b8aad;white-space:nowrap;font-variant-numeric:tabular-nums;min-width:34px;text-align:right;';
+  timeEl.textContent = '0:00';
+
+  // Update time display when metadata loads
+  audio.addEventListener('loadedmetadata', function () {
+    timeEl.textContent = formatTime(audio.duration);
+  });
+
+  // Assemble player
   container.appendChild(btn);
+  container.appendChild(middle);
+  container.appendChild(timeEl);
 
-  // Hover effects
-  btn.addEventListener('mouseenter', function () {
-    btn.style.transform = 'scale(1.08)';
-    btn.style.boxShadow = '0 6px 28px rgba(0,51,161,0.45)';
-    label.style.display = 'block';
-    label.style.opacity = '1';
-  });
-  btn.addEventListener('mouseleave', function () {
-    btn.style.transform = 'scale(1)';
-    btn.style.boxShadow = '0 4px 20px rgba(0,51,161,0.35)';
-    if (!isPlaying) {
-      label.style.opacity = '0';
-      setTimeout(function () { label.style.display = 'none'; }, 300);
-    }
-  });
+  // --- Helper: format seconds to M:SS ---
+  function formatTime(secs) {
+    if (!secs || isNaN(secs)) return '0:00';
+    var m = Math.floor(secs / 60);
+    var s = Math.floor(secs % 60);
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
 
+  // --- Progress update ---
   function updateProgress() {
     if (audio.duration) {
       var pct = audio.currentTime / audio.duration;
-      var offset = ringCircumference * (1 - pct);
-      progressCircle.style.strokeDashoffset = offset;
+      progressFill.style.width = (pct * 100) + '%';
+      timeEl.textContent = formatTime(audio.currentTime);
     }
   }
 
+  // --- Playing state UI ---
   function setPlayingUI() {
     isPlaying = true;
-    iconSpan.innerHTML = pauseIcon;
-    label.textContent = 'Pausar';
-    label.style.display = 'block';
-    label.style.opacity = '1';
+    btn.innerHTML = pauseIcon;
+    btn.setAttribute('aria-label', 'Pausar narración');
     btn.style.background = '#1a4db3';
-    progressInterval = setInterval(updateProgress, 100);
+    titleRow.textContent = 'Pausar narración';
+    progressInterval = setInterval(updateProgress, 200);
   }
 
-  function setStoppedUI(labelText) {
+  function setStoppedUI(label) {
     isPlaying = false;
-    iconSpan.innerHTML = playIcon;
-    label.textContent = labelText || 'Escuchar';
+    btn.innerHTML = playIcon;
+    btn.setAttribute('aria-label', 'Escuchar narración de esta página');
     btn.style.background = '#0033A1';
+    titleRow.textContent = label || 'Escuchar esta página';
     clearInterval(progressInterval);
   }
 
+  // --- Click handler ---
   btn.addEventListener('click', function (e) {
     e.preventDefault();
     e.stopPropagation();
 
     if (isPlaying) {
       audio.pause();
-      setStoppedUI('Escuchar');
+      setStoppedUI('Escuchar esta página');
     } else {
       var playPromise = audio.play();
       if (playPromise !== undefined) {
@@ -142,24 +164,25 @@ document.addEventListener('DOMContentLoaded', function () {
           setPlayingUI();
         }).catch(function (err) {
           console.error('Audio narrator: play failed', err);
-          setStoppedUI('Error');
+          setStoppedUI('Error al reproducir');
         });
       } else {
-        // Old browsers where play() doesn't return a promise
         setPlayingUI();
       }
     }
   });
 
+  // --- Audio events ---
   audio.addEventListener('ended', function () {
     setStoppedUI('Escuchar de nuevo');
-    audio.currentTime = 0;
-    progressCircle.style.strokeDashoffset = ringCircumference;
+    progressFill.style.width = '100%';
+    setTimeout(function () {
+      audio.currentTime = 0;
+      progressFill.style.width = '0%';
+      timeEl.textContent = formatTime(audio.duration);
+      setStoppedUI('Escuchar esta página');
+    }, 2000);
   });
 
-  // Hide label after 4 seconds
-  setTimeout(function () {
-    label.style.opacity = '0';
-    setTimeout(function () { label.style.display = 'none'; }, 300);
-  }, 4000);
+  audio.addEventListener('timeupdate', updateProgress);
 });
