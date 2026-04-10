@@ -500,6 +500,7 @@
           <!-- Tab: Foros -->
           <div id="tab-foros" class="config-tab-content hidden p-5 space-y-4">
             <p class="text-sm text-gray-500 mb-2">Indica los IDs de actividad (cmid) de Moodle para foros especiales del curso.</p>
+            <div id="foros-suggestions-banner" class="hidden mb-3 p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-700"></div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Foro de presentacion (cmid)</label>
@@ -2071,6 +2072,36 @@
       document.querySelectorAll('.config-tab-content').forEach(c => c.classList.add('hidden'));
       document.getElementById('tab-' + tab).classList.remove('hidden');
       if (tab === 'bibliografia') loadBibliografia();
+      if (tab === 'foros') populateForosSuggestions();
+    }
+
+    function populateForosSuggestions() {
+      const banner = document.getElementById('foros-suggestions-banner');
+      if (!banner || !currentDetail?.snapshot?.snapshot_json) return;
+      const snap = currentDetail.snapshot.snapshot_json;
+      const forums = [];
+      (snap.sections || []).forEach(function(s) {
+        (s.modules || []).forEach(function(m) {
+          if (m.modname === 'forum' && m.id) {
+            forums.push({ cmid: m.id, name: m.name || 'Foro', section: s.name || ('Sección ' + s.number) });
+          }
+        });
+      });
+      if (forums.length === 0) { banner.classList.add('hidden'); return; }
+      var inputP = document.getElementById('cfg-foro-presentacion');
+      var inputC = document.getElementById('cfg-foro-consultas');
+      // Only show banner if at least one input is empty
+      if (inputP.value && inputC.value) { banner.classList.add('hidden'); return; }
+      banner.classList.remove('hidden');
+      banner.innerHTML = '<strong>Foros detectados en el snapshot</strong> — haz clic para asignar:<br>' +
+        forums.map(function(f) {
+          return '<span class="inline-flex gap-1 mr-3 mt-1">' +
+            '<span class="text-blue-800 font-medium">' + f.name + '</span>' +
+            ' (cmid <code>' + f.cmid + '</code>)' +
+            (!inputP.value ? ' <button type="button" class="underline hover:text-blue-900" onclick="document.getElementById(\'cfg-foro-presentacion\').value=' + f.cmid + ';populateForosSuggestions()">→ presentación</button>' : '') +
+            (!inputC.value ? ' <button type="button" class="underline hover:text-blue-900" onclick="document.getElementById(\'cfg-foro-consultas\').value=' + f.cmid + ';populateForosSuggestions()">→ consultas</button>' : '') +
+            '</span>';
+        }).join('');
     }
 
     // --- Bibliografia tab ---
