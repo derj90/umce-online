@@ -236,15 +236,39 @@
       }
     }
 
+    #a11y-panel-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    #a11y-close {
+      background: #f3f4f6;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 8px;
+      color: #6b7280;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    #a11y-close:hover {
+      background: #e5e7eb;
+      color: #111827;
+    }
     #a11y-panel h3 {
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
       font-weight: 800;
       font-size: 16px;
       color: #111827;
-      margin: 0 0 4px 0;
+      margin: 0;
       display: flex;
       align-items: center;
       gap: 8px;
+      flex: 1;
     }
     #a11y-panel .a11y-subtitle {
       font-size: 11px;
@@ -436,10 +460,15 @@
   panel.setAttribute('role', 'dialog');
   panel.setAttribute('aria-label', 'Opciones de accesibilidad DUA');
   panel.innerHTML = `
-    <h3>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0033A1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="2"/><path d="M12 7.5v4m0 0l-4 7m4-7l4 7"/><path d="M7 11.5h10"/></svg>
-      Accesibilidad
-    </h3>
+    <div id="a11y-panel-header">
+      <h3>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0033A1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="2"/><path d="M12 7.5v4m0 0l-4 7m4-7l4 7"/><path d="M7 11.5h10"/></svg>
+        Accesibilidad
+      </h3>
+      <button id="a11y-close" aria-label="Cerrar panel de accesibilidad" title="Cerrar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
     <div class="a11y-subtitle">Dise&ntilde;o Universal para el Aprendizaje (DUA)</div>
 
     <div class="a11y-section">
@@ -637,6 +666,13 @@
       panelOpen = false;
       panel.classList.remove('open');
     }
+  });
+
+  // Close panel on X button
+  document.getElementById('a11y-close').addEventListener('click', () => {
+    panelOpen = false;
+    panel.classList.remove('open');
+    fab.setAttribute('aria-expanded', 'false');
   });
 
   // --- Apply state to DOM ---
