@@ -101,15 +101,29 @@
     }
 
     // Hide accessibility floating FAB — nav icon replaces it
-    const a11yFab = document.getElementById('a11y-fab');
-    if (a11yFab) a11yFab.style.display = 'none';
+    // Must run after accesibilidad-dua.js creates the element (loaded dynamically above)
+    function hideA11yFab() {
+      var a11yFab = document.getElementById('a11y-fab');
+      if (a11yFab) {
+        a11yFab.style.display = 'none';
+      } else {
+        // Script hasn't created the FAB yet — retry
+        setTimeout(hideA11yFab, 300);
+      }
+    }
+    setTimeout(hideA11yFab, 500);
 
-    // Wire nav icons to existing widget panels
+    // Wire nav accessibility button to panel (panel created async by accesibilidad-dua.js)
     const navA11yBtn = document.getElementById('nav-a11y-btn');
     if (navA11yBtn) {
       navA11yBtn.addEventListener('click', function () {
-        const panel = document.getElementById('a11y-panel');
-        if (panel) panel.classList.toggle('open');
+        var panel = document.getElementById('a11y-panel');
+        if (!panel) return; // script hasn't loaded yet
+        var isOpen = panel.classList.contains('open');
+        panel.classList.toggle('open', !isOpen);
+        // Update aria on the FAB (even though hidden) so accesibilidad-dua.js stays in sync
+        var fab = document.getElementById('a11y-fab');
+        if (fab) fab.setAttribute('aria-expanded', !isOpen);
       });
     }
 
