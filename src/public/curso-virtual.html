@@ -512,7 +512,8 @@
     async function submitModalForumReply(cmid, forumId, platform, discussionId) {
       const message = getRichEditorHtml(`forum-modal-reply-${cmid}`);
       if (!message) return;
-      const btn = textarea.parentElement.querySelector('button');
+      const editorEl = document.getElementById(`forum-modal-reply-${cmid}`);
+      const btn = editorEl?.parentElement?.querySelector('button');
       btn.disabled = true; btn.textContent = 'Enviando...'; btn.style.opacity = '0.6';
       try {
         const res = await fetch(`/api/curso-virtual/forum/${platform}/${forumId}/reply`, {

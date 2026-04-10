@@ -179,6 +179,19 @@
       0% { background-position: -200% 0; }
       100% { background-position: 200% 0; }
     }
+    /* Fade-up animation */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fade-up { opacity: 1; transform: none; transition: none; }
+    }
   </style>
 </head>
 <body class="bg-white text-gray-900 antialiased">
@@ -680,6 +693,42 @@
 
       });
     });
+  })();
+  </script>
+
+  <script>
+  // =====================================================================
+  // Fade-up IntersectionObserver
+  // =====================================================================
+  (function initFadeUp() {
+    'use strict';
+    function setup() {
+      var els = document.querySelectorAll('.fade-up');
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+      window._umceObserver = observer;
+
+      els.forEach(function(el) {
+        var rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          el.classList.add('visible');
+        } else {
+          observer.observe(el);
+        }
+      });
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setup);
+    } else {
+      setup();
+    }
   })();
   </script>
 
