@@ -3,7 +3,7 @@
   "id": "1.2",
   "nivel": 1,
   "type": "Curso",
-  "title": "Creación de materiales educativos con Canva",
+  "title": "Elaboración de materiales educativos digitales (con Canva)",
   "category": "Diseño",
   "hours": 10,
   "sync": 2,
@@ -26,8 +26,8 @@
   "requisitos": "Cuenta gratuita en Canva (canva.com). No se requiere experiencia previa en diseño.",
   "certificacion": "Al completar, se suman 10 horas hacia tu Certificación de Competencias Digitales (Nivel Inicial: 27h requeridas).",
   "groups": [
-    { "name": "Grupo 1", "schedule": "Jueves 15:00 hrs", "dates": "7 May, 14 May" },
-    { "name": "Grupo 2", "schedule": "Miércoles 11:00 hrs", "dates": "3 Jun, 10 Jun" }
+    { "name": "Grupo 1", "schedule": "Jueves 17:00 hrs", "dates": "7 y 14 de mayo" },
+    { "name": "Grupo 2", "schedule": "11:00 hrs", "dates": "Lunes 20 y martes 21 de julio (semana de cierre de semestre)" }
   ],
   "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLScVipPmydqHRlHfpkxDXiyTql0IT0N3mdtdBrNH92LRCUUmBA/viewform",
   "accent": {
