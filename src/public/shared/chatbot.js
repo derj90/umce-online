@@ -47,6 +47,10 @@
     if (!isFloating) {
       // Inline mode: panel always visible, no FAB
       isOpen = true;
+    } else {
+      // Sync isOpen with actual DOM state (panel may have been opened by shared.js nav button
+      // before chatbot.js finished loading)
+      isOpen = !!(panel && panel.classList.contains('open'));
     }
   }
 
@@ -351,6 +355,10 @@
     bindEvents();
     detectUserRole();
     checkBetaConsent();
+
+    // Expose toggle/close so shared.js nav button can call them with isOpen in sync
+    window.umceChatToggle = toggleChat;
+    window.umceChatClose = closeChat;
 
     // Auto-init session for inline mode (only if consent given)
     if (!isFloating && hasConsent) {

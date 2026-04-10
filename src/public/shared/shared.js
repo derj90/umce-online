@@ -58,6 +58,13 @@
     loadPromises.push(loadPartial('chatbot-placeholder', '/shared/chatbot.html'));
     await Promise.all(loadPromises);
 
+    // Load chatbot.js after HTML partial is in the DOM (if not already loaded by the page)
+    if (!document.querySelector('script[src="/shared/chatbot.js"]')) {
+      var chatbotScript = document.createElement('script');
+      chatbotScript.src = '/shared/chatbot.js';
+      document.body.appendChild(chatbotScript);
+    }
+
     // Initialize nav after loading
     initNavigation();
     // Initialize scroll observer
@@ -106,12 +113,17 @@
         if (path.startsWith('/virtualizacion')) {
           window.location.href = '/virtualizacion/asistente';
         } else {
-          // Toggle chat panel directly
+          // If chatbot.js is loaded and exposes umceChatToggle, use it (keeps isOpen in sync)
+          if (typeof window.umceChatToggle === 'function') {
+            window.umceChatToggle();
+            return;
+          }
+          // Fallback: toggle chat panel directly via CSS class
           const chatPanel = document.getElementById('chat-panel');
           if (chatPanel) {
-            const isOpen = chatPanel.classList.toggle('open');
-            // Try to trigger session if opening
-            if (isOpen) {
+            const opening = !chatPanel.classList.contains('open');
+            chatPanel.classList.toggle('open', opening);
+            if (opening) {
               const chatInput = document.getElementById('chat-input');
               if (chatInput) chatInput.focus();
             }
@@ -124,6 +136,10 @@
     const chatClose = document.getElementById('chat-close');
     if (chatClose) {
       chatClose.addEventListener('click', function () {
+        if (typeof window.umceChatClose === 'function') {
+          window.umceChatClose();
+          return;
+        }
         const chatPanel = document.getElementById('chat-panel');
         if (chatPanel) chatPanel.classList.remove('open');
       });
