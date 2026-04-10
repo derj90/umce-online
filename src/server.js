@@ -674,6 +674,29 @@ async function portalMutate(table, method, body, params = '') {
   return text ? JSON.parse(text) : [];
 }
 
+// Upsert using PostgREST merge-duplicates (relies on UNIQUE constraints)
+async function portalUpsert(table, body) {
+  if (!SUPABASE_SERVICE_KEY) throw new Error('SUPABASE_SERVICE_KEY no configurado');
+  const url = `${SUPABASE_URL}/rest/v1/${table}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_SERVICE_KEY,
+      'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+      'Content-Profile': 'portal',
+      'Accept-Profile': 'portal',
+      'Content-Type': 'application/json',
+      'Prefer': 'resolution=merge-duplicates,return=minimal'
+    },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(10000)
+  });
+  if (!res.ok) { const t = await res.text(); throw new Error(`Portal upsert ${table}: ${res.status} ${t}`); }
+}
+
+const COMPLETION_TTL_MS = 30 * 60 * 1000;  // 30 min
+const GRADES_TTL_MS    = 2 * 60 * 60 * 1000; // 2 h
+
 // === Moodle Identity Resolution ===
 // Resolve umce email → Moodle userid, with caching in user_moodle_mapping
 async function resolveMoodleUserId(email, platformId) {
@@ -704,36 +727,68 @@ async function resolveMoodleUserId(email, platformId) {
   }
 }
 
-// Fetch completion data for a user in a course
-async function fetchCompletion(platformId, courseId, userId) {
+// Fetch completion data — cache-first (30 min TTL), live fallback, auto-write cache
+async function fetchCompletion(platformId, courseId, userId, bypassCache = false) {
   const platform = PLATFORMS.find(p => p.id === platformId);
   if (!platform) return null;
+
+  if (!bypassCache) {
+    try {
+      const rows = await portalQuery('cache_completions',
+        `moodle_platform=eq.${platformId}&moodle_course_id=eq.${courseId}&moodle_userid=eq.${userId}&limit=1`);
+      if (rows[0] && (Date.now() - new Date(rows[0].fetched_at).getTime()) < COMPLETION_TTL_MS) {
+        return rows[0].completions_json;
+      }
+    } catch {}
+  }
+
   try {
     const data = await moodleCall(platform, 'core_completion_get_activities_completion_status', {
       courseid: courseId, userid: userId
     });
-    return (data.statuses || []).reduce((acc, s) => {
+    const result = (data.statuses || []).reduce((acc, s) => {
       acc[s.cmid] = { state: s.state, tracking: s.tracking, timecompleted: s.timecompleted };
       return acc;
     }, {});
+    portalUpsert('cache_completions', {
+      moodle_platform: platformId, moodle_course_id: courseId, moodle_userid: userId,
+      completions_json: result, fetched_at: new Date().toISOString()
+    }).catch(() => {});
+    return result;
   } catch { return null; }
 }
 
-// Fetch grades for a user in a course
-async function fetchGrades(platformId, courseId, userId) {
+// Fetch grades — cache-first (2 h TTL), live fallback, auto-write cache
+async function fetchGrades(platformId, courseId, userId, bypassCache = false) {
   const platform = PLATFORMS.find(p => p.id === platformId);
   if (!platform) return null;
+
+  if (!bypassCache) {
+    try {
+      const rows = await portalQuery('cache_grades',
+        `moodle_platform=eq.${platformId}&moodle_course_id=eq.${courseId}&moodle_userid=eq.${userId}&limit=1`);
+      if (rows[0] && (Date.now() - new Date(rows[0].fetched_at).getTime()) < GRADES_TTL_MS) {
+        return rows[0].grades_json;
+      }
+    } catch {}
+  }
+
   try {
     const data = await moodleCall(platform, 'gradereport_user_get_grade_items', {
       courseid: courseId, userid: userId
     });
     const grades = data.usergrades?.[0]?.gradeitems || [];
-    return grades.map(g => ({
+    const result = grades.map(g => ({
       id: g.id, itemname: g.itemname, itemtype: g.itemtype, itemmodule: g.itemmodule,
       cmid: g.cmid, graderaw: g.graderaw, gradeformatted: g.gradeformatted,
       feedback: (g.feedback || '').replace(/<[^>]*>/g, '').substring(0, 300),
       grademin: g.grademin, grademax: g.grademax, percentageformatted: g.percentageformatted
     }));
+    portalUpsert('cache_grades', {
+      moodle_platform: platformId, moodle_course_id: courseId, moodle_userid: userId,
+      grades_json: result, fetched_at: new Date().toISOString()
+    }).catch(() => {});
+    return result;
   } catch { return null; }
 }
 
@@ -4977,8 +5032,8 @@ app.post('/api/curso-virtual/:linkId/refresh', authMiddleware, async (req, res) 
     if (!moodleUserId) return res.json({ refreshed: false, reason: 'Usuario no encontrado en Moodle' });
 
     const [completion, grades] = await Promise.all([
-      fetchCompletion(link.moodle_platform, link.moodle_course_id, moodleUserId),
-      fetchGrades(link.moodle_platform, link.moodle_course_id, moodleUserId)
+      fetchCompletion(link.moodle_platform, link.moodle_course_id, moodleUserId, true),
+      fetchGrades(link.moodle_platform, link.moodle_course_id, moodleUserId, true)
     ]);
 
     res.json({ refreshed: true, completion: !!completion, grades: !!grades });
