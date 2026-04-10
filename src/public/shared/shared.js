@@ -65,6 +65,13 @@
       document.body.appendChild(chatbotScript);
     }
 
+    // Load accesibilidad-dua.js universally (if not already loaded by the page)
+    if (!document.querySelector('script[src*="accesibilidad-dua"]')) {
+      var a11yScript = document.createElement('script');
+      a11yScript.src = '/accesibilidad-dua.js';
+      document.body.appendChild(a11yScript);
+    }
+
     // Initialize nav after loading
     initNavigation();
     // Initialize scroll observer
