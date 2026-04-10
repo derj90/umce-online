@@ -106,7 +106,10 @@
     '@media (max-width: 400px) { #a11y-panel { right: 8px; left: 8px; width: auto; bottom: 84px; } #a11y-fab { bottom: 16px; right: 16px; } }',
 
     /* Tipografía interna del panel */
-    '#a11y-panel h3 { font-weight: 800; font-size: 16px; color: #111827; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px; }',
+    '#a11y-panel h3 { font-weight: 800; font-size: 16px; color: #111827; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px; flex: 1; }',
+    '#a11y-panel-header { display: flex; align-items: center; gap: 8px; }',
+    '#a11y-close { background: none; border: none; cursor: pointer; padding: 4px; border-radius: 8px; color: #9ca3af; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }',
+    '#a11y-close:hover { background: #f3f4f6; color: #111827; }',
     '#a11y-panel .a11y-subtitle { font-size: 11px; color: #9ca3af; margin-bottom: 16px; }',
     '#a11y-panel .a11y-section { margin-bottom: 14px; }',
     '#a11y-panel .a11y-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }',
@@ -158,14 +161,21 @@
   panel.setAttribute('role', 'dialog');
   panel.setAttribute('aria-label', 'Opciones de accesibilidad DUA');
   panel.innerHTML = [
-    '<h3>',
-      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0033A1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
-        '<circle cx="12" cy="4.5" r="2"/>',
-        '<path d="M12 7.5v4m0 0l-4 7m4-7l4 7"/>',
-        '<path d="M7 11.5h10"/>',
-      '</svg>',
-      ' Accesibilidad',
-    '</h3>',
+    '<div id="a11y-panel-header">',
+      '<h3>',
+        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0033A1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
+          '<circle cx="12" cy="4.5" r="2"/>',
+          '<path d="M12 7.5v4m0 0l-4 7m4-7l4 7"/>',
+          '<path d="M7 11.5h10"/>',
+        '</svg>',
+        ' Accesibilidad',
+      '</h3>',
+      '<button id="a11y-close" aria-label="Cerrar panel de accesibilidad">',
+        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
+          '<path d="M18 6L6 18M6 6l12 12"/>',
+        '</svg>',
+      '</button>',
+    '</div>',
     '<div class="a11y-subtitle">Dise\u00f1o Universal para el Aprendizaje (DUA)</div>',
 
     /* I. Representación */
@@ -280,6 +290,12 @@
       panelOpen = false;
       panel.classList.remove('open');
     }
+  });
+
+  document.getElementById('a11y-close').addEventListener('click', function () {
+    panelOpen = false;
+    panel.classList.remove('open');
+    fab.setAttribute('aria-expanded', 'false');
   });
 
   /* ── Aplicar estado ──────────────────────────────────────────────────── */
