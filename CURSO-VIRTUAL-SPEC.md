@@ -377,11 +377,11 @@ Fuente: `core_completion_get_activities_completion_status` (Moodle API)
 
 ---
 
-## Reconocimiento academico e insignias
+## Insignias del estudiante (curso virtual)
 
-**Proposito**: hacer visible el progreso y los logros del usuario (estudiante o docente) como reconocimiento formal, motivacion intrinseca, y evidencia para acreditacion/portafolio. Ademas, soportar el modelo de **modularizacion curricular y microcredenciales** definido institucionalmente.
+**Proposito**: hacer visible el progreso y los logros del **estudiante** dentro de sus cursos virtuales. Son reconocimiento formal, motivacion intrinseca, y evidencia para acreditacion/portafolio.
 **Estandares QM cubiertos**: 3.1 (actividades promueven logro de objetivos), 1.2 (proposito del curso claro)
-**Conexion institucional**: SDPA (linea 3.6), Certificacion de Competencias TIC, Ruta Formativa IA, Modularizacion Curricular UDFV-UGCI
+**Alcance**: SOLO el estudiante en el contexto de cursos virtuales. El desarrollo profesional del academico/docente es un sistema separado (ver seccion "Desarrollo Profesional Academico" mas abajo).
 
 ### Contexto: Modularizacion de la oferta formativa
 
@@ -403,20 +403,18 @@ Segun el analisis institucional (Notion: "Problemas, Practicas Identificadas y S
 - Movilidad interna entre programas mediante modulos equivalentes
 - Interoperabilidad entre postgrado, prosecuciones y educacion continua
 
-**Implicancia para el sistema de badges**: las insignias NO son solo gamificacion — son la **capa de representacion digital** de la modularizacion. Cada modulo completado = insignia verificable. Un conjunto de insignias de modulo = microcredencial. Un conjunto de microcredenciales = diplomado/postitulo. El sistema de badges de UMCE Online es el registro digital de esta trayectoria.
+**Implicancia para las insignias del estudiante**: las insignias NO son solo gamificacion — son la **capa de representacion digital** de la modularizacion. Cada modulo completado = insignia verificable. Un conjunto de insignias de modulo = microcredencial. Un conjunto de microcredenciales = diplomado/postitulo. El sistema de badges es el registro digital de esta trayectoria academica del estudiante.
 
-### Arquitectura de credenciales apilables
-
-El sistema de insignias se organiza en 4 niveles jerarquicos, donde cada nivel se construye acumulando el anterior:
+### Arquitectura de credenciales apilables (estudiante)
 
 ```
-Nivel 4: GRADO / TITULO
-  └── Nivel 3: MICROCREDENCIAL (diplomado, postitulo, certificacion)
-        └── Nivel 2: MODULO completado (asignatura / curso)
+Nivel 4: GRADO / TITULO (informativo — no se otorga desde UMCE Online)
+  └── Nivel 3: MICROCREDENCIAL (diplomado, postitulo como salida intermedia)
+        └── Nivel 2: MODULO completado (asignatura / curso aprobado)
               └── Nivel 1: LOGRO dentro de un modulo (nucleo, evaluacion, participacion)
 ```
 
-**Nivel 1 — Logros granulares** (ya especificados arriba como "insignias de curso"):
+**Nivel 1 — Logros granulares**:
 - Nucleo completado, entrega puntual, participacion activa, nota destacada
 - Se otorgan automaticamente desde datos de Moodle
 - Son motivacionales y de feedback inmediato
@@ -431,7 +429,6 @@ Nivel 4: GRADO / TITULO
 **Nivel 3 — Microcredencial** (salida intermedia):
 - Se otorga automaticamente cuando el estudiante acumula un conjunto definido de modulos
 - Ejemplo: completar 4 modulos especificos del MEIGLIP = Diplomado en Educacion Intercultural (salida intermedia)
-- Ejemplo: completar 4 cursos Nivel 1 Ruta IA = Certificacion "Iniciacion en IA Educativa"
 - Definida por el admin/UGCI en una tabla de reglas de composicion
 - Verificable publicamente, con detalle de los modulos que la componen
 - Exportable como certificado PDF con firma digital institucional
@@ -439,13 +436,9 @@ Nivel 4: GRADO / TITULO
 **Nivel 4 — Grado completo** (informativo):
 - No se otorga desde UMCE Online (eso es Ucampus/Registro Curricular)
 - Pero el sistema muestra el progreso hacia el grado: "Has completado 8 de 12 modulos del Magister"
-- Conecta con el dashboard de trayectoria estudiantil (solucion propuesta para P8 en Notion)
 
-### Tipos de insignias
+### Insignias de curso (catalogo estudiante)
 
-El sistema maneja 3 categorias de insignias, con reglas de otorgamiento distintas:
-
-**1. Insignias de curso (estudiante)**
 Se otorgan automaticamente al cumplir condiciones dentro de un curso virtual.
 
 | Insignia | Condicion de otorgamiento | Icono |
@@ -457,68 +450,47 @@ Se otorgan automaticamente al cumplir condiciones dentro de un curso virtual.
 | Primera evaluacion | Primera evaluacion calificada en el curso | Lapiz |
 | Nota destacada | Promedio final >= 6.0 (o umbral configurable por programa) | Medalla |
 
-**2. Insignias de trayectoria (estudiante o docente)**
+### Insignias de trayectoria (estudiante)
+
 Se otorgan al completar hitos que cruzan multiples cursos.
 
-| Insignia | Condicion | Aplica a |
-|----------|-----------|----------|
-| Primer curso virtual completado | Completar 1 curso al 100% | Estudiante |
-| Semestre completo | Todos los cursos del semestre completados | Estudiante |
-| Explorador | Haber accedido a cursos en 2+ plataformas Moodle distintas | Estudiante |
-| Formador en progreso | Completar 1 curso de la Ruta Formativa IA o Certificacion TIC | Docente |
-| Nivel Inicial TIC certificado | Completar requisitos del Nivel Inicial (27h + evidencia) | Docente |
-| Nivel Intermedio TIC certificado | Completar requisitos del Nivel Intermedio (54h + portafolio) | Docente |
-| Nivel Avanzado TIC certificado | Completar requisitos del Nivel Avanzado (81h + mentoria) | Docente |
-| Ruta IA Nivel 1 | Completar los 4 cursos del Nivel Iniciacion IA (40h) | Docente |
-| Ruta IA Nivel 2 | Completar los 4 cursos del Nivel Aplicacion IA (44h) | Docente |
-| Ruta IA Nivel 3 | Completar los 4 cursos del Nivel Integracion IA (48h) | Docente |
+| Insignia | Condicion |
+|----------|-----------|
+| Primer curso virtual completado | Completar 1 curso al 100% |
+| Semestre completo | Todos los cursos del semestre completados |
+| Explorador | Haber accedido a cursos en 2+ plataformas Moodle distintas |
 
-**3. Insignias manuales (admin/DI)**
-Otorgadas manualmente por un DI o admin para reconocimientos especiales.
+### Insignias manuales
+
+Otorgadas manualmente por un DI o admin para reconocimientos especiales al estudiante.
 
 | Insignia | Ejemplo de uso |
 |----------|---------------|
 | Mencion especial | Trabajo destacado en un curso |
-| Mentor | Docente que participo como mentor en el SDPA |
-| Innovador | Proyecto de innovacion educativa completado |
-| Colaborador UDFV | Participacion en actividades de la UDFV |
+| Colaborador | Participacion en actividades de la UDFV como ayudante |
 
-### Vista "Mis logros" (perfil del usuario)
+### Vista "Mis logros" (perfil del estudiante)
 
 Accesible desde el menu de usuario (avatar en top bar) → "Mis logros".
 
-**Para estudiantes:**
 - Grid de insignias obtenidas con fecha de obtencion
 - Insignias agrupadas por: curso actual, cursos anteriores, trayectoria
 - Insignias pendientes proximas ("Te falta 1 nucleo para completar el curso")
-- Barra de progreso hacia la proxima insignia de trayectoria
+- Barra de progreso hacia la proxima microcredencial
 - Estadisticas: total de cursos completados, insignias obtenidas, promedio general
-
-**Para docentes/academicos:**
-- Todo lo anterior (si imparten cursos como estudiantes de capacitacion)
-- Seccion "Mi desarrollo academico" (conecta con SDPA):
-  - Progreso hacia certificacion TIC: nivel actual + horas acumuladas + horas faltantes
-  - Progreso en Ruta Formativa IA: cursos completados por nivel
-  - Cronograma institucional: "Nivel Inicial 2025, Nivel Intermedio 2026, Nivel Avanzado 2027"
-  - Lista de cursos de capacitacion completados con fechas y horas cronologicas
-- Seccion "Insignias otorgadas a mis estudiantes" (cursos que imparte):
-  - Cuantos estudiantes completaron, cuantos obtuvieron nota destacada, etc.
+- Progreso hacia grado: "8 de 12 modulos del Magister completados" (barra informativa)
 
 **Exportabilidad:**
 - Cada insignia tiene un detalle expandible: nombre, descripcion, criterios, fecha, curso, emisor
 - Boton "Exportar mis logros" → genera PDF con lista de insignias + detalle (para portafolio)
-- Para docentes: export incluye horas SDPA acumuladas (evidencia para certificacion TIC)
-- Cada insignia puede tener un enlace unico verificable (tipo credencial digital): `umce.online/badge/{hash}` — cualquier persona con el enlace puede verificar la autenticidad
+- Cada insignia puede tener un enlace unico verificable: `umce.online/badge/{hash}`
 
-### Reglas de otorgamiento automatico
-
-El sistema evalua reglas cuando ocurren eventos:
+### Reglas de otorgamiento automatico (estudiante)
 
 **Triggers:**
 - Cuando se actualiza `cache_completions` (cron) → evalua insignias de nucleo y curso
 - Cuando se actualiza `cache_grades` (cron) → evalua insignias de nota destacada
 - Cuando se actualiza `cache_submissions` (cron) → evalua insignia de entrega puntual
-- Cuando un admin marca un curso de capacitacion como completado → evalua insignias SDPA
 
 **Logica:**
 ```
@@ -529,6 +501,7 @@ on_completion_update(user, course):
   if all nucleos completed:
     grant_badge('curso_completado', user, course)
     check_trayectoria_badges(user)
+    check_microcredenciales(user)
 
 on_grade_update(user, course):
   if promedio >= threshold:
@@ -537,18 +510,395 @@ on_grade_update(user, course):
 grant_badge(type, user, ...):
   if badge already exists for this user+type+course: skip
   insert into user_badges
-  insert into notifications (para que el usuario vea la insignia nueva)
+  insert into notifications
   if push_enabled: send push notification "Obtuviste una nueva insignia"
 ```
 
 ### Insignia en el curso virtual (inline)
 
-Las insignias no solo viven en "Mis logros" — tambien aparecen en contexto:
+Las insignias tambien aparecen en contexto dentro del curso:
 
 - **Sidebar del curso**: al lado del nombre del nucleo completado aparece mini-badge
 - **Seccion Inicio**: si el curso esta completado, banner con insignia de curso completado
 - **Seccion Evaluaciones**: si todas entregadas a tiempo, badge de entrega puntual visible
-- **Toast/notificacion**: cuando se otorga una insignia, aparece toast animado con la insignia
+- **Toast/notificacion**: cuando se otorga una insignia, aparece toast animado
+
+---
+
+## Desarrollo Profesional Academico (docente)
+
+**SISTEMA SEPARADO** del de insignias del estudiante. Tiene su propia logica, vistas y flujos.
+
+**Proposito**: hacer visible y trackear la trayectoria de desarrollo profesional del academico/docente UMCE, conectando con el SDPA institucional (Sistema de Desarrollo Profesional Academico, UDA 2022) y generando evidencia para certificaciones, acreditacion y portafolio docente.
+
+**Fuentes institucionales**: SDPA (UDA, 2022), Certificacion Competencias Digitales Docentes (UDFV, 2025), Ruta Formativa IA (UDFV, 2025), Marco Competencias TIC UMCE.
+
+### Por que es un sistema separado
+
+El SDPA es un sistema institucional completo con:
+- 2 areas (desarrollo academico + proyectos de innovacion)
+- 6 lineas de desarrollo (docencia, investigacion, vinculacion con el medio, gestion academica, tematicas transversales, integracion TIC)
+- 4 programas (induccion, actualizacion y desarrollo, acompanamiento focalizado, difusion de buenas practicas)
+- Certificaciones formales: Diplomado en Docencia Universitaria (216h, 8 SCT), Certificacion Competencia TIC (81h, 3 SCT)
+- Ruta Formativa IA: 3 niveles, 12 cursos, 132 horas
+
+Meterlo como "categoria extra" de insignias de curso virtual minimiza su complejidad y mezcla flujos que no tienen nada que ver. El docente NO esta "cursando un curso virtual" — esta en un programa de desarrollo profesional que vive en otro contexto (capacitaciones UDFV/DUDA, talleres presenciales, mentorias, proyectos de innovacion).
+
+**Punto de encuentro con insignias del estudiante**: las microcredenciales. Un docente que completa la Ruta IA Nivel 1 obtiene una microcredencial verificable con el mismo formato OB 3.0. Pero el flujo de registro, seguimiento y otorgamiento es completamente diferente.
+
+### Estructura del SDPA en UMCE Online
+
+```
+DESARROLLO PROFESIONAL ACADEMICO
+├── Lineas de desarrollo (6)
+│   ├── 3.1 Docencia
+│   ├── 3.2 Investigacion
+│   ├── 3.3 Vinculacion con el medio
+│   ├── 3.4 Gestion academica
+│   ├── 3.5 Tematicas transversales
+│   └── 3.6 Integracion TIC (foco principal de UMCE Online)
+│
+├── Programas (4)
+│   ├── Induccion al Modelo Educativo
+│   ├── Actualizacion y Desarrollo Profesional
+│   ├── Acompanamiento focalizado
+│   └── Difusion de buenas practicas
+│
+├── Certificaciones
+│   ├── Diplomado en Docencia Universitaria (8 SCT = 216h)
+│   │   ├── Mencion Investigacion-Accion
+│   │   └── Mencion Procesos Curriculares
+│   ├── Certificacion Competencia TIC (3 niveles)
+│   │   ├── Nivel Inicial (27h)
+│   │   ├── Nivel Intermedio (54h)
+│   │   └── Nivel Avanzado (81h + evidencia pedagogica)
+│   └── Ruta Formativa IA (3 niveles)
+│       ├── Nivel 1 Iniciacion (4 cursos, 40h)
+│       ├── Nivel 2 Aplicacion (4 cursos, 44h)
+│       └── Nivel 3 Integracion (4 cursos, 48h)
+│
+└── Reconocimientos
+    ├── Mentor SDPA
+    ├── Proyecto de innovacion completado
+    └── Buenas practicas difundidas
+```
+
+### Fuentes de datos del docente
+
+A diferencia del estudiante (cuyos datos vienen 100% de Moodle), el docente tiene fuentes multiples:
+
+| Fuente | Que registra | Como se ingresa |
+|--------|-------------|-----------------|
+| Capacitaciones UDFV | Cursos TIC, Ruta IA, talleres | Admin UDFV registra asistencia/aprobacion |
+| Actividades UDA | Induccion, seminarios, talleres SDPA | Admin UDA registra (o se importa desde planilla UDA) |
+| Proyectos de innovacion | Propuestas aprobadas, implementadas, evaluadas | Admin registra manualmente |
+| Moodle (como estudiante) | Si el docente toma un curso en Moodle como alumno | Automatico via API (mismo flujo que estudiante) |
+| Portafolio de evidencias | Experiencia pedagogica TIC (requisito cert.) | Docente sube evidencia, admin valida |
+| Planilla historica | Actividades pre-2026 (desde 2020) | Importacion masiva CSV (una vez) |
+
+### Vista "Mi Desarrollo Profesional" (perfil docente)
+
+Accesible desde menu de usuario → "Mi desarrollo profesional" (NO desde "Mis logros" del estudiante).
+
+**Panel principal:**
+- Resumen: horas totales acumuladas, lineas SDPA activas, certificaciones obtenidas
+- Barra de progreso hacia la proxima certificacion (ej: "54 de 81 horas para Nivel Avanzado TIC")
+
+**Seccion Certificacion TIC:**
+- 3 tarjetas: Nivel Inicial / Intermedio / Avanzado
+- Cada tarjeta muestra: estado (completado/en progreso/pendiente), horas acumuladas/requeridas
+- Lista de actividades que suman para ese nivel, con fecha y horas
+- Requisito especial: "Evidencia pedagogica" con estado (no presentada / en revision / aprobada)
+- Descarga de certificado si completado (OB 3.0)
+
+**Seccion Ruta Formativa IA:**
+- 3 bloques: Nivel 1 Iniciacion / Nivel 2 Aplicacion / Nivel 3 Integracion
+- Cada bloque muestra los 4 cursos con estado (completado/en progreso/no iniciado)
+- Prerequisitos visibles (ej: "Requiere Nivel 1 completo")
+- Horas acumuladas por nivel
+- Descarga de certificacion por nivel si completado (OB 3.0)
+
+**Seccion Diplomado en Docencia Universitaria:**
+- Progreso hacia 8 SCT (216h): desglose por area (4 SCT area principal + 1 SCT transversalidad + 3 SCT proyecto innovacion)
+- Estado del proyecto de innovacion (si aplica)
+- Mencion seleccionada o en progreso
+
+**Seccion Historial completo:**
+- Tabla con todas las actividades formativas registradas
+- Columnas: actividad, linea SDPA, programa, horas, fecha, registrado por
+- Filtros por linea, programa, anio
+- Export CSV/PDF para portafolio
+
+**Seccion "Mis estudiantes" (como docente de curso virtual):**
+- Resumen de insignias otorgadas a sus estudiantes en los cursos que imparte
+- Cuantos completaron, cuantos obtuvieron nota destacada, etc.
+- Esto es lo UNICO que conecta con el sistema de insignias del estudiante
+
+### Flujo de registro de actividades
+
+A diferencia del estudiante (todo automatico), el registro docente tiene flujo hibrido:
+
+```
+FLUJO AUTOMATICO (si el docente toma curso en Moodle):
+  → Mismo flujo que estudiante: cron detecta completion → registra actividad + horas
+
+FLUJO MANUAL (admin UDFV/UDA):
+  1. Admin accede a panel "Gestion SDPA" (protegido)
+  2. Busca docente por nombre/email
+  3. Registra actividad: tipo, linea SDPA, programa, horas, fecha, evidencia
+  4. Sistema calcula automaticamente progreso hacia certificaciones
+  5. Si se completa una certificacion → notificacion al docente + emision OB 3.0
+
+FLUJO IMPORTACION (historico):
+  1. Admin sube CSV con formato: email, actividad, horas, fecha, linea, programa
+  2. Sistema valida y registra masivamente
+  3. Recalcula progreso de todos los docentes afectados
+
+FLUJO EVIDENCIA (para certificacion TIC):
+  1. Docente accede a "Mi Desarrollo Profesional"
+  2. En seccion Certificacion TIC → "Subir evidencia pedagogica"
+  3. Sube documento/enlace describiendo uso de TIC en su docencia
+  4. Admin UDFV revisa y aprueba/rechaza con comentario
+  5. Si aprobada + horas completas → certificacion emitida
+```
+
+### Schema SQL (desarrollo profesional docente)
+
+```sql
+-- Lineas SDPA (referencia)
+CREATE TYPE linea_sdpa AS ENUM (
+  'docencia', 'investigacion', 'vinculacion_medio',
+  'gestion_academica', 'tematicas_transversales', 'integracion_tic'
+);
+
+CREATE TYPE programa_sdpa AS ENUM (
+  'induccion', 'actualizacion_desarrollo',
+  'acompanamiento_focalizado', 'difusion_buenas_practicas'
+);
+
+CREATE TYPE tipo_actividad_sdpa AS ENUM (
+  'taller', 'curso', 'seminario', 'proyecto_innovacion',
+  'mentoria', 'induccion', 'autoformacion', 'otro'
+);
+
+-- Actividades formativas registradas por docente
+CREATE TABLE actividades_sdpa (
+  id SERIAL PRIMARY KEY,
+  docente_email TEXT NOT NULL, -- @umce.cl
+  nombre_actividad TEXT NOT NULL,
+  descripcion TEXT,
+  linea linea_sdpa NOT NULL,
+  programa programa_sdpa,
+  tipo tipo_actividad_sdpa NOT NULL DEFAULT 'curso',
+  horas_cronologicas NUMERIC(5,1) NOT NULL,
+  creditos_sct NUMERIC(3,1), -- calculado: horas / 27
+  fecha_inicio DATE NOT NULL,
+  fecha_termino DATE,
+  estado TEXT NOT NULL DEFAULT 'completada' CHECK (estado IN ('en_progreso', 'completada', 'abandonada')),
+  calificacion NUMERIC(2,1), -- si aplica
+  plataforma TEXT, -- 'moodle_evirtual', 'presencial', 'asincrono_udfv', etc.
+  moodle_course_id INTEGER, -- si viene de Moodle (para tracking automatico)
+  evidencia_url TEXT, -- enlace a documento/portafolio
+  registrado_por TEXT NOT NULL, -- email del admin que registro o 'sistema' si automatico
+  notas TEXT,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX idx_act_sdpa_docente ON actividades_sdpa(docente_email);
+CREATE INDEX idx_act_sdpa_linea ON actividades_sdpa(linea);
+CREATE INDEX idx_act_sdpa_fecha ON actividades_sdpa(fecha_inicio);
+
+-- Certificaciones docentes (definiciones)
+CREATE TABLE certificaciones_sdpa (
+  id SERIAL PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL, -- 'tic_inicial', 'tic_intermedio', 'tic_avanzado', 'ruta_ia_1', 'diplomado_docencia_ia', etc.
+  nombre TEXT NOT NULL,
+  descripcion TEXT,
+  horas_requeridas NUMERIC(5,1) NOT NULL,
+  creditos_sct NUMERIC(3,1),
+  linea_principal linea_sdpa,
+  requiere_evidencia BOOLEAN DEFAULT false,
+  requiere_proyecto BOOLEAN DEFAULT false,
+  prerequisito_id INTEGER REFERENCES certificaciones_sdpa(id), -- ej: Nivel 2 IA requiere Nivel 1
+  reglas_composicion JSONB, -- criterios especificos (ej: "4 SCT en area principal + 1 SCT transversal + 3 SCT proyecto")
+  activa BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Progreso de certificacion por docente
+CREATE TABLE progreso_certificaciones (
+  id SERIAL PRIMARY KEY,
+  docente_email TEXT NOT NULL,
+  certificacion_id INTEGER NOT NULL REFERENCES certificaciones_sdpa(id),
+  horas_acumuladas NUMERIC(5,1) DEFAULT 0,
+  estado TEXT NOT NULL DEFAULT 'en_progreso' CHECK (estado IN ('no_iniciado', 'en_progreso', 'requisitos_cumplidos', 'certificado')),
+  evidencia_estado TEXT CHECK (evidencia_estado IN ('no_presentada', 'en_revision', 'aprobada', 'rechazada')),
+  evidencia_url TEXT,
+  evidencia_comentario TEXT, -- feedback del admin
+  proyecto_estado TEXT CHECK (proyecto_estado IN ('no_presentado', 'en_desarrollo', 'presentado', 'aprobado')),
+  fecha_certificacion TIMESTAMPTZ, -- cuando se emitio
+  credential_json JSONB, -- OB 3.0 firmado
+  verificacion_hash TEXT UNIQUE, -- umce.online/credential/{hash}
+  certificado_por TEXT, -- email del admin que aprobo
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(docente_email, certificacion_id)
+);
+
+CREATE INDEX idx_prog_cert_docente ON progreso_certificaciones(docente_email);
+CREATE INDEX idx_prog_cert_hash ON progreso_certificaciones(verificacion_hash);
+
+-- Evidencias pedagogicas (para certificacion TIC)
+CREATE TABLE evidencias_sdpa (
+  id SERIAL PRIMARY KEY,
+  docente_email TEXT NOT NULL,
+  certificacion_id INTEGER NOT NULL REFERENCES certificaciones_sdpa(id),
+  titulo TEXT NOT NULL,
+  descripcion TEXT,
+  tipo TEXT NOT NULL CHECK (tipo IN ('documento', 'enlace', 'video', 'portafolio', 'otro')),
+  url TEXT,
+  archivo_url TEXT,
+  estado TEXT NOT NULL DEFAULT 'pendiente' CHECK (estado IN ('pendiente', 'en_revision', 'aprobada', 'rechazada')),
+  revisado_por TEXT,
+  comentario_revision TEXT,
+  fecha_revision TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Vista resumen por docente
+CREATE VIEW v_resumen_docente_sdpa AS
+SELECT
+  a.docente_email,
+  COUNT(*) AS total_actividades,
+  SUM(a.horas_cronologicas) AS total_horas,
+  SUM(a.horas_cronologicas) FILTER (WHERE a.linea = 'integracion_tic') AS horas_tic,
+  SUM(a.horas_cronologicas) FILTER (WHERE a.linea = 'docencia') AS horas_docencia,
+  SUM(a.horas_cronologicas) FILTER (WHERE a.linea = 'investigacion') AS horas_investigacion,
+  COUNT(*) FILTER (WHERE a.estado = 'completada') AS actividades_completadas,
+  MIN(a.fecha_inicio) AS primera_actividad,
+  MAX(a.fecha_termino) AS ultima_actividad,
+  (SELECT COUNT(*) FROM progreso_certificaciones pc
+   WHERE pc.docente_email = a.docente_email AND pc.estado = 'certificado') AS certificaciones_obtenidas
+FROM actividades_sdpa a
+WHERE a.estado = 'completada'
+GROUP BY a.docente_email;
+
+-- Vista progreso hacia certificaciones
+CREATE VIEW v_progreso_certificaciones AS
+SELECT
+  pc.docente_email,
+  c.slug AS certificacion_slug,
+  c.nombre AS certificacion_nombre,
+  c.horas_requeridas,
+  pc.horas_acumuladas,
+  ROUND((pc.horas_acumuladas / c.horas_requeridas * 100)::numeric, 1) AS porcentaje_avance,
+  pc.estado,
+  pc.evidencia_estado,
+  pc.proyecto_estado,
+  pc.fecha_certificacion,
+  c.prerequisito_id,
+  (SELECT pc2.estado FROM progreso_certificaciones pc2
+   WHERE pc2.docente_email = pc.docente_email
+   AND pc2.certificacion_id = c.prerequisito_id) AS estado_prerequisito
+FROM progreso_certificaciones pc
+JOIN certificaciones_sdpa c ON c.id = pc.certificacion_id
+WHERE c.activa = true;
+```
+
+### Datos semilla (certificaciones_sdpa)
+
+```sql
+INSERT INTO certificaciones_sdpa (slug, nombre, descripcion, horas_requeridas, creditos_sct, linea_principal, requiere_evidencia, requiere_proyecto, prerequisito_id, reglas_composicion) VALUES
+  ('tic_inicial', 'Certificacion TIC - Nivel Inicial', 'Competencia digital docente nivel inicial', 27, 1, 'integracion_tic', false, false, null, null),
+  ('tic_intermedio', 'Certificacion TIC - Nivel Intermedio', 'Competencia digital docente nivel intermedio', 54, 2, 'integracion_tic', false, false, 1, null),
+  ('tic_avanzado', 'Certificacion TIC - Nivel Avanzado', 'Competencia digital docente nivel avanzado. Requiere evidencia pedagogica.', 81, 3, 'integracion_tic', true, false, 2, null),
+  ('ruta_ia_1', 'Ruta IA - Nivel 1 Iniciacion', 'Fundamentos y alfabetizacion digital con IA (4 cursos)', 40, 1.5, 'integracion_tic', false, false, null,
+    '{"cursos_requeridos": ["ia_intro_alfabetizacion", "ia_etica", "ia_generativa_primeros_pasos", "ia_ciudadania_digital"]}'),
+  ('ruta_ia_2', 'Ruta IA - Nivel 2 Aplicacion', 'Integracion pedagogica y eficiencia con IA (4 cursos)', 44, 1.6, 'integracion_tic', false, false, 4,
+    '{"cursos_requeridos": ["ia_recursos_educativos", "ia_automatizacion", "ia_evaluacion_retroalimentacion", "ia_inclusion"]}'),
+  ('ruta_ia_3', 'Ruta IA - Nivel 3 Integracion', 'Innovacion y liderazgo pedagogico con IA (4 cursos)', 48, 1.8, 'integracion_tic', false, false, 5,
+    '{"cursos_requeridos": ["ia_personalizacion", "ia_diseno_instruccional", "ia_investigacion", "ia_liderazgo_comunidades"]}'),
+  ('diplomado_docencia_ia', 'Diplomado en Docencia Universitaria - Mencion Investigacion-Accion', 'Diplomado formal UMCE (8 SCT)', 216, 8, 'docencia', false, true, null,
+    '{"creditos_area_principal": 4, "creditos_transversalidad": 1, "creditos_proyecto": 3}'),
+  ('diplomado_docencia_curr', 'Diplomado en Docencia Universitaria - Mencion Procesos Curriculares', 'Diplomado formal UMCE (8 SCT)', 216, 8, 'docencia', false, true, null,
+    '{"creditos_area_principal": 4, "creditos_transversalidad": 1, "creditos_proyecto": 3}');
+```
+
+### Endpoints API (desarrollo profesional docente)
+
+```
+-- Docente logueado
+GET    /api/docente/sdpa/resumen              → resumen: horas, lineas, certificaciones
+GET    /api/docente/sdpa/actividades           → historial de actividades (filtrable)
+GET    /api/docente/sdpa/certificaciones        → progreso hacia cada certificacion
+POST   /api/docente/sdpa/evidencia              → subir evidencia pedagogica
+GET    /api/docente/sdpa/export                 → export PDF/CSV para portafolio
+GET    /api/docente/sdpa/mis-estudiantes        → resumen de insignias de sus estudiantes
+
+-- Admin UDFV/UDA (protegido)
+POST   /api/admin/sdpa/registrar-actividad      → registrar actividad para un docente
+POST   /api/admin/sdpa/importar-csv             → importacion masiva historica
+GET    /api/admin/sdpa/docentes                 → lista de docentes con resumen SDPA
+GET    /api/admin/sdpa/docente/:email           → detalle completo de un docente
+PATCH  /api/admin/sdpa/evidencia/:id/revisar    → aprobar/rechazar evidencia
+POST   /api/admin/sdpa/certificar               → emitir certificacion (genera OB 3.0)
+GET    /api/admin/sdpa/metricas                 → dashboard institucional SDPA
+GET    /api/admin/sdpa/export                   → export CSV para informes institucionales
+
+-- Verificacion publica (sin auth)
+GET    /api/credential/:hash                    → verificacion publica de certificacion docente (OB 3.0)
+```
+
+### Paginas HTML
+
+```
+public/mi-desarrollo.html          → Vista docente "Mi Desarrollo Profesional"
+public/admin/gestion-sdpa.html     → Panel admin: registro de actividades, gestion docentes
+public/admin/evidencias.html       → Revision de evidencias pedagogicas
+public/verificar-credencial.html   → Verificacion publica de certificaciones
+```
+
+### Panel admin "Gestion SDPA"
+
+Vista para admin UDFV/UDA con:
+
+**Busqueda de docente**: por nombre o email
+**Ficha del docente**: resumen de horas, actividades, progreso certificaciones
+**Registrar actividad**: formulario con campos: docente, actividad, tipo, linea, programa, horas, fecha
+**Importar CSV**: para carga masiva de historico (actividades desde 2020)
+**Dashboard institucional**:
+  - Total docentes activos en formacion
+  - Distribucion por linea SDPA (grafico)
+  - Progreso hacia certificaciones TIC por facultad/departamento
+  - Actividades por programa y anio
+  - Horas promedio por docente
+  - Docentes sin actividad en ultimo anio (alerta)
+  - Export CSV para informes a VRA/DIPOS/CNA
+
+### Relacion con insignias del estudiante
+
+Los dos sistemas comparten SOLO dos cosas:
+
+1. **Formato de emision OB 3.0**: ambos usan el mismo stack de @digitalcredentials/* para emitir credenciales verificables. La infraestructura de claves Ed25519 es compartida.
+
+2. **Endpoint de verificacion publica**: tanto `umce.online/badge/{hash}` (insignias estudiante) como `umce.online/credential/{hash}` (certificaciones docente) usan el mismo patron de verificacion.
+
+Todo lo demas es independiente: schemas separados, vistas separadas, flujos separados, endpoints separados.
+
+### Fase de implementacion
+
+| Componente | Fase | Dependencia |
+|-----------|------|-------------|
+| Schema actividades_sdpa + certificaciones_sdpa | Fase 3 (3.4) | Ninguna |
+| Panel admin: registro manual de actividades | Fase 4 | Schema SDPA |
+| Panel admin: importacion CSV historica | Fase 4 | Schema SDPA |
+| Vista docente "Mi Desarrollo Profesional" (basica) | Fase 5-C | Schema + actividades registradas |
+| Progreso automatico hacia certificaciones | Fase 5-C | actividades_sdpa + certificaciones_sdpa |
+| Evidencias pedagogicas (subida + revision) | Fase 5+ | progreso_certificaciones |
+| Emision OB 3.0 para certificaciones docentes | Fase 5+ | @digitalcredentials/* + progreso |
+| Dashboard institucional SDPA para admin | Fase 5+ | v_resumen_docente_sdpa |
+| Sincronizacion automatica con Moodle (docente como alumno) | Fase 5+ | API Moodle existente |
 
 ### Formato de emision: Open Badges 3.0
 
@@ -623,15 +973,8 @@ Las insignias no solo viven en "Mis logros" — tambien aparecen en contexto:
 - Clave publica expuesta en endpoint publico `.well-known`
 - Rotacion de claves: cuando se rota, las insignias antiguas siguen siendo verificables contra la clave vieja (se publica historial)
 
-**Impacto en schema existente:**
-```sql
--- Agregar columna para el Verifiable Credential firmado
-ALTER TABLE user_badges ADD COLUMN credential_json JSONB;
-ALTER TABLE user_badges ADD COLUMN badge_image_url TEXT; -- SVG/PNG con JSON embebido
-
-ALTER TABLE user_microcredenciales ADD COLUMN credential_json JSONB;
-ALTER TABLE user_microcredenciales ADD COLUMN credential_image_url TEXT;
-```
+**Impacto en schema:**
+Las columnas `credential_json` y `badge_image_url` ya estan incluidas en los schemas de `user_badges` (estudiante) y `progreso_certificaciones` (docente). No se necesitan ALTERs separados.
 
 **Portabilidad para el usuario:**
 - Boton "Agregar a LinkedIn" en cada insignia (LinkedIn acepta OB 3.0)
@@ -1073,91 +1416,56 @@ CREATE TABLE cache_recordings (
 );
 ```
 
-### Schema: user_badges (reconocimiento academico)
+### Schema: badge_definitions + user_badges (insignias del estudiante)
+
+**NOTA**: Este schema es SOLO para insignias del estudiante. El desarrollo profesional docente tiene su propio schema separado (ver seccion "Desarrollo Profesional Academico").
 
 ```sql
--- Definiciones de insignias (catalogo)
+-- Definiciones de insignias del estudiante (catalogo)
 CREATE TABLE badge_definitions (
   id SERIAL PRIMARY KEY,
-  slug TEXT NOT NULL UNIQUE,           -- 'nucleo_completado', 'curso_completado', 'nivel_inicial_tic', etc.
-  categoria TEXT NOT NULL CHECK (categoria IN ('curso', 'modulo', 'trayectoria', 'manual', 'sdpa')),
+  slug TEXT NOT NULL UNIQUE,           -- 'nucleo_completado', 'curso_completado', etc.
+  categoria TEXT NOT NULL CHECK (categoria IN ('curso', 'modulo', 'trayectoria', 'manual')),
   -- 'curso' = logros dentro de un curso (nivel 1)
   -- 'modulo' = asignatura/curso completado (nivel 2, unidad basica de modularizacion)
   -- 'trayectoria' = hitos cross-curso (nivel 1-2)
-  -- 'sdpa' = desarrollo profesional docente
   -- 'manual' = otorgadas por admin/DI
-  nombre TEXT NOT NULL,                -- "Nucleo completado"
-  descripcion TEXT NOT NULL,           -- "Completaste todas las actividades obligatorias del nucleo"
+  nombre TEXT NOT NULL,
+  descripcion TEXT NOT NULL,
   icono TEXT NOT NULL,                 -- nombre de icono Lucide: 'shield-check', 'star', 'medal', etc.
-  color TEXT DEFAULT '#2563eb',        -- color primario del badge (hex)
+  color TEXT DEFAULT '#2563eb',
   activo BOOLEAN DEFAULT true,
-  -- Para badges automaticos: condiciones en JSON
   regla_auto JSONB,                    -- null = manual. Ejemplo: {"type": "nucleo_100", "threshold": 1.0}
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- Insignias otorgadas a usuarios
+-- Insignias otorgadas a estudiantes
 CREATE TABLE user_badges (
   id SERIAL PRIMARY KEY,
-  user_email TEXT NOT NULL,            -- email @umce.cl del usuario
+  user_email TEXT NOT NULL,            -- email @umce.cl del estudiante
   badge_definition_id INTEGER NOT NULL REFERENCES badge_definitions(id),
 
   -- Contexto del otorgamiento
   piac_link_id INTEGER REFERENCES piac_links(id),  -- null para badges de trayectoria/manual
   nucleo_numero INTEGER,               -- null si no aplica
-  moodle_platform TEXT,                -- plataforma donde se logro
-  moodle_course_id INTEGER,            -- curso donde se logro
+  moodle_platform TEXT,
+  moodle_course_id INTEGER,
 
   -- Metadata
   granted_at TIMESTAMPTZ DEFAULT now(),
   granted_by TEXT,                     -- 'system' para automaticos, email del admin para manuales
-  nota TEXT,                           -- nota opcional del DI/admin ("Trabajo destacado en...")
-  verificacion_hash TEXT NOT NULL,     -- hash unico para verificacion publica: umce.online/badge/{hash}
-
-  -- SDPA (solo para badges de docente)
-  horas_cronologicas NUMERIC(5,1),    -- horas que suma esta insignia para certificacion TIC
-  programa_sdpa TEXT,                  -- 'ruta_ia_nivel_1', 'certificacion_tic_inicial', etc.
+  nota TEXT,
+  verificacion_hash TEXT NOT NULL,     -- hash unico: umce.online/badge/{hash}
+  credential_json JSONB,              -- OB 3.0 firmado (se genera al emitir)
+  badge_image_url TEXT,               -- SVG/PNG con JSON embebido
 
   UNIQUE(user_email, badge_definition_id, piac_link_id, nucleo_numero)
 );
 
--- Indices
 CREATE INDEX idx_ub_user ON user_badges(user_email);
 CREATE INDEX idx_ub_badge ON user_badges(badge_definition_id);
 CREATE INDEX idx_ub_piac ON user_badges(piac_link_id) WHERE piac_link_id IS NOT NULL;
 CREATE INDEX idx_ub_hash ON user_badges(verificacion_hash);
-CREATE INDEX idx_ub_sdpa ON user_badges(programa_sdpa) WHERE programa_sdpa IS NOT NULL;
-
--- Progreso SDPA por docente (vista materializada)
-CREATE MATERIALIZED VIEW mv_progreso_sdpa AS
-SELECT
-  ub.user_email,
-  ub.programa_sdpa,
-  COUNT(*) AS badges_obtenidos,
-  SUM(ub.horas_cronologicas) AS horas_acumuladas,
-  CASE
-    WHEN ub.programa_sdpa LIKE 'certificacion_tic%' THEN
-      CASE
-        WHEN SUM(ub.horas_cronologicas) >= 81 THEN 'avanzado'
-        WHEN SUM(ub.horas_cronologicas) >= 54 THEN 'intermedio'
-        WHEN SUM(ub.horas_cronologicas) >= 27 THEN 'inicial'
-        ELSE 'en_progreso'
-      END
-    WHEN ub.programa_sdpa LIKE 'ruta_ia%' THEN
-      CASE
-        WHEN COUNT(*) >= 12 THEN 'completa'
-        WHEN COUNT(*) >= 8 THEN 'nivel_3'
-        WHEN COUNT(*) >= 4 THEN 'nivel_2'
-        ELSE 'nivel_1'
-      END
-    ELSE 'en_progreso'
-  END AS nivel_alcanzado,
-  MAX(ub.granted_at) AS ultimo_logro
-FROM user_badges ub
-WHERE ub.programa_sdpa IS NOT NULL
-GROUP BY ub.user_email, ub.programa_sdpa;
-
-CREATE UNIQUE INDEX idx_mv_sdpa ON mv_progreso_sdpa(user_email, programa_sdpa);
 ```
 
 ### Schema: microcredenciales (credenciales apilables)
@@ -1185,7 +1493,7 @@ CREATE TABLE microcredencial_requisitos (
   id SERIAL PRIMARY KEY,
   microcredencial_id INTEGER NOT NULL REFERENCES microcredencial_definitions(id) ON DELETE CASCADE,
   badge_definition_id INTEGER NOT NULL REFERENCES badge_definitions(id),
-  -- El badge debe ser de categoria 'modulo' o 'sdpa'
+  -- El badge debe ser de categoria 'modulo' (nivel 2 del estudiante)
   obligatorio BOOLEAN DEFAULT true,    -- true = obligatorio, false = electivo
   orden INTEGER DEFAULT 0,             -- orden sugerido de completacion
   UNIQUE(microcredencial_id, badge_definition_id)
@@ -1249,7 +1557,7 @@ GROUP BY ub.user_email, md.id, md.slug, md.nombre, md.tipo, md.programa_origen, 
 ```
 on_badge_granted(user, badge):
   -- Cuando se otorga un badge de nivel 2 (modulo completado), verificar microcredenciales
-  if badge.categoria in ('modulo', 'curso', 'sdpa'):
+  if badge.categoria in ('modulo', 'curso'):
     for each microcredencial that includes this badge:
       check v_progreso_microcredenciales(user, microcredencial)
       if elegible_para_otorgamiento AND not already_granted:
@@ -1302,14 +1610,13 @@ Para estudiantes de postgrado, la vista de logros incluye una seccion adicional:
 ### Endpoints de reconocimiento academico:
 ```
 -- Insignias (nivel 1-2)
-GET    /api/user/badges                    → insignias del usuario logueado
-GET    /api/user/badges/sdpa               → progreso SDPA del docente logueado
+GET    /api/user/badges                    → insignias del estudiante logueado
 GET    /api/badge/:hash                    → verificacion publica de insignia (sin auth)
-GET    /api/piac/:linkId/badges            → insignias del usuario en un curso especifico
+GET    /api/piac/:linkId/badges            → insignias del estudiante en un curso especifico
 GET    /api/admin/badges/stats             → estadisticas de insignias por curso/programa (admin)
 POST   /api/admin/badges/grant             → otorgar insignia manual (admin/DI)
 POST   /api/admin/badges/revoke/:id        → revocar insignia (admin)
-GET    /api/user/badges/export             → export PDF con logros del usuario
+GET    /api/user/badges/export             → export PDF con logros del estudiante
 
 -- Microcredenciales (nivel 3)
 GET    /api/user/microcredenciales              → microcredenciales del usuario + progreso hacia las pendientes
@@ -1323,32 +1630,31 @@ PUT    /api/admin/microcredenciales/:id         → editar microcredencial (admi
 GET    /api/admin/microcredenciales/:id/stats   → cuantos estudiantes la han obtenido, cuantos en progreso
 ```
 
-### Datos semilla (badge_definitions iniciales):
+### Datos semilla (badge_definitions — solo estudiante):
 ```sql
 INSERT INTO badge_definitions (slug, categoria, nombre, descripcion, icono, color, regla_auto) VALUES
+  -- Nivel 1: logros dentro de un curso
   ('nucleo_completado', 'curso', 'Nucleo completado', 'Completaste todas las actividades obligatorias de este nucleo', 'shield-check', '#16a34a', '{"type": "nucleo_100"}'),
   ('curso_completado', 'curso', 'Curso completado', 'Completaste todos los nucleos del curso', 'star', '#eab308', '{"type": "curso_100"}'),
   ('participacion_activa', 'curso', 'Participacion activa', 'Participaste en al menos el 80% de los foros del curso', 'message-circle', '#8b5cf6', '{"type": "foro_80"}'),
   ('entrega_puntual', 'curso', 'Entrega puntual', 'Entregaste todas las evaluaciones antes de la fecha limite', 'clock', '#06b6d4', '{"type": "entregas_a_tiempo"}'),
   ('primera_evaluacion', 'curso', 'Primera evaluacion', 'Recibiste tu primera calificacion en este curso', 'pencil', '#f97316', '{"type": "primera_nota"}'),
   ('nota_destacada', 'curso', 'Nota destacada', 'Obtuviste un promedio igual o superior al umbral de excelencia', 'medal', '#dc2626', '{"type": "promedio_sobre_umbral", "threshold": 6.0}'),
+  -- Nivel 2: modulo completado (unidad basica de modularizacion)
   ('modulo_completado', 'modulo', 'Modulo completado', 'Completaste esta asignatura/modulo con calificacion aprobatoria', 'badge-check', '#0d9488', '{"type": "modulo_aprobado"}'),
-  -- NOTA: 'modulo_completado' es la unidad basica de la modularizacion. Se crea una instancia por cada
-  -- asignatura/curso aprobado. Es el building block para microcredenciales (nivel 3).
   -- Se otorga cuando: curso_completado=true AND calificacion >= nota_minima_aprobacion del programa.
+  -- Es el building block para microcredenciales (nivel 3).
+  -- Trayectoria: hitos cross-curso
   ('primer_curso_completado', 'trayectoria', 'Primer curso virtual', 'Completaste tu primer curso en UMCE Online', 'rocket', '#2563eb', '{"type": "total_cursos_completados", "threshold": 1}'),
   ('semestre_completo', 'trayectoria', 'Semestre completo', 'Completaste todos los cursos del semestre', 'calendar-check', '#059669', '{"type": "semestre_100"}'),
   ('explorador', 'trayectoria', 'Explorador', 'Accediste a cursos en 2 o mas plataformas Moodle', 'compass', '#7c3aed', '{"type": "plataformas_distintas", "threshold": 2}'),
-  ('nivel_inicial_tic', 'sdpa', 'Nivel Inicial TIC', 'Certificaste el Nivel Inicial de Competencia Digital Docente (27h)', 'award', '#16a34a', null),
-  ('nivel_intermedio_tic', 'sdpa', 'Nivel Intermedio TIC', 'Certificaste el Nivel Intermedio de Competencia Digital Docente (54h)', 'award', '#eab308', null),
-  ('nivel_avanzado_tic', 'sdpa', 'Nivel Avanzado TIC', 'Certificaste el Nivel Avanzado de Competencia Digital Docente (81h)', 'award', '#dc2626', null),
-  ('ruta_ia_nivel_1', 'sdpa', 'Ruta IA - Iniciacion', 'Completaste los 4 cursos del Nivel 1 de la Ruta Formativa IA (40h)', 'brain', '#06b6d4', null),
-  ('ruta_ia_nivel_2', 'sdpa', 'Ruta IA - Aplicacion', 'Completaste los 4 cursos del Nivel 2 de la Ruta Formativa IA (44h)', 'brain', '#8b5cf6', null),
-  ('ruta_ia_nivel_3', 'sdpa', 'Ruta IA - Integracion', 'Completaste los 4 cursos del Nivel 3 de la Ruta Formativa IA (48h)', 'brain', '#dc2626', null),
-  ('mencion_especial', 'manual', 'Mencion especial', 'Reconocimiento por trabajo destacado', 'sparkles', '#f59e0b', null),
-  ('mentor_sdpa', 'manual', 'Mentor', 'Participaste como mentor en el Sistema de Desarrollo Profesional Academico', 'users', '#0891b2', null),
-  ('innovador', 'manual', 'Innovador', 'Completaste un proyecto de innovacion educativa', 'lightbulb', '#84cc16', null),
-  ('colaborador_udfv', 'manual', 'Colaborador UDFV', 'Participaste activamente en actividades de la UDFV', 'heart-handshake', '#ec4899', null);
+  -- Manuales: otorgadas por admin/DI
+  ('mencion_especial', 'manual', 'Mencion especial', 'Reconocimiento por trabajo destacado en un curso', 'sparkles', '#f59e0b', null),
+  ('colaborador', 'manual', 'Colaborador', 'Participaste como ayudante o colaborador en actividades UDFV', 'heart-handshake', '#ec4899', null);
+
+-- NOTA: Las certificaciones docentes (TIC, Ruta IA, Diplomado Docencia, Mentor, Innovador)
+-- ya NO van aqui. Estan en el schema separado: certificaciones_sdpa + actividades_sdpa.
+-- Ver seccion "Desarrollo Profesional Academico".
 ```
 
 ### Flujo de lectura (estudiante abre curso):
@@ -1711,22 +2017,32 @@ Referencia cruzada de que features del curso virtual se construyen en que fase:
 | Bibliografia: cron validacion URLs/DOI | Fase 4 (4.2) | cron + CrossRef API |
 | Bibliografia: dashboard calidad por curso | Fase 5+ | mv_calidad_bibliografica |
 | Bibliografia: dashboard agregado institucional (acreditacion) | Fase 5+ | vista admin + export CSV |
-| Badges: schema + definiciones semilla | Fase 3 (3.4) | badge_definitions + user_badges + microcredencial_definitions |
-| Badges: setup OB 3.0 (keypair Ed25519 + .well-known) | Fase 3 (3.4) | @digitalcredentials/* npm packages |
-| Badges: otorgamiento automatico (curso) | Fase 5-B | Requiere cache_completions + cache_grades |
-| Badges: mini-badge inline en sidebar/curso | Fase 5-B | user_badges + frontend |
-| Badges: vista "Mis logros" (estudiante) | Fase 5-C | user_badges + nueva pagina |
-| Badges: seccion SDPA docente + progreso TIC/IA | Fase 5-C | mv_progreso_sdpa |
-| Badges: insignias manuales (admin/DI) | Fase 5-C | endpoint POST grant |
-| Badges: export PDF de logros | Fase 5+ | user_badges + generador PDF |
-| Badges: verificacion publica (link unico) | Fase 5+ | endpoint /badge/:hash |
-| Microcredenciales: schema + definiciones | Fase 3 (3.4) | microcredencial_definitions + requisitos |
-| Microcredenciales: otorgamiento automatico | Fase 5-C | Requiere badges modulo + reglas composicion |
-| Microcredenciales: vista "Mi trayectoria" (estudiante postgrado) | Fase 5-C | v_progreso_microcredenciales |
+| **Insignias estudiante** | | |
+| Badges estudiante: schema + semilla | Fase 3 (3.4) | badge_definitions + user_badges (sin SDPA) |
+| Badges estudiante: setup OB 3.0 (keypair Ed25519 + .well-known) | Fase 3 (3.4) | @digitalcredentials/* npm packages |
+| Badges estudiante: otorgamiento automatico | Fase 5-B | Requiere cache_completions + cache_grades |
+| Badges estudiante: mini-badge inline en sidebar/curso | Fase 5-B | user_badges + frontend |
+| Badges estudiante: vista "Mis logros" | Fase 5-C | user_badges + nueva pagina |
+| Badges estudiante: insignias manuales (admin/DI) | Fase 5-C | endpoint POST grant |
+| Badges estudiante: export PDF de logros | Fase 5+ | user_badges + generador PDF |
+| Badges estudiante: verificacion publica | Fase 5+ | endpoint /badge/:hash |
+| Microcredenciales estudiante: schema + definiciones | Fase 3 (3.4) | microcredencial_definitions + requisitos |
+| Microcredenciales estudiante: otorgamiento automatico | Fase 5-C | Requiere badges modulo |
+| Microcredenciales estudiante: vista "Mi trayectoria" | Fase 5-C | v_progreso_microcredenciales |
 | Microcredenciales: itinerarios DEC (cursos → diplomado) | Fase 5+ | misma logica, datos DEC |
 | Microcredenciales: admin panel (crear/editar credenciales) | Fase 5+ | endpoints admin |
 | Microcredenciales: verificacion publica + export PDF | Fase 5+ | endpoint /microcredencial/:hash |
 | Progreso hacia grado (barra informativa) | Fase 5+ | datos desde badges modulo vs total programa |
+| **Desarrollo Profesional Docente (SDPA)** | | **Sistema separado** |
+| SDPA: schema (actividades + certificaciones + progreso + evidencias) | Fase 3 (3.4) | Schema propio, NO usa badge_definitions |
+| SDPA: datos semilla certificaciones (TIC + Ruta IA + Diplomados) | Fase 3 (3.4) | certificaciones_sdpa |
+| SDPA: panel admin registro actividades | Fase 4+ | actividades_sdpa + UI admin |
+| SDPA: importacion CSV historica | Fase 4+ | actividades_sdpa + bulk import |
+| SDPA: vista "Mi Desarrollo Profesional" (docente) | Fase 5-C | actividades_sdpa + progreso_certificaciones |
+| SDPA: flujo evidencias pedagogicas | Fase 5+ | evidencias_sdpa + revision admin |
+| SDPA: emision OB 3.0 certificaciones docentes | Fase 5+ | @digitalcredentials/* + progreso_certificaciones |
+| SDPA: dashboard institucional (admin/VRA) | Fase 5+ | v_resumen_docente_sdpa + export |
+| SDPA: verificacion publica certificaciones | Fase 5+ | endpoint /credential/:hash |
 | Accesibilidad audit | Transversal | Desde Fase 3, validar en cada PR |
 | Mobile-first responsive | Transversal | Desde Fase 3, disenar mobile-first |
 | --- | --- | --- |
@@ -1753,9 +2069,9 @@ Referencia cruzada de que features del curso virtual se construyen en que fase:
 6. Estructura semantica HTML + accesibilidad base
 7. Barra superior con recursos compartidos (ya existe en API)
 8. Incluir chatbot generico (shared/chatbot.js — ya funcional, solo incluir en HTML)
-9. Schema `curso_virtual_config` + `institutional_defaults` + `curso_virtual_bibliografia` + `badge_definitions` + `user_badges`
+9. Schema `curso_virtual_config` + `institutional_defaults` + `curso_virtual_bibliografia` + `badge_definitions` + `user_badges` (solo estudiante)
 10. Endpoints config basicos (GET/PUT)
-11. Datos semilla de badge_definitions (INSERT inicial)
+11. Datos semilla de badge_definitions (INSERT inicial — solo estudiante, sin SDPA)
 
 ### Fase 3-B — Visado y configuracion DI
 9. Toggle de visado en panel DI
@@ -1791,11 +2107,22 @@ Referencia cruzada de que features del curso virtual se construyen en que fase:
 33. Politicas y textos institucionales editables por admin
 34. Manejo de errores y degradacion graceful
 35. Pagina "Mis logros" (vista estudiante: grid de insignias, progreso, estadisticas)
-36. Seccion "Mi desarrollo academico" para docentes (progreso SDPA, certificacion TIC, ruta IA)
-37. Panel admin: otorgar/revocar insignias manuales
-38. Export PDF de logros del usuario (para portafolio/acreditacion)
-39. Verificacion publica de insignias (umce.online/badge/{hash})
-40. Dashboard de calidad bibliografica por curso (DI)
-41. Dashboard bibliografico agregado institucional + export CSV (admin, CNA)
+36. Panel admin: otorgar/revocar insignias manuales al estudiante
+37. Export PDF de logros del estudiante (para portafolio/acreditacion)
+38. Verificacion publica de insignias (umce.online/badge/{hash})
+39. Dashboard de calidad bibliografica por curso (DI)
+40. Dashboard bibliografico agregado institucional + export CSV (admin, CNA)
+
+### Desarrollo Profesional Docente (independiente del curso virtual)
+41. Schema SDPA: actividades_sdpa + certificaciones_sdpa + progreso_certificaciones + evidencias_sdpa
+42. Datos semilla de certificaciones_sdpa (TIC 3 niveles + Ruta IA 3 niveles + Diplomados)
+43. Panel admin: registro manual de actividades para docentes
+44. Panel admin: importacion CSV historica (actividades desde 2020)
+45. Vista docente "Mi Desarrollo Profesional" (basica: resumen + progreso certificaciones)
+46. Vista docente: detalle Certificacion TIC + Ruta IA + Diplomado
+47. Flujo de evidencias pedagogicas (subida docente + revision admin)
+48. Emision OB 3.0 para certificaciones docentes
+49. Dashboard institucional SDPA para admin (metricas, export CSV para VRA/CNA)
+50. Verificacion publica de certificaciones docentes (umce.online/credential/{hash})
 
 Cada sub-fase es desplegable e iterable. Se puede hacer demo al final de cada una.

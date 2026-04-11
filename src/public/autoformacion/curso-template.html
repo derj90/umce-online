@@ -435,6 +435,59 @@
     .callout-warning { background: #fff7ed; border-left-color: #f97316; color: #7c2d12; }
     .callout-concept { background: #faf5ff; border-left-color: #a855f7; color: #3b0764; }
     .callout-example { background: #f8fafc; border-left-color: #94a3b8; color: #334155; }
+
+    /* ============================================================
+       MOCA — BANNER DE PERFIL ACTIVO
+    ============================================================ */
+    .moca-banner {
+      background: linear-gradient(135deg, var(--accent-50), var(--accent-100));
+      border: 1px solid var(--accent-100);
+      border-left: 4px solid var(--accent-600);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.875rem;
+    }
+    .moca-banner-label { font-weight: 600; color: var(--accent-900); font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    .moca-banner-profile { background: var(--accent-700); color: white; padding: 0.125rem 0.625rem; border-radius: 999px; font-weight: 600; font-size: 0.8125rem; }
+    .moca-banner-change { margin-left: auto; color: var(--accent-700); text-decoration: underline; cursor: pointer; background: none; border: none; font-family: inherit; font-size: 0.8125rem; padding: 0; }
+    .moca-banner-change:hover { color: var(--accent-900); }
+
+    /* ============================================================
+       MOCA — DIAGNÓSTICO
+    ============================================================ */
+    .moca-diag-container { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .moca-diag-header { margin-bottom: 1.5rem; }
+    .moca-diag-header h2 { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 1.375rem; font-weight: 700; color: var(--accent-900); margin-bottom: 0.5rem; }
+    .moca-diag-header p { font-size: 0.9375rem; color: var(--text-secondary); line-height: 1.6; }
+    .moca-diag-progress { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem; }
+
+    .moca-diag-question { border-top: 1px solid var(--border); padding: 1.25rem 0; }
+    .moca-diag-question:first-of-type { border-top: none; padding-top: 0.5rem; }
+    .moca-diag-dim-tag { display: inline-block; font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-700); background: var(--accent-50); padding: 0.125rem 0.5rem; border-radius: 999px; margin-bottom: 0.5rem; }
+    .moca-diag-question-text { font-size: 0.9375rem; font-weight: 600; color: var(--text); line-height: 1.5; margin-bottom: 0.75rem; }
+    .moca-diag-option { display: flex; align-items: flex-start; gap: 0.625rem; width: 100%; text-align: left; padding: 0.625rem 0.875rem; margin-bottom: 0.375rem; border: 2px solid var(--border); border-radius: 8px; background: white; cursor: pointer; font-size: 0.8125rem; font-family: inherit; transition: all 0.15s; line-height: 1.4; }
+    .moca-diag-option:hover { border-color: var(--accent-600); background: var(--accent-50); }
+    .moca-diag-option.selected { border-color: var(--accent-700); background: var(--accent-100); }
+    .moca-diag-option-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #d1d5db; flex-shrink: 0; margin-top: 2px; transition: all 0.15s; }
+    .moca-diag-option.selected .moca-diag-option-dot { background: var(--accent-700); border-color: var(--accent-700); box-shadow: inset 0 0 0 2px white; }
+
+    .moca-diag-submit { display: block; width: 100%; padding: 0.875rem 1.25rem; border-radius: 8px; font-weight: 700; font-size: 0.9375rem; cursor: pointer; border: none; background: var(--accent-700); color: white; font-family: inherit; margin-top: 1.25rem; transition: background 0.15s; }
+    .moca-diag-submit:hover:not(:disabled) { background: var(--accent-900); }
+    .moca-diag-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .moca-diag-result { text-align: center; padding: 2rem 1rem; }
+    .moca-diag-result-score { font-family: 'Archivo', system-ui, sans-serif; font-size: 3rem; font-weight: 800; color: var(--accent-700); line-height: 1; margin-bottom: 0.5rem; }
+    .moca-diag-result-label { font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1.5rem; }
+    .moca-diag-result-profile { display: inline-block; background: var(--accent-700); color: white; padding: 0.5rem 1.25rem; border-radius: 999px; font-weight: 700; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 1.0625rem; margin-bottom: 1rem; }
+    .moca-diag-result-desc { font-size: 0.9375rem; color: var(--text); line-height: 1.7; max-width: 520px; margin: 0 auto 1.5rem; }
+    .moca-diag-result-breakdown { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .moca-diag-result-dim { background: var(--accent-50); border: 1px solid var(--accent-100); border-radius: 8px; padding: 0.625rem 0.875rem; min-width: 130px; }
+    .moca-diag-result-dim-label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); font-weight: 600; }
+    .moca-diag-result-dim-value { font-size: 1.25rem; font-weight: 800; color: var(--accent-700); font-family: 'Archivo', system-ui, sans-serif; }
   </style>
 </head>
 <body>
@@ -527,6 +580,10 @@
     var saveTimeout    = null;
     var token          = null;
 
+    // MOCA runtime — opcional, solo activo si courseConfig.moca existe
+    var mocaProfile    = null;   // 'explorador' | 'integrador' | 'disenador' | null
+    var mocaDiagState  = null;   // { answers: {q_id: optIdx}, submitted, score, dimScores, profile }
+
     // ============================================================
     // BOOT SEQUENCE
     // ============================================================
@@ -616,6 +673,13 @@
       moduleKeys = cfg.modules.map(function(m) { return m.id; });
       currentModule = moduleKeys[0];
 
+      // MOCA: restaurar perfil si el curso tiene bloque moca
+      if (cfg.moca && cfg.moca.perfiles) {
+        try {
+          mocaProfile = localStorage.getItem('moca_profile_' + COURSE_SLUG) || null;
+        } catch(e) { mocaProfile = null; }
+      }
+
       // xAPI Tracker
       var moodlePlatformUrls = {
         evirtual:  'https://evirtual.umce.cl',
@@ -669,6 +733,7 @@
         html += '<div class="sidebar-module-items">';
 
         mod.slides.forEach(function(slide, idx) {
+          if (!slideVisibleForProfile(slide)) return;
           var slideKey = mKey + '_' + idx;
           var isViewed = !!progress[slideKey];
           var isActive = (mKey === currentModule && idx === currentSlideIndex);
@@ -691,9 +756,13 @@
     };
 
     function calculateModuleProgress(mKey, mod) {
-      var total = mod.slides.length;
+      var total = 0;
       var viewed = 0;
-      mod.slides.forEach(function(s, idx) { if (progress[mKey + '_' + idx]) viewed++; });
+      mod.slides.forEach(function(s, idx) {
+        if (!slideVisibleForProfile(s)) return;
+        total++;
+        if (progress[mKey + '_' + idx]) viewed++;
+      });
       return total > 0 ? Math.round((viewed / total) * 100) : 0;
     }
 
@@ -719,15 +788,22 @@
       var contentArea = document.getElementById('content-area');
       var html = '';
 
+      // Banner MOCA de perfil activo (solo si curso tiene bloque moca y perfil asignado)
+      html += renderMocaBanner();
+
       if (slide.type === 'quiz') {
         html += renderQuiz(moduleKey);
+      } else if (slide.type === 'diagnostico' && courseConfig.moca && courseConfig.moca.test_diagnostico && courseConfig.moca.test_diagnostico.preguntas) {
+        html += renderDiagnostico(moduleKey);
       } else {
+        // Conteo de slides visibles para el header (no el total bruto)
+        var visCounts = getVisibleSlideCounts(mod);
         var slideHeaderHtml = '<div class="slide-header">'
           + '<span class="slide-header-module">' + escHtml(mod.title) + '</span>'
           + '<span class="slide-header-sep">&middot;</span>'
-          + '<span class="slide-header-counter">Slide ' + (slideIndex + 1) + ' de ' + mod.slides.length + '</span>'
+          + '<span class="slide-header-counter">Slide ' + visCounts.currentVisible + ' de ' + visCounts.totalVisible + '</span>'
           + '<span class="slide-header-sep">&middot;</span>'
-          + '<span class="slide-header-time">~' + (mod.slides.length * 3) + ' min</span>'
+          + '<span class="slide-header-time">~' + (visCounts.totalVisible * 3) + ' min</span>'
           + '</div>';
         html += slideHeaderHtml;
         html += '<div class="prose-edu">' + (slide.html || '') + '</div>';
@@ -765,31 +841,37 @@
 
       // --- Anterior ---
       var prevHtml = '';
-      if (slideIndex > 0) {
-        prevHtml = '<button class="btn btn-outline" onclick="navigateTo(\'' + moduleKey + '\',' + (slideIndex - 1) + ')">&larr; Anterior</button>';
+      var prevIdx = findPrevVisibleSlideIdx(mod, slideIndex);
+      if (prevIdx !== -1) {
+        prevHtml = '<button class="btn btn-outline" onclick="navigateTo(\'' + moduleKey + '\',' + prevIdx + ')">&larr; Anterior</button>';
       } else {
         var prevModKey = getPrevModule(moduleKey);
         if (prevModKey) {
           var prevMod = getModule(prevModKey);
-          var prevLast = prevMod.slides.length - 1;
-          prevHtml = '<button class="btn btn-outline" onclick="navigateTo(\'' + prevModKey + '\',' + prevLast + ')">&larr; Anterior</button>';
+          var prevLastVisible = findLastVisibleSlideIdx(prevMod);
+          if (prevLastVisible !== -1) {
+            prevHtml = '<button class="btn btn-outline" onclick="navigateTo(\'' + prevModKey + '\',' + prevLastVisible + ')">&larr; Anterior</button>';
+          } else {
+            prevHtml = '<div></div>';
+          }
         } else {
           prevHtml = '<div></div>';
         }
       }
       html += prevHtml;
 
-      // --- Contador central ---
-      html += '<span class="slide-counter">' + (slideIndex + 1) + ' / ' + mod.slides.length + '</span>';
+      // --- Contador central (solo slides visibles) ---
+      var visCounts = getVisibleSlideCounts(mod);
+      html += '<span class="slide-counter">' + visCounts.currentVisible + ' / ' + visCounts.totalVisible + '</span>';
 
-      // --- Siguiente (solo en slides de info; quiz maneja su propio avance) ---
+      // --- Siguiente (quiz y diagnostico manejan su propio avance) ---
       var nextHtml = '<div></div>';
-      if (slide.type !== 'quiz') {
-        if (slideIndex < mod.slides.length - 1) {
-          nextHtml = '<button class="btn btn-primary" onclick="navigateTo(\'' + moduleKey + '\',' + (slideIndex + 1) + ')">Siguiente &rarr;</button>';
+      if (slide.type !== 'quiz' && slide.type !== 'diagnostico') {
+        var nextIdx = findNextVisibleSlideIdx(mod, slideIndex);
+        if (nextIdx !== -1) {
+          nextHtml = '<button class="btn btn-primary" onclick="navigateTo(\'' + moduleKey + '\',' + nextIdx + ')">Siguiente &rarr;</button>';
         } else {
-          // Último slide de info del módulo (antes del quiz)
-          // No hay botón siguiente: el quiz aparece en el slide final del módulo
+          // Último slide visible del módulo (antes del quiz si lo hubiera, o fin del curso)
           nextHtml = '<div></div>';
         }
       }
@@ -1050,6 +1132,263 @@
     window.toggleSidebar = function() {
       document.getElementById('sidebar').classList.toggle('open');
       document.getElementById('sidebar-overlay').classList.toggle('open');
+    };
+
+    // ============================================================
+    // MOCA — VISIBILIDAD POR PERFIL
+    // ============================================================
+    function slideVisibleForProfile(slide) {
+      if (!slide || !slide.moca_metadata || !slide.moca_metadata.perfil_visible) return true;
+      var list = slide.moca_metadata.perfil_visible;
+      if (!list || list.length === 0) return true; // array vacío o ausente = visible para todos
+      if (!mocaProfile) return true;
+      return list.indexOf(mocaProfile) !== -1;
+    }
+
+    function findNextVisibleSlideIdx(mod, fromIdx) {
+      for (var i = fromIdx + 1; i < mod.slides.length; i++) {
+        if (slideVisibleForProfile(mod.slides[i])) return i;
+      }
+      return -1;
+    }
+
+    function findPrevVisibleSlideIdx(mod, fromIdx) {
+      for (var i = fromIdx - 1; i >= 0; i--) {
+        if (slideVisibleForProfile(mod.slides[i])) return i;
+      }
+      return -1;
+    }
+
+    function findLastVisibleSlideIdx(mod) {
+      for (var i = mod.slides.length - 1; i >= 0; i--) {
+        if (slideVisibleForProfile(mod.slides[i])) return i;
+      }
+      return -1;
+    }
+
+    function getVisibleSlideCounts(mod) {
+      var totalVisible = 0;
+      var currentVisible = 0;
+      for (var i = 0; i < mod.slides.length; i++) {
+        if (slideVisibleForProfile(mod.slides[i])) {
+          totalVisible++;
+          if (i <= currentSlideIndex) currentVisible++;
+        }
+      }
+      return { totalVisible: totalVisible, currentVisible: Math.max(1, currentVisible) };
+    }
+
+    // ============================================================
+    // MOCA — BANNER DE PERFIL ACTIVO
+    // ============================================================
+    function renderMocaBanner() {
+      if (!courseConfig || !courseConfig.moca || !courseConfig.moca.perfiles) return '';
+      if (!mocaProfile) return '';
+      var pInfo = findPerfilInfo(mocaProfile);
+      var label = pInfo ? (pInfo.nombre || capitalize(mocaProfile)) : capitalize(mocaProfile);
+      var html = '<div class="moca-banner">';
+      html += '<span class="moca-banner-label">Ruta activa MOCA:</span>';
+      html += '<span class="moca-banner-profile">' + escHtml(label) + '</span>';
+      html += '<button class="moca-banner-change" onclick="mocaResetProfile()">Cambiar perfil</button>';
+      html += '</div>';
+      return html;
+    }
+
+    function findPerfilInfo(perfilId) {
+      if (!courseConfig || !courseConfig.moca || !courseConfig.moca.perfiles) return null;
+      for (var i = 0; i < courseConfig.moca.perfiles.length; i++) {
+        if (courseConfig.moca.perfiles[i].id === perfilId) return courseConfig.moca.perfiles[i];
+      }
+      return null;
+    }
+
+    function capitalize(s) {
+      if (!s) return '';
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    window.mocaResetProfile = function() {
+      if (!confirm('\u00bfSeguro que quieres repetir el diagn\u00f3stico? Tu perfil actual se borrar\u00e1.')) return;
+      mocaProfile = null;
+      mocaDiagState = null;
+      try { localStorage.removeItem('moca_profile_' + COURSE_SLUG); } catch(e) {}
+      // Navegar de vuelta al primer slide tipo diagnostico
+      for (var m = 0; m < moduleKeys.length; m++) {
+        var mod = getModule(moduleKeys[m]);
+        if (!mod) continue;
+        for (var s = 0; s < mod.slides.length; s++) {
+          if (mod.slides[s].type === 'diagnostico') {
+            navigateTo(moduleKeys[m], s);
+            return;
+          }
+        }
+      }
+      buildSidebar();
+      navigateTo(currentModule, currentSlideIndex);
+    };
+
+    // ============================================================
+    // MOCA — DIAGNÓSTICO: RENDER Y SUBMIT
+    // ============================================================
+    function renderDiagnostico(moduleKey) {
+      var td = courseConfig.moca.test_diagnostico;
+      var preguntas = td.preguntas || [];
+
+      if (!mocaDiagState) {
+        mocaDiagState = { answers: {}, submitted: false, score: 0, dimScores: {}, profile: null };
+      }
+
+      var dimLabels = {
+        'conocimiento_tpack': 'Conocimiento TPACK',
+        'experiencia_ia_educativa': 'Experiencia IA educativa',
+        'practica_diseno_instruccional': 'Pr\u00e1ctica de dise\u00f1o instruccional'
+      };
+
+      var html = '<div class="moca-diag-container">';
+
+      if (!mocaDiagState.submitted) {
+        html += '<div class="moca-diag-header">';
+        html += '<h2>Diagn\u00f3stico MOCA</h2>';
+        html += '<p>Responde las ' + preguntas.length + ' preguntas con honestidad. No hay respuestas correctas ni incorrectas: el instrumento asigna tu ruta formativa seg\u00fan tu punto de partida.</p>';
+        var answered = Object.keys(mocaDiagState.answers).length;
+        html += '<div class="moca-diag-progress">Respondidas: ' + answered + ' / ' + preguntas.length + '</div>';
+        html += '</div>';
+
+        preguntas.forEach(function(q, qIdx) {
+          html += '<div class="moca-diag-question">';
+          html += '<span class="moca-diag-dim-tag">' + escHtml(dimLabels[q.dimension] || q.dimension) + '</span>';
+          html += '<p class="moca-diag-question-text">' + (qIdx + 1) + '. ' + escHtml(q.texto) + '</p>';
+          q.opciones.forEach(function(opt, oIdx) {
+            var selected = (mocaDiagState.answers[q.id] === oIdx);
+            var cls = 'moca-diag-option' + (selected ? ' selected' : '');
+            html += '<button class="' + cls + '" onclick="mocaAnswerQuestion(\'' + q.id + '\',' + oIdx + ')">';
+            html += '<span class="moca-diag-option-dot"></span>';
+            html += '<span>' + escHtml(opt.texto) + '</span>';
+            html += '</button>';
+          });
+          html += '</div>';
+        });
+
+        var allAnswered = preguntas.every(function(q) { return mocaDiagState.answers[q.id] !== undefined; });
+        html += '<button class="moca-diag-submit" ' + (allAnswered ? '' : 'disabled')
+             + ' onclick="mocaSubmitDiagnostico()">Asignar mi perfil MOCA</button>';
+      } else {
+        var pInfo = findPerfilInfo(mocaDiagState.profile);
+        var pLabel = pInfo ? (pInfo.nombre || capitalize(mocaDiagState.profile)) : capitalize(mocaDiagState.profile);
+        var pDesc = pInfo ? (pInfo.descripcion || '') : '';
+
+        html += '<div class="moca-diag-result">';
+        html += '<div class="moca-diag-result-score">' + mocaDiagState.score + '<span style="font-size:1.25rem;color:var(--text-secondary);">/100</span></div>';
+        html += '<div class="moca-diag-result-label">Puntaje global del diagn\u00f3stico</div>';
+
+        html += '<div class="moca-diag-result-breakdown">';
+        Object.keys(mocaDiagState.dimScores).forEach(function(dim) {
+          html += '<div class="moca-diag-result-dim">';
+          html += '<div class="moca-diag-result-dim-label">' + escHtml(dimLabels[dim] || dim) + '</div>';
+          html += '<div class="moca-diag-result-dim-value">' + mocaDiagState.dimScores[dim] + '<span style="font-size:0.75rem;color:var(--text-secondary);font-weight:600;">/100</span></div>';
+          html += '</div>';
+        });
+        html += '</div>';
+
+        html += '<div class="moca-diag-result-profile">' + escHtml(pLabel) + '</div>';
+        if (pDesc) html += '<p class="moca-diag-result-desc">' + escHtml(pDesc) + '</p>';
+
+        html += '<button class="btn btn-primary" onclick="mocaContinueAfterDiag()">Comenzar mi ruta &rarr;</button>';
+        html += '</div>';
+      }
+
+      html += '</div>';
+      return html;
+    }
+
+    window.mocaAnswerQuestion = function(questionId, optionIndex) {
+      if (!mocaDiagState || mocaDiagState.submitted) return;
+      mocaDiagState.answers[questionId] = optionIndex;
+      navigateTo(currentModule, currentSlideIndex); // re-render
+    };
+
+    window.mocaSubmitDiagnostico = function() {
+      if (!mocaDiagState) return;
+      var td = courseConfig.moca.test_diagnostico;
+      var preguntas = td.preguntas || [];
+      var dimSum = {};
+      var dimMax = {};
+      var totalSum = 0;
+      var totalMax = 0;
+
+      preguntas.forEach(function(q) {
+        var ansIdx = mocaDiagState.answers[q.id];
+        var pts = 0;
+        if (ansIdx !== undefined && q.opciones[ansIdx]) {
+          pts = q.opciones[ansIdx].puntos || 0;
+        }
+        var maxQ = 0;
+        for (var k = 0; k < q.opciones.length; k++) {
+          if ((q.opciones[k].puntos || 0) > maxQ) maxQ = q.opciones[k].puntos || 0;
+        }
+        dimSum[q.dimension] = (dimSum[q.dimension] || 0) + pts;
+        dimMax[q.dimension] = (dimMax[q.dimension] || 0) + maxQ;
+        totalSum += pts;
+        totalMax += maxQ;
+      });
+
+      var scoreGlobal = totalMax > 0 ? Math.round((totalSum / totalMax) * 100) : 0;
+
+      var dimScores = {};
+      Object.keys(dimSum).forEach(function(dim) {
+        var mx = dimMax[dim] || 1;
+        dimScores[dim] = Math.round((dimSum[dim] / mx) * 100);
+      });
+
+      var profile = null;
+      var umbrales = td.umbrales_perfil || {};
+      var perfilIds = Object.keys(umbrales);
+      for (var i = 0; i < perfilIds.length; i++) {
+        var p = perfilIds[i];
+        var t = umbrales[p];
+        if (scoreGlobal >= t.min && scoreGlobal <= t.max) { profile = p; break; }
+      }
+      if (!profile) {
+        profile = (courseConfig.moca.perfiles[0] || {}).id || perfilIds[0];
+      }
+
+      mocaDiagState.submitted = true;
+      mocaDiagState.score = scoreGlobal;
+      mocaDiagState.dimScores = dimScores;
+      mocaDiagState.profile = profile;
+
+      mocaProfile = profile;
+      try { localStorage.setItem('moca_profile_' + COURSE_SLUG, profile); } catch(e) {}
+
+      // xAPI: reportar perfil asignado via trackCompletion con el score del diagnóstico
+      if (tracker && typeof tracker.trackCompletion === 'function') {
+        try { tracker.trackCompletion(scoreGlobal); } catch(e) {}
+      }
+
+      var slideKey = currentModule + '_' + currentSlideIndex;
+      if (!progress[slideKey]) {
+        progress[slideKey] = true;
+        saveProgress();
+      }
+
+      navigateTo(currentModule, currentSlideIndex); // re-render con resultado
+      buildSidebar(); // re-filtrar slides por perfil
+    };
+
+    window.mocaContinueAfterDiag = function() {
+      var nextModKey = getNextModule(currentModule);
+      if (nextModKey) {
+        var nextMod = getModule(nextModKey);
+        var firstVisible = 0;
+        for (var i = 0; i < nextMod.slides.length; i++) {
+          if (slideVisibleForProfile(nextMod.slides[i])) { firstVisible = i; break; }
+        }
+        navigateTo(nextModKey, firstVisible);
+      } else {
+        var mod = getModule(currentModule);
+        var lastVisible = findLastVisibleSlideIdx(mod);
+        if (lastVisible !== -1) navigateTo(currentModule, lastVisible);
+      }
     };
 
     // ============================================================

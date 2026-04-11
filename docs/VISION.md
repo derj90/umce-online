@@ -1,3 +1,12 @@
+# OBSOLETO — Ver VISION.md en la raiz del repo
+
+> Este documento fue reemplazado por `/VISION.md` (01-Abr-2026) que contiene la reconceptualizacion
+> con 7 pilares y la estrategia abril-junio 2026. No usar este archivo como referencia.
+
+---
+
+# (Contenido original conservado como referencia historica)
+
 # UMCE.online — Donde estamos y hacia donde va
 
 ## Contexto

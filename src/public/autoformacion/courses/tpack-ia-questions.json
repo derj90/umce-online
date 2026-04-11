@@ -1,0 +1,268 @@
+{
+  "_meta": {
+    "slug": "tpack-ia",
+    "description": "Banco de preguntas sumativas por módulo del curso TPACK+IA (MOCA piloto). 5 preguntas por módulo, mostradas todas en cada intento (questionsPerQuiz=5).",
+    "fecha_generacion": "2026-04-11",
+    "estado": "DRAFT — contenido inicial para validación; revisable por David"
+  },
+  "m1": [
+    {
+      "id": "m1q1",
+      "text": "¿Quiénes son los autores del marco TPACK y en qué año publicaron la formulación clásica?",
+      "options": [
+        { "text": "Biggs (1999)", "correct": false, "feedback": "" },
+        { "text": "Mishra y Koehler (2006)", "correct": true, "feedback": "" },
+        { "text": "Shulman (1986)", "correct": false, "feedback": "" },
+        { "text": "Redecker (2017)", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m1q2",
+      "text": "¿Cuál de las siguientes NO es una de las tres áreas de conocimiento base del marco TPACK?",
+      "options": [
+        { "text": "Conocimiento Tecnológico (TK)", "correct": false, "feedback": "" },
+        { "text": "Conocimiento Pedagógico (PK)", "correct": false, "feedback": "" },
+        { "text": "Conocimiento del Contenido (CK)", "correct": false, "feedback": "" },
+        { "text": "Conocimiento Evaluativo (EK)", "correct": true, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m1q3",
+      "text": "El Conocimiento Pedagógico del Contenido (PCK), en la formulación de Shulman retomada por Mishra y Koehler, se refiere a:",
+      "options": [
+        { "text": "Conocer en profundidad el contenido disciplinar sin considerar cómo enseñarlo", "correct": false, "feedback": "" },
+        { "text": "Conocer métodos generales de enseñanza independientes del contenido", "correct": false, "feedback": "" },
+        { "text": "Conocer cómo enseñar un contenido específico considerando representaciones, analogías y dificultades típicas de los estudiantes", "correct": true, "feedback": "" },
+        { "text": "Dominar herramientas tecnológicas para apoyar la enseñanza", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m1q4",
+      "text": "La extensión TPACK-XK (Schmid et al., 2021) agrega una dimensión específica. ¿Cuál?",
+      "options": [
+        { "text": "Conocimiento de evaluación formativa", "correct": false, "feedback": "" },
+        { "text": "Conocimiento contextual (X de context/cross)", "correct": true, "feedback": "" },
+        { "text": "Conocimiento ético sobre uso de tecnología", "correct": false, "feedback": "" },
+        { "text": "Conocimiento de diseño instruccional", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m1q5",
+      "text": "Una de las principales críticas metodológicas al instrumento de autoevaluación TPACK original (Schmidt et al., 2009) señalada por la literatura posterior es que:",
+      "options": [
+        { "text": "Ha sido validado solo con profesores en ejercicio, no con pre-servicio", "correct": false, "feedback": "" },
+        { "text": "Las subescalas TPK, TCK y TPACK presentan baja discriminación factorial entre sí", "correct": true, "feedback": "" },
+        { "text": "Incluye demasiadas preguntas sobre ética y pocas sobre contenido", "correct": false, "feedback": "" },
+        { "text": "No tiene traducción al español", "correct": false, "feedback": "" }
+      ]
+    }
+  ],
+  "m2": [
+    {
+      "id": "m2q1",
+      "text": "¿Cuál de los siguientes es un ejemplo de modelo de lenguaje grande (LLM) usado habitualmente en educación?",
+      "options": [
+        { "text": "Scratch", "correct": false, "feedback": "" },
+        { "text": "Claude", "correct": true, "feedback": "" },
+        { "text": "Kahoot", "correct": false, "feedback": "" },
+        { "text": "Moodle", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m2q2",
+      "text": "El documento UNESCO (2023) Guidance for generative AI in education and research recomienda, entre sus principios centrales:",
+      "options": [
+        { "text": "Prohibir toda IA generativa en educación formal", "correct": false, "feedback": "" },
+        { "text": "Adoptar IA generativa sin restricciones, confiando en los proveedores", "correct": false, "feedback": "" },
+        { "text": "Un enfoque centrado en el humano con regulación, equidad, protección de datos y alfabetización en IA", "correct": true, "feedback": "" },
+        { "text": "Delegar la decisión de uso exclusivamente en cada docente individual", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m2q3",
+      "text": "Una analítica predictiva en educación típicamente se usa para:",
+      "options": [
+        { "text": "Reemplazar al docente en la toma de decisiones pedagógicas", "correct": false, "feedback": "" },
+        { "text": "Identificar estudiantes en riesgo de abandono o bajo rendimiento a partir de patrones históricos", "correct": true, "feedback": "" },
+        { "text": "Generar automáticamente contenido de aprendizaje", "correct": false, "feedback": "" },
+        { "text": "Traducir materiales a múltiples idiomas", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m2q4",
+      "text": "¿Cuál de las siguientes consideraciones éticas es más relevante al integrar IA generativa en actividades evaluadas?",
+      "options": [
+        { "text": "El costo de las suscripciones premium", "correct": false, "feedback": "" },
+        { "text": "Autoría, integridad académica y transparencia en el uso de la herramienta", "correct": true, "feedback": "" },
+        { "text": "La velocidad de respuesta del modelo", "correct": false, "feedback": "" },
+        { "text": "El color de la interfaz", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m2q5",
+      "text": "La revisión sistemática de Crompton y Burke (2023) sobre IA en educación superior tras la aparición de ChatGPT concluye, entre otras cosas, que:",
+      "options": [
+        { "text": "La IA generativa ya reemplazó el rol del docente en la mayoría de los estudios", "correct": false, "feedback": "" },
+        { "text": "La literatura es aún incipiente y los diseños metodológicos son heterogéneos, por lo que se requiere más investigación empírica", "correct": true, "feedback": "" },
+        { "text": "No existe evidencia de impacto positivo de la IA en el aprendizaje", "correct": false, "feedback": "" },
+        { "text": "Todos los estudios reportan resultados uniformemente positivos", "correct": false, "feedback": "" }
+      ]
+    }
+  ],
+  "m3": [
+    {
+      "id": "m3q1",
+      "text": "El marco I-TPACK de Celik (2023) extiende el TPACK clásico incorporando específicamente:",
+      "options": [
+        { "text": "Conocimiento evaluativo automatizado", "correct": false, "feedback": "" },
+        { "text": "Conocimiento ético para integrar herramientas basadas en IA en la enseñanza", "correct": true, "feedback": "" },
+        { "text": "Conocimiento de realidad virtual", "correct": false, "feedback": "" },
+        { "text": "Conocimiento de gamificación", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m3q2",
+      "text": "El enfoque Human-Centered AI Pedagogy (HCAP) se caracteriza por:",
+      "options": [
+        { "text": "Priorizar el rendimiento de los modelos por sobre el aprendizaje", "correct": false, "feedback": "" },
+        { "text": "Centrar el diseño educativo en la agencia, el desarrollo y los valores humanos frente a la IA, no en la tecnología per se", "correct": true, "feedback": "" },
+        { "text": "Automatizar completamente la retroalimentación", "correct": false, "feedback": "" },
+        { "text": "Eliminar el rol docente en favor de tutores de IA", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m3q3",
+      "text": "¿Cuál de las siguientes es una diferencia clave entre TPACK clásico e I-TPACK/AI-TPACK?",
+      "options": [
+        { "text": "I-TPACK reemplaza el conocimiento del contenido", "correct": false, "feedback": "" },
+        { "text": "I-TPACK/AI-TPACK visibilizan el conocimiento sobre la IA (sus capacidades, limitaciones y ética) como componente diferenciado", "correct": true, "feedback": "" },
+        { "text": "AI-TPACK elimina la dimensión pedagógica", "correct": false, "feedback": "" },
+        { "text": "No hay diferencia, son sinónimos", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m3q4",
+      "text": "Al analizar un caso de uso de IA en aula desde el marco TPACK×IA, una pregunta central es:",
+      "options": [
+        { "text": "¿Qué modelo de IA es más moderno?", "correct": false, "feedback": "" },
+        { "text": "¿Cómo interactúan el contenido disciplinar, la estrategia pedagógica y las capacidades/limitaciones de la IA para favorecer el aprendizaje buscado?", "correct": true, "feedback": "" },
+        { "text": "¿Cuánto cuesta la suscripción al servicio?", "correct": false, "feedback": "" },
+        { "text": "¿Qué dispositivos usan los estudiantes?", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m3q5",
+      "text": "Una limitación metodológica común detectada en la literatura empírica sobre TPACK e IA (2023-2025) es:",
+      "options": [
+        { "text": "El exceso de estudios longitudinales", "correct": false, "feedback": "" },
+        { "text": "La predominancia de estudios de autoevaluación transversal, con poca triangulación con desempeño observado en aula", "correct": true, "feedback": "" },
+        { "text": "Demasiados estudios experimentales con grupo control", "correct": false, "feedback": "" },
+        { "text": "La uniformidad en los instrumentos de medida", "correct": false, "feedback": "" }
+      ]
+    }
+  ],
+  "m4": [
+    {
+      "id": "m4q1",
+      "text": "En una configuración MOCA, los Resultados Formativos (RF) del curso:",
+      "options": [
+        { "text": "Varían según el perfil asignado por el diagnóstico", "correct": false, "feedback": "" },
+        { "text": "Son invariantes: todos los perfiles alcanzan los mismos RF, solo cambia la ruta para llegar a ellos", "correct": true, "feedback": "" },
+        { "text": "Se definen al final del curso según lo aprendido", "correct": false, "feedback": "" },
+        { "text": "Son sugerencias opcionales sin carácter vinculante", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m4q2",
+      "text": "Al diseñar una actividad para el perfil Explorador en un curso MOCA, la recomendación principal es:",
+      "options": [
+        { "text": "Reducir el andamiaje y abrir los casos para fomentar autonomía", "correct": false, "feedback": "" },
+        { "text": "Proveer alto andamiaje: plantillas estructuradas, casos guiados y retroalimentación formativa frecuente", "correct": true, "feedback": "" },
+        { "text": "Eliminar las rúbricas para no condicionar el proceso", "correct": false, "feedback": "" },
+        { "text": "Mantener el mismo nivel de complejidad que para el perfil Diseñador", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m4q3",
+      "text": "En MOCA, las evaluaciones sumativas son invariantes. Esto significa que:",
+      "options": [
+        { "text": "Los criterios de evaluación cambian según el perfil", "correct": false, "feedback": "" },
+        { "text": "Todos los perfiles rinden la misma rúbrica; solo varía la complejidad del artefacto entregado", "correct": true, "feedback": "" },
+        { "text": "Solo los perfiles altos se evalúan formalmente", "correct": false, "feedback": "" },
+        { "text": "La evaluación es opcional", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m4q4",
+      "text": "¿Cuál de los siguientes es un principio clave del diseño de actividades con IA alineadas a TPACK?",
+      "options": [
+        { "text": "Seleccionar primero la herramienta de IA más novedosa y luego justificar su uso", "correct": false, "feedback": "" },
+        { "text": "Partir de los resultados de aprendizaje y el contenido, y elegir la IA solo si su aporte pedagógico es explicable y verificable", "correct": true, "feedback": "" },
+        { "text": "Usar IA en todas las actividades de un curso por defecto", "correct": false, "feedback": "" },
+        { "text": "Prohibir el uso de IA cuando el contenido es complejo", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m4q5",
+      "text": "El taller colaborativo de co-diseño entre perfiles MOCA tiene como función principal:",
+      "options": [
+        { "text": "Igualar el nivel de todos los participantes al más bajo", "correct": false, "feedback": "" },
+        { "text": "Fomentar aprendizaje vicario y retroalimentación entre pares con diferentes puntos de partida", "correct": true, "feedback": "" },
+        { "text": "Evaluar individualmente a cada participante", "correct": false, "feedback": "" },
+        { "text": "Seleccionar a los mejores diseños para publicación", "correct": false, "feedback": "" }
+      ]
+    }
+  ],
+  "m5": [
+    {
+      "id": "m5q1",
+      "text": "El Producto Integrador del curso se entrega de manera diferenciada por perfil MOCA. ¿Qué formato corresponde al perfil Explorador?",
+      "options": [
+        { "text": "Un caso de estudio completo con análisis crítico de literatura", "correct": false, "feedback": "" },
+        { "text": "Una propuesta preliminar de actividad TPACK+IA con plantilla estructurada", "correct": true, "feedback": "" },
+        { "text": "Una secuencia didáctica completa con justificación bibliográfica", "correct": false, "feedback": "" },
+        { "text": "Un artículo publicable en revista Q1", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m5q2",
+      "text": "La rúbrica del Producto Integrador evalúa cuatro dimensiones. ¿Cuál de estas NO forma parte de esas cuatro?",
+      "options": [
+        { "text": "Fundamentación teórica", "correct": false, "feedback": "" },
+        { "text": "Diseño pedagógico", "correct": false, "feedback": "" },
+        { "text": "Integración tecnológica", "correct": false, "feedback": "" },
+        { "text": "Cantidad de herramientas utilizadas", "correct": true, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m5q3",
+      "text": "La reflexión metacognitiva al cierre del curso cumple principalmente la función de:",
+      "options": [
+        { "text": "Repasar contenidos aprendidos memorísticamente", "correct": false, "feedback": "" },
+        { "text": "Favorecer la transferibilidad de lo aprendido a la propia práctica docente y hacer visible el proceso de aprendizaje", "correct": true, "feedback": "" },
+        { "text": "Calificar a los compañeros del curso", "correct": false, "feedback": "" },
+        { "text": "Completar requisitos administrativos del curso", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m5q4",
+      "text": "La nota de aprobación del curso TPACK+IA (invariante MOCA) es:",
+      "options": [
+        { "text": "40%", "correct": false, "feedback": "" },
+        { "text": "50%", "correct": false, "feedback": "" },
+        { "text": "60%", "correct": true, "feedback": "" },
+        { "text": "75%", "correct": false, "feedback": "" }
+      ]
+    },
+    {
+      "id": "m5q5",
+      "text": "Al finalizar el curso, ¿qué característica distingue al perfil Diseñador respecto a los otros perfiles en términos del tipo de artefacto evaluado?",
+      "options": [
+        { "text": "No debe entregar producto final", "correct": false, "feedback": "" },
+        { "text": "Entrega un caso de estudio completo con análisis crítico de literatura y fundamentación en extensiones recientes del marco (I-TPACK, HCAP, AI-TPACK)", "correct": true, "feedback": "" },
+        { "text": "Solo debe completar un cuestionario", "correct": false, "feedback": "" },
+        { "text": "Entrega exactamente el mismo artefacto que el perfil Explorador", "correct": false, "feedback": "" }
+      ]
+    }
+  ]
+}

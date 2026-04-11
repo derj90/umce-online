@@ -1,0 +1,1081 @@
+{
+  "_draft_notes": {
+    "estado": "DRAFT — primer pase aplicando moca_spec_v1_closed.md",
+    "fecha": "2026-04-11",
+    "autor": "Pipeline MOCA sesión post-cierre ADRs",
+    "pendiente_contenido": "Este archivo contiene metadata, bloque MOCA completo y estructura de módulos con slides como stubs (título + type). El HTML de cada slide debe generarse en un pase posterior derivando de generate_mbz.py y la bibliografía base.",
+    "destino_real": "Al validarse, copiar a ~/Documents/umce-online/src/public/autoformacion/courses/tpack-ia.json (requiere confirmación explícita por regla NUNCA modificar cursos reales sin OK)",
+    "checklist_aplicado": "10/10 de moca_spec_v1_closed.md §7",
+    "supersede": "tpack_ia_diagnostico_moca.xml (se integra como slide diagnóstico), generate_mbz.py (se referencia para derivar HTML)"
+  },
+
+  "slug": "tpack-ia",
+  "title": "Integración de TPACK e Inteligencia Artificial en Educación",
+  "subtitle": "Marco teórico y diseño de experiencias de aprendizaje con configuración adaptativa MOCA",
+  "description": "Comprende el marco TPACK (Mishra & Koehler, 2006) y sus extensiones para integrar Inteligencia Artificial en contextos educativos. Diseña experiencias de aprendizaje que articulen conocimiento tecnológico, pedagógico y del contenido con herramientas IA. El curso utiliza configuración adaptativa (MOCA): tras un test diagnóstico serás asignado a uno de tres perfiles (Explorador, Integrador o Diseñador) que adaptará tu ruta formativa manteniendo los mismos Resultados Formativos.",
+  "accent": "purple",
+  "accentColors": {
+    "900": "#4c1d95",
+    "700": "#6d28d9",
+    "600": "#7c3aed",
+    "100": "#ede9fe",
+    "50": "#f5f3ff",
+    "bg": "#f8f5ff"
+  },
+  "duration": "5 semanas",
+  "level": "Intermedio",
+  "modality": "Autoformación adaptativa (MOCA)",
+  "price": "Gratuito",
+  "moodle": {
+    "platform": "evirtual",
+    "courseId": null
+  },
+  "xapi": {
+    "activityBase": "https://umce.online/autoformacion/tpack-ia",
+    "moduleId": "tpack-ia"
+  },
+  "instructor": {
+    "name": "UDFV — Unidad de Desarrollo y Formación Virtual",
+    "role": "Vicerrectoría Académica, UMCE",
+    "avatar": null
+  },
+  "enrollment": {
+    "requireRut": false,
+    "requireInstitution": false,
+    "institutions": []
+  },
+  "passingScore": 60,
+  "questionsPerQuiz": 5,
+
+  "moca": {
+    "version": "1.0",
+
+    "ejes": {
+      "autonomia_esperada": "media",
+      "modalidad_entrega": "asincrono_puro",
+      "madurez_pedagogica_digital": "en_transicion",
+      "madurez_detalle": {
+        "docente": "El contexto docente del piloto es mixto: instructores UDFV con alto dominio pedagógico-digital (TPACK explícito, experiencia en diseño instruccional y uso crítico de IA) que diseñan el curso, pero la audiencia objetivo son docentes UMCE con madurez pedagógica digital heterogénea — algunos experimentan con herramientas digitales sin sistematicidad, otros usan el LMS como repositorio. El diseño asume que el instructor puede retroalimentar con criterio pero que los participantes no comparten un marco TPACK común de entrada.",
+        "estudiante": "Docentes y profesionales de la educación con competencia digital funcional (pueden operar Moodle, enviar tareas, participar en foros) pero con autorregulación parcial: cumplen plazos con apoyo de recordatorios y estructura del curso. La mayoría no ha diseñado experiencias con IA integrada como parte del aprendizaje del estudiante, aunque usa herramientas como ChatGPT ocasionalmente. Se asume alfabetización digital para seguir el curso pero no para autogestionar completamente el proceso sin andamiaje.",
+        "institucional": "UMCE cuenta con estrategia de virtualización en implementación fragmentada: 5 plataformas Moodle operativas, soporte técnico disponible, Unidad UDFV con experiencia en e-learning, pero sin políticas institucionales unificadas de integración de IA en docencia. La infraestructura soporta el curso pero la institución no declara aún estándares de uso de IA educativa. Coincide con el 56% de IES en nivel intermedio de transformación digital según Bravo-Jaico et al. (2025)."
+      }
+    },
+
+    "capas_activas": ["caracterizacion", "orientacion", "configuracion"],
+
+    "configuracion": {
+      "par": "viable",
+      "descripcion_brecha": "La configuración ideal asumiría alta autonomía del estudiante (mínimo andamiaje, actividades abiertas, retroalimentación por pares). La subdimensión estudiante del Eje 3 (autorregulación parcial, experiencia inicial con IA educativa) impide sostener ese ideal: el componente 'actividades de aprendizaje' requiere andamiaje diferenciado por perfil y el componente 'evaluación y retroalimentación' requiere presencia docente formativa (no solo pares). La configuración viable preserva el Producto Integrador como invariante pero diferencia el andamiaje, profundidad bibliográfica y complejidad de casos por perfil MOCA. Condición de revisión: cuando la madurez estudiantil avance a 'avanzado' (autorregulación digital consolidada) se podrá reducir el andamiaje del perfil Explorador a niveles del Integrador actual.",
+      "tension_principal": "estructura_vs_autonomia"
+    },
+
+    "perfiles": [
+      {
+        "id": "explorador",
+        "nombre": "Explorador",
+        "descripcion": "Conocimiento inicial en TPACK e IA. La ruta incluye fundamentos completos con alto andamiaje, casos guiados y plantillas estructuradas para el Producto Integrador.",
+        "autonomia_nivel": "media_baja",
+        "andamiaje": "alto",
+        "sct_distribucion": {
+          "sincronico_h": 0,
+          "asincronico_h": 11,
+          "autonomo_h": 16
+        },
+        "actividades_adicionales": ["IN1_refuerzo_tpack", "EE1_autoevaluacion_guiada", "EV1_rubrica_ejemplificada"],
+        "diagnostico_umbral": {
+          "min_puntaje": 0,
+          "max_puntaje": 40
+        }
+      },
+      {
+        "id": "integrador",
+        "nombre": "Integrador",
+        "descripcion": "Domina TPACK o IA pero no ambos. La ruta condensa lo conocido y profundiza lo nuevo. Secuencia didáctica de 3 actividades articuladas como Producto Integrador.",
+        "autonomia_nivel": "media",
+        "andamiaje": "medio",
+        "sct_distribucion": {
+          "sincronico_h": 0,
+          "asincronico_h": 9,
+          "autonomo_h": 18
+        },
+        "actividades_adicionales": ["EA1_analisis_caso_intermedio", "EE2_autoevaluacion_abierta"],
+        "diagnostico_umbral": {
+          "min_puntaje": 41,
+          "max_puntaje": 70
+        }
+      },
+      {
+        "id": "disenador",
+        "nombre": "Diseñador",
+        "descripcion": "Conoce TPACK, usa IA y diseña. Foco en integración avanzada y análisis crítico. Caso de estudio completo con diseño, implementación proyectada y evaluación de impacto como Producto Integrador.",
+        "autonomia_nivel": "alta",
+        "andamiaje": "bajo",
+        "sct_distribucion": {
+          "sincronico_h": 0,
+          "asincronico_h": 7,
+          "autonomo_h": 20
+        },
+        "actividades_adicionales": ["EB1_debate_avanzado", "ED1_caso_abierto"],
+        "diagnostico_umbral": {
+          "min_puntaje": 71,
+          "max_puntaje": 100
+        }
+      }
+    ],
+
+    "test_diagnostico": {
+      "num_preguntas": 12,
+      "dimensiones": ["conocimiento_tpack", "experiencia_ia_educativa", "practica_diseno_instruccional"],
+      "puntaje_max": 100,
+      "instrumento_referencia": "Instrumento ad hoc del piloto TPACK+IA basado en tpack_ia_diagnostico_moca.xml (4 preguntas por dimensión, Likert de autoevaluación con 3 niveles)",
+      "asignacion_automatica": true,
+      "ubicacion_en_curso": "antes_m1",
+      "formula_score": "round((suma_puntos / 24) * 100) — cada pregunta aporta 0, 1 o 2 puntos; 12 preguntas × 2 puntos máx = 24 puntos brutos, escalados a 0-100",
+      "umbrales_perfil": {
+        "explorador": { "min": 0, "max": 40 },
+        "integrador": { "min": 41, "max": 70 },
+        "disenador": { "min": 71, "max": 100 }
+      },
+      "preguntas": [
+        {
+          "id": "tpack_1",
+          "dimension": "conocimiento_tpack",
+          "texto": "Conozco los componentes del marco TPACK de Mishra y Koehler (conocimiento tecnológico, pedagógico, de contenido y sus intersecciones).",
+          "opciones": [
+            { "texto": "No lo conozco", "puntos": 0 },
+            { "texto": "He oído hablar, pero no lo domino", "puntos": 1 },
+            { "texto": "Lo conozco y puedo explicarlo", "puntos": 2 }
+          ]
+        },
+        {
+          "id": "tpack_2",
+          "dimension": "conocimiento_tpack",
+          "texto": "Puedo explicar la diferencia entre PCK (Pedagogical Content Knowledge) y TPACK con un ejemplo concreto de mi área disciplinar.",
+          "opciones": [
+            { "texto": "No sabría distinguirlos", "puntos": 0 },
+            { "texto": "Distingo los conceptos pero me cuesta ejemplificarlos", "puntos": 1 },
+            { "texto": "Los distingo y puedo dar ejemplos propios", "puntos": 2 }
+          ]
+        },
+        {
+          "id": "tpack_3",
+          "dimension": "conocimiento_tpack",
+          "texto": "He leído trabajos académicos sobre TPACK (Mishra & Koehler, Schmid, Celik u otros autores del campo).",
+          "opciones": [
+            { "texto": "Nunca he leído literatura académica de TPACK", "puntos": 0 },
+            { "texto": "He leído alguna referencia introductoria", "puntos": 1 },
+            { "texto": "He leído varios artículos y conozco a los autores clave", "puntos": 2 }
+          ]
+        },
+        {
+          "id": "tpack_4",
+          "dimension": "conocimiento_tpack",
+          "texto": "Puedo identificar en una clase concreta qué tipo de conocimiento (tecnológico, pedagógico, de contenido) se está activando en cada momento.",
+          "opciones": [
+            { "texto": "No lo había pensado así", "puntos": 0 },
+            { "texto": "Puedo identificarlo con apoyo de plantillas o guías", "puntos": 1 },
+            { "texto": "Lo identifico de manera autónoma y sistemática", "puntos": 2 }
+          ]
+        },
+        {
+          "id": "ia_1",
+          "dimension": "experiencia_ia_educativa",
+          "texto": "He utilizado herramientas de IA generativa (ChatGPT, Claude, Gemini, Copilot) para tareas profesionales propias.",
+          "opciones": [
+            { "texto": "Nunca las he usado", "puntos": 0 },
+            { "texto": "Las he probado algunas veces", "puntos": 1 },
+            { "texto": "Las uso con frecuencia en mi trabajo profesional", "puntos": 2 }
+          ]
+        },
+        {
+          "id": "ia_2",
+          "dimension": "experiencia_ia_educativa",
+          "texto": "He utilizado herramientas de IA en el diseño o implementación de actividades educativas para estudiantes.",
+          "opciones": [
+            { "texto": "No las he integrado en mi práctica docente", "puntos": 0 },
+            { "texto": "Las he usado a nivel exploratorio en alguna actividad", "puntos": 1 },
+            { "texto": "Las integro de forma intencional en actividades evaluadas", "puntos": 2 }
+          ]
+        },
+        {
+          "id": "ia_3",
+          "dimension": "experiencia_ia_educativa",
+          "texto": "Conozco las principales consideraciones éticas de la IA en educación (sesgos, privacidad, autoría, equidad, impacto ambiental).",
+          "opciones": [
+            { "texto": "No las conozco en profundidad", "puntos": 0 },
+            { "texto": "Conozco algunas pero no un marco completo", "puntos": 1 },
+            { "texto": "Conozco marcos como UNESCO 2023 y los aplico a decisiones de diseño", "puntos": 2 }
+          ]
+        },
+        {
+          "id": "ia_4",
+          "dimension": "experiencia_ia_educativa",
+          "texto": "He leído literatura académica reciente (2023 en adelante) sobre IA en educación (Celik, Crompton y Burke, UNESCO u otros).",
+          "opciones": [
+            { "texto": "No he leído literatura académica específica", "puntos": 0 },
+            { "texto": "He leído alguna referencia introductoria o divulgativa", "puntos": 1 },
+            { "texto": "He leído varios estudios y puedo citarlos con fundamento", "puntos": 2 }
+          ]
+        },
+        {
+          "id": "di_1",
+          "dimension": "practica_diseno_instruccional",
+          "texto": "He diseñado actividades o secuencias didácticas usando un modelo explícito de diseño instruccional (ADDIE, backward design, u otro).",
+          "opciones": [
+            { "texto": "No conozco modelos de diseño instruccional", "puntos": 0 },
+            { "texto": "Conozco alguno pero no lo aplico sistemáticamente", "puntos": 1 },
+            { "texto": "Diseño sistemáticamente con un modelo explícito", "puntos": 2 }
+          ]
+        },
+        {
+          "id": "di_2",
+          "dimension": "practica_diseno_instruccional",
+          "texto": "Cuando diseño una actividad, parto de resultados de aprendizaje formulados con verbos observables y criterios de evaluación alineados.",
+          "opciones": [
+            { "texto": "Normalmente parto del contenido o del recurso", "puntos": 0 },
+            { "texto": "Lo hago en algunas unidades, no siempre", "puntos": 1 },
+            { "texto": "Siempre parto de los resultados y alineo la evaluación", "puntos": 2 }
+          ]
+        },
+        {
+          "id": "di_3",
+          "dimension": "practica_diseno_instruccional",
+          "texto": "He rediseñado mi práctica docente a partir de evidencia concreta de aprendizaje de mis estudiantes.",
+          "opciones": [
+            { "texto": "No trabajo con evidencia sistemática para rediseñar", "puntos": 0 },
+            { "texto": "Lo he hecho ocasionalmente frente a resultados bajos", "puntos": 1 },
+            { "texto": "Rediseño de manera sistemática ciclo tras ciclo", "puntos": 2 }
+          ]
+        },
+        {
+          "id": "di_4",
+          "dimension": "practica_diseno_instruccional",
+          "texto": "He compartido o publicado diseños educativos propios (en comunidades de práctica, congresos, repositorios abiertos o artículos).",
+          "opciones": [
+            { "texto": "No he compartido diseños propios fuera de mi aula", "puntos": 0 },
+            { "texto": "Los he compartido informalmente con colegas", "puntos": 1 },
+            { "texto": "Los he presentado o publicado en espacios formales", "puntos": 2 }
+          ]
+        }
+      ]
+    },
+
+    "pipeline": {
+      "formato_institucional": "DEC",
+      "momentos": {
+        "m1_ideacion": {
+          "completado": true,
+          "fecha": "2026-04-09",
+          "output_resumen": "Tema: Integración de TPACK e IA en Educación. Audiencia: docentes UMCE/abierta. Formato: DEC (Taller/Seminario). Modalidad: e-learning 100% asíncrono. SCT: 1."
+        },
+        "m2_investigacion": {
+          "completado": true,
+          "fecha": "2026-04-09",
+          "referencias_clave": [
+            "Mishra & Koehler (2006) — TPACK original",
+            "Schmid et al. (2021) — TPACK-XK",
+            "Celik (2023) — I-TPACK ética IA",
+            "Crompton & Burke (2023) — IA en educación superior",
+            "UNESCO (2023) — Guidance for generative AI"
+          ],
+          "num_referencias": 5
+        },
+        "m3_dimensionamiento_sct": {
+          "completado": true,
+          "fecha": "2026-04-09",
+          "sct": 1,
+          "horas_totales": 27,
+          "semanas": 5
+        },
+        "m4_perfilado_moca": {
+          "completado": true,
+          "fecha": "2026-04-09",
+          "num_perfiles": 3,
+          "perfiles_ids": ["explorador", "integrador", "disenador"],
+          "test_generado": true
+        },
+        "m5_documento_institucional": {
+          "completado": true,
+          "fecha": "2026-04-11",
+          "formato": "DEC",
+          "estado": "draft v1 generado en research/tpack_ia_dec.md; pendiente de revisión y firma institucional UDFV → Vicerrectoría Académica"
+        },
+        "m6_piac": {
+          "completado": false,
+          "fecha": null,
+          "link_drive": null,
+          "nucleos": 1,
+          "semanas_planificadas": 5
+        },
+        "m7_implementacion": {
+          "completado": false,
+          "fecha": null,
+          "moodle_course_id": null,
+          "grupos_creados": false
+        }
+      }
+    },
+
+    "alineacion": {
+      "modelo_educativo_umce": true,
+      "marco_evaluativo_dimensiones_prioritarias": ["D3", "D6"],
+      "tpack_componentes_foco": ["TCK", "TPK", "TPACK"],
+      "oscqr_referenciado": true
+    },
+
+    "meta": {
+      "autor_diseno": "David Reyes Jofré",
+      "fecha_diseno": "2026-04-11",
+      "sesion_pipeline": "Sesión post-cierre ADRs MOCA v1.0 (11-abr-2026, Claude Opus 4.6)",
+      "documento_master": "~/Documents/TPACK-IA-MOCA/research/moca_spec_v1_closed.md",
+      "notas": "Primer piloto MOCA tras el cierre del spec v1.0. Aplicación del checklist completo de validación (§7). El JSON queda listo para integrarse al sistema de autoformación de umce.online pendiente de: (a) generación HTML de slides, (b) redacción formal del DEC en Momento 5, (c) construcción del PIAC en Momento 6, (d) implementación en Moodle en Momento 7."
+    }
+  },
+
+  "resultados_formativos": [
+    {
+      "id": "RF1",
+      "texto": "Caracteriza el marco TPACK y sus componentes para diagnosticar el nivel de integración tecnológica de una práctica pedagógica.",
+      "nivel_bloom": "comprender",
+      "tpack_componentes": ["TK", "PK", "CK", "TCK", "TPK", "TPACK"]
+    },
+    {
+      "id": "RF2",
+      "texto": "Analiza el estado actual de la Inteligencia Artificial aplicada a educación, identificando oportunidades pedagógicas, riesgos éticos y marcos de integración.",
+      "nivel_bloom": "analizar",
+      "tpack_componentes": ["TK", "TCK"]
+    },
+    {
+      "id": "RF3",
+      "texto": "Diseña una experiencia de aprendizaje que integre TPACK e IA de forma fundamentada, adecuada a un contexto educativo específico.",
+      "nivel_bloom": "crear",
+      "tpack_componentes": ["TPACK", "TPK", "TCK"]
+    },
+    {
+      "id": "RF4",
+      "texto": "Evalúa críticamente propuestas de integración TPACK+IA considerando dimensiones éticas, pedagógicas y técnicas.",
+      "nivel_bloom": "evaluar",
+      "tpack_componentes": ["TPACK"]
+    }
+  ],
+
+  "criterios_evaluacion": [
+    {
+      "id": "CE1.1",
+      "texto": "Identifica los 7 componentes del marco TPACK (TK, PK, CK, TPK, TCK, PCK, TPACK) con ejemplos pertinentes al contexto propio.",
+      "ra_asociado": "RF1"
+    },
+    {
+      "id": "CE1.2",
+      "texto": "Distingue las extensiones del marco (TPACK-XK, I-TPACK, AI-TPACK) y su aporte específico respecto al modelo original.",
+      "ra_asociado": "RF1"
+    },
+    {
+      "id": "CE2.1",
+      "texto": "Clasifica herramientas de IA relevantes para educación según su función pedagógica (generativa, analítica, tutorización, evaluación).",
+      "ra_asociado": "RF2"
+    },
+    {
+      "id": "CE2.2",
+      "texto": "Aplica el marco ético UNESCO (2023) para analizar implicancias de uso de IA en un caso educativo.",
+      "ra_asociado": "RF2"
+    },
+    {
+      "id": "CE3.1",
+      "texto": "Diseña una propuesta pedagógica que articula al menos 3 componentes TPACK con 1 herramienta IA, justificada teóricamente.",
+      "ra_asociado": "RF3"
+    },
+    {
+      "id": "CE3.2",
+      "texto": "Documenta el proceso de diseño usando un modelo instruccional (ADDIE, SAM, Backward Design u otro).",
+      "ra_asociado": "RF3"
+    },
+    {
+      "id": "CE4.1",
+      "texto": "Analiza una propuesta ajena identificando fortalezas, debilidades y mejoras fundamentadas en marcos teóricos del curso.",
+      "ra_asociado": "RF4"
+    },
+    {
+      "id": "CE4.2",
+      "texto": "Identifica limitaciones y condiciones de transferibilidad de su propia propuesta a otros contextos.",
+      "ra_asociado": "RF4"
+    }
+  ],
+
+  "modules": [
+    {
+      "id": "m0",
+      "title": "Bienvenida y Diagnóstico MOCA",
+      "fullTitle": "Módulo 0: Bienvenida y Test Diagnóstico de Perfil Adaptativo",
+      "duration": "30 min",
+      "units": 2,
+      "slides": [
+        {
+          "title": "Bienvenida al curso TPACK+IA",
+          "type": "info",
+          "html": "<h2>Bienvenida al curso: Integración de TPACK e Inteligencia Artificial en Educación</h2><p>Este curso ha sido diseñado por la Unidad de Desarrollo y Formación Virtual (UDFV) de la UMCE para docentes y profesionales de la educación que deseen comprender y aplicar, de forma fundamentada, la intersección entre el marco TPACK y las herramientas de Inteligencia Artificial disponibles hoy en contextos educativos.</p><p>Lo que hace diferente a este curso es su <strong>configuración adaptativa basada en el Modelo MOCA</strong> (Modelo de Configuración Adaptativa de Cursos Online). Antes de comenzar el contenido propiamente tal, completarás un breve test diagnóstico que evaluará tu conocimiento previo en tres dimensiones: TPACK, IA en educación y diseño instruccional. A partir de ese resultado, el sistema te asignará automáticamente a uno de tres perfiles de aprendizaje:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Explorador:</strong> punto de partida inicial en TPACK e IA. Recibirás fundamentos completos, casos guiados y plantillas estructuradas para construir tu producto final.</li><li style=\"margin-bottom:0.5rem;\"><strong>Integrador:</strong> dominas uno de los dos ámbitos pero no ambos. Tu ruta condensa lo que ya conoces y profundiza lo nuevo, con mayor autonomía y bibliografía extendida.</li><li style=\"margin-bottom:0.5rem;\"><strong>Diseñador:</strong> conoces TPACK, usas IA y diseñas experiencias de aprendizaje. Tu ruta se orienta a la integración avanzada, el análisis crítico y un producto integrador de mayor profundidad.</li></ul><p>Los tres perfiles comparten los mismos <strong>Resultados Formativos</strong> y las mismas evaluaciones sumativas. Lo que cambia es el nivel de andamiaje, la complejidad de los casos y la profundidad bibliográfica requerida. El perfil se asigna al inicio del curso y se mantiene durante todo el recorrido.</p><h2>Estructura del curso</h2><p>El curso se desarrolla en <strong>5 semanas</strong>, con una dedicación total de <strong>27 horas (1 SCT)</strong>, en modalidad 100% asíncrona:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Semana 1 — Módulo 1:</strong> Fundamentos del marco TPACK y sus componentes</li><li style=\"margin-bottom:0.5rem;\"><strong>Semana 2 — Módulo 2:</strong> Inteligencia Artificial aplicada a educación</li><li style=\"margin-bottom:0.5rem;\"><strong>Semana 3 — Módulo 3:</strong> Extensiones AI-TPACK y análisis de casos</li><li style=\"margin-bottom:0.5rem;\"><strong>Semana 4 — Módulo 4:</strong> Diseño de experiencias TPACK+IA por perfil</li><li style=\"margin-bottom:0.5rem;\"><strong>Semana 5 — Módulo 5:</strong> Producto Integrador y metacognición de cierre</li></ul><p>Al completar el curso y aprobar el Producto Integrador con un 60% o más, recibirás un certificado digital emitido por UDFV. Antes de comenzar, realiza el test diagnóstico para que el sistema configure tu ruta.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "IN",
+            "tipo_actividad_especifica": "IN_bienvenida",
+            "fase": "antes",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": null,
+            "ce_asociados": [],
+            "nivel_bloom": "recordar",
+            "tiempo_estimado_min": 10,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "modalidad_entrega",
+            "capa_moca": "caracterizacion",
+            "andamiaje_nivel": null,
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Slide de orientación común a todos los perfiles. Explica el modelo MOCA, los 3 perfiles y cómo se asigna el perfil tras el diagnóstico."
+          }
+        },
+        {
+          "title": "Test Diagnóstico MOCA — Asignación de perfil",
+          "type": "diagnostico",
+          "html": "<h2>Test Diagnóstico MOCA — Asignación de perfil de aprendizaje</h2><p>Este test tiene como propósito asignarte al perfil de aprendizaje que mejor corresponde a tu punto de partida. No es una evaluación de conocimientos en sentido estricto: es un instrumento de autoevaluación que mide tu nivel de familiaridad con tres dimensiones específicas del dominio del curso.</p><h2>Las tres dimensiones que evalúa</h2><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Conocimiento TPACK:</strong> ¿Cuánto conoces el marco Technological Pedagogical Content Knowledge y sus componentes? ¿Lo has aplicado en tu práctica docente?</li><li style=\"margin-bottom:0.5rem;\"><strong>Experiencia con IA en educación:</strong> ¿Has utilizado herramientas de IA (ChatGPT, Claude, Copilot u otras) con fines pedagógicos? ¿Conoces sus implicancias éticas?</li><li style=\"margin-bottom:0.5rem;\"><strong>Práctica de diseño instruccional:</strong> ¿Diseñas experiencias de aprendizaje con objetivos, actividades y evaluación alineados? ¿Usas algún modelo instruccional?</li></ul><h2>Cómo funciona la asignación</h2><p>El test consta de <strong>12 preguntas</strong> (4 por dimensión) con respuestas de tipo Likert de autoevaluación. Tu puntaje total determina el perfil asignado:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>0-40 puntos → Perfil Explorador:</strong> ruta con fundamentos completos y alto andamiaje.</li><li style=\"margin-bottom:0.5rem;\"><strong>41-70 puntos → Perfil Integrador:</strong> ruta que condensa lo conocido y profundiza lo nuevo.</li><li style=\"margin-bottom:0.5rem;\"><strong>71-100 puntos → Perfil Diseñador:</strong> ruta orientada a integración avanzada y análisis crítico.</li></ul><p>La asignación es automática e inmediata al terminar el test. Si tienes dudas sobre tu perfil asignado, puedes contactar a la Unidad UDFV. El test toma aproximadamente <strong>10 minutos</strong> y tiene <strong>1 intento</strong>.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "EV",
+            "tipo_actividad_especifica": "EV_diagnostico",
+            "fase": "antes",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": null,
+            "ce_asociados": [],
+            "nivel_bloom": "recordar",
+            "tiempo_estimado_min": 10,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "madurez_pedagogica_digital",
+            "capa_moca": "caracterizacion",
+            "andamiaje_nivel": null,
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Test diagnóstico estructural MOCA. No evalúa ningún RF (es pre-curso). La asignación es automática por puntaje total y usa los umbrales declarados en moca.perfiles[].diagnostico_umbral."
+          }
+        }
+      ]
+    },
+    {
+      "id": "m1",
+      "title": "Fundamentos de TPACK",
+      "fullTitle": "Módulo 1 (Semana 1): Fundamentos del marco TPACK",
+      "duration": "5 horas",
+      "units": 4,
+      "slides": [
+        {
+          "title": "Introducción a TPACK",
+          "type": "info",
+          "html": "<h2>Introducción a TPACK: ¿por qué necesitamos un marco para integrar tecnología?</h2><p>Durante décadas, la formación docente se centró en dos grandes dominios: el <strong>conocimiento de la disciplina</strong> que se enseña y el <strong>conocimiento pedagógico</strong> de cómo enseñarla. La llegada de las tecnologías digitales al aula agregó un tercer dominio — el conocimiento tecnológico — pero durante mucho tiempo se trató como una habilidad técnica separada, como si aprender a usar una herramienta fuera suficiente para integrarla con sentido pedagógico.</p><p>El resultado fue predecible: docentes que dominaban sus disciplinas y tenían sólida formación pedagógica, pero que usaban la tecnología de forma superficial (proyectar lo que antes escribían en pizarra, enviar archivos PDF en vez de libros de texto). El problema no era técnico: era conceptual. Faltaba un marco que explicara cómo estos tres tipos de conocimiento interactúan cuando un docente diseña una experiencia de aprendizaje.</p><p>Ese marco es <strong>TPACK</strong> (Technological Pedagogical Content Knowledge), propuesto por Punya Mishra y Matthew Koehler en 2006, construyendo sobre el concepto de <em>Pedagogical Content Knowledge</em> (PCK) de Lee Shulman (1986). TPACK plantea que la integración tecnológica efectiva no ocurre cuando un docente conoce bien la tecnología por separado, sino cuando logra articular simultáneamente tres tipos de conocimiento y sus intersecciones.</p><p>Desde su publicación en <em>Teachers College Record</em>, el marco ha sido validado empíricamente en centenares de estudios y ha derivado en múltiples extensiones — entre ellas las que revisaremos en el Módulo 3 — para incorporar la Inteligencia Artificial como componente emergente del conocimiento tecnológico docente.</p><p>Al finalizar este módulo estarás en condiciones de identificar los 7 componentes del marco, reconocerlos en situaciones de práctica docente real y distinguir las principales extensiones que incorporan el contexto y la IA.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "IN",
+            "tipo_actividad_especifica": "IN_lectura_introductoria",
+            "fase": "antes",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF1",
+            "ce_asociados": ["CE1.1"],
+            "nivel_bloom": "comprender",
+            "tiempo_estimado_min": 20,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "madurez_pedagogica_digital",
+            "capa_moca": "orientacion",
+            "andamiaje_nivel": "alto",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": false
+            },
+            "notas_diseno": "Slide introductoria al módulo. El perfil Diseñador puede saltarla si ya conoce el origen histórico de TPACK, pero se recomienda revisarla para calibrar el lenguaje del curso."
+          }
+        },
+        {
+          "title": "Los 7 componentes del marco",
+          "type": "info",
+          "html": "<h2>Los 7 componentes del marco TPACK</h2><p>TPACK describe el conocimiento docente para la integración tecnológica como la intersección de tres dominios base y sus cuatro combinaciones posibles. Los tres dominios base son:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>TK — Technological Knowledge (Conocimiento Tecnológico):</strong> Comprensión de cómo funcionan las tecnologías digitales y analógicas, capacidad de adaptarse a nuevas herramientas. Va más allá de la alfabetización digital básica: implica entender qué puede y qué no puede hacer una tecnología en un contexto pedagógico.</li><li style=\"margin-bottom:0.5rem;\"><strong>PK — Pedagogical Knowledge (Conocimiento Pedagógico):</strong> Conocimiento de métodos, estrategias, teorías del aprendizaje y procesos de evaluación, independientemente del contenido disciplinar. Incluye gestión de aula, motivación y diseño instruccional.</li><li style=\"margin-bottom:0.5rem;\"><strong>CK — Content Knowledge (Conocimiento del Contenido):</strong> Dominio profundo de la disciplina que se enseña — sus conceptos, teorías, marcos explicativos y formas de producir conocimiento.</li></ul><p>Las cuatro intersecciones son:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>PCK — Pedagogical Content Knowledge:</strong> Cómo enseñar un contenido específico: qué analogías usar, qué conceptos son más difíciles, cómo secuenciar la enseñanza. Concepto original de Shulman (1986).</li><li style=\"margin-bottom:0.5rem;\"><strong>TCK — Technological Content Knowledge:</strong> Cómo la tecnología puede representar o transformar la comprensión de un contenido. Por ejemplo: simulaciones moleculares en química, líneas de tiempo interactivas en historia.</li><li style=\"margin-bottom:0.5rem;\"><strong>TPK — Technological Pedagogical Knowledge:</strong> Cómo una tecnología puede apoyar o modificar una estrategia pedagógica. Por ejemplo: usar foros para debate asíncrono, cuestionarios con retroalimentación inmediata.</li><li style=\"margin-bottom:0.5rem;\"><strong>TPACK — Technological Pedagogical Content Knowledge:</strong> La intersección de los tres dominios: el conocimiento de cómo integrar tecnología de forma que potencie el aprendizaje de un contenido específico con una estrategia pedagógica apropiada. Es la forma más sofisticada de conocimiento docente para la integración tecnológica.</li></ul><p>Es importante recordar que TPACK no es una suma de los tres dominios: es una forma de conocimiento emergente que surge de su articulación. Un docente puede tener alto TK, PK y CK por separado, y aun así tener bajo TPACK si no ha desarrollado la capacidad de articularlos en la práctica.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "IN",
+            "tipo_actividad_especifica": "IN_lectura_conceptual",
+            "fase": "durante",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF1",
+            "ce_asociados": ["CE1.1"],
+            "nivel_bloom": "comprender",
+            "tiempo_estimado_min": 30,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "madurez_pedagogica_digital",
+            "capa_moca": "orientacion",
+            "andamiaje_nivel": "medio",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Slide conceptual central del módulo 1. Obligatoria para todos los perfiles porque establece el vocabulario compartido del curso."
+          }
+        },
+        {
+          "title": "Extensión TPACK-XK (2019)",
+          "type": "info",
+          "html": "<h2>Extensión TPACK-XK: incorporando el contexto y las actitudes</h2><p>El marco TPACK original fue criticado por no considerar explícitamente el <strong>contexto</strong> en que opera el docente. ¿Cambia el TPACK de un docente según si trabaja en una escuela rural sin conectividad, en una universidad con laboratorios de última generación, o en un contexto de pandemia con aprendizaje remoto de emergencia? La evidencia sugiere que sí.</p><p>En 2019, Schmid, Brianza y Petko propusieron la extensión <strong>TPACK-XK</strong>, donde XK representa el <em>Extended Knowledge</em> o conocimiento extendido del contexto. Esta extensión incorpora dos elementos que el modelo original dejaba implícitos:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Conocimiento del contexto (XK):</strong> Comprensión de las características del entorno institucional, sociocultural, económico y tecnológico en que ocurre la enseñanza. Un docente con alto XK adapta sus decisiones pedagógico-tecnológicas al contexto real, no solo al contexto ideal.</li><li style=\"margin-bottom:0.5rem;\"><strong>Actitudes y disposiciones:</strong> La disposición del docente hacia la tecnología y hacia la innovación pedagógica modera la activación del TPACK. Un docente con alto conocimiento pero baja disposición al riesgo pedagógico puede tener TPACK inerte — presente como saber, ausente como práctica.</li></ul><p>Esta extensión tiene especial relevancia para el contexto UMCE: docentes que trabajan simultáneamente en contextos de alta y baja dotación tecnológica deben desarrollar un TPACK-XK que les permita adaptar sus decisiones de integración sin depender de condiciones ideales.</p><p>Estudios posteriores como el de Schmid et al. (2021) validaron la escala de autoevaluación TPACK-XK con docentes en formación, mostrando que el conocimiento del contexto tiene un peso predictivo propio sobre la calidad de la integración tecnológica, independiente del TK, PK y CK.</p><p>El test diagnóstico MOCA que realizaste al inicio de este curso incorpora una dimensión de práctica de diseño instruccional que aproxima este XK contextual: si diseñas experiencias de aprendizaje con criterio, es probable que tengas mayor capacidad de contextualizar tus decisiones tecnológicas.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "IN",
+            "tipo_actividad_especifica": "IN_lectura_extension",
+            "fase": "durante",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF1",
+            "ce_asociados": ["CE1.2"],
+            "nivel_bloom": "comprender",
+            "tiempo_estimado_min": 25,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "madurez_pedagogica_digital",
+            "capa_moca": "orientacion",
+            "andamiaje_nivel": "medio",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Introduce la primera extensión del modelo TPACK. Obligatoria para los 3 perfiles porque CE1.2 exige distinguir extensiones."
+          }
+        },
+        {
+          "title": "Foro S1: Tu experiencia con TPACK",
+          "type": "forum",
+          "html": "<h2>Foro S1: Tu experiencia con TPACK</h2><p>Este foro es el primer espacio de intercambio del curso. El objetivo es que conectes los conceptos revisados en el Módulo 1 con tu propia práctica docente y que comiences a conocer las experiencias de tus compañeros y compañeras.</p><p>La consigna varía según tu perfil de aprendizaje:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.8rem;\"><strong>Perfil Explorador:</strong> Revisando los 7 componentes del marco TPACK, elige uno que reconozcas en tu práctica actual (aunque no lo hayas llamado así antes) y describe brevemente una situación concreta en que ese componente estuvo presente. ¿Cómo tomaste esa decisión en ese momento?</li><li style=\"margin-bottom:0.8rem;\"><strong>Perfil Integrador:</strong> ¿Dónde identificas tensiones entre tu conocimiento pedagógico (PK) y tu conocimiento tecnológico (TK) en tu práctica? ¿Hay situaciones en que una herramienta tecnológica te ha forzado a cambiar tu enfoque pedagógico, o viceversa? Describe una y analiza qué componente TPACK estuvo activado.</li><li style=\"margin-bottom:0.8rem;\"><strong>Perfil Diseñador:</strong> El TPACK ha sido criticado por ser descriptivo pero poco prescriptivo: describe bien qué tipos de conocimiento necesita un docente, pero no dice cómo desarrollarlos ni cómo diagnosticar brechas. ¿Cuál es la crítica más fuerte que le harías al modelo desde tu experiencia de diseño? ¿La extensión XK resuelve esa crítica o la amplía?</li></ul><p><strong>Formato:</strong> Publica tu respuesta inicial (mínimo 150 palabras) antes del viernes de la Semana 1. Luego, comenta la respuesta de al menos un compañero o compañera usando criterios del marco TPACK para enriquecer o cuestionar su análisis.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "ED",
+            "tipo_actividad_especifica": "ED_foro_reflexion",
+            "fase": "durante",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF1",
+            "ce_asociados": ["CE1.1", "CE1.2"],
+            "nivel_bloom": "aplicar",
+            "tiempo_estimado_min": 40,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "autonomia_esperada",
+            "capa_moca": "configuracion",
+            "andamiaje_nivel": "medio",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Foro con consigna diferenciada por perfil. El nivel de análisis esperado escala desde descripción (Explorador) hasta crítica epistemológica (Diseñador)."
+          }
+        },
+        {
+          "title": "Evaluación Módulo 1",
+          "type": "quiz"
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "IA en Educación",
+      "fullTitle": "Módulo 2 (Semana 2): Inteligencia Artificial aplicada a educación",
+      "duration": "5 horas",
+      "units": 4,
+      "slides": [
+        {
+          "title": "Panorama de IA en educación",
+          "type": "info",
+          "html": "<h2>Panorama de la Inteligencia Artificial en educación (2022-2025)</h2><p>La Inteligencia Artificial no es nueva en educación: los sistemas de tutoría inteligente existen desde la década de 1970 (PLATO, Sophie), los sistemas de recomendación de contenidos operan en plataformas de aprendizaje desde los 2000, y la analítica del aprendizaje como campo consolidado data de 2011 con la primera conferencia LAK. Lo que cambió drásticamente en 2022 fue la <strong>accesibilidad y capacidad de los modelos de lenguaje de gran escala</strong> (LLM, Large Language Models).</p><p>El lanzamiento público de ChatGPT-3.5 en noviembre de 2022 marcó un antes y un después: por primera vez, un sistema de IA generativa de alta capacidad quedó disponible sin costo y sin requisitos técnicos para cualquier persona con acceso a internet. Las implicancias para la educación fueron inmediatas y disruptivas: estudiantes entregando trabajos generados automáticamente, docentes sin marcos para evaluar el uso legítimo de estas herramientas, instituciones respondiendo de forma reactiva con políticas de prohibición.</p><p>Crompton &amp; Burke (2023) sistematizaron 71 estudios publicados entre enero y agosto de 2023 — el primer semestre post-ChatGPT en la academia — y encontraron que la mayor parte de la investigación se concentraba en educación superior, que los usos predominantes eran generación de texto y retroalimentación, y que los marcos éticos estaban sistemáticamente ausentes de las propuestas de implementación.</p><p>Hoy, el panorama se ha complejizado: existen LLMs multimodales (texto, imagen, audio, video), sistemas de IA integrados directamente en LMS (Moodle AI, Canvas AI), herramientas de analítica predictiva para identificar estudiantes en riesgo, y asistentes de evaluación automatizados. La pregunta central para los docentes ya no es si usar IA, sino <strong>cómo integrarla con criterio pedagógico, ético y contextual</strong>. Ese es el objeto de este módulo y del curso completo.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "IN",
+            "tipo_actividad_especifica": "IN_lectura_panorama",
+            "fase": "antes",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF2",
+            "ce_asociados": ["CE2.1"],
+            "nivel_bloom": "comprender",
+            "tiempo_estimado_min": 25,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "madurez_pedagogica_digital",
+            "capa_moca": "orientacion",
+            "andamiaje_nivel": "alto",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": false
+            },
+            "notas_diseno": "Slide introductoria al módulo 2. El perfil Diseñador puede omitirla si ya conoce el contexto histórico de IA en educación post-2022."
+          }
+        },
+        {
+          "title": "Tipos de IA relevantes (LLM, recomendación, analítica)",
+          "type": "info",
+          "html": "<h2>Tipos de IA relevantes para educación</h2><p>No toda la IA es igual desde el punto de vista pedagógico. Para tomar decisiones de integración fundamentadas es necesario distinguir al menos cuatro tipos de sistemas con lógicas y usos educativos diferenciados:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.8rem;\"><strong>Modelos de Lenguaje de Gran Escala (LLM):</strong> Sistemas entrenados sobre enormes corpus textuales que generan texto coherente en respuesta a instrucciones. Ejemplos: ChatGPT (OpenAI), Claude (Anthropic), Gemini (Google), Llama (Meta). Usos educativos: tutoría conversacional, retroalimentación de escritura, generación de materiales, síntesis de textos, apoyo a estudiantes con necesidades diversas. Limitaciones: alucinaciones (información falsa presentada con confianza), sesgos de entrenamiento, privacidad de datos.</li><li style=\"margin-bottom:0.8rem;\"><strong>Sistemas de recomendación:</strong> Algoritmos que predicen qué contenido, actividad o recurso es más adecuado para cada estudiante según su historial de interacción. Ejemplos: Khan Academy, Duolingo, plataformas adaptativas como Smart Sparrow. Usos educativos: personalización de rutas de aprendizaje, sugerencia de ejercicios de práctica, adaptación de dificultad. Limitaciones: refuerzo de la burbuja de aprendizaje, dependencia de datos históricos.</li><li style=\"margin-bottom:0.8rem;\"><strong>Analítica predictiva del aprendizaje:</strong> Modelos que analizan patrones de comportamiento en LMS para predecir riesgo de deserción, bajo rendimiento o falta de compromiso. Usos educativos: alertas tempranas para docentes, intervenciones personalizadas, dashboards de seguimiento. Limitaciones: profecía autocumplida, privacidad, necesidad de volúmenes de datos.</li><li style=\"margin-bottom:0.8rem;\"><strong>IA generativa multimodal:</strong> Sistemas que generan o transforman texto, imagen, audio y video. Ejemplos: DALL-E, Stable Diffusion, Sora, herramientas de síntesis de voz. Usos educativos: generación de materiales visuales accesibles, subtitulado automático, contenido interactivo. Limitaciones: derechos de autor, desinformación visual, sesgo cultural en representaciones.</li></ul><p>Para el diseño TPACK+IA, la pregunta clave al seleccionar una herramienta no es qué hace la herramienta, sino qué conocimiento pedagógico y del contenido requiere activar para integrarla con sentido educativo.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "IN",
+            "tipo_actividad_especifica": "IN_lectura_tipologia",
+            "fase": "durante",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF2",
+            "ce_asociados": ["CE2.1"],
+            "nivel_bloom": "comprender",
+            "tiempo_estimado_min": 30,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "madurez_pedagogica_digital",
+            "capa_moca": "orientacion",
+            "andamiaje_nivel": "medio",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Slide central del módulo 2 para CE2.1. Obligatoria para todos los perfiles porque establece la taxonomía de herramientas IA que se usará en módulos posteriores."
+          }
+        },
+        {
+          "title": "Casos de uso educativos",
+          "type": "info",
+          "html": "<h2>Casos de uso educativos de la IA</h2><p>Conocer los tipos de IA no es suficiente: es necesario reconocer cómo se han implementado en contextos educativos reales, con sus ventajas documentadas y sus límites conocidos. A continuación se presentan cuatro usos con mayor evidencia acumulada:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.8rem;\"><strong>Tutoría adaptativa:</strong> Sistemas como Khan Academy con IA o Carnegie Learning adaptan ejercicios y explicaciones al desempeño individual del estudiante. La evidencia muestra mejoras en matemáticas y ciencias cuando se usa como complemento (no sustituto) de la enseñanza directa. Límite central: el tutor IA no puede detectar el origen emocional o social del error.</li><li style=\"margin-bottom:0.8rem;\"><strong>Evaluación automatizada:</strong> Herramientas de corrección de escritura (Grammarly, ChatGPT como evaluador) o sistemas de evaluación de código (GitHub Copilot, Codio). Permiten retroalimentación inmediata y en escala. Límite: la evaluación automatizada de argumentación compleja tiene baja validez; el docente debe diseñar tareas que no sean trivialmente resolubles por IA.</li><li style=\"margin-bottom:0.8rem;\"><strong>Generación de material didáctico:</strong> Docentes que usan LLMs para crear preguntas de práctica, ejemplos diferenciados por nivel, resúmenes o adaptaciones de textos complejos. Ventaja: reduce tiempo de preparación. Límite: el docente debe validar el contenido generado porque los LLMs pueden introducir imprecisiones conceptuales, especialmente en dominios especializados.</li><li style=\"margin-bottom:0.8rem;\"><strong>Retroalimentación automatizada:</strong> Sistemas que analizan ensayos o proyectos y generan comentarios según criterios establecidos. Útiles en cursos masivos donde la retroalimentación individual no es sostenible. Límite: la retroalimentación automatizada puede ser genérica y no detectar las fortalezas específicas del trabajo del estudiante.</li></ul><p>El criterio TPACK para seleccionar un caso de uso educativo es que la tecnología potencie algo que sin ella sería imposible o significativamente peor, no que simplemente lo digitalice. Un quiz impreso digitalizado no es integración TPACK: es sustitución sin transformación.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "IN",
+            "tipo_actividad_especifica": "IN_lectura_casos",
+            "fase": "durante",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF2",
+            "ce_asociados": ["CE2.1", "CE2.2"],
+            "nivel_bloom": "analizar",
+            "tiempo_estimado_min": 30,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "madurez_pedagogica_digital",
+            "capa_moca": "orientacion",
+            "andamiaje_nivel": "medio",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Slide de casos concretos. Conecta con el análisis de caso del módulo 3."
+          }
+        },
+        {
+          "title": "Marco ético UNESCO (2023)",
+          "type": "info",
+          "html": "<h2>Marco ético para la IA en educación: UNESCO (2023)</h2><p>En 2023, la UNESCO publicó <em>Guidance for generative AI in education and research</em>, el primer documento de referencia global sobre el uso de IA generativa en instituciones educativas. El documento no prohíbe el uso de IA sino que establece un conjunto de principios y dimensiones éticas que deben guiar las decisiones institucionales y docentes.</p><p>Las dimensiones éticas centrales del marco UNESCO son:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.8rem;\"><strong>Sesgos y equidad:</strong> Los modelos de IA son entrenados con datos históricos que reflejan desigualdades sociales, de género, raciales y culturales. Un sistema de tutoría IA entrenado con datos de estudiantes de países de altos ingresos puede funcionar deficientemente con estudiantes de otros contextos. Las instituciones deben evaluar los sesgos antes de implementar herramientas IA.</li><li style=\"margin-bottom:0.8rem;\"><strong>Privacidad de datos:</strong> El uso de herramientas IA con datos de estudiantes menores de edad o con información sensible (salud, situación socioeconómica) requiere marcos claros de consentimiento y protección. Las plataformas externas pueden almacenar conversaciones y usarlas para reentrenamiento.</li><li style=\"margin-bottom:0.8rem;\"><strong>Autoría y honestidad académica:</strong> La IA generativa disuelve las fronteras tradicionales entre autoría humana y automatizada. Las instituciones necesitan políticas que distingan el uso legítimo (andamiaje, edición) del fraudulento (sustitución completa del trabajo propio).</li><li style=\"margin-bottom:0.8rem;\"><strong>Transparencia y explicabilidad:</strong> Los docentes y estudiantes tienen derecho a saber cuándo un sistema IA está tomando decisiones que los afectan (qué contenido se les recomienda, qué calificación automática reciben) y cuáles son los criterios de esa decisión.</li><li style=\"margin-bottom:0.8rem;\"><strong>Autonomía y dependencia:</strong> El uso intensivo de IA puede erosionar habilidades cognitivas que el aprendizaje debería desarrollar: escritura, razonamiento, búsqueda crítica de información. El marco UNESCO advierte sobre el riesgo de que la IA reemplace el proceso de aprendizaje en vez de apoyarlo.</li></ul><p>Para los docentes UMCE, este marco ofrece una herramienta práctica: antes de implementar cualquier herramienta IA en el aula, es posible usar las cinco dimensiones como lista de verificación para anticipar riesgos y diseñar salvaguardas pedagógicas.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "IN",
+            "tipo_actividad_especifica": "IN_lectura_etica",
+            "fase": "durante",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF2",
+            "ce_asociados": ["CE2.2"],
+            "nivel_bloom": "analizar",
+            "tiempo_estimado_min": 25,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "madurez_pedagogica_digital",
+            "capa_moca": "orientacion",
+            "andamiaje_nivel": "bajo",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Slide sobre CE2.2. Obligatoria para todos. El perfil Diseñador puede ir directamente al documento original UNESCO para profundizar."
+          }
+        },
+        {
+          "title": "Foro S2: IA en tu contexto",
+          "type": "forum",
+          "html": "<h2>Foro S2: IA en tu contexto educativo</h2><p>Este foro te invita a conectar el panorama teórico del Módulo 2 con tu experiencia concreta como docente o profesional de la educación. La consigna varía según tu perfil de aprendizaje:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.8rem;\"><strong>Perfil Explorador:</strong> Describe una herramienta de IA que uses o hayas probado (puede ser ChatGPT, una herramienta de corrección automática, un sistema de recomendación). Usando la tipología del módulo, ¿a qué tipo corresponde? ¿Qué oportunidad pedagógica identificas y qué riesgo ético según el marco UNESCO?</li><li style=\"margin-bottom:0.8rem;\"><strong>Perfil Integrador:</strong> Identifica un caso de uso de IA en tu contexto educativo — real o potencial — y analízalo usando al menos dos dimensiones del marco ético UNESCO (2023). ¿Qué condiciones deberían cumplirse para que ese uso sea pedagógicamente legítimo y éticamente responsable?</li><li style=\"margin-bottom:0.8rem;\"><strong>Perfil Diseñador:</strong> El marco UNESCO es un documento de política institucional: describe principios pero no prescribe implementaciones. Desde tu experiencia de diseño, ¿qué vacío operativo identificas en ese marco? ¿Qué elemento añadirías o modificarías para hacerlo aplicable en el contexto de la educación superior chilena?</li></ul><p><strong>Formato:</strong> Publica tu respuesta inicial (mínimo 150 palabras) antes del viernes de la Semana 2. Comenta al menos una respuesta de un compañero o compañera de un perfil diferente al tuyo, si es posible.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "ED",
+            "tipo_actividad_especifica": "ED_foro_analisis",
+            "fase": "durante",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF2",
+            "ce_asociados": ["CE2.1", "CE2.2"],
+            "nivel_bloom": "analizar",
+            "tiempo_estimado_min": 45,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "autonomia_esperada",
+            "capa_moca": "configuracion",
+            "andamiaje_nivel": "medio",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Foro con consigna diferenciada. La respuesta del Diseñador tiene un nivel analítico-crítico mayor que implica evaluar el marco UNESCO, no solo aplicarlo."
+          }
+        },
+        {
+          "title": "Evaluación Módulo 2",
+          "type": "quiz"
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Intersección TPACK × IA",
+      "fullTitle": "Módulo 3 (Semana 3): Extensiones AI-TPACK y análisis de casos",
+      "duration": "6 horas",
+      "units": 5,
+      "slides": [
+        {
+          "title": "I-TPACK (Celik, 2023)",
+          "type": "info",
+          "html": "<h2>I-TPACK: Inteligencia Artificial como componente transversal del conocimiento docente</h2><p>En 2023, Ismail Celik publicó en <em>Computers in Human Behavior</em> la propuesta de <strong>Intelligent-TPACK (I-TPACK)</strong>, el primer intento sistemático de extender el marco TPACK para incorporar la IA no como una tecnología más dentro del TK, sino como un dominio de conocimiento propio que atraviesa todos los componentes del modelo original.</p><p>La pregunta de investigación de Celik era empírica: ¿los docentes que usan herramientas de IA en educación movilizan un tipo de conocimiento diferente al TK convencional? A través de entrevistas y análisis factorial, encontró evidencia de que sí: el conocimiento necesario para integrar IA éticamente en la práctica docente tiene dimensiones que no están capturadas por el TK estándar.</p><p>Las 8 dimensiones del I-TPACK identificadas por Celik son:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>AI knowledge (AIK):</strong> Comprensión de cómo funcionan los sistemas de IA (no a nivel de código, sino de lógica: entrenamiento, sesgo, probabilidad).</li><li style=\"margin-bottom:0.5rem;\"><strong>AI ethics knowledge (AIEK):</strong> Conocimiento de los marcos éticos aplicables al uso de IA en educación (incluyendo UNESCO 2023).</li><li style=\"margin-bottom:0.5rem;\"><strong>AI pedagogical knowledge (AIPK):</strong> Saber cuándo y cómo una herramienta IA apoya mejor una estrategia pedagógica específica.</li><li style=\"margin-bottom:0.5rem;\"><strong>AI content knowledge (AICK):</strong> Comprensión de cómo la IA transforma la representación del contenido disciplinar.</li><li style=\"margin-bottom:0.5rem;\"><strong>AI pedagogical content knowledge (AIPCK):</strong> Integración de AIPK y AICK: saber enseñar un contenido específico con IA de forma pedagógicamente apropiada.</li><li style=\"margin-bottom:0.5rem;\"><strong>AI technological pedagogical knowledge (AITPK):</strong> Saber usar herramientas IA para implementar estrategias pedagógicas.</li><li style=\"margin-bottom:0.5rem;\"><strong>AI technological content knowledge (AITCK):</strong> Saber usar IA para representar o transformar contenidos disciplinares.</li><li style=\"margin-bottom:0.5rem;\"><strong>I-TPACK:</strong> La intersección total: conocimiento integrado para enseñar con IA de forma tecnológicamente competente, pedagógicamente coherente, éticamente responsable y contextualmente pertinente.</li></ul><p>La contribución central de Celik es elevar la ética de IA al nivel de un componente del conocimiento docente, no como un añadido sino como una dimensión constitutiva. Sin conocimiento ético, el I-TPACK es incompleto por definición.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "IN",
+            "tipo_actividad_especifica": "IN_lectura_extension_avanzada",
+            "fase": "durante",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF1",
+            "ce_asociados": ["CE1.2"],
+            "nivel_bloom": "analizar",
+            "tiempo_estimado_min": 30,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "madurez_pedagogica_digital",
+            "capa_moca": "orientacion",
+            "andamiaje_nivel": "medio",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Primera extensión AI-TPACK. Conecta directamente con CE1.2 y con la dimensión ética del módulo 2."
+          }
+        },
+        {
+          "title": "AI-TPACK 7 componentes (2024-25)",
+          "type": "info",
+          "html": "<h2>AI-TPACK: desagregación del conocimiento de IA en 7 componentes (2024-2025)</h2><p>Paralela a la propuesta de Celik, una línea de investigación liderada principalmente por equipos en Asia Oriental (Hwang, Lin y colaboradores) desarrolló entre 2024 y 2025 una versión diferente de la extensión TPACK para IA, que en vez de agregar dimensiones éticas al núcleo del modelo, propone una <strong>desagregación más granular del Technological Knowledge</strong> cuando ese conocimiento refiere a herramientas de IA.</p><p>El modelo AI-TPACK de 7 componentes distingue dentro del TK tradicional al menos las siguientes subdimensiones específicas para IA:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Conocimiento de datos (Data Knowledge, DK):</strong> Comprensión de cómo los sistemas IA aprenden a partir de datos, qué sesgos introduce la calidad y origen de los datos de entrenamiento.</li><li style=\"margin-bottom:0.5rem;\"><strong>Conocimiento de algoritmos (Algorithm Knowledge, AK):</strong> Comprensión funcional (no técnica) de cómo los algoritmos clasifican, predicen o generan — suficiente para evaluar críticamente los resultados.</li><li style=\"margin-bottom:0.5rem;\"><strong>Conocimiento de modelos (Model Knowledge, MK):</strong> Entendimiento de que distintos modelos (GPT, BERT, difusión) tienen fortalezas y limitaciones específicas según el tipo de tarea.</li><li style=\"margin-bottom:0.5rem;\"><strong>Conocimiento de aplicaciones (Application Knowledge, AppK):</strong> Conocimiento práctico de herramientas específicas de IA disponibles en el mercado educativo y sus condiciones de uso.</li><li style=\"margin-bottom:0.5rem;\"><strong>Conocimiento de diseño con IA (AI Design Knowledge, AIDK):</strong> Capacidad de definir instrucciones (prompts) efectivas y de diseñar flujos de trabajo que incorporen IA en la secuencia didáctica.</li><li style=\"margin-bottom:0.5rem;\"><strong>Conocimiento de evaluación de salidas IA (AI Output Evaluation, AOEK):</strong> Habilidad para evaluar críticamente el contenido generado por IA: detectar alucinaciones, sesgos, errores conceptuales.</li><li style=\"margin-bottom:0.5rem;\"><strong>Conocimiento de interacción humano-IA (HIAK):</strong> Comprensión de los efectos del uso prolongado de IA sobre los procesos cognitivos del estudiante — autonomía, metacognición, motivación.</li></ul><p>La diferencia clave entre I-TPACK (Celik) y AI-TPACK 7 componentes es el punto de énfasis: Celik pone la ética en el centro del modelo; la línea AI-TPACK prioriza la granularidad técnico-funcional del conocimiento tecnológico. Ambos aportes son complementarios y el campo tiende a integrarlos.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "IN",
+            "tipo_actividad_especifica": "IN_lectura_extension_avanzada",
+            "fase": "durante",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF1",
+            "ce_asociados": ["CE1.2"],
+            "nivel_bloom": "analizar",
+            "tiempo_estimado_min": 30,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "madurez_pedagogica_digital",
+            "capa_moca": "orientacion",
+            "andamiaje_nivel": "bajo",
+            "obligatorio_perfil": {
+              "explorador": false,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Slide de mayor densidad técnica. El perfil Explorador puede omitirla en primera lectura y volver si su análisis de caso lo requiere."
+          }
+        },
+        {
+          "title": "HCAP y AIA-PCEK (2025-26)",
+          "type": "info",
+          "html": "<h2>HCAP y AIA-PCEK: las fronteras actuales del campo (2025-2026)</h2><p>El campo de las extensiones TPACK para IA continúa evolucionando. Las propuestas más recientes (2025-2026) se mueven en dos direcciones complementarias:</p><p><strong>HCAP — Human-Centered AI Pedagogy</strong></p><p>El marco HCAP surge como respuesta a una preocupación emergente: a medida que las herramientas de IA se vuelven más capaces, existe el riesgo de que el diseño pedagógico se subordine a las capacidades de la herramienta en vez de al aprendizaje del estudiante. HCAP propone invertir la dirección: la IA debe diseñarse y usarse en función de la agencia, la identidad y el desarrollo cognitivo humano, no al revés.</p><p>Sus principios operativos incluyen: (1) la IA como extensión de la agencia docente, no como sustituto; (2) el diseño centrado en los procesos cognitivos que la IA debe apoyar, no en las funcionalidades que ofrece; (3) la vigilancia permanente de los efectos de la IA sobre la autonomía del aprendiz.</p><p><strong>AIA-PCEK — AI-Augmented Pedagogical Content and Ethics Knowledge</strong></p><p>La propuesta AIA-PCEK (2025) integra la ética directamente en el componente PCK del modelo original, argumentando que en la era de la IA, no es posible tener buen conocimiento pedagógico del contenido sin saber cómo la IA transforma la producción, distribución y validación del conocimiento en cada disciplina. Un docente de historia necesita saber qué hace ChatGPT con las fuentes históricas; un docente de ciencias necesita entender las limitaciones de los modelos IA para razonar causalmente.</p><p>Ambas propuestas comparten una premisa que el curso TPACK+IA adopta como principio de diseño: <strong>la integración de IA en educación no es una decisión técnica, es una decisión pedagógica y ética que requiere conocimiento especializado</strong>. Ese es el núcleo del I-TPACK y de todas sus extensiones.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "IN",
+            "tipo_actividad_especifica": "IN_lectura_frontera_investigacion",
+            "fase": "durante",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF1",
+            "ce_asociados": ["CE1.2"],
+            "nivel_bloom": "analizar",
+            "tiempo_estimado_min": 25,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "madurez_pedagogica_digital",
+            "capa_moca": "orientacion",
+            "andamiaje_nivel": "bajo",
+            "obligatorio_perfil": {
+              "explorador": false,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Slide de frontera del campo. Recomendada para Integrador y obligatoria para Diseñador. El Explorador puede leerla como material complementario."
+          }
+        },
+        {
+          "title": "Revisión sistemática Crompton & Burke (2023)",
+          "type": "info",
+          "html": "<h2>¿Qué dice la evidencia? Crompton &amp; Burke (2023) — Revisión sistemática post-ChatGPT</h2><p>Crompton, H. &amp; Burke, D. (2023). Artificial intelligence in higher education: the state of the field. <em>International Journal of Educational Technology in Higher Education, 20</em>(1), 22.</p><p>Esta revisión sistemática es el estudio de mayor alcance publicado en el primer semestre posterior al lanzamiento de ChatGPT-3.5. Los autores analizaron 71 estudios empíricos sobre IA en educación superior publicados entre enero y agosto de 2023, con el objetivo de mapear el estado del campo en un momento de máxima disrupción.</p><p>Los principales hallazgos son:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.8rem;\"><strong>Concentración geográfica:</strong> El 60% de los estudios provenía de Asia Oriental (China, Corea del Sur, Taiwán). Los contextos latinoamericanos estaban prácticamente ausentes, lo que crea una brecha de evidencia relevante para el diseño de políticas en Chile.</li><li style=\"margin-bottom:0.8rem;\"><strong>Usos predominantes:</strong> Los usos más estudiados fueron generación de texto (33%), retroalimentación automatizada (22%) y sistemas de tutoría (18%). Los usos de IA generativa para evaluación sumativa y para diseño instruccional eran incipientes al momento del estudio.</li><li style=\"margin-bottom:0.8rem;\"><strong>Ausencia de marcos éticos:</strong> Solo el 12% de los estudios incorporaba algún tipo de análisis ético de los sistemas implementados. Ninguno citaba el marco UNESCO (publicado en el mismo período).</li><li style=\"margin-bottom:0.8rem;\"><strong>Disciplinas más activas:</strong> Ciencias de la computación, medicina y lengua extranjera concentraban el 55% de los estudios. Las ciencias de la educación y la pedagogía estaban subrepresentadas como disciplinas productoras de conocimiento — aunque son precisamente las que más necesitan este campo.</li><li style=\"margin-bottom:0.8rem;\"><strong>Brecha teoría-práctica:</strong> La mayoría de los estudios describían implementaciones sin anclarlas en marcos pedagógicos o modelos de integración tecnológica. La palabra TPACK aparecía en menos del 5% de los artículos.</li></ul><p>La implicancia para este curso es directa: la investigación disponible sobre IA en educación superior en 2023 es vasta pero fragmentada, con baja densidad teórica y casi sin marcos de integración que conecten IA con conocimiento pedagógico del contenido. Esa brecha es precisamente la que los marcos I-TPACK y sus extensiones buscan llenar.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "IN",
+            "tipo_actividad_especifica": "IN_lectura_revision_sistematica",
+            "fase": "durante",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF2",
+            "ce_asociados": ["CE2.1", "CE2.2"],
+            "nivel_bloom": "analizar",
+            "tiempo_estimado_min": 25,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "madurez_pedagogica_digital",
+            "capa_moca": "orientacion",
+            "andamiaje_nivel": "medio",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Revisión sistemática como base empírica del módulo. Obligatoria para todos porque establece el estado del arte del campo."
+          }
+        },
+        {
+          "title": "Análisis de Caso S3 (diferenciado por perfil)",
+          "type": "assign",
+          "html": "<h2>Análisis de Caso S3 — Evaluación sumativa diferenciada por perfil MOCA</h2><p>Esta actividad es la primera evaluación sumativa del curso. Debes analizar un caso de integración de TPACK e IA en un contexto educativo real o simulado. El producto, profundidad y criterios de evaluación varían según tu perfil asignado.</p><h2>Instrucciones por perfil</h2><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.8rem;\"><strong>Perfil Explorador:</strong> Se te proporciona un caso guiado (disponible en los recursos de esta actividad): una docente de enseñanza media que incorpora ChatGPT como herramienta de retroalimentación de escritura. Tu tarea es identificar qué componentes TPACK están presentes en su práctica y cuáles están ausentes. Usa los 7 componentes del marco y explica con ejemplos del caso. Extensión: 2-3 páginas. Formato: informe estructurado con encabezados por componente.</li><li style=\"margin-bottom:0.8rem;\"><strong>Perfil Integrador:</strong> Elige un caso de uso de IA en educación de tu propio contexto o de la literatura reciente. Analiza la coherencia entre el diseño pedagógico y la herramienta IA seleccionada usando la nomenclatura I-TPACK (Celik, 2023): ¿qué componentes del I-TPACK activa el docente del caso? ¿Qué componentes están ausentes o subdesarrollados? Fundamenta con al menos 2 referencias del curso. Extensión: 3-4 páginas.</li><li style=\"margin-bottom:0.8rem;\"><strong>Perfil Diseñador:</strong> Selecciona un caso de integración IA en educación superior (puede ser tu propia práctica). Evalúa críticamente el caso usando simultáneamente el marco TPACK, el I-TPACK y al menos una dimensión del marco ético UNESCO (2023). Identifica brechas, tensiones y propón mejoras específicas con justificación teórica. Tu análisis debe demostrar que puedes movilizar los tres marcos en forma articulada, no secuencial. Extensión: 5-6 páginas.</li></ul><h2>Criterios de evaluación</h2><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Uso de los marcos teóricos del curso (40%):</strong> Precisión conceptual y pertinencia de la aplicación.</li><li style=\"margin-bottom:0.5rem;\"><strong>Análisis del caso (40%):</strong> Profundidad, evidencia y coherencia del argumento.</li><li style=\"margin-bottom:0.5rem;\"><strong>Presentación y referencias (20%):</strong> Claridad del informe, formato APA para las citas.</li></ul><p><strong>Plazo de entrega:</strong> Viernes de la Semana 3, a las 23:59. Solo se acepta un archivo PDF o Word.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "EV",
+            "tipo_actividad_especifica": "EV_assign_analisis_caso",
+            "fase": "durante",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF1",
+            "ce_asociados": ["CE1.1", "CE1.2", "CE2.1", "CE2.2"],
+            "nivel_bloom": "analizar",
+            "tiempo_estimado_min": 120,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "autonomia_esperada",
+            "capa_moca": "configuracion",
+            "andamiaje_nivel": "alto",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Primera evaluación sumativa. El Explorador recibe el caso guiado como andamiaje. El Diseñador debe articular 3 marcos en forma simultánea. El andamiaje_nivel 'alto' es estructural del sistema MOCA, no del nivel de exigencia."
+          }
+        },
+        {
+          "title": "Evaluación Módulo 3",
+          "type": "quiz"
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Diseño con TPACK e IA",
+      "fullTitle": "Módulo 4 (Semana 4): Diseño de experiencias TPACK+IA",
+      "duration": "6 horas",
+      "units": 4,
+      "slides": [
+        {
+          "title": "Guía de diseño por perfil MOCA",
+          "type": "info",
+          "html": "<h2>Guía de diseño de experiencias TPACK+IA por perfil MOCA</h2><p>En este módulo pasas del análisis al diseño. La tarea central de la Semana 4 es comenzar a construir tu Producto Integrador: una propuesta de experiencia de aprendizaje que integre TPACK e IA de forma fundamentada en tu contexto educativo real o proyectado.</p><p>El alcance de la propuesta y el nivel de exigencia varían según tu perfil. A continuación se describe la ruta de diseño para cada uno:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.8rem;\"><strong>Perfil Explorador — Una actividad de aprendizaje:</strong> Diseña una actividad de aprendizaje que integre al menos 2 componentes TPACK identificables y 1 herramienta IA con una función pedagógica explícita. Usa la plantilla estructurada disponible en los recursos de este módulo. La plantilla incluye campos para: objetivo de aprendizaje, descripción de la actividad, herramienta IA utilizada, componentes TPACK activados y evaluación. No es necesario un modelo instruccional formal, pero sí coherencia entre objetivo, actividad y evaluación.</li><li style=\"margin-bottom:0.8rem;\"><strong>Perfil Integrador — Una secuencia didáctica de 3 actividades:</strong> Diseña una secuencia de 3 actividades articuladas que cubran la progresión antes-durante-después del aprendizaje, usando TPACK completo (los 7 componentes presentes en al menos alguna actividad) y una estrategia de IA que se mantenga coherente a lo largo de la secuencia. Fundamenta con al menos 2 referencias del curso. Puedes usar ADDIE, SAM, Backward Design o el modelo instruccional que prefieras, pero debes declararlo y justificar su elección.</li><li style=\"margin-bottom:0.8rem;\"><strong>Perfil Diseñador — Un módulo completo:</strong> Diseña un módulo de aprendizaje con análisis TPACK multidimensional (usando I-TPACK o AI-TPACK 7 componentes), integración IA fundamentada en la bibliografía del curso y una propuesta de evaluación del impacto esperado en el aprendizaje del estudiante. Incluye un análisis de las condiciones de transferibilidad: ¿bajo qué condiciones contextuales este diseño funciona? ¿Qué cambia si el contexto cambia?</li></ul><p>Esta semana es de construcción progresiva: el foro de co-diseño S4 es el espacio para compartir borradores y recibir retroalimentación de pares antes de la entrega final en la Semana 5.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "IN",
+            "tipo_actividad_especifica": "IN_guia_diseno",
+            "fase": "durante",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF3",
+            "ce_asociados": ["CE3.1", "CE3.2"],
+            "nivel_bloom": "crear",
+            "tiempo_estimado_min": 30,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "autonomia_esperada",
+            "capa_moca": "configuracion",
+            "andamiaje_nivel": "alto",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Guía de diseño diferenciada por perfil. Activa RF3 que es el resultado de mayor complejidad (crear). El Explorador usa plantilla, el Diseñador trabaja con mayor autonomía."
+          }
+        },
+        {
+          "title": "Plantillas diferenciadas",
+          "type": "info",
+          "html": "<h2>Plantillas de diseño diferenciadas por perfil</h2><p>Para apoyar el proceso de diseño, la Unidad UDFV ha preparado tres plantillas diferenciadas que puedes descargar desde los recursos adjuntos a este módulo. A continuación se describe qué incluye cada plantilla y cuándo usarla:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.8rem;\"><strong>Plantilla A — Perfil Explorador:</strong> Documento Word estructurado con 7 secciones guiadas: (1) Contexto educativo, (2) Objetivo de aprendizaje (con verbo de Bloom), (3) Descripción de la actividad paso a paso, (4) Herramienta IA seleccionada y su función pedagógica, (5) Componentes TPACK activados (tabla con los 7 componentes para marcar), (6) Criterios de evaluación de la actividad, (7) Reflexión sobre limitaciones. Cada sección incluye instrucciones y un ejemplo orientador.</li><li style=\"margin-bottom:0.8rem;\"><strong>Plantilla B — Perfil Integrador:</strong> Documento más abierto con estructura de secuencia didáctica en 3 momentos. Incluye tabla de alineación entre objetivos, actividades, herramientas IA y evaluación. Requiere declarar el modelo instruccional elegido y justificar la elección de la herramienta IA según los tipos revisados en el Módulo 2. No incluye instrucciones paso a paso: solo la estructura y los campos mínimos requeridos.</li><li style=\"margin-bottom:0.8rem;\"><strong>Plantilla C — Perfil Diseñador:</strong> Marco de diseño abierto con secciones mínimas requeridas: contexto y caracterización MOCA del grupo destinatario, análisis I-TPACK o AI-TPACK del diseño, propuesta de evaluación de impacto, condiciones de transferibilidad. No hay instrucciones: se espera que el Diseñador construya su propio formato con coherencia interna.</li></ul><p>Las plantillas son herramientas de andamiaje, no formatos rígidos. Si eres Explorador y quieres ir más allá de la plantilla, adelante. Si eres Diseñador y necesitas más estructura en una sección específica, puedes tomar elementos de las plantillas A o B.</p><p>El uso de plantilla no es obligatorio: lo que evalúa el curso es el producto, no el formato. La plantilla está pensada para facilitar el proceso, especialmente en perfiles con menor experiencia de diseño instruccional formal.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "IN",
+            "tipo_actividad_especifica": "IN_plantillas_andamiaje",
+            "fase": "durante",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF3",
+            "ce_asociados": ["CE3.1", "CE3.2"],
+            "nivel_bloom": "aplicar",
+            "tiempo_estimado_min": 20,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "autonomia_esperada",
+            "capa_moca": "configuracion",
+            "andamiaje_nivel": "alto",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": false
+            },
+            "notas_diseno": "Slide de recursos. El Diseñador puede omitirla o revisarla rápidamente. El Explorador debe leerla antes de acceder a los archivos adjuntos."
+          }
+        },
+        {
+          "title": "Taller colaborativo S4: Co-diseño",
+          "type": "forum",
+          "html": "<h2>Taller colaborativo S4: Co-diseño de experiencias TPACK+IA</h2><p>Este foro funciona como un taller de retroalimentación formativa entre pares. El objetivo es que compartas un borrador o avance de tu Producto Integrador y recibas comentarios fundamentados de al menos dos compañeros o compañeras antes de la entrega final en la Semana 5.</p><p><strong>¿Qué publicar?</strong> No es necesario tener el Producto Integrador terminado. Puedes publicar: (a) el objetivo de aprendizaje y la descripción de la actividad/secuencia/módulo, (b) la herramienta IA seleccionada y su función pedagógica, (c) una pregunta específica sobre un aspecto en que necesitas retroalimentación.</p><p><strong>¿Cómo dar retroalimentación?</strong> Usa los criterios de la rúbrica del Producto Integrador como guía. Para cada diseño que comentes, responde al menos dos de estas preguntas:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\">¿Qué componentes TPACK están claramente presentes? ¿Cuáles podrían hacerse más explícitos?</li><li style=\"margin-bottom:0.5rem;\">¿La herramienta IA seleccionada tiene una función pedagógica clara o podría sustituirse por una más simple sin pérdida?</li><li style=\"margin-bottom:0.5rem;\">¿Hay alguna dimensión ética (Marco UNESCO) que el diseño debería considerar y que no está explicitada?</li><li style=\"margin-bottom:0.5rem;\">¿El producto está alineado con el nivel esperado para el perfil declarado?</li></ul><p>La retroalimentación de pares no es evaluada con nota, pero es formativa y obligatoria: debes publicar tu avance y comentar al menos 2 compañeros para acceder a la actividad de entrega del Producto Integrador en la Semana 5.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "ED",
+            "tipo_actividad_especifica": "ED_foro_coevaluacion",
+            "fase": "durante",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF3",
+            "ce_asociados": ["CE3.1", "CE3.2", "CE4.1"],
+            "nivel_bloom": "evaluar",
+            "tiempo_estimado_min": 60,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "autonomia_esperada",
+            "capa_moca": "configuracion",
+            "andamiaje_nivel": "medio",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Foro de retroalimentación formativa. Activa CE4.1 (analizar propuesta ajena) de forma no evaluada. Es requisito de habilitación para la entrega del Producto Integrador."
+          }
+        },
+        {
+          "title": "Evaluación Módulo 4",
+          "type": "quiz"
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Producto Integrador y Cierre",
+      "fullTitle": "Módulo 5 (Semana 5): Producto Integrador Final y Metacognición",
+      "duration": "5 horas",
+      "units": 4,
+      "slides": [
+        {
+          "title": "Rúbrica del Producto Integrador (diferenciada)",
+          "type": "info",
+          "html": "<h2>Rúbrica del Producto Integrador — Criterios diferenciados por perfil MOCA</h2><p>El Producto Integrador se evalúa con cuatro dimensiones comunes a los tres perfiles. Lo que varía entre perfiles es el nivel de complejidad esperado en cada dimensión, no los criterios en sí. El puntaje mínimo de aprobación es 60% del total.</p><h2>Dimensiones de evaluación (todos los perfiles)</h2><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>D1 — Fundamentación teórica (25%):</strong> Uso preciso y pertinente de los marcos TPACK, I-TPACK y bibliografía del curso.</li><li style=\"margin-bottom:0.5rem;\"><strong>D2 — Diseño pedagógico (25%):</strong> Coherencia entre objetivos de aprendizaje, actividades, herramientas IA y evaluación.</li><li style=\"margin-bottom:0.5rem;\"><strong>D3 — Integración tecnológica (25%):</strong> Pertinencia y profundidad del uso de IA como decisión pedagógica fundamentada.</li><li style=\"margin-bottom:0.5rem;\"><strong>D4 — Reflexión crítica (25%):</strong> Análisis de implicancias éticas, limitaciones del diseño y condiciones de transferibilidad.</li></ul><h2>Niveles de logro por perfil</h2><p><strong>Perfil Explorador</strong></p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Destacado (90-100):</strong> Identifica correctamente los componentes TPACK en su actividad, usa la herramienta IA con propósito pedagógico explícito y reflexiona sobre al menos 1 implicancia ética.</li><li style=\"margin-bottom:0.5rem;\"><strong>Competente (70-89):</strong> Identifica la mayoría de los componentes TPACK con alguna imprecisión, la herramienta IA está presente pero su función pedagógica podría ser más explícita.</li><li style=\"margin-bottom:0.5rem;\"><strong>En desarrollo (50-69):</strong> Identificación incompleta de componentes TPACK, propuesta de actividad débil o sin coherencia interna.</li><li style=\"margin-bottom:0.5rem;\"><strong>Insuficiente (&lt;50):</strong> No identifica componentes TPACK ni justifica el uso de la herramienta IA.</li></ul><p><strong>Perfil Integrador</strong></p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Destacado (90-100):</strong> Secuencia didáctica articulada con TPACK completo, estrategia IA coherente en los 3 momentos, fundamentación bibliográfica sólida con 3 o más referencias.</li><li style=\"margin-bottom:0.5rem;\"><strong>Competente (70-89):</strong> Secuencia con algunas debilidades en articulación o fundamentación, TPACK parcialmente aplicado.</li><li style=\"margin-bottom:0.5rem;\"><strong>En desarrollo (50-69):</strong> Secuencia desarticulada o con uso de IA como sustitución sin transformación pedagógica.</li><li style=\"margin-bottom:0.5rem;\"><strong>Insuficiente (&lt;50):</strong> No hay secuencia reconocible o no hay fundamentación teórica.</li></ul><p><strong>Perfil Diseñador</strong></p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Destacado (90-100):</strong> Módulo completo con análisis I-TPACK o AI-TPACK multidimensional, propuesta de evaluación de impacto, análisis ético explícito y condiciones de transferibilidad argumentadas.</li><li style=\"margin-bottom:0.5rem;\"><strong>Competente (70-89):</strong> Módulo con análisis parcial, evaluación de impacto superficial o transferibilidad no argumentada.</li><li style=\"margin-bottom:0.5rem;\"><strong>En desarrollo (50-69):</strong> Módulo incompleto o sin dimensión evaluativa ni análisis crítico.</li><li style=\"margin-bottom:0.5rem;\"><strong>Insuficiente (&lt;50):</strong> No constituye un diseño de módulo reconocible.</li></ul>",
+          "moca_metadata": {
+            "categoria_e_actividad": "IN",
+            "tipo_actividad_especifica": "IN_rubrica_evaluacion",
+            "fase": "antes",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF3",
+            "ce_asociados": ["CE3.1", "CE3.2", "CE4.1", "CE4.2"],
+            "nivel_bloom": "evaluar",
+            "tiempo_estimado_min": 20,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "autonomia_esperada",
+            "capa_moca": "configuracion",
+            "andamiaje_nivel": "alto",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Slide de rúbrica. Debe leerse antes de la entrega del Producto Integrador. Es material de orientación, no de evaluación en sí misma."
+          }
+        },
+        {
+          "title": "Entrega del Producto Integrador",
+          "type": "assign",
+          "html": "<h2>Entrega del Producto Integrador Final</h2><p>Esta es la actividad de evaluación sumativa principal del curso. Entrega tu Producto Integrador según el nivel y formato definido por tu perfil MOCA. Lee con atención las instrucciones antes de subir tu archivo.</p><h2>Productos esperados por perfil</h2><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.8rem;\"><strong>Perfil Explorador — Propuesta de actividad de aprendizaje (3-4 páginas):</strong> Documento que describe una actividad de aprendizaje que integra al menos 2 componentes TPACK identificados explícitamente y 1 herramienta IA con función pedagógica declarada. Debe incluir: contexto educativo (nivel, asignatura, número de estudiantes), objetivo de aprendizaje, descripción de la actividad, componentes TPACK presentes y reflexión sobre 1 implicancia ética del uso de IA. Formato sugerido: plantilla A del módulo 4.</li><li style=\"margin-bottom:0.8rem;\"><strong>Perfil Integrador — Secuencia didáctica TPACK+IA (5-6 páginas):</strong> Documento que presenta una secuencia de 3 actividades articuladas (antes/durante/después del aprendizaje) que integra TPACK completo y una estrategia IA coherente. Debe declarar el modelo instruccional utilizado (ADDIE, SAM, Backward Design u otro) y justificarlo. Incluye al menos 3 referencias del curso en formato APA.</li><li style=\"margin-bottom:0.8rem;\"><strong>Perfil Diseñador — Caso de estudio completo (7-8 páginas):</strong> Documento que presenta el diseño de un módulo de aprendizaje con análisis I-TPACK o AI-TPACK (al menos 5 componentes explícitos), fundamentación ética según el marco UNESCO (2023), propuesta de evaluación del impacto esperado en el aprendizaje y análisis de las condiciones de transferibilidad del diseño a otros contextos. Incluye al menos 5 referencias en formato APA, incluyendo fuentes del curso y al menos 1 fuente externa no citada en el curso.</li></ul><h2>Requisitos formales</h2><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\">Formato: PDF o Word (.docx)</li><li style=\"margin-bottom:0.5rem;\">Portada con: nombre completo, perfil MOCA asignado, institución y contexto educativo del diseño</li><li style=\"margin-bottom:0.5rem;\">Referencias en formato APA 7.</li><li style=\"margin-bottom:0.5rem;\">Plazo: Viernes de la Semana 5 a las 23:59. Sin extensión de plazo salvo casos de fuerza mayor comunicados con anticipación.</li></ul><p>Recuerda que debes haber publicado en el Foro S4 y comentado al menos 2 propuestas de pares para poder acceder a esta actividad de entrega.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "EV",
+            "tipo_actividad_especifica": "EV_assign_producto_integrador",
+            "fase": "despues",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF3",
+            "ce_asociados": ["CE3.1", "CE3.2", "CE4.1", "CE4.2"],
+            "nivel_bloom": "crear",
+            "tiempo_estimado_min": 180,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "autonomia_esperada",
+            "capa_moca": "configuracion",
+            "andamiaje_nivel": "alto",
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Evaluación sumativa principal del curso. Invariante para los 3 perfiles. El producto difiere en alcance y profundidad según el perfil, pero los 4 criterios de la rúbrica aplican a todos."
+          }
+        },
+        {
+          "title": "Reflexión de cierre",
+          "type": "info",
+          "html": "<h2>Reflexión de cierre — Metacognición del recorrido</h2><p>Has completado el recorrido de cinco semanas del curso Integración de TPACK e Inteligencia Artificial en Educación. Antes de responder la evaluación final, te invitamos a detenerte un momento en tres preguntas de reflexión metacognitiva. No se entregan por escrito — son para ti.</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.8rem;\"><strong>¿Cómo ha cambiado tu comprensión de TPACK después de incorporar la dimensión IA?</strong> Al inicio del curso, TPACK podía parecerte un marco abstracto o demasiado teórico para la práctica cotidiana. ¿Hay algún componente del TPACK — o del I-TPACK — que ahora ves de otra manera? ¿Hay alguna decisión de diseño que tomarías diferente hoy?</li><li style=\"margin-bottom:0.8rem;\"><strong>¿Qué herramienta, concepto o marco fue más transformador para tu práctica?</strong> Piensa en un momento específico del curso — una lectura, un caso, un comentario de un compañero — que cambió algo en tu forma de pensar sobre la integración tecnológica. ¿Por qué ese momento y no otro?</li><li style=\"margin-bottom:0.8rem;\"><strong>¿Qué desafíos identifies para implementar lo aprendido en tu contexto?</strong> El conocimiento TPACK+IA es necesario pero no suficiente: existen condiciones institucionales, culturales y de recursos que facilitan o dificultan su aplicación. ¿Cuáles son los tres obstáculos más concretos que enfrentarías? ¿Cuál es el primero que podrías trabajar?</li></ul><p>Si quieres compartir alguna de estas reflexiones con la comunidad del curso, el Foro de cierre es el espacio para hacerlo. La participación en ese foro es voluntaria pero enriquece el cierre colectivo del recorrido.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "EE",
+            "tipo_actividad_especifica": "EE_autoevaluacion_metacognitiva",
+            "fase": "despues",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF4",
+            "ce_asociados": ["CE4.2"],
+            "nivel_bloom": "evaluar",
+            "tiempo_estimado_min": 20,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "autonomia_esperada",
+            "capa_moca": "configuracion",
+            "andamiaje_nivel": null,
+            "obligatorio_perfil": {
+              "explorador": true,
+              "integrador": true,
+              "disenador": true
+            },
+            "notas_diseno": "Slide de cierre metacognitivo. No tiene entrega asociada. Activa CE4.2 (transferibilidad) de forma reflexiva."
+          }
+        },
+        {
+          "title": "Foro de cierre: Lecciones aprendidas",
+          "type": "forum",
+          "html": "<h2>Foro de cierre: Lecciones aprendidas del recorrido TPACK+IA</h2><p>Este es el último espacio de intercambio del curso. La participación es voluntaria pero se agradece: las reflexiones de cierre enriquecen el aprendizaje colectivo y contribuyen a mejorar el curso para las próximas cohortes.</p><p><strong>Consigna:</strong> Comparte 1-2 ideas que te llevas de este recorrido y que cambiarán algo — grande o pequeño — en tu práctica docente o de diseño. No es necesario que sean conclusiones perfectas ni que estén completamente desarrolladas. A veces la lección más importante es una pregunta que no tenías antes de empezar.</p><p>Si quieres, también puedes responder: ¿qué cambiarías del curso si pudieras? Tu retroalimentación es valiosa para la Unidad UDFV en el proceso de mejora continua del diseño.</p><p>Lee al menos 2 comentarios de tus compañeros y responde a uno de ellos si alguna reflexión te conecta con tu propia experiencia.</p>",
+          "moca_metadata": {
+            "categoria_e_actividad": "ED",
+            "tipo_actividad_especifica": "ED_foro_cierre",
+            "fase": "despues",
+            "perfil_visible": ["explorador", "integrador", "disenador"],
+            "ra_asociado": "RF4",
+            "ce_asociados": ["CE4.1", "CE4.2"],
+            "nivel_bloom": "evaluar",
+            "tiempo_estimado_min": 30,
+            "modalidad": "asincrono",
+            "eje_moca_dominante": "autonomia_esperada",
+            "capa_moca": "configuracion",
+            "andamiaje_nivel": null,
+            "obligatorio_perfil": {
+              "explorador": false,
+              "integrador": false,
+              "disenador": false
+            },
+            "notas_diseno": "Foro de cierre voluntario. obligatorio_perfil false para todos. Activa CE4.1 y CE4.2 de forma reflective y no evaluada."
+          }
+        },
+        {
+          "title": "Evaluación Final",
+          "type": "quiz"
+        }
+      ]
+    }
+  ],
+
+  "faq": [
+    {
+      "q": "¿Qué significa que el curso sea 'adaptativo MOCA'?",
+      "a": "El curso usa el Modelo de Configuración Adaptativa (MOCA): tras un test diagnóstico de 12 preguntas serás asignado a uno de tres perfiles (Explorador, Integrador o Diseñador). Todos los perfiles tienen los mismos Resultados Formativos y las mismas evaluaciones finales, pero varía el nivel de andamiaje, la complejidad de los casos y la profundidad bibliográfica según tu punto de partida."
+    },
+    {
+      "q": "¿Necesito conocer TPACK de antemano?",
+      "a": "No. El test diagnóstico detecta tu conocimiento previo y te asigna al perfil adecuado. El perfil Explorador incluye todos los fundamentos con alto andamiaje."
+    },
+    {
+      "q": "¿Puedo cambiar de perfil durante el curso?",
+      "a": "El perfil se asigna al inicio y se mantiene para preservar la coherencia de la ruta. Si detectas un desajuste importante, contacta a la Unidad UDFV."
+    },
+    {
+      "q": "¿El curso otorga certificación?",
+      "a": "Al completar todos los módulos y aprobar el Producto Integrador con calificación ≥60% recibirás un certificado digital emitido por UDFV."
+    }
+  ],
+
+  "completion": {
+    "message": "Has completado exitosamente el curso Integración de TPACK e IA en Educación. Ahora cuentas con el marco TPACK extendido para integrar Inteligencia Artificial en tu práctica docente de forma fundamentada, ética y pedagógicamente coherente.",
+    "nextStepUrl": null,
+    "nextStepLabel": "Volver al portal"
+  }
+}

@@ -1,23 +1,31 @@
 -- Autoformación enrollments
+-- NOTE: rut is nullable — some courses (e.g. modelo-educativo) don't require it
 CREATE TABLE IF NOT EXISTS portal.autoformacion_enrollments (
   id SERIAL PRIMARY KEY,
   course_slug TEXT NOT NULL DEFAULT 'sustentabilidad',
+  rut TEXT,
   nombre TEXT NOT NULL,
   apellido TEXT NOT NULL,
   email TEXT NOT NULL,
-  institucion TEXT,
+  universidad TEXT,
   estamento TEXT,
-  enrolled_at TIMESTAMPTZ DEFAULT now(),
-  completed_at TIMESTAMPTZ,
+  access_token TEXT NOT NULL,
+  moodle_user_id INTEGER,
+  moodle_enrolled BOOLEAN DEFAULT false,
   progress JSONB DEFAULT '{}',
-  access_token TEXT UNIQUE,
-  UNIQUE(course_slug, email)
+  completed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(email, course_slug),
+  UNIQUE(access_token)
 );
 
--- Index for lookups
+-- Indexes for lookups
 CREATE INDEX IF NOT EXISTS idx_autoformacion_email ON portal.autoformacion_enrollments(email);
 CREATE INDEX IF NOT EXISTS idx_autoformacion_slug ON portal.autoformacion_enrollments(course_slug);
+CREATE INDEX IF NOT EXISTS idx_autoformacion_rut ON portal.autoformacion_enrollments(rut);
+CREATE INDEX IF NOT EXISTS idx_autoformacion_token ON portal.autoformacion_enrollments(access_token);
 
 -- RLS
 ALTER TABLE portal.autoformacion_enrollments ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Service role full access" ON portal.autoformacion_enrollments FOR ALL USING (true);
+CREATE POLICY "autoformacion_service_all" ON portal.autoformacion_enrollments FOR ALL USING (true) WITH CHECK (true);

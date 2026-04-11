@@ -1,5 +1,20 @@
 # Notas de sesion: Revision del CURSO-VIRTUAL-SPEC.md
 
+## 26-mar-2026 — Separacion SDPA / insignias estudiante
+
+**Decision**: El SDPA (Sistema de Desarrollo Profesional Academico) es un sistema institucional enorme (2 areas, 6 lineas, 4 programas, certificaciones de diplomado 216h/8 SCT, certificacion TIC 81h/3 SCT, Ruta IA 12 cursos/132h). Meterlo como "categoria sdpa" en badge_definitions fue un error de escala.
+
+**Cambios aplicados**:
+1. `schema-badges.sql` limpiado: solo 12 insignias del estudiante en 4 categorias (curso, modulo, trayectoria, manual). Removida categoria 'sdpa', columnas programa_sdpa/horas_cronologicas, mv_progreso_sdpa, y 10 seeds SDPA.
+2. `schema-microcredenciales.sql`: removida referencia a 'sdpa' en comentario de requisitos.
+3. `schema-sdpa.sql` creado: 4 tablas propias (actividades_sdpa, certificaciones_sdpa, progreso_certificaciones, evidencias_sdpa), 2 vistas, 8 certificaciones semilla, prerequisitos encadenados, RLS y grants.
+
+**Punto de encuentro**: formato OB 3.0. Ambos sistemas emiten credenciales verificables con la misma infra Ed25519, pero con endpoints separados (`/badge/:hash` para estudiantes, `/credential/:hash` para docentes).
+
+**Pasos de implementacion**: 1-40 curso virtual estudiante, 41-50 SDPA docente. Independientes.
+
+---
+
 **Fecha**: 25-mar-2026
 **Participantes**: David (coordinador UDFV) + Claude (Cowork)
 **Resultado**: CURSO-VIRTUAL-SPEC.md v2 completo (1063 lineas, 19 secciones)
@@ -261,6 +276,56 @@ David pidio que la seccion bibliografica del curso virtual permita validar las f
 - **NO son requisitos funcionales directos** — son contexto institucional que informa decisiones de diseno
 - **NO crear un modulo de certificacion TIC** dentro del curso virtual — eso es otro sistema
 - **NO exponer estos documentos a los estudiantes** — son documentos internos de la UDFV/UDA
+
+---
+
+## Sesion 26-mar-2026: Separacion insignias estudiante vs. desarrollo profesional docente
+
+### Decision
+
+David detecto que el sistema de insignias mezclaba el mundo del estudiante con el del academico/docente. Las insignias de curso (nucleo_completado, curso_completado, etc.) estaban bien disenadas para el estudiante, pero el SDPA del docente estaba metido como "categoria sdpa" dentro de badge_definitions — un parche que minimizaba un sistema institucional enorme.
+
+### Que se hizo
+
+**Se separaron en dos sistemas independientes:**
+
+1. **Insignias del estudiante** (seccion "Insignias del estudiante - curso virtual"):
+   - badge_definitions: categorias 'curso', 'modulo', 'trayectoria', 'manual' — SIN 'sdpa'
+   - user_badges: solo para estudiantes, sin columnas horas_cronologicas ni programa_sdpa
+   - Datos semilla: 12 insignias (6 curso + 1 modulo + 3 trayectoria + 2 manual)
+   - Flujo: 100% automatico desde datos de Moodle via cron
+   - Vista: "Mis logros" con grid de insignias + progreso microcredenciales
+
+2. **Desarrollo Profesional Academico** (nueva seccion completa):
+   - Schema propio: actividades_sdpa, certificaciones_sdpa, progreso_certificaciones, evidencias_sdpa
+   - Cubre las 6 lineas SDPA + 4 programas + certificaciones TIC (3 niveles) + Ruta IA (12 cursos) + Diplomado Docencia
+   - Flujo hibrido: registro manual por admin + automatico si docente toma curso en Moodle + importacion CSV historica
+   - Flujo de evidencias pedagogicas (subida docente + revision admin)
+   - Vista: "Mi Desarrollo Profesional" (separada de "Mis logros")
+   - Dashboard institucional SDPA para admin/VRA
+
+**Punto de encuentro**: OB 3.0. Ambos sistemas emiten credenciales con el mismo formato y stack criptografico. Pero los schemas, vistas, flujos y endpoints son completamente independientes.
+
+### Cambios en CURSO-VIRTUAL-SPEC.md
+
+- Seccion "Reconocimiento academico e insignias" → dividida en "Insignias del estudiante" + "Desarrollo Profesional Academico"
+- badge_definitions: eliminada categoria 'sdpa', quitadas 7 insignias SDPA de datos semilla
+- user_badges: eliminadas columnas horas_cronologicas y programa_sdpa
+- Eliminada vista materializada mv_progreso_sdpa (reemplazada por v_resumen_docente_sdpa y v_progreso_certificaciones)
+- microcredencial_requisitos: ya no referencia badges de categoria 'sdpa'
+- Agregados 4 nuevos schemas: actividades_sdpa, certificaciones_sdpa, progreso_certificaciones, evidencias_sdpa
+- Agregados datos semilla de certificaciones_sdpa (8 certificaciones)
+- Agregados endpoints separados: /api/docente/sdpa/* + /api/admin/sdpa/*
+- Tabla features→fases actualizada con seccion "Desarrollo Profesional Docente (SDPA)" separada
+- Orden de implementacion: pasos 41-50 nuevos para SDPA
+
+### Instrucciones para Claude Code
+
+Cuando implementes insignias/badges:
+- **badge_definitions y user_badges** son SOLO para estudiantes. No busques SDPA ahi.
+- El docente tiene su propio schema: actividades_sdpa + certificaciones_sdpa + progreso_certificaciones
+- NO mezclar los flujos: el estudiante es automatico (cron), el docente es hibrido (manual + automatico)
+- OB 3.0 es compartido: misma infraestructura de claves Ed25519, pero endpoints separados (/badge/:hash vs /credential/:hash)
 
 ---
 
