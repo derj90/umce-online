@@ -12,7 +12,7 @@ La UDFV ha estado desarrollando un conjunto de herramientas digitales para apoya
 
 El trabajo está en desarrollo. Lo que existe hoy son prototipos funcionales que permiten calcular créditos, planificar la distribución de horas en actividades concretas y evaluar la calidad de un curso virtual. Lo que falta es la validación institucional formal: una mesa de trabajo UGCI-UDFV, presentación a consejeros y articulación con DAC y DIPOS para la estructura de programas híbridos y e-learning.
 
-El análisis de la Planilla Master UMCE Virtual 2026 (342 sesiones, 12 programas) identificó un problema estructural que los instrumentos actuales no capturan: cada actividad curricular se diseña de forma aislada, pero nadie agrega la carga total del estudiante que cursa varias actividades en paralelo. Un estudiante típico de postgrado enfrenta entre 6 y 12 horas sincrónicas semanales; en prosecución, los casos más cargados llegan a 15 horas. La modularización —secuenciar las actividades en vez de superponerlas— reduce esa carga a la mitad sin modificar los créditos totales ni los contenidos. Este argumento empírico, que complementa la decisión institucional ya tomada en 2019, orienta la próxima fase de las herramientas.
+El análisis de la Planilla Master UMCE Virtual 2026 (342 sesiones, 12 programas) muestra que la carga sincrónica agregada de los estudiantes varía significativamente entre programas: un estudiante típico de postgrado enfrenta entre 6 y 12 horas sincrónicas semanales; en prosecución, los casos más cargados llegan a 15 horas. El plan de estudios de cada programa ya define qué actividades se cursan en paralelo; lo que falta es una herramienta que permita visualizar fácilmente la curva de carga semanal resultante. La modularización —secuenciar las actividades en vez de superponerlas— reduce la carga simultánea sin modificar los créditos totales ni los contenidos. Este argumento empírico, que complementa la decisión institucional ya tomada en 2019, orienta la próxima fase de las herramientas.
 
 ---
 
@@ -211,7 +211,7 @@ Las herramientas que la UDFV está desarrollando intentan abordar ambos problema
 
 ### 8.1 El problema de la sobrecarga agregada
 
-Existe un tercer problema que los dos anteriores no capturan: cada actividad curricular es diseñada de forma aislada, pero nadie agrega la carga total que el estudiante enfrenta semana a semana cuando cursa varias actividades en paralelo.
+Existe un tercer aspecto que los dos anteriores no abordan: la carga agregada que el estudiante enfrenta semana a semana cuando cursa varias actividades en paralelo. El plan de estudios define qué actividades se cursan simultáneamente, pero actualmente no existe una herramienta institucional que visualice la curva de carga semanal resultante.
 
 El análisis de la **Planilla Master UMCE Virtual 2026** (342 sesiones, 12 programas) permite dimensionar este problema con datos reales. Las duraciones de sesión son bimodales: 1,5 horas (110 sesiones) y 3,0 horas (125 sesiones) concentran la mayor parte de la oferta, en proporciones casi idénticas. Con este patrón, un estudiante típico enfrenta:
 
@@ -220,9 +220,9 @@ El análisis de la **Planilla Master UMCE Virtual 2026** (342 sesiones, 12 progr
 | Postgrado (perfil típico) | 3-4 sesiones | 6-9 horas (hasta 12 hrs) |
 | Prosecución | hasta 6 sesiones | hasta 15 horas |
 
-Los programas con bloques de 3 horas generan las cargas más altas cuando los estudiantes tienen 3 o 4 actividades concurrentes. Los casos más cargados identificados son Mg. Educación Especial 2026 y Mg. Política Educativa 2025, que alcanzan 12 horas semanales de sincronía. En prosecución (nivel pregrado), los casos más cargados llegan a 15 horas semanales. Cada docente toma decisiones razonables en el diseño de su propia asignatura; el problema no está en las asignaturas individuales, sino en que nadie tiene la vista del total semanal que enfrenta el estudiante.
+Los programas con bloques de 3 horas generan las cargas más altas cuando los estudiantes tienen 3 o 4 actividades concurrentes. Los casos más intensivos en postgrado alcanzan 12 horas semanales de sincronía. En prosecución (nivel pregrado), los casos más cargados llegan a 15 horas semanales.
 
-La **Resolución Exenta N° 2025-00-1542** (Mg. Ed. Intercultural, noviembre 2025) ilustra cómo esto ocurre en un programa real e introduce además un hallazgo relevante para la calculadora. El semestre 1 mezcla actividades curriculares de 18 semanas (distribuidas) y 8 semanas (concentradas). Si ambas corren en paralelo durante las 8 semanas de coincidencia, la carga estudiantil sube a 14 hrs sincrónicas + 20 hrs asincrónicas + 5 hrs autónomas = **39 hrs/semana** — para luego caer a 7 hrs/semana en las semanas restantes. Ningún instrumento actual hace visible ese pico. Se trata de un programa vespertino para profesionales en ejercicio. La sobrecarga no es un error de diseño de ninguna asignatura individual: es la consecuencia estructural de no agregar.
+Una resolución exenta de un programa de postgrado (2025) ilustra un caso relevante: el semestre 1 mezcla actividades curriculares de 18 semanas (distribuidas) y 8 semanas (concentradas). Si ambas corren en paralelo durante las 8 semanas de coincidencia, la carga estudiantil sube a 14 hrs sincrónicas + 20 hrs asincrónicas + 5 hrs autónomas = **39 hrs/semana** — para luego caer a 7 hrs/semana en las semanas restantes. Una herramienta de visualización de carga a nivel de programa haría visible este tipo de pico al momento de diseñar el plan de estudios.
 
 Esta misma resolución confirma que el formato institucional de los planes de estudios ya declara exactamente tres tipos de horas — Sincrónicas, Asincrónicas, Trabajo Autónomo — con duración en semanas por actividad curricular. La calculadora refleja exactamente esa estructura, lo que facilita la lectura cruzada entre herramienta y resolución y valida el enfoque de tres columnas adoptado.
 
