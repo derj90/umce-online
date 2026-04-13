@@ -64,9 +64,6 @@
     .traz-table th { background: #F8FAFC; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #6B7280; padding: 0.625rem 1rem; }
     .traz-table td { padding: 0.625rem 1rem; font-size: 0.875rem; border-bottom: 1px solid #F3F4F6; }
 
-    /* Activity input row in encuesta */
-    .enc-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: 0.5rem; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #F3F4F6; }
-    .enc-row:last-child { border-bottom: none; }
 
     /* Semaforo badge */
     .badge-verde { background: #D1FAE5; color: #059669; }
@@ -193,8 +190,28 @@
     <div class="wizard-step active" id="step1">
       <div class="explain-box">
         <div class="explain-title">&iquest;Qu&eacute; vamos a hacer?</div>
-        <p>Vamos a verificar que las <strong>horas de trabajo de tu curso sean coherentes con los cr&eacute;ditos SCT declarados</strong>. En el SCT Chile, <strong>1 cr&eacute;dito = 27 horas</strong> de trabajo real del estudiante: clases, lecturas, tareas, evaluaciones y estudio aut&oacute;nomo. Todo cuenta.</p>
-        <p class="mt-2">Esta herramienta sigue la Gu&iacute;a de c&aacute;lculo SCT de la UGCI y se usa en el <strong>Momento 1 del flujo institucional</strong>: antes de la Resoluci&oacute;n Exenta.</p>
+        <p>Vamos a verificar que las <strong>horas de trabajo de tu curso sean coherentes con los cr&eacute;ditos SCT declarados</strong>. Esta herramienta se usa en el <strong>Momento 1 del flujo institucional</strong>: antes de la Resoluci&oacute;n Exenta que fija los cr&eacute;ditos.</p>
+      </div>
+
+      <!-- Contexto metodológico -->
+      <div class="bg-gray-50 rounded-xl p-5 mb-2 text-sm text-gray-700 leading-relaxed space-y-3">
+        <p>En el sistema SCT-Chile, <strong>1 cr&eacute;dito equivale a 27 horas cronol&oacute;gicas de trabajo real del estudiante</strong> (Res. Exenta N&deg; 002140, UMCE, 2011; derivado de la Declaraci&oacute;n de Valpara&iacute;so, CRUCH, 2003). Ese n&uacute;mero incluye <em>todo</em> lo que el estudiante hace para aprender: sesiones en vivo, participar en foros, leer, estudiar, preparar evaluaciones.</p>
+        <p>Esta calculadora usa el <strong>m&eacute;todo compositivo</strong> (bottom-up) del Manual SCT-Chile (CRUCH, 2013): en vez de partir de los cr&eacute;ditos y repartir horas, se estiman primero las horas reales por semana y se derivan los cr&eacute;ditos. Para eso necesitas distinguir tres tipos de horas, porque cada uno tiene implicancias distintas para el dise&ntilde;o del curso y para el presupuesto:</p>
+        <div class="grid sm:grid-cols-3 gap-3 mt-1">
+          <div class="bg-white rounded-lg p-3 border border-blue-100">
+            <div class="font-bold text-sm mb-1" style="color:#0033A1">Sincr&oacute;nicas (HS)</div>
+            <p class="text-xs text-gray-600">Actividades en tiempo real: Zoom, clase en vivo, tutor&iacute;a sincr&oacute;nica. Requieren coincidencia horaria entre docente y estudiantes.</p>
+          </div>
+          <div class="bg-white rounded-lg p-3 border border-purple-100">
+            <div class="font-bold text-sm mb-1" style="color:#7C3AED">Asincr&oacute;nicas (HAs)</div>
+            <p class="text-xs text-gray-600">Actividades con interacci&oacute;n pero sin coincidencia horaria: foros moderados, trabajo colaborativo, evaluaciones con retroalimentaci&oacute;n. Requieren dise&ntilde;o de interacci&oacute;n y moderaci&oacute;n docente.</p>
+          </div>
+          <div class="bg-white rounded-lg p-3 border border-green-100">
+            <div class="font-bold text-sm mb-1" style="color:#059669">Trabajo aut&oacute;nomo (HAut)</div>
+            <p class="text-xs text-gray-600">Trabajo individual sin mediaci&oacute;n: lectura, estudio, reflexi&oacute;n. Seg&uacute;n la normativa institucional, estas horas &laquo;al ser propias del estudiante, no contemplan ser remuneradas&raquo; (Doc. N&deg; 004-2020, Direcci&oacute;n de Docencia).</p>
+          </div>
+        </div>
+        <p>La f&oacute;rmula es: <strong>SCT = (HS + HAs + HAut) &times; NS &divide; 27</strong>, donde NS es el n&uacute;mero de semanas. El resultado se redondea al entero superior (criterio operativo UGCI). Si los cr&eacute;ditos calculados no coinciden con los declarados en la resoluci&oacute;n exenta, hay una inconsistencia que conviene resolver antes de dise&ntilde;ar el curso.</p>
       </div>
 
       <div class="space-y-6">
@@ -233,21 +250,28 @@
         <!-- Perfil de estudiantes -->
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-1.5">&iquest;Qu&eacute; tipo de estudiantes tiene?</label>
-          <p class="text-xs text-gray-400 mb-2">El perfil determina la distribuci&oacute;n sincr&oacute;nico/asincr&oacute;nico recomendada.</p>
+          <p class="text-xs text-gray-400 mb-2">El perfil determina la proporci&oacute;n recomendada entre horas sincr&oacute;nicas, asincr&oacute;nicas y aut&oacute;nomas.</p>
           <div class="grid sm:grid-cols-3 gap-2" id="profileSelector">
             <label class="radio-card selected flex items-center gap-2">
               <input type="radio" name="profile" value="pregrado" checked>
-              <div><div class="text-sm font-semibold">Pregrado</div><div class="text-xs text-gray-400">M&aacute;s acompa&ntilde;amiento sincr&oacute;nico</div></div>
+              <div><div class="text-sm font-semibold">Pregrado</div><div class="text-xs text-gray-400">&ge;15% sincr&oacute;nico</div></div>
             </label>
             <label class="radio-card flex items-center gap-2">
               <input type="radio" name="profile" value="postgrado">
-              <div><div class="text-sm font-semibold">Postgrado</div><div class="text-xs text-gray-400">Profesionales, m&aacute;s autonom&iacute;a</div></div>
+              <div><div class="text-sm font-semibold">Postgrado</div><div class="text-xs text-gray-400">&le;50% sincr&oacute;nico</div></div>
             </label>
             <label class="radio-card flex items-center gap-2">
               <input type="radio" name="profile" value="continua">
-              <div><div class="text-sm font-semibold">Ed. Continua</div><div class="text-xs text-gray-400">Flexible, ritmo propio</div></div>
+              <div><div class="text-sm font-semibold">Ed. Continua</div><div class="text-xs text-gray-400">&le;30% sincr&oacute;nico</div></div>
             </label>
           </div>
+          <details class="fundamentacion-panel mt-2">
+            <summary>&iquest;Por qu&eacute; importa el perfil?</summary>
+            <div class="fundamentacion-content">
+              <p>El perfil del estudiante determina cu&aacute;nta presencia sincr&oacute;nica necesita el curso. En pregrado, los estudiantes requieren m&aacute;s acompa&ntilde;amiento en tiempo real. En postgrado, los participantes son profesionales en ejercicio con mayor autonom&iacute;a de aprendizaje, lo que justifica m&aacute;s asincronismo y dise&ntilde;os heutag&oacute;gicos que respetan la autogesti&oacute;n (Hase &amp; Kenyon, 2000). En educaci&oacute;n continua, la flexibilidad horaria es prioritaria.</p>
+              <p class="fundamentacion-refs">Salmon, G. (2013). <em>E-tivities</em>; Hase, S. &amp; Kenyon, C. (2000). From andragogy to heutagogy.</p>
+            </div>
+          </details>
         </div>
 
         <!-- Formato — auto-ajusta semanas y créditos -->
@@ -278,16 +302,21 @@
         </div>
 
         <!-- Horas por semana y semanas -->
-        <div class="grid sm:grid-cols-3 gap-4">
+        <div class="grid sm:grid-cols-4 gap-4">
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1.5">HP sincr&oacute;nicas <span class="text-gray-400 font-normal text-xs">(hrs/sem)</span></label>
-            <input type="number" id="hp" value="2" min="0" max="40" step="0.5" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
-            <p class="text-xs text-gray-400 mt-1">Zoom, clases en vivo</p>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">HS sincr&oacute;nicas <span class="text-gray-400 font-normal text-xs">(hrs/sem)</span></label>
+            <input type="number" id="hs" value="1.5" min="0" max="40" step="0.5" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+            <p class="text-xs text-gray-400 mt-1">Zoom, clases en vivo, tutor&iacute;a sincr&oacute;nica</p>
           </div>
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1.5">HA aut&oacute;nomas <span class="text-gray-400 font-normal text-xs">(hrs/sem)</span></label>
-            <input type="number" id="ha" value="2.5" min="0" max="40" step="0.5" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
-            <p class="text-xs text-gray-400 mt-1">Lecturas, tareas, e-actividades</p>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">HAs asincr&oacute;nicas <span class="text-gray-400 font-normal text-xs">(hrs/sem)</span></label>
+            <input type="number" id="has" value="2" min="0" max="40" step="0.5" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+            <p class="text-xs text-gray-400 mt-1">Foros moderados, trabajo colaborativo, evaluaciones con retroalimentaci&oacute;n</p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">HAut aut&oacute;nomo <span class="text-gray-400 font-normal text-xs">(hrs/sem)</span></label>
+            <input type="number" id="haut" value="1" min="0" max="40" step="0.5" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+            <p class="text-xs text-gray-400 mt-1">Lecturas, estudio, reflexi&oacute;n, repaso</p>
           </div>
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Semanas <span class="text-gray-400 font-normal text-xs">(NS)</span></label>
@@ -295,6 +324,15 @@
             <p class="text-xs text-gray-400 mt-1">Duraci&oacute;n del m&oacute;dulo</p>
           </div>
         </div>
+        <details class="fundamentacion-panel">
+          <summary>&iquest;C&oacute;mo estimar estas horas?</summary>
+          <div class="fundamentacion-content">
+            <p>Si no tienes certeza de cu&aacute;ntas horas toma cada tipo de actividad, puedes usar como referencia los estimadores de carga acad&eacute;mica de Penn State (HIA Estimator App), Wake Forest (Workload Estimator 2.0, Rice &amp; Artus, 2016) o Massey University. Estas herramientas proporcionan rangos calibrados para actividades t&iacute;picas: lectura acad&eacute;mica, escritura, participaci&oacute;n en foros, evaluaciones, etc.</p>
+            <p class="mt-2">La <strong>regla del tercio</strong> es una orientaci&oacute;n institucional: las horas de trabajo aut&oacute;nomo deber&iacute;an representar aproximadamente un tercio de la carga total. Esto asegura equilibrio entre actividades dirigidas (sincr&oacute;nicas + asincr&oacute;nicas) y aprendizaje autodirigido. Si tu curso es de 4.5 hrs/semana, aproximadamente 1.5 hrs deber&iacute;an ser aut&oacute;nomas.</p>
+            <p class="mt-2">El Manual SCT-Chile (CRUCH, 2013) recomienda adem&aacute;s contrastar la carga <em>planificada</em> (la que calculas aqu&iacute;) con la carga <em>percibida</em> por los estudiantes una vez que el curso est&aacute; en operaci&oacute;n, para ajustar iterativamente.</p>
+            <p class="fundamentacion-refs">Penn State HIA Estimator; Rice, M. &amp; Artus, S. (2016). Wake Forest Workload Estimator; Manual SCT-Chile (CRUCH, 2013); Doc. N&deg; 004-2020 (Direcci&oacute;n de Docencia, UMCE).</p>
+          </div>
+        </details>
 
         <!-- Bloque azul: Lo que esto significa para tu estudiante -->
         <div class="bg-blue-50 border border-blue-100 rounded-xl p-5">
@@ -329,28 +367,9 @@
             </div>
           </div>
 
-          <p class="text-xs text-gray-400 mt-3">F&oacute;rmula: SCT = ((HP + HA) &times; NS) &divide; 27. Carga recomendada: m&aacute;x. 10 hrs/semana. Alerta: sobre 12 hrs/semana.</p>
+          <p class="text-xs text-gray-400 mt-3">F&oacute;rmula: SCT = (HS + HAs + HAut) &times; NS &divide; 27. Carga recomendada: m&aacute;x. 10 hrs/semana. Alerta: sobre 12 hrs/semana.</p>
         </div>
 
-        <!-- Encuesta docente simplificada -->
-        <div>
-          <h3 class="font-heading font-bold text-gray-800 mb-1">Encuesta docente simplificada</h3>
-          <p class="text-sm text-gray-500 mb-3">Estima cu&aacute;ntas horas requiere cada tipo de actividad en tu curso por semana. El total debe coincidir con HP + HA declarados arriba.</p>
-          <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <div class="grid grid-cols-[1fr_auto_auto] gap-0 text-xs font-bold uppercase tracking-wide text-gray-500 bg-gray-50 px-4 py-2.5 border-b border-gray-200">
-              <span>Tipo de actividad</span>
-              <span class="text-center w-24">Hrs/semana</span>
-              <span class="text-center w-20">Total</span>
-            </div>
-            <div id="encuestaRows" class="divide-y divide-gray-100"></div>
-            <div class="grid grid-cols-[1fr_auto_auto] px-4 py-2.5 bg-blue-50 border-t border-blue-100 font-bold text-sm">
-              <span class="text-umce-azul">Total declarado</span>
-              <span class="text-center w-24 text-umce-azul" id="encWeeklyTotal">0.0</span>
-              <span class="text-center w-20 text-umce-azul" id="encTotal">0</span>
-            </div>
-          </div>
-          <p class="text-xs text-gray-400 mt-2">Compara este total con HP+HA para verificar consistencia interna.</p>
-        </div>
 
         <div class="flex justify-end pt-4">
           <button class="btn-primary" onclick="goToStep(2)">
@@ -365,7 +384,7 @@
     <div class="wizard-step" id="step2">
       <div class="explain-box">
         <div class="explain-title">Etapa 2 &mdash; C&aacute;lculo SCT</div>
-        <p>Aqu&iacute; se aplica la f&oacute;rmula oficial del CRUCH: <strong>SCT = ((HP + HA) &times; NS) &divide; 27</strong>. El resultado se redondea al entero superior (criterio operativo consensuado).</p>
+        <p>Aqu&iacute; se aplica la f&oacute;rmula oficial del CRUCH: <strong>SCT = ((HS + HAs + HAut) &times; NS) &divide; 27</strong>. El resultado se redondea al entero superior (criterio operativo consensuado).</p>
       </div>
 
       <div class="space-y-6">
@@ -374,14 +393,18 @@
           <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Resultado del c&aacute;lculo</p>
           <div class="text-6xl font-extrabold text-umce-azul mb-1" id="resultSCT">3</div>
           <p class="text-gray-500 text-sm">cr&eacute;ditos SCT</p>
-          <div class="mt-4 grid grid-cols-3 gap-3">
+          <div class="mt-4 grid grid-cols-4 gap-3">
             <div class="bg-white rounded-lg p-3">
-              <div class="text-xl font-bold text-umce-azul" id="resultHP">36</div>
-              <div class="text-xs text-gray-400">HP (sincr&oacute;nico)</div>
+              <div class="text-xl font-bold text-umce-azul" id="resultHS">36</div>
+              <div class="text-xs text-gray-400">HS (sincr&oacute;nico)</div>
             </div>
             <div class="bg-white rounded-lg p-3">
-              <div class="text-xl font-bold text-umce-azul" id="resultHA">45</div>
-              <div class="text-xs text-gray-400">HA (aut&oacute;nomo)</div>
+              <div class="text-xl font-bold text-umce-azul" id="resultHAs">45</div>
+              <div class="text-xs text-gray-400">HAs (asincr&oacute;nico)</div>
+            </div>
+            <div class="bg-white rounded-lg p-3">
+              <div class="text-xl font-bold text-umce-azul" id="resultHAut">0</div>
+              <div class="text-xs text-gray-400">HAut (aut&oacute;nomo)</div>
             </div>
             <div class="bg-white rounded-lg p-3">
               <div class="text-xl font-bold text-umce-azul" id="resultNS">18</div>
@@ -395,11 +418,11 @@
           <h3 class="font-heading font-bold text-gray-800 mb-3">Paso a paso del c&aacute;lculo</h3>
           <div class="space-y-2 text-sm">
             <div class="flex justify-between py-1.5 border-b border-gray-200">
-              <span class="text-gray-600">HP + HA (horas por semana estimadas)</span>
+              <span class="text-gray-600">HS + HAs + HAut (horas por semana)</span>
               <span class="font-bold text-gray-800" id="calcStep1">81</span>
             </div>
             <div class="flex justify-between py-1.5 border-b border-gray-200">
-              <span class="text-gray-600">HP + HA por n&uacute;mero de semanas (total)</span>
+              <span class="text-gray-600">(HS + HAs + HAut) &times; NS (total)</span>
               <span class="font-bold text-gray-800" id="calcStep2">81</span>
             </div>
             <div class="flex justify-between py-1.5 border-b border-gray-200">
@@ -427,21 +450,31 @@
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <div class="w-3 h-3 rounded-full" style="background:#0033A1"></div>
-                  <span class="text-sm text-gray-700">Sincr&oacute;nico (HP)</span>
+                  <span class="text-sm text-gray-700">Sincr&oacute;nico (HS)</span>
                 </div>
                 <div class="text-right">
-                  <span class="font-bold text-sm" id="distHP">36 hrs</span>
-                  <span class="text-xs text-gray-400 ml-1" id="distHPpct">(44%)</span>
+                  <span class="font-bold text-sm" id="distHS">36 hrs</span>
+                  <span class="text-xs text-gray-400 ml-1" id="distHSpct">(44%)</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full" style="background:#7C3AED"></div>
+                  <span class="text-sm text-gray-700">Asincr&oacute;nico (HAs)</span>
+                </div>
+                <div class="text-right">
+                  <span class="font-bold text-sm" id="distHAs">0 hrs</span>
+                  <span class="text-xs text-gray-400 ml-1" id="distHAspct">(0%)</span>
                 </div>
               </div>
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <div class="w-3 h-3 rounded-full" style="background:#059669"></div>
-                  <span class="text-sm text-gray-700">Aut&oacute;nomo (HA)</span>
+                  <span class="text-sm text-gray-700">Aut&oacute;nomo (HAut)</span>
                 </div>
                 <div class="text-right">
-                  <span class="font-bold text-sm" id="distHA">45 hrs</span>
-                  <span class="text-xs text-gray-400 ml-1" id="distHApct">(56%)</span>
+                  <span class="font-bold text-sm" id="distHAut">45 hrs</span>
+                  <span class="text-xs text-gray-400 ml-1" id="distHAutpct">(56%)</span>
                 </div>
               </div>
               <div class="border-t pt-3 flex items-center justify-between">
@@ -525,7 +558,7 @@
           <div class="text-5xl font-extrabold text-umce-azul" id="printSCT">3</div>
           <div>
             <div class="font-bold text-umce-azul">cr&eacute;ditos SCT asignados</div>
-            <div class="text-sm text-gray-500 mt-0.5" id="printFormula">((36 + 45) &times; 18) &divide; 27 = 3.0 &rarr; 3</div>
+            <div class="text-sm text-gray-500 mt-0.5" id="printFormula">((1.5 + 2 + 1) &times; 18) &divide; 27 = 3.0 &rarr; 3</div>
           </div>
         </div>
 
@@ -580,7 +613,7 @@
     <div class="wizard-step" id="step4">
       <div class="explain-box">
         <div class="explain-title">Etapa 4 &mdash; Verificaci&oacute;n de consistencia</div>
-        <p>Se verifican dos niveles: (1) consistencia entre las horas declaradas en la encuesta docente y los totales HP+HA, y (2) si la carga semanal es sostenible seg&uacute;n los est&aacute;ndares institucionales.</p>
+        <p>Se verifican tres niveles: (1) distribuci&oacute;n entre horas sincr&oacute;nicas, asincr&oacute;nicas y aut&oacute;nomas, (2) proporci&oacute;n de trabajo aut&oacute;nomo (regla del tercio), y (3) sostenibilidad de la carga semanal seg&uacute;n los est&aacute;ndares institucionales.</p>
       </div>
 
       <div class="space-y-5">
@@ -601,31 +634,6 @@
             <h3 class="font-heading font-bold text-gray-700">Verificaciones por nivel</h3>
           </div>
           <div class="divide-y divide-gray-100" id="checksContainer"></div>
-        </div>
-
-        <!-- Verificacion actividades individuales (encuesta) -->
-        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
-          <div class="px-5 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
-            <h3 class="font-heading font-bold text-gray-700">Consistencia encuesta docente</h3>
-            <span class="text-xs px-2 py-1 rounded-full font-semibold" id="encConsistBadge">Calculando</span>
-          </div>
-          <div class="p-5">
-            <div class="grid grid-cols-3 gap-3 mb-4">
-              <div class="stat-card">
-                <div class="stat-value" id="verEncTotal" style="font-size:1.5rem">0</div>
-                <div class="stat-label">Hrs encuesta</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-value" id="verDeclared" style="font-size:1.5rem">0</div>
-                <div class="stat-label">HP + HA declaradas</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-value" id="verDiff" style="font-size:1.5rem">0</div>
-                <div class="stat-label">Diferencia (hrs)</div>
-              </div>
-            </div>
-            <p class="text-xs text-gray-400" id="encConsistDetail">La encuesta docente sirve para desagregar la carga. Si hay diferencia significativa (&gt;10%), revisar los datos de la Etapa 1.</p>
-          </div>
         </div>
 
         <!-- Recomendaciones -->
@@ -659,64 +667,44 @@
   <!-- Contexto educativo (fuera del wizard) -->
   <section class="bg-gray-50 py-12 mt-4 no-print">
     <div class="max-w-3xl mx-auto px-6">
-      <h2 class="font-heading font-extrabold text-2xl mb-6">Sobre el SCT Chile</h2>
+      <h2 class="font-heading font-extrabold text-2xl mb-6">Contexto del SCT Chile en la UMCE</h2>
       <div class="grid sm:grid-cols-2 gap-4">
         <div class="bg-white rounded-xl p-5 border border-gray-200">
-          <div class="font-bold text-umce-azul mb-2">&#128218; Base normativa</div>
-          <p class="text-sm text-gray-600">El SCT-Chile fue creado en 2003 por las 25 universidades del CRUCH (Declaraci&oacute;n de Valpara&iacute;so), compatible con el ECTS europeo. La UMCE adopt&oacute; 1 SCT = 27 hrs (Res. Exentas N&deg; 100062 y N&deg; 100241, 2019).</p>
+          <div class="font-bold text-umce-azul mb-2">Base normativa</div>
+          <p class="text-sm text-gray-600">El SCT-Chile fue creado en 2003 por las 25 universidades del CRUCH (Declaraci&oacute;n de Valpara&iacute;so), compatible con el ECTS europeo. La UMCE fij&oacute; 1 SCT = 27 hrs (Res. Exenta N&deg; 002140, 2011) y aprob&oacute; la modularizaci&oacute;n curricular (Res. Exentas N&deg; 100062 y N&deg; 100241, 2019). La UGCI operacionaliza estos criterios en la Gu&iacute;a de C&aacute;lculo SCT-Chile UMCE.</p>
         </div>
         <div class="bg-white rounded-xl p-5 border border-gray-200">
-          <div class="font-bold text-umce-azul mb-2">&#128200; Dos m&eacute;todos oficiales</div>
-          <p class="text-sm text-gray-600"><strong>Anal&iacute;tico (top-down):</strong> se fija el total de cr&eacute;ditos y se distribuye. <strong>Compositivo (bottom-up):</strong> se suman las horas reales y se derivan los cr&eacute;ditos. Esta calculadora usa el m&eacute;todo compositivo y valida contra el anal&iacute;tico.</p>
+          <div class="font-bold text-umce-azul mb-2">M&eacute;todo compositivo (bottom-up)</div>
+          <p class="text-sm text-gray-600">Esta calculadora usa el m&eacute;todo compositivo del Manual SCT-Chile (CRUCH, 2013): se estiman las horas reales de trabajo del estudiante por semana y se derivan los cr&eacute;ditos. Esto permite contrastar con el m&eacute;todo anal&iacute;tico (top-down), donde los cr&eacute;ditos ya est&aacute;n fijados por la resoluci&oacute;n exenta y las horas se distribuyen.</p>
         </div>
         <div class="bg-white rounded-xl p-5 border border-gray-200">
-          <div class="font-bold text-umce-azul mb-2">&#9201; Carga semanal</div>
-          <p class="text-sm text-gray-600">Recomendada: <strong>10 hrs/semana</strong>. M&aacute;xima: <strong>12 hrs/semana</strong>. Para postgrado (profesionales en ejercicio), se recomienda m&aacute;s asincronismo y mayor autonom&iacute;a (marco heutagog&oacute;gico).</p>
+          <div class="font-bold text-umce-azul mb-2">Tres tipos de carga</div>
+          <p class="text-sm text-gray-600">El Manual SCT-Chile distingue carga <strong>planificada</strong> (la que se calcula aqu&iacute;), <strong>percibida</strong> (reportada por estudiantes al final del curso) y <strong>efectiva</strong> (medida con registros de plataforma). Contrastar las tres cierra el ciclo de mejora continua del dise&ntilde;o. Esta herramienta trabaja sobre la carga planificada.</p>
         </div>
         <div class="bg-white rounded-xl p-5 border border-gray-200">
-          <div class="font-bold text-umce-azul mb-2">&#128279; Siguiente paso</div>
-          <p class="text-sm text-gray-600">Una vez validados los SCT, usa el <a href="/virtualizacion/planificador" class="text-umce-azul font-semibold hover:underline">Planificador Curricular</a> para distribuir las horas en e-actividades concretas semana a semana.</p>
+          <div class="font-bold text-umce-azul mb-2">Siguiente paso: Planificador</div>
+          <p class="text-sm text-gray-600">Una vez validados los SCT y aprobado el PAC, el siguiente momento es dise&ntilde;ar el PIAC: distribuir las horas en actividades concretas semana a semana. El <a href="/virtualizacion/planificador" class="text-umce-azul font-semibold hover:underline">Planificador Curricular</a> gu&iacute;a ese proceso con un cat&aacute;logo de 37 e-actividades y tiempos referenciales.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Fundamentación académica -->
+  <!-- Referencias bibliográficas -->
   <section class="py-12 no-print" style="background: #F8FAFC;">
     <div class="max-w-3xl mx-auto px-6">
-      <p class="text-xs font-bold uppercase tracking-widest mb-4" style="color: #0033A1;">Fundamentación de decisiones de diseño</p>
-
-      <details class="fundamentacion-panel">
-        <summary>¿Por qué 27 horas por crédito?</summary>
-        <div class="fundamentacion-content">
-          <p>El Sistema de Créditos Transferibles (SCT-Chile) fue creado en 2003 por las universidades del CRUCH para homologar la carga académica con el sistema europeo ECTS. El estándar de 27 horas por crédito refleja el tiempo total de trabajo real del estudiante (presencial, autónomo y evaluativo) y fue adoptado por la UMCE mediante resoluciones exentas internas. La UGCI lo operacionaliza en la Guía de Cálculo SCT, que es la base técnica de esta calculadora.</p>
-          <p class="fundamentacion-refs">Referencias: Declaración de Valparaíso (CRUCH, 2003); Manual SCT-Chile (CRUCH, 2007); Res. Exenta N° 002140 (UMCE, 2011)</p>
-        </div>
-      </details>
-
-      <details class="fundamentacion-panel">
-        <summary>¿Por qué redondeo al entero superior (ceil)?</summary>
-        <div class="fundamentacion-content">
-          <p>El redondeo hacia arriba (ceil) es un criterio operativo consensuado institucionalmente adoptado por la UGCI para evitar la subdeclaración de créditos cuando el cálculo compositivo produce fracciones. No existe norma SCT-Chile que imponga un método único de redondeo, por lo que la decisión responde al uso práctico en procesos de aprobación curricular de la UMCE.</p>
-          <p class="fundamentacion-refs">Referencias: Criterio operativo UGCI (uso institucional consensuado)</p>
-        </div>
-      </details>
-
-      <details class="fundamentacion-panel">
-        <summary>¿Por qué perfiles diferenciados (pregrado / postgrado)?</summary>
-        <div class="fundamentacion-content">
-          <p>El perfil del estudiante determina la distribución óptima de la carga. En postgrado, el estudiante es un profesional en ejercicio con mayor autonomía de aprendizaje, lo que justifica mayor asincronismo, menor carga de actividades presenciales sincrónicas y diseños heutagógicos que respetan la autogestión. El modelo e-Moderating de Salmon y la experiencia de la UOC son referentes para esta distinción en entornos virtuales avanzados.</p>
-          <p class="fundamentacion-refs">Referencias: Salmon, G. (2013). <em>E-tivities</em>; Guitert, M. (2015). Aprendizaje colaborativo en entornos virtuales; Hase, S. &amp; Kenyon, C. (heutagogía, adultos profesionales)</p>
-        </div>
-      </details>
-
-      <details class="fundamentacion-panel">
-        <summary>¿Por qué encuestas de estimación de carga percibida?</summary>
-        <div class="fundamentacion-content">
-          <p>El Manual SCT-Chile (CRUCH) recomienda contrastar tres tipos de carga: la planificada (calculada por el diseñador), la percibida (reportada por el estudiante) y la efectiva (medida con registros reales). Las encuestas de estimación permiten detectar brechas entre lo planificado y lo vivido, cerrando el ciclo de mejora continua que el sistema SCT-Chile tiene como finalidad última.</p>
-          <p class="fundamentacion-refs">Referencias: Manual SCT-Chile (CRUCH, 2007); Guía de Cálculo SCT UGCI (UMCE)</p>
-        </div>
-      </details>
+      <p class="text-xs font-bold uppercase tracking-widest mb-4" style="color: #0033A1;">Referencias</p>
+      <div class="space-y-2 text-sm text-gray-600 leading-relaxed">
+        <p>Consejo de Rectores de las Universidades Chilenas [CRUCH]. (2003). <em>Declaraci&oacute;n de Valpara&iacute;so</em>. Origen del Sistema de Cr&eacute;ditos Transferibles SCT-Chile.</p>
+        <p>CRUCH. (2013). <em>Manual para la implementaci&oacute;n del Sistema de Cr&eacute;ditos Acad&eacute;micos Transferibles SCT-Chile</em>, 2.&ordf; ed. M&eacute;todos anal&iacute;tico (top-down) y compositivo (bottom-up), instrumentos de encuesta, rango 24-31 hrs/cr&eacute;dito.</p>
+        <p>Direcci&oacute;n de Docencia, UMCE. (2020). <em>Doc. N&deg; 004-2020: Orientaciones para PAC virtuales</em>. Define la distribuci&oacute;n de horas sincr&oacute;nicas, asincr&oacute;nicas y aut&oacute;nomas.</p>
+        <p>Hase, S. &amp; Kenyon, C. (2000). From andragogy to heutagogy. <em>UltiBASE</em>. Fundamento del aprendizaje autodirigido en adultos profesionales.</p>
+        <p>Penn State. <em>HIA Estimator App</em>. Estimador de carga acad&eacute;mica: 18 tipos de actividad con rangos calibrados.</p>
+        <p>Rice, M. &amp; Artus, S. (2016). <em>Workload Estimator 2.0</em>. Wake Forest University. Tasas de lectura y escritura calibradas para educaci&oacute;n superior.</p>
+        <p>Salmon, G. (2013). <em>E-tivities: The key to active online learning</em>, 2.&ordf; ed. Routledge. Modelo e-Moderating y dise&ntilde;o de actividades asincr&oacute;nicas.</p>
+        <p>UMCE. (2011). <em>Resoluci&oacute;n Exenta N&deg; 002140</em>. Fija 1 cr&eacute;dito SCT = 27 horas cronol&oacute;gicas de trabajo estudiantil.</p>
+        <p>UMCE. (2019). <em>Resoluciones Exentas N&deg; 100062 y N&deg; 100241</em>. Aprueban redise&ntilde;o curricular basado en competencias, modularizado, con SCT.</p>
+        <p>UGCI, UMCE. (2026). <em>Gu&iacute;a de C&aacute;lculo SCT-Chile UMCE</em> (borrador, abril 2026). Base t&eacute;cnica de esta calculadora.</p>
+      </div>
     </div>
   </section>
 
@@ -762,61 +750,14 @@
     // ================================
     var currentStep = 1, maxStepReached = 1;
 
-    // Encuesta docente: tipos de actividad con horas/semana
-    var ENCUESTA_TIPOS = [
-      { id: 'enc_sinc', label: 'Sesiones sincr\u00f3nicas (Zoom, clase en vivo)', hrsDefault: 0 },
-      { id: 'enc_lect', label: 'Lecturas y estudio de materiales', hrsDefault: 0 },
-      { id: 'enc_tar', label: 'Tareas y e-actividades', hrsDefault: 0 },
-      { id: 'enc_eval', label: 'Evaluaciones (quizzes, pruebas, productos)', hrsDefault: 0 },
-      { id: 'enc_colab', label: 'Trabajo colaborativo y foros', hrsDefault: 0 },
-      { id: 'enc_auto', label: 'Estudio aut\u00f3nomo y repaso', hrsDefault: 0 },
-    ];
-
     // ================================
     // Inicializacion
     // ================================
     function init() {
-      renderEncuesta();
       bindInputs();
       updatePreview();
       document.getElementById('printDate').textContent = 'Generado: ' + new Date().toLocaleDateString('es-CL', { year:'numeric', month:'long', day:'numeric' });
     }
-
-    // ================================
-    // Renderizar encuesta docente
-    // ================================
-    function renderEncuesta() {
-      var ns = parseInt(document.getElementById('ns').value) || 18;
-      var html = ENCUESTA_TIPOS.map(function(t) {
-        var total = (t.hrsDefault * ns).toFixed(1);
-        return '<div class="grid grid-cols-[1fr_auto_auto] gap-0 items-center px-4 py-2.5 hover:bg-gray-50 transition-colors">'
-          + '<span class="text-sm text-gray-700">' + t.label + '</span>'
-          + '<div class="w-24 text-center">'
-          + '<input type="number" id="' + t.id + '" value="' + t.hrsDefault + '" min="0" max="99" step="0.5" '
-          + 'class="w-16 px-2 py-1.5 text-center rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm" '
-          + 'oninput="updateEncuesta()">'
-          + '</div>'
-          + '<div class="w-20 text-center text-sm font-semibold text-gray-700 enc-row-total" id="total_' + t.id + '">' + total + '</div>'
-          + '</div>';
-      }).join('');
-      document.getElementById('encuestaRows').innerHTML = html;
-      updateEncuesta();
-    }
-
-    window.updateEncuesta = function() {
-      var ns = parseInt(document.getElementById('ns').value) || 18;
-      var weeklySum = 0;
-      ENCUESTA_TIPOS.forEach(function(t) {
-        var el = document.getElementById(t.id);
-        var val = parseFloat(el ? el.value : 0) || 0;
-        weeklySum += val;
-        var totalEl = document.getElementById('total_' + t.id);
-        if (totalEl) totalEl.textContent = (val * ns).toFixed(1);
-      });
-      var totalHrs = weeklySum * ns;
-      document.getElementById('encWeeklyTotal').textContent = weeklySum.toFixed(1);
-      document.getElementById('encTotal').textContent = totalHrs.toFixed(1);
-    };
 
     // ================================
     // Bind inputs para preview en vivo
@@ -831,12 +772,11 @@
     };
 
     function bindInputs() {
-      ['hp','ha','ns','sctDeclarados'].forEach(function(id) {
+      ['hs','has','haut','ns','sctDeclarados'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) {
           el.addEventListener('input', function() {
             updatePreview();
-            if (id !== 'sctDeclarados') updateEncuesta();
           });
         }
       });
@@ -865,7 +805,6 @@
             if (fmt.sctFijo !== null) document.getElementById('sctDeclarados').value = fmt.sctFijo;
           }
           updatePreview();
-          updateEncuesta();
         });
       });
     }
@@ -874,13 +813,14 @@
     // Preview en tiempo real (Etapa 1)
     // ================================
     function updatePreview() {
-      var hp = parseFloat(document.getElementById('hp').value) || 0;
-      var ha = parseFloat(document.getElementById('ha').value) || 0;
+      var hs = parseFloat(document.getElementById('hs') ? document.getElementById('hs').value : 0) || 0;
+      var has = parseFloat(document.getElementById('has') ? document.getElementById('has').value : 0) || 0;
+      var haut = parseFloat(document.getElementById('haut') ? document.getElementById('haut').value : 0) || 0;
       var ns = parseInt(document.getElementById('ns').value) || 1;
-      var total = (hp + ha) * ns;
+      var total = (hs + has + haut) * ns;
       var sctExact = total / 27;
       var sct = Math.ceil(sctExact);
-      var weekly = hp + ha;
+      var weekly = hs + has + haut;
 
       document.getElementById('previewTotal').textContent = total.toFixed(0);
       document.getElementById('previewSCT').textContent = sct;
@@ -972,37 +912,45 @@
     // Calculo principal (Etapa 2)
     // ================================
     function runCalc() {
-      var hp = parseFloat(document.getElementById('hp').value) || 0;
-      var ha = parseFloat(document.getElementById('ha').value) || 0;
+      var hs = parseFloat(document.getElementById('hs') ? document.getElementById('hs').value : 0) || 0;
+      var has = parseFloat(document.getElementById('has') ? document.getElementById('has').value : 0) || 0;
+      var haut = parseFloat(document.getElementById('haut') ? document.getElementById('haut').value : 0) || 0;
       var ns = parseInt(document.getElementById('ns').value) || 1;
-      var total = (hp + ha) * ns;
+      var total = (hs + has + haut) * ns;
       var sctExact = total / 27;
       var sct = Math.ceil(sctExact);
-      var weekly = hp + ha;
+      var weekly = hs + has + haut;
 
       // Resultado principal
       document.getElementById('resultSCT').textContent = sct;
-      document.getElementById('resultHP').textContent = hp;
-      document.getElementById('resultHA').textContent = ha;
+      document.getElementById('resultHS').textContent = hs;
+      document.getElementById('resultHAs').textContent = has;
+      document.getElementById('resultHAut').textContent = haut;
       document.getElementById('resultNS').textContent = ns;
 
       // Pasos del calculo
-      document.getElementById('calcStep1').textContent = (hp + ha).toFixed(1) + ' hrs/sem';
+      document.getElementById('calcStep1').textContent = weekly.toFixed(1) + ' hrs/sem';
       document.getElementById('calcStep2').textContent = total.toFixed(1) + ' hrs';
       document.getElementById('calcStep3').textContent = sctExact.toFixed(3);
       document.getElementById('calcStep4').textContent = sct;
 
       // Distribucion
-      var hpPct = total > 0 ? Math.round(hp * ns / total * 100) : 0;
-      var haPct = 100 - hpPct;
-      document.getElementById('distHP').textContent = (hp * ns).toFixed(0) + ' hrs';
-      document.getElementById('distHPpct').textContent = '(' + hpPct + '%)';
-      document.getElementById('distHA').textContent = (ha * ns).toFixed(0) + ' hrs';
-      document.getElementById('distHApct').textContent = '(' + haPct + '%)';
+      var hsTotal = hs * ns;
+      var hasTotal = has * ns;
+      var hautTotal = haut * ns;
+      var hsPct = total > 0 ? Math.round(hsTotal / total * 100) : 0;
+      var hasPct = total > 0 ? Math.round(hasTotal / total * 100) : 0;
+      var hautPct = total > 0 ? (100 - hsPct - hasPct) : 0;
+      document.getElementById('distHS').textContent = hsTotal.toFixed(0) + ' hrs';
+      document.getElementById('distHSpct').textContent = '(' + hsPct + '%)';
+      document.getElementById('distHAs').textContent = hasTotal.toFixed(0) + ' hrs';
+      document.getElementById('distHAspct').textContent = '(' + hasPct + '%)';
+      document.getElementById('distHAut').textContent = hautTotal.toFixed(0) + ' hrs';
+      document.getElementById('distHAutpct').textContent = '(' + hautPct + '%)';
       document.getElementById('distTotal').textContent = total.toFixed(0) + ' hrs';
 
       // Donut
-      renderDonut(hp * ns, ha * ns);
+      renderDonut(hsTotal, hasTotal, hautTotal);
 
       // Semaforo carga semanal
       renderSemaforo(weekly);
@@ -1011,18 +959,19 @@
       renderWeeklyBars(weekly, ns);
     }
 
-    function renderDonut(hpTotal, haTotal) {
+    function renderDonut(hsTotal, hasTotal, hautTotal) {
       var svg = document.getElementById('donutChart');
       svg.querySelectorAll('.donut-seg').forEach(function(s) { s.remove(); });
       svg.querySelectorAll('.center-txt').forEach(function(s) { s.remove(); });
 
-      var total = hpTotal + haTotal;
+      var total = hsTotal + hasTotal + hautTotal;
       if (total === 0) return;
       var circ = 2 * Math.PI * 70;
 
       var segments = [
-        { val: hpTotal, color: '#0033A1' },
-        { val: haTotal, color: '#059669' }
+        { val: hsTotal, color: '#0033A1' },
+        { val: hasTotal, color: '#7C3AED' },
+        { val: hautTotal, color: '#059669' }
       ];
       var offset = 0;
       segments.forEach(function(seg) {
@@ -1110,10 +1059,12 @@
     // Etapa 3: Presentacion
     // ================================
     function updatePresentation() {
-      var hp = parseFloat(document.getElementById('hp').value) || 0;
-      var ha = parseFloat(document.getElementById('ha').value) || 0;
+      var hs = parseFloat(document.getElementById('hs') ? document.getElementById('hs').value : 0) || 0;
+      var has = parseFloat(document.getElementById('has') ? document.getElementById('has').value : 0) || 0;
+      var haut = parseFloat(document.getElementById('haut') ? document.getElementById('haut').value : 0) || 0;
       var ns = parseInt(document.getElementById('ns').value) || 1;
-      var total = (hp + ha) * ns;
+      var weekly = hs + has + haut;
+      var total = weekly * ns;
       var sctExact = total / 27;
       var sct = Math.ceil(sctExact);
 
@@ -1127,17 +1078,18 @@
       document.getElementById('printProfile').textContent = profileMap[profile ? profile.value : 'pregrado'] || '\u2014';
 
       document.getElementById('printSCT').textContent = sct;
-      document.getElementById('printFormula').textContent = '((' + hp + ' + ' + ha + ') \u00d7 ' + ns + ') \u00f7 27 = ' + sctExact.toFixed(3) + ' \u2192 ' + sct;
+      document.getElementById('printFormula').textContent = '((' + hs + ' + ' + has + ' + ' + haut + ') \u00d7 ' + ns + ') \u00f7 27 = ' + sctExact.toFixed(3) + ' \u2192 ' + sct;
 
       // Tabla trazabilidad
       var rows = [
-        { entrada: 'Horas sincr\u00f3nicas por semana (HP)', proc: 'Dato declarado por el acad\u00e9mico', resultado: 'Par\u00e1metro de entrada', valor: hp + ' hrs/sem' },
-        { entrada: 'Horas aut\u00f3nomas por semana (HA)', proc: 'Dato declarado por el acad\u00e9mico', resultado: 'Par\u00e1metro de entrada', valor: ha + ' hrs/sem' },
+        { entrada: 'Horas sincr\u00f3nicas por semana (HS)', proc: 'Dato declarado', resultado: 'Par\u00e1metro de entrada', valor: hs + ' hrs/sem' },
+        { entrada: 'Horas asincr\u00f3nicas por semana (HAs)', proc: 'Dato declarado', resultado: 'Par\u00e1metro de entrada', valor: has + ' hrs/sem' },
+        { entrada: 'Horas trabajo aut\u00f3nomo por semana (HAut)', proc: 'Dato declarado', resultado: 'Par\u00e1metro de entrada', valor: haut + ' hrs/sem' },
         { entrada: 'N\u00famero de semanas (NS)', proc: 'Duraci\u00f3n del m\u00f3dulo', resultado: 'Par\u00e1metro de entrada', valor: ns + ' semanas' },
-        { entrada: 'HP + HA (carga por semana)', proc: hp + ' + ' + ha, resultado: 'Carga semanal total', valor: (hp + ha).toFixed(1) + ' hrs/sem' },
-        { entrada: '(HP + HA) \u00d7 NS (horas totales)', proc: '(' + (hp + ha).toFixed(1) + ') \u00d7 ' + ns, resultado: 'Total horas semestre', valor: total.toFixed(1) + ' hrs' },
+        { entrada: 'HS + HAs + HAut (carga semanal)', proc: hs + ' + ' + has + ' + ' + haut, resultado: 'Carga semanal total', valor: weekly.toFixed(1) + ' hrs/sem' },
+        { entrada: '(HS + HAs + HAut) \u00d7 NS (horas totales)', proc: '(' + weekly.toFixed(1) + ') \u00d7 ' + ns, resultado: 'Total horas semestre', valor: total.toFixed(1) + ' hrs' },
         { entrada: 'Divisi\u00f3n entre 27 (valor exacto)', proc: total.toFixed(1) + ' \u00f7 27', resultado: 'SCT sin redondear', valor: sctExact.toFixed(3) },
-        { entrada: 'Redondeo al entero superior', proc: 'Math.ceil(' + sctExact.toFixed(3) + ')', resultado: '<strong>SCT final asignado</strong>', valor: '<strong>' + sct + ' SCT</strong>' },
+        { entrada: 'Redondeo al entero superior (ceil)', proc: 'Math.ceil(' + sctExact.toFixed(3) + ')', resultado: '<strong>SCT final asignado</strong>', valor: '<strong>' + sct + ' SCT</strong>' },
       ];
       document.getElementById('trazabilidadBody').innerHTML = rows.map(function(r) {
         return '<tr><td class="text-gray-600">' + r.entrada + '</td><td class="font-mono text-xs text-gray-500">' + r.proc + '</td><td>' + r.resultado + '</td><td class="text-right font-semibold">' + r.valor + '</td></tr>';
@@ -1148,56 +1100,22 @@
     // Etapa 4: Verificacion
     // ================================
     function runVerification() {
-      var hp = parseFloat(document.getElementById('hp').value) || 0;
-      var ha = parseFloat(document.getElementById('ha').value) || 0;
+      var hs = parseFloat(document.getElementById('hs') ? document.getElementById('hs').value : 0) || 0;
+      var has = parseFloat(document.getElementById('has') ? document.getElementById('has').value : 0) || 0;
+      var haut = parseFloat(document.getElementById('haut') ? document.getElementById('haut').value : 0) || 0;
       var ns = parseInt(document.getElementById('ns').value) || 1;
-      var weekly = hp + ha;
+      var weekly = hs + has + haut;
       var profile = document.querySelector('#profileSelector input[type=radio]:checked');
       var profileVal = profile ? profile.value : 'pregrado';
 
-      // Encuesta total
-      var encWeekly = 0;
-      ENCUESTA_TIPOS.forEach(function(t) {
-        var el = document.getElementById(t.id);
-        if (el) encWeekly += parseFloat(el.value) || 0;
-      });
-      var encTotal = encWeekly * ns;
-      var declared = (hp + ha) * ns;
-      var diff = Math.abs(encTotal - declared);
-      var diffPct = declared > 0 ? diff / declared : 0;
-
-      // Actualizar stats verificacion
-      document.getElementById('verEncTotal').textContent = encTotal.toFixed(1);
-      document.getElementById('verDeclared').textContent = declared.toFixed(1);
-      var diffEl = document.getElementById('verDiff');
-      var diffVal = encTotal - declared;
-      diffEl.textContent = (diffVal >= 0 ? '+' : '') + diffVal.toFixed(1);
-      diffEl.style.color = diffPct <= 0.1 ? '#059669' : '#DC2626';
-
-      // Badge consistencia encuesta
-      var encBadge = document.getElementById('encConsistBadge');
-      if (diffPct <= 0.1) {
-        encBadge.textContent = 'Consistente';
-        encBadge.className = 'text-xs px-2 py-1 rounded-full font-semibold badge-verde';
-      } else if (diffPct <= 0.25) {
-        encBadge.textContent = 'Diferencia leve';
-        encBadge.className = 'text-xs px-2 py-1 rounded-full font-semibold badge-amarillo';
-      } else {
-        encBadge.textContent = 'Inconsistente';
-        encBadge.className = 'text-xs px-2 py-1 rounded-full font-semibold badge-rojo';
-      }
-      document.getElementById('encConsistDetail').textContent = diffPct <= 0.1
-        ? 'La encuesta docente es consistente con los totales HP+HA declarados (diferencia \u226410%).'
-        : 'La encuesta docente difiere ' + Math.round(diffPct * 100) + '% de los totales HP+HA. Revisar si las horas por actividad suman correctamente.';
-
       // Checks
-      var syncPct = (hp + ha) > 0 ? hp / (hp + ha) : 0;
+      var syncPct = weekly > 0 ? hs / weekly : 0;
+      var asyncPct = weekly > 0 ? has / weekly : 0;
+      var autPct = weekly > 0 ? haut / weekly : 0;
       var syncOk = profileVal === 'postgrado' ? syncPct <= 0.5 : syncPct >= 0.15;
       var weeklyOk = weekly <= 12;
       var weeklyRecomOk = weekly <= 10;
-      var encOk = diffPct <= 0.1;
-      var haRatio = (hp + ha) > 0 ? ha / (hp + ha) : 0;
-      var autonomyOk = profileVal === 'postgrado' ? haRatio >= 0.5 : true;
+      var autOk = autPct >= 0.25 && autPct <= 0.40;
 
       var checks = [
         {
@@ -1217,13 +1135,13 @@
           label: profileVal === 'postgrado'
             ? 'Balance sincr\u00f3nico para postgrado (\u226450% sincr\u00f3nico)'
             : 'Componente sincr\u00f3nica para pregrado (\u226515%)',
-          desc: 'Sincr\u00f3nico actual: ' + Math.round(syncPct * 100) + '%. ' + (profileVal === 'postgrado' ? 'Profesionales adultos necesitan m\u00e1s flexibilidad asincr\u00f3nica.' : 'Estudiantes de pregrado necesitan acompa\u00f1amiento sincr\u00f3nico.')
+          desc: 'Sincr\u00f3nico (HS) actual: ' + Math.round(syncPct * 100) + '%. ' + (profileVal === 'postgrado' ? 'Profesionales adultos necesitan m\u00e1s flexibilidad asincr\u00f3nica.' : 'Estudiantes de pregrado necesitan acompa\u00f1amiento sincr\u00f3nico.')
         },
         {
-          ok: encOk,
-          label: 'Consistencia encuesta docente (\u226410% diferencia)',
-          desc: 'Diferencia entre encuesta y totales HP+HA: ' + Math.round(diffPct * 100) + '%.'
-        }
+          ok: autOk,
+          label: 'Proporci\u00f3n de trabajo aut\u00f3nomo (HAut entre 25\u201340%)',
+          desc: 'HAut actual: ' + Math.round(autPct * 100) + '% de la carga total. La normativa institucional sugiere aproximadamente un tercio de la carga total (25\u201340%).'
+        },
       ];
 
       document.getElementById('checksContainer').innerHTML = checks.map(function(ch) {
@@ -1277,9 +1195,10 @@
       var recs = [];
       if (!weeklyOk) recs.push('Reducir la carga semanal por debajo de 12 hrs/semana. Opciones: aumentar el n\u00famero de semanas, reducir actividades o redistribuir la carga.');
       else if (!weeklyRecomOk) recs.push('La carga est\u00e1 entre 10 y 12 hrs/semana. Evaluar si es sostenible para el perfil de estudiantes (especialmente postgrado).');
-      if (!syncOk && profileVal === 'postgrado') recs.push('Para postgrado, se recomienda que el componente sincr\u00f3nico no supere el 50%. Reducir HP o aumentar HA.');
-      if (!syncOk && profileVal !== 'postgrado') recs.push('Para pregrado, se recomienda al menos un 15% de horas sincr\u00f3nicas para acompa\u00f1amiento.');
-      if (!encOk) recs.push('La encuesta docente no coincide con los totales HP+HA. Revisar que la suma de actividades en la encuesta iguale las horas declaradas.');
+      if (!syncOk && profileVal === 'postgrado') recs.push('Para postgrado, se recomienda que el componente sincr\u00f3nico (HS) no supere el 50%. Reducir HS o aumentar HAs/HAut.');
+      if (!syncOk && profileVal !== 'postgrado') recs.push('Para pregrado, se recomienda al menos un 15% de horas sincr\u00f3nicas (HS) para acompa\u00f1amiento.');
+      if (!autOk && autPct < 0.25) recs.push('El trabajo aut\u00f3nomo (HAut) es menor al recomendado. La normativa institucional sugiere que sea aproximadamente un tercio de la carga total.');
+      if (!autOk && autPct > 0.40) recs.push('El trabajo aut\u00f3nomo (HAut) supera el 40%. Verificar que haya suficiente interacci\u00f3n docente (HS + HAs).');
       if (recs.length === 0) recs.push('No hay recomendaciones cr\u00edticas. El dise\u00f1o cumple con los est\u00e1ndares institucionales. Exportar el informe de la Etapa 3 para adjuntar al PAC.');
 
       var recsSection = document.getElementById('recsSection');
@@ -1338,8 +1257,9 @@
       document.getElementById('courseCode').value = '';
       document.getElementById('programName').value = '';
       document.getElementById('semester').value = '';
-      document.getElementById('hp').value = 2;
-      document.getElementById('ha').value = 2.5;
+      if (document.getElementById('hs')) document.getElementById('hs').value = 1.5;
+      if (document.getElementById('has')) document.getElementById('has').value = 2;
+      if (document.getElementById('haut')) document.getElementById('haut').value = 1;
       document.getElementById('ns').value = 18;
       document.getElementById('sctDeclarados').value = 3;
       document.querySelectorAll('#profileSelector .radio-card').forEach(function(c, i) {
@@ -1352,7 +1272,6 @@
         var r = c.querySelector('input');
         if (r) r.checked = i === 0;
       });
-      renderEncuesta();
       updatePreview();
       goToStep(1);
     };
