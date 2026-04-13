@@ -286,6 +286,7 @@
           </div>
           <h1 class="font-heading text-3xl md:text-4xl font-extrabold mb-3 leading-tight">Sistema QA &mdash; Evaluaci&oacute;n<br class="hidden sm:block"> de Cursos Virtuales</h1>
           <p class="text-white/70 text-base max-w-xl">Eval&uacute;a la calidad de un curso ya implementado en Moodle. 77 indicadores en 6 dimensiones &mdash; el sistema analiza y recomienda; el equipo instruccional decide. <strong class="text-white/90">No crea ni modifica nada en Moodle.</strong></p>
+          <p class="text-white/60 text-sm max-w-xl mt-2">El QA no es una revisi&oacute;n de &uacute;nica vez: opera en <strong class="text-white/80">tres fases</strong>. Antes de implementar el curso en Moodle (QA Preventivo), despu&eacute;s de construirlo pero antes de abrirlo a estudiantes (QA de Implementaci&oacute;n), y durante la operaci&oacute;n activa del semestre (QA de Operaci&oacute;n). Este ciclo de tres momentos garantiza calidad continua y genera retroalimentaci&oacute;n para mejorar el dise&ntilde;o del siguiente per&iacute;odo.</p>
           <div class="flex flex-wrap gap-3 mt-4">
             <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-white/70 bg-white/10 rounded-lg px-3 py-1.5">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -322,6 +323,144 @@
       </div>
     </div>
   </div>
+
+  <!-- Fases del sistema QA -->
+  <section class="bg-white border-b border-gray-100 py-8">
+    <div class="max-w-7xl mx-auto px-6">
+      <p class="text-xs font-bold uppercase tracking-widest mb-5" style="color: #0033A1;">&iquest;C&oacute;mo funciona el sistema QA?</p>
+      <div class="grid sm:grid-cols-3 gap-4">
+
+        <!-- Fase 1: QA Preventivo -->
+        <div class="rounded-xl border border-gray-200 bg-gray-50 p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-extrabold flex items-center justify-center flex-shrink-0">1</span>
+            <div>
+              <p class="font-semibold text-sm text-gray-900">QA Preventivo</p>
+              <p class="text-xs text-gray-400">Antes de implementar en Moodle</p>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 leading-relaxed mb-3">Corre autom&aacute;ticamente cuando el Diseñador Instruccional (DI) completa el Planificador Curricular. El sistema verifica 8 condiciones directamente desde el plan: si el contenido pasivo supera el 60&nbsp;%, si hay al menos una actividad colaborativa, si la carga semanal es coherente con los cr&eacute;ditos SCT declarados, y si existe balance entre modalidades s&iacute;ncrona y as&iacute;ncrona.</p>
+          <p class="text-xs text-gray-500 italic">Si el sem&aacute;foro es rojo, el bot&oacute;n de exportar el plan queda bloqueado hasta corregir las brechas cr&iacute;ticas.</p>
+        </div>
+
+        <!-- Fase 2: QA de Implementación -->
+        <div class="rounded-xl border border-gray-200 bg-gray-50 p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 rounded-full bg-amber-100 text-amber-700 text-xs font-extrabold flex items-center justify-center flex-shrink-0">2</span>
+            <div>
+              <p class="font-semibold text-sm text-gray-900">QA de Implementaci&oacute;n</p>
+              <p class="text-xs text-gray-400">Curso construido, antes de abrir a estudiantes</p>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 leading-relaxed mb-3">El sistema consulta la API de Moodle y ejecuta 10 verificaciones de calidad de configuraci&oacute;n: que las tareas tengan fecha de entrega, que los foros tengan instrucciones de m&aacute;s de 100 caracteres, que el libro de calificaciones est&eacute; visible, que los videos de YouTube tengan subt&iacute;tulos activados (par&aacute;metro <code class="text-xs bg-gray-100 px-1 rounded">cc_load_policy=1</code>), y que las tareas evaluadas tengan r&uacute;brica o criterios de calificaci&oacute;n. Tambi&eacute;n detecta discrepancias entre lo planificado en el PIAC y lo que existe en Moodle.</p>
+          <p class="text-xs text-gray-500 italic">52 de los 77 indicadores pueden verificarse autom&aacute;ticamente v&iacute;a API. Los 25 restantes requieren revisi&oacute;n humana.</p>
+        </div>
+
+        <!-- Fase 3: QA de Operación -->
+        <div class="rounded-xl border border-gray-200 bg-gray-50 p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 rounded-full bg-green-100 text-green-700 text-xs font-extrabold flex items-center justify-center flex-shrink-0">3</span>
+            <div>
+              <p class="font-semibold text-sm text-gray-900">QA de Operaci&oacute;n</p>
+              <p class="text-xs text-gray-400">Durante el semestre activo</p>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 leading-relaxed mb-3">Mientras el curso est&aacute; en marcha, el sistema monitorea indicadores en tiempo real: tasa de completion por actividad (alerta si cae bajo el 30&nbsp;%), distribuci&oacute;n de calificaciones (alerta si m&aacute;s del 40&nbsp;% reprueba), tiempo de retroalimentaci&oacute;n del docente (alerta si supera 7 d&iacute;as h&aacute;biles) y participaci&oacute;n en foros. Estos datos alimentan el panel de Alertas y se complementan con los hallazgos del Auditor Acad&eacute;mico autom&aacute;tico.</p>
+          <p class="text-xs text-gray-500 italic">Al cierre del semestre, el sistema genera un informe de retroalimentaci&oacute;n que orienta el redise&ntilde;o para el per&iacute;odo siguiente.</p>
+        </div>
+
+      </div>
+
+      <!-- Auditor Académico connection -->
+      <div class="mt-5 rounded-xl border border-indigo-100 bg-indigo-50 p-4 flex gap-3 items-start">
+        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #4F46E5;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        <div>
+          <p class="text-sm font-semibold text-indigo-900 mb-1">Conexi&oacute;n con el Auditor Acad&eacute;mico</p>
+          <p class="text-sm text-indigo-800 leading-relaxed">El QA de Operaci&oacute;n se alimenta de un Auditor Acad&eacute;mico autom&aacute;tico que se ejecuta cada noche y verifica 18 reglas acad&eacute;micas (PA.01 a PA.18), entre ellas: docente sin acceso m&aacute;s de 14 d&iacute;as (PA.02), sin evaluaci&oacute;n sumativa en semana 5 (PA.01), estudiantes sin retroalimentaci&oacute;n en semana 7 (PA.14), y gradebook oculto (PA.06). Cada hallazgo se clasifica por severidad y se escala a la dimensi&oacute;n QA correspondiente, alimentando el panel de Alertas de este sistema.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================================================
+       GENEALOGÍA DEL MARCO
+  ================================================ -->
+  <section class="bg-white border-b border-gray-100 py-8">
+    <div class="max-w-7xl mx-auto px-6">
+      <p class="text-xs font-bold uppercase tracking-widest mb-5" style="color: #0033A1;">Genealog&iacute;a del marco evaluativo</p>
+
+      <!-- Flow -->
+      <div class="grid sm:grid-cols-4 gap-0 mb-6">
+        <!-- Step 1 -->
+        <div class="relative">
+          <div class="rounded-xl border border-blue-200 bg-blue-50 p-4 h-full">
+            <p class="text-xs font-bold uppercase tracking-widest text-blue-600 mb-1">Referente internacional</p>
+            <p class="font-semibold text-sm text-gray-900 mb-1">OSCQR &mdash; SUNY</p>
+            <p class="text-xs text-gray-600 leading-relaxed">Est&aacute;ndar de c&oacute;digo abierto (CC BY 4.0). 50 est&aacute;ndares en 6 categor&iacute;as para cursos en l&iacute;nea. Elegido sobre Quality Matters por ser abierto y orientado a la mejora continua, no a la certificaci&oacute;n punitiva.</p>
+          </div>
+          <div class="hidden sm:flex absolute top-1/2 -right-3 -translate-y-1/2 z-10">
+            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="relative mt-3 sm:mt-0 sm:pl-6">
+          <div class="rounded-xl border border-violet-200 bg-violet-50 p-4 h-full">
+            <p class="text-xs font-bold uppercase tracking-widest text-violet-600 mb-1">Adaptaci&oacute;n contextual</p>
+            <p class="font-semibold text-sm text-gray-900 mb-1">Sep&uacute;lveda Parrini, P. (2024)</p>
+            <p class="text-xs text-gray-600 leading-relaxed">Proyecto UMC20992. An&aacute;lisis comparado de 25 modelos de educaci&oacute;n virtual. OSCQR se adapta al contexto institucional UMCE y se a&ntilde;aden dos dimensiones propias (D5 y D6) ausentes en cualquier est&aacute;ndar internacional. Resultado: 77 indicadores en 6 dimensiones, escala 0&ndash;4.</p>
+          </div>
+          <div class="hidden sm:flex absolute top-1/2 -right-3 -translate-y-1/2 z-10">
+            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="relative mt-3 sm:mt-0 sm:pl-6">
+          <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 h-full">
+            <p class="text-xs font-bold uppercase tracking-widest text-amber-600 mb-1">Validaci&oacute;n</p>
+            <p class="font-semibold text-sm text-gray-900 mb-1">Pilotaje nov&ndash;dic 2024</p>
+            <p class="text-xs text-gray-600 leading-relaxed">Marco evaluativo validado con 5 cursos de posgrado UMCE e informantes clave de &aacute;reas acad&eacute;micas. Es el &uacute;nico instrumento evaluativo nacional que integra perspectiva de g&eacute;nero y corresponsabilidad junto a est&aacute;ndares internacionales.</p>
+          </div>
+          <div class="hidden sm:flex absolute top-1/2 -right-3 -translate-y-1/2 z-10">
+            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="relative mt-3 sm:mt-0 sm:pl-6">
+          <div class="rounded-xl border border-green-200 bg-green-50 p-4 h-full">
+            <p class="text-xs font-bold uppercase tracking-widest text-green-600 mb-1">Instrumento institucional</p>
+            <p class="font-semibold text-sm text-gray-900 mb-1">Mesa 1 de Virtualizaci&oacute;n 2026</p>
+            <p class="text-xs text-gray-600 leading-relaxed">La Mesa 1 adopt&oacute; el marco como instrumento oficial de aseguramiento de calidad UMCE y lo operacionaliz&oacute; en este sistema digital, habilitando evaluaci&oacute;n autom&aacute;tica via API Moodle e informe de mejora.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary row -->
+      <div class="rounded-xl border border-gray-200 bg-gray-50 p-4 flex flex-wrap gap-6 items-center text-sm text-gray-600">
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-gray-900 text-lg">77</span>
+          <span class="text-xs text-gray-500">indicadores<br>en 6 dimensiones</span>
+        </div>
+        <div class="w-px h-8 bg-gray-300 hidden sm:block"></div>
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-gray-900 text-lg">0&ndash;4</span>
+          <span class="text-xs text-gray-500">escala<br>Likert</span>
+        </div>
+        <div class="w-px h-8 bg-gray-300 hidden sm:block"></div>
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-gray-900 text-lg">+2</span>
+          <span class="text-xs text-gray-500">dimensiones propias<br>D5 y D6</span>
+        </div>
+        <div class="w-px h-8 bg-gray-300 hidden sm:block"></div>
+        <div class="text-xs text-gray-500 leading-relaxed">
+          D1&ndash;D4 adaptadas de OSCQR (SUNY). D5 (Perspectiva de g&eacute;nero y equidad) y D6 (Corresponsabilidad social y cuidados digitales) son aportaciones originales UMCE sin equivalente en ning&uacute;n est&aacute;ndar internacional.
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- Mobile tab bar -->
   <div class="qa-tabs-mobile sticky top-20 z-20">
@@ -373,7 +512,7 @@
         <div class="bg-gray-50 rounded-xl p-3 text-xs text-gray-500">
           <p class="font-semibold text-gray-700 mb-1">Marco evaluativo</p>
           <p>77 indicadores &bull; 6 dimensiones &bull; Escala 0&ndash;4</p>
-          <p class="mt-1 text-gray-400">Sepu&uacute;lveda, 2024 &mdash; UMC20992</p>
+          <p class="mt-1 text-gray-400">Sep&uacute;lveda Parrini, P. (2024) &mdash; UMC20992</p>
         </div>
       </div>
     </aside>
@@ -418,7 +557,7 @@
               Analizar
             </button>
           </div>
-          <p class="text-xs text-gray-400 mt-2">Modo demo activo &mdash; los resultados son simulados para ilustrar el sistema.</p>
+          <p class="text-xs text-gray-400 mt-2"><strong class="text-gray-600">Modo demo activo:</strong> los resultados son simulados para ilustrar el sistema. En funcionamiento real, el sistema lee el curso de Moodle v&iacute;a API, analiza su estructura contra los 77 indicadores, cruza el PIAC vinculado y genera un informe accionable con recomendaciones espec&iacute;ficas por dimensi&oacute;n.</p>
         </div>
 
         <!-- Loading state (hidden by default) -->
@@ -515,6 +654,89 @@
           </div>
 
         </div><!-- /results-container -->
+
+        <!-- Descripción profunda de las 6 dimensiones -->
+        <div class="mt-6">
+          <h3 class="font-heading font-bold text-base text-gray-900 mb-1">Qu&eacute; eval&uacute;a cada dimensi&oacute;n</h3>
+          <p class="text-sm text-gray-500 mb-4">Cada dimensi&oacute;n agrupa indicadores con un enfoque tem&aacute;tico definido. A continuaci&oacute;n se describe qu&eacute; se eval&uacute;a, por qu&eacute; importa y c&oacute;mo se conecta con el modelo educativo UMCE.</p>
+
+          <div class="space-y-4">
+
+            <!-- D1 -->
+            <div class="bg-white rounded-xl border border-gray-200 p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-content-center flex-shrink-0" style="background: #0033A1;">D1</span>
+                <h4 class="font-heading font-bold text-sm text-gray-900">Experiencia de Interacci&oacute;n con la Plataforma</h4>
+                <span class="text-xs text-gray-400 ml-auto">18 indicadores &bull; 4 subdimensiones</span>
+              </div>
+              <p class="text-sm text-gray-600 leading-relaxed">Eval&uacute;a c&oacute;mo el estudiante experimenta el entorno Moodle desde el primer acceso: si la navegaci&oacute;n es clara, si la estructura del curso refleja una progresi&oacute;n l&oacute;gica semana a semana, si el libro de calificaciones est&aacute; visible, y si los recursos cargan sin barreras t&eacute;cnicas. Indicadores concretos incluyen la presencia de instrucciones de uso del entorno, la consistencia visual con la identidad UMCE y la regularidad de la comunicaci&oacute;n en el f&oacute;rum de novedades. Un curso bien estructurado reduce la carga cognitiva extra&ntilde;a y permite que el estudiante enfoque su atenci&oacute;n en el aprendizaje, no en encontrar los materiales. En el modelo educativo UMCE, esta dimensi&oacute;n es la condici&oacute;n de base: si la plataforma no es usable, ninguna otra dimensi&oacute;n puede compensarlo.</p>
+              <p class="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100">Adaptada de las categor&iacute;as de dise&ntilde;o del entorno del est&aacute;ndar OSCQR (SUNY) al contexto institucional UMCE &mdash; Sep&uacute;lveda Parrini, P. (2024)</p>
+            </div>
+
+            <!-- D2 -->
+            <div class="bg-white rounded-xl border border-gray-200 p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center flex-shrink-0" style="background: #059669;">D2</span>
+                <h4 class="font-heading font-bold text-sm text-gray-900">Accesibilidad</h4>
+                <span class="text-xs text-gray-400 ml-auto">17 indicadores &bull; 4 subdimensiones</span>
+              </div>
+              <p class="text-sm text-gray-600 leading-relaxed">Verifica que los contenidos sean accesibles para estudiantes con distintas necesidades: si los videos tienen subt&iacute;tulos o transcripci&oacute;n, si las im&aacute;genes tienen texto alternativo descriptivo, si los documentos est&aacute;n en formato accesible (PDF etiquetado o Word), y si el contraste de colores cumple el est&aacute;ndar WCAG AA. El sistema detecta autom&aacute;ticamente videos de YouTube sin el par&aacute;metro de subt&iacute;tulos activado, y archivos en formato .pptx que requieren software espec&iacute;fico. Esta dimensi&oacute;n es cr&iacute;tica en el contexto universitario chileno porque el 8&ndash;10&nbsp;% de los estudiantes presenta alguna condici&oacute;n de discapacidad sensorial o cognitiva. El principio de Dise&ntilde;o Universal para el Aprendizaje (DUA) establece que una buena accesibilidad beneficia a todos los estudiantes, no solo a quienes tienen discapacidad declarada.</p>
+              <p class="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100">Adaptada de los est&aacute;ndares de accesibilidad del est&aacute;ndar OSCQR (SUNY) al contexto institucional UMCE &mdash; Sep&uacute;lveda Parrini, P. (2024)</p>
+            </div>
+
+            <!-- D3 -->
+            <div class="bg-white rounded-xl border border-gray-200 p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center flex-shrink-0" style="background: #7C3AED;">D3</span>
+                <h4 class="font-heading font-bold text-sm text-gray-900">Coherencia Did&aacute;ctica</h4>
+                <span class="text-xs text-gray-400 ml-auto">16 indicadores &bull; 5 subdimensiones</span>
+              </div>
+              <p class="text-sm text-gray-600 leading-relaxed">Es la dimensi&oacute;n de mayor complejidad pedag&oacute;gica: eval&uacute;a si lo que el curso declara que ense&ntilde;ar&aacute; (resultados de aprendizaje del PIAC) guarda coherencia con c&oacute;mo lo ense&ntilde;a (actividades) y c&oacute;mo lo eval&uacute;a (instrumentos y criterios). Indicadores clave: si los objetivos de aprendizaje son visibles por secci&oacute;n, si las evaluaciones sumativas tienen r&uacute;brica, si existe al menos una evaluaci&oacute;n formativa, si la proporci&oacute;n de contenido pasivo no supera el 60&nbsp;%, y si la carga de actividades es consistente con los cr&eacute;ditos SCT declarados. Este &uacute;ltimo punto conecta directamente con el Planificador Curricular: el QA de Implementaci&oacute;n cruza el plan M3 contra lo que realmente existe en Moodle, detectando n&uacute;cleos del PIAC que no tienen actividades asociadas. La coherencia did&aacute;ctica es el coraz&oacute;n del marco evaluativo porque determina si el dise&ntilde;o del curso realmente puede producir los aprendizajes comprometidos con el estudiante.</p>
+              <p class="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100">Adaptada de los est&aacute;ndares de dise&ntilde;o instruccional y evaluaci&oacute;n del est&aacute;ndar OSCQR (SUNY) al contexto institucional UMCE &mdash; Sep&uacute;lveda Parrini, P. (2024)</p>
+            </div>
+
+            <!-- D4 -->
+            <div class="bg-white rounded-xl border border-gray-200 p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center flex-shrink-0" style="background: #D97706;">D4</span>
+                <h4 class="font-heading font-bold text-sm text-gray-900">Competencias para la Docencia Virtual</h4>
+                <span class="text-xs text-gray-400 ml-auto">7 indicadores &bull; 2 subdimensiones</span>
+              </div>
+              <p class="text-sm text-gray-600 leading-relaxed">Eval&uacute;a la presencia y el desempe&ntilde;o del docente en el aula virtual: frecuencia de acceso al curso, tiempo de respuesta a consultas de los estudiantes, calidad y oportunidad de la retroalimentaci&oacute;n en tareas, y documentaci&oacute;n de las sesiones s&iacute;ncronas mediante grabaciones accesibles. El QA de Operaci&oacute;n monitorea si el docente accede al curso con regularidad &mdash;la ausencia por m&aacute;s de 14 d&iacute;as genera una alerta cr&iacute;tica&mdash; y si la retroalimentaci&oacute;n de tareas se entrega antes de los 7 d&iacute;as h&aacute;biles. La presencia docente activa no solo tiene un efecto motivacional demostrado en la retenci&oacute;n estudiantil; en el contexto de la UMCE, donde muchos estudiantes trabajan y tienen responsabilidades familiares, saber que el docente est&aacute; presente reduce significativamente la sensaci&oacute;n de abandono en los momentos de dificultad.</p>
+              <p class="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100">Adaptada de los est&aacute;ndares de presencia e interacci&oacute;n docente del est&aacute;ndar OSCQR (SUNY) al contexto institucional UMCE &mdash; Sep&uacute;lveda Parrini, P. (2024)</p>
+            </div>
+
+            <!-- D5 -->
+            <div class="bg-white rounded-xl border border-pink-100 p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center flex-shrink-0" style="background: #DB2777;">D5</span>
+                <h4 class="font-heading font-bold text-sm text-gray-900">Perspectiva de G&eacute;nero y Equidad</h4>
+                <span class="text-xs text-gray-400 ml-auto">11 indicadores &bull; 2 subdimensiones</span>
+              </div>
+              <p class="text-sm text-gray-600 leading-relaxed">Verifica que el dise&ntilde;o del curso no reproduzca sesgos de g&eacute;nero ni desigualdades en sus contenidos, lenguaje y representaciones. Los indicadores eval&uacute;an: si los enunciados de actividades usan lenguaje incluyente (evitando el gen&eacute;rico masculino exclusivo), si la bibliograf&iacute;a obligatoria incluye autor&iacute;as de mujeres y disidencias, si los ejemplos y casos de estudio representan diversidad de sujetos, y si los recursos visuales evitan estereotipos de g&eacute;nero. Esta dimensi&oacute;n no es evaluable autom&aacute;ticamente &mdash;requiere revisi&oacute;n humana del equipo de Dise&ntilde;o Instruccional&mdash; y es transversal a la pol&iacute;tica institucional de equidad de la UMCE.</p>
+              <div class="mt-3 pt-3 border-t border-pink-100 bg-pink-50 rounded-lg px-3 py-2">
+                <p class="text-xs font-semibold text-pink-700 mb-0.5">Aportaci&oacute;n original UMCE</p>
+                <p class="text-xs text-pink-600">D5 no tiene equivalente en OSCQR ni en ning&uacute;n otro est&aacute;ndar internacional de calidad para cursos en l&iacute;nea. Es una dimensi&oacute;n propia creada por Sep&uacute;lveda Parrini (2024) a partir de las pol&iacute;ticas institucionales de equidad de la UMCE y el an&aacute;lisis comparado de 25 modelos de educaci&oacute;n virtual.</p>
+              </div>
+            </div>
+
+            <!-- D6 -->
+            <div class="bg-white rounded-xl border border-red-100 p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center flex-shrink-0" style="background: #DC2626;">D6</span>
+                <h4 class="font-heading font-bold text-sm text-gray-900">Corresponsabilidad Social y Cuidados Digitales</h4>
+                <span class="text-xs text-gray-400 ml-auto">8 indicadores &bull; 3 subdimensiones</span>
+              </div>
+              <p class="text-sm text-gray-600 leading-relaxed">Eval&uacute;a si el curso reconoce que los estudiantes existen fuera del aula virtual y tienen vidas complejas: si la carga acad&eacute;mica es coherente con los cr&eacute;ditos SCT comprometidos, si los avisos y cambios de fechas se comunican con antelaci&oacute;n suficiente, si existe una pol&iacute;tica visible de flexibilidad o extensi&oacute;n de plazo para situaciones excepcionales, y si los plazos de entrega no se concentran en el mismo d&iacute;a generando picos de carga insostenibles. En el pilotaje de 2024, esta fue la dimensi&oacute;n con puntajes m&aacute;s bajos en los 5 cursos evaluados (promedio 1.0/4.0), reflejando una brecha estructural en el dise&ntilde;o de cursos virtuales UMCE que el modelo instruccional busca corregir sistem&aacute;ticamente.</p>
+              <div class="mt-3 pt-3 border-t border-red-100 bg-red-50 rounded-lg px-3 py-2">
+                <p class="text-xs font-semibold text-red-700 mb-0.5">Aportaci&oacute;n original UMCE</p>
+                <p class="text-xs text-red-600">D6 no tiene equivalente en OSCQR ni en ning&uacute;n otro est&aacute;ndar internacional de calidad para cursos en l&iacute;nea. Es una dimensi&oacute;n propia creada por Sep&uacute;lveda Parrini (2024) que incorpora la perspectiva de corresponsabilidad y bienestar digital como condici&oacute;n de calidad del dise&ntilde;o instructivo, coherente con el perfil del estudiantado UMCE.</p>
+              </div>
+            </div>
+
+          </div>
+        </div><!-- /6 dimensiones -->
+
       </div><!-- /panel-evaluar -->
 
 
@@ -545,6 +767,12 @@
           </div>
         </div>
 
+        <!-- Cómo se generan las recomendaciones -->
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 text-sm text-blue-900 leading-relaxed">
+          <p class="font-semibold mb-1">C&oacute;mo se generan estas recomendaciones</p>
+          <p>Las recomendaciones no son gen&eacute;ricas: cada una est&aacute; vinculada al indicador espec&iacute;fico que fall&oacute; en una dimensi&oacute;n, con una acci&oacute;n concreta que el DI o el docente puede tomar directamente en Moodle. Por ejemplo, si el sistema detecta que un video de YouTube no tiene subt&iacute;tulos activados, la recomendaci&oacute;n incluye exactamente qu&eacute; par&aacute;metro agregar a la URL. Si una tarea no tiene r&uacute;brica, la recomendaci&oacute;n explica c&oacute;mo crearla en la configuraci&oacute;n de la actividad. Las prioridades (Alta / Media / Baja) reflejan el impacto estimado en la puntuaci&oacute;n de la dimensi&oacute;n y el esfuerzo relativo de implementaci&oacute;n. El equipo de dise&ntilde;o instruccional de la UDFV revisa y valida las recomendaciones antes de comunicarlas al docente.</p>
+        </div>
+
         <!-- Recommendations list -->
         <div id="rec-list" class="space-y-4"></div>
 
@@ -557,7 +785,7 @@
         <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div>
             <h2 class="font-heading text-2xl font-extrabold text-gray-900">Alertas del Sistema</h2>
-            <p class="text-sm text-gray-500 mt-0.5">Condiciones detectadas que requieren atenci&oacute;n del equipo de dise&ntilde;o instruccional.</p>
+            <p class="text-sm text-gray-500 mt-0.5">Condiciones detectadas autom&aacute;ticamente que requieren atenci&oacute;n del equipo de dise&ntilde;o instruccional. Las alertas cr&iacute;ticas provienen del Auditor Acad&eacute;mico nocturno (18 reglas PA.xx); las advertencias e informativas, de la verificaci&oacute;n de los 77 indicadores v&iacute;a API Moodle.</p>
           </div>
           <div class="flex gap-2 text-xs flex-wrap">
             <span class="alert-badge critica">1 cr&iacute;tica</span>
@@ -644,9 +872,9 @@
             <span><strong class="text-gray-600">D1</strong>: Interacci&oacute;n plataforma</span>
             <span><strong class="text-gray-600">D2</strong>: Accesibilidad</span>
             <span><strong class="text-gray-600">D3</strong>: Coherencia did&aacute;ctica</span>
-            <span><strong class="text-gray-600">D4</strong>: Docencia virtual</span>
+            <span><strong class="text-gray-600">D4</strong>: Competencias docencia virtual</span>
             <span><strong class="text-gray-600">D5</strong>: G&eacute;nero y equidad</span>
-            <span><strong class="text-gray-600">D6</strong>: Corresponsabilidad</span>
+            <span><strong class="text-gray-600">D6</strong>: Corresponsabilidad social</span>
           </div>
         </div>
 
@@ -661,7 +889,7 @@
 
         <!-- Report footer note -->
         <div class="bg-gray-50 rounded-xl border border-gray-200 p-4 text-xs text-gray-500">
-          <p><strong class="text-gray-700">Nota metodol&oacute;gica:</strong> Los puntajes son promedios ponderados de los 77 indicadores del Marco Evaluativo UDFV-UMCE (Sepu&uacute;lveda, 2024). Los indicadores de dimensiones D4-D6 pueden no ser evaluables en todos los cursos. Los datos de demo son simulados para ilustrar el sistema.</p>
+          <p><strong class="text-gray-700">Nota metodol&oacute;gica:</strong> Los puntajes son promedios ponderados de los 77 indicadores del Marco Evaluativo UDFV-UMCE (Sep&uacute;lveda Parrini, P., 2024). Los indicadores de dimensiones D4-D6 pueden no ser evaluables en todos los cursos. Los datos de demo son simulados para ilustrar el sistema.</p>
         </div>
 
       </div><!-- /panel-reportar -->
@@ -678,7 +906,7 @@
         <summary>¿Por qué 6 dimensiones de evaluación?</summary>
         <div class="fundamentacion-content">
           <p>El Marco Evaluativo UDFV-UMCE organiza la calidad del curso virtual en seis dimensiones que cubren desde la interacción con la plataforma hasta la corresponsabilidad. Este modelo fue construido con 77 indicadores validados mediante pilotaje en 5 actividades curriculares y revisión con informantes clave de áreas académicas UMCE en noviembre-diciembre 2024. Las 6 dimensiones permiten diagnósticos diferenciados que orientan mejoras específicas, evitando la mirada genérica de un puntaje único.</p>
-          <p class="fundamentacion-refs">Referencias: Sepúlveda, D. (2024). Marco Evaluativo UDFV-UMCE. Proyecto UMC20992</p>
+          <p class="fundamentacion-refs">Referencias: Sep&uacute;lveda Parrini, P. (2024). Marco Evaluativo de Cursos Virtuales UMCE. Proyecto UMC20992</p>
         </div>
       </details>
 
@@ -697,6 +925,23 @@
           <p class="fundamentacion-refs">Referencias: Principio UDFV de IA como soporte (no sustituto) del juicio pedagógico</p>
         </div>
       </details>
+
+      <details class="fundamentacion-panel">
+        <summary>¿Por qué tres fases de QA y no solo una evaluación al final?</summary>
+        <div class="fundamentacion-content">
+          <p>El enfoque de QA en tres fases (Preventivo → Implementación → Operación) responde a la evidencia de que corregir errores de diseño instruccional cuesta exponencialmente más a medida que avanza el ciclo. Un error detectado en el plan (M3) se corrige en minutos; el mismo error detectado cuando el curso está activo con 30 estudiantes matriculados implica notificaciones, ajustes de fechas, posibles quejas y riesgo académico real. La analogía en ingeniería de software es el principio "shift-left testing": entre más temprano se detecta el defecto, menor es el costo de corregirlo. En el contexto educativo, este principio se traduce en un ciclo de retroalimentación que conecta el cierre de un semestre (M5) directamente con el diseño del siguiente (M1), evitando que los mismos errores se repitan sistemáticamente.</p>
+          <p class="fundamentacion-refs">Referencias: Principio shift-left en aseguramiento de calidad; Modelo de retroalimentación continua UDFV-UMCE 2026</p>
+        </div>
+      </details>
+
+      <details class="fundamentacion-panel">
+        <summary>¿Qué son las reglas PA.xx del Auditor Académico?</summary>
+        <div class="fundamentacion-content">
+          <p>El Auditor Académico es un proceso automatizado que se ejecuta cada noche en el servidor y revisa 18 reglas académicas (PA.01 a PA.18) sobre todos los cursos activos en las 5 plataformas Moodle de la UMCE. Cada regla tiene una condición específica: PA.01 detecta cursos sin ninguna evaluación sumativa pasada la semana 5; PA.02 detecta docentes sin acceso al aula virtual por más de 14 días; PA.06 detecta libros de calificaciones ocultos; PA.14 detecta estudiantes que han entregado tareas y no han recibido retroalimentación después de la semana 7. Estas reglas generan hallazgos con severidad (crítica, advertencia, informativa) que se escalan a la dimensión QA correspondiente y aparecen en el panel de Alertas. El Auditor reemplaza la revisión manual que antes hacía el coordinador, liberando tiempo para el trabajo pedagógico que requiere juicio humano.</p>
+          <p class="fundamentacion-refs">Referencias: Reglas PA.xx Auditor Académico UDFV (en producción desde abril 2026); UMC20992</p>
+        </div>
+      </details>
+
     </div>
   </section>
 
@@ -751,11 +996,11 @@
         score: 1.75, desc: 'Acceso multimodal: subt\u00edtulos, lengua de se\u00f1as, audiodescripci\u00f3n y ajustes.' },
       { id: 'd3', nombre: 'Coherencia did\u00e1ctica', short: 'D3', indicadores: 16, subdims: 5, color: '#7C3AED', emoji: '\uD83D\uDCDA',
         score: 2.80, desc: 'Alineaci\u00f3n entre objetivos, actividades y evaluaciones del curso.' },
-      { id: 'd4', nombre: 'Docencia virtual', short: 'D4', indicadores: 7, subdims: 2, color: '#D97706', emoji: '\uD83D\uDC69\u200D\uD83C\uDFEB',
+      { id: 'd4', nombre: 'Competencias para la docencia virtual', short: 'D4', indicadores: 7, subdims: 2, color: '#D97706', emoji: '\uD83D\uDC69\u200D\uD83C\uDFEB',
         score: 3.10, desc: 'Competencias pedag\u00f3gicas del docente en el aula virtual y sesiones s\u00edncronas.' },
       { id: 'd5', nombre: 'Perspectiva de g\u00e9nero y equidad', short: 'D5', indicadores: 11, subdims: 2, color: '#DB2777', emoji: '\u2696\uFE0F',
         score: 2.10, desc: 'Lenguaje inclusivo, representaci\u00f3n equitativa y contenidos no sexistas.' },
-      { id: 'd6', nombre: 'Corresponsabilidad social y cuidados', short: 'D6', indicadores: 8, subdims: 3, color: '#DC2626', emoji: '\uD83E\uDD1D',
+      { id: 'd6', nombre: 'Corresponsabilidad social y cuidados digitales', short: 'D6', indicadores: 8, subdims: 3, color: '#DC2626', emoji: '\uD83E\uDD1D',
         score: 1.50, desc: 'Reconocimiento de cargas de cuidado y contextos de vida de los estudiantes.' }
     ];
 
