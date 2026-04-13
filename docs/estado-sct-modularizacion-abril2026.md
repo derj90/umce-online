@@ -12,6 +12,8 @@ La UDFV ha estado desarrollando un conjunto de herramientas digitales para apoya
 
 El trabajo está en desarrollo. Lo que existe hoy son prototipos funcionales que permiten calcular créditos, planificar la distribución de horas en actividades concretas y evaluar la calidad de un curso virtual. Lo que falta es la validación institucional formal: una mesa de trabajo UGCI-UDFV, presentación a consejeros y articulación con DAC y DIPOS para la estructura de programas híbridos y e-learning.
 
+El análisis de la Planilla Master UMCE Virtual 2026 (342 sesiones, 12 programas) identificó un problema estructural que los instrumentos actuales no capturan: cada actividad curricular se diseña de forma aislada, pero nadie agrega la carga total del estudiante que cursa varias actividades en paralelo. Un estudiante típico de postgrado enfrenta entre 6 y 12 horas sincrónicas semanales; en prosecución, los casos más cargados llegan a 15 horas. La modularización —secuenciar las actividades en vez de superponerlas— reduce esa carga a la mitad sin modificar los créditos totales ni los contenidos. Este argumento empírico, que complementa la decisión institucional ya tomada en 2019, orienta la próxima fase de las herramientas.
+
 ---
 
 ## 2. Marco normativo vigente
@@ -39,7 +41,7 @@ SCT = (HS + HAs + HAut) × NS / 27
 
 Derivación: 45 horas/semana × 18 semanas = 810 horas semestrales ÷ 30 créditos = 27 horas por crédito.
 
-La distinción entre horas asincrónicas y autónomas no es terminológica: tiene implicancias para el diseño instruccional (las asincrónicas requieren diseño de interacción y moderación docente) y para el presupuesto (según la normativa institucional, las horas de trabajo autónomo, al ser propias del estudiante, no contemplan ser remuneradas). La regla operativa es que las horas autónomas representen aproximadamente un tercio de la carga total.
+La distinción entre horas asincrónicas y autónomas tiene implicancias para el diseño instruccional: las asincrónicas requieren diseño de interacción y moderación docente, mientras que las autónomas son trabajo individual del estudiante sin mediación docente directa. La regla operativa es que las horas autónomas representen aproximadamente un tercio de la carga total.
 
 ---
 
@@ -101,22 +103,36 @@ La UDFV ha estado construyendo un conjunto de herramientas web para apoyar cada 
 
 ### 5.1 Calculadora SCT
 
-Toma como base la Guía de Cálculo SCT-Chile de la UGCI (borrador abril 2026) y la fórmula fijada por la Resolución Exenta N° 002140. El usuario ingresa por separado los tres tipos de horas de trabajo estudiantil: horas sincrónicas (sesiones en tiempo real con coincidencia horaria docente-estudiante), horas asincrónicas (actividades estructuradas con interacción y moderación docente, pero sin coincidencia horaria) y horas de trabajo autónomo (lectura, estudio, reflexión individual sin mediación docente). La calculadora aplica la fórmula, verifica que la carga semanal total esté dentro del rango sostenible (máximo 12 horas por semana por módulo) y aplica el criterio de redondeo ceil que usa la UGCI.
+Toma como base la Guía de Cálculo SCT-Chile de la UGCI (borrador abril 2026) y la fórmula fijada por la Resolución Exenta N° 002140. El usuario ingresa por separado los tres tipos de horas de trabajo estudiantil: horas sincrónicas (sesiones en tiempo real con coincidencia horaria docente-estudiante), horas asincrónicas (actividades estructuradas con interacción y moderación docente, pero sin coincidencia horaria) y horas de trabajo autónomo (lectura, estudio, reflexión individual sin mediación docente). La calculadora aplica la fórmula, verifica que la carga semanal total esté dentro del rango sostenible (máximo 12 horas por semana por módulo, basado en datos de la Planilla Master UMCE Virtual 2026) y aplica el criterio de redondeo ceil que usa la UGCI.
 
-El desglose en tres tipos permite identificar dos proporciones clave: la proporción de trabajo autónomo (la regla operativa es que represente aproximadamente un tercio de la carga total, ya que estas horas no contemplan remuneración docente según la normativa institucional) y la proporción de actividad sincrónica según el perfil de estudiante (pregrado requiere mayor presencia sincrónica; postgrado y educación continua admiten mayor asincronismo y autonomía). También permite seleccionar entre 4 tipos de unidad curricular (semestral de 18 semanas, módulo de 8, microcredencial de 5, CUECH Súbete de 16) para que el usuario vea cómo cambian los créditos según la duración.
+El desglose en tres tipos permite identificar dos proporciones clave: la proporción de trabajo autónomo (la regla operativa es que represente aproximadamente un tercio de la carga total, ya que estas horas no contemplan remuneración docente según la normativa institucional) y la orientación de actividad sincrónica según el perfil de estudiante (pregrado requiere mayor presencia sincrónica; postgrado y educación continua admiten mayor asincronismo y autonomía). También permite seleccionar entre 4 duraciones de referencia (semestral de 18 semanas, módulo de 8, bloque breve de 5, CUECH Súbete de 16) para que el usuario vea cómo cambian los créditos según la duración. Cualquiera de estas duraciones puede generar una microcredencial como certificación; la microcredencial no es un formato temporal sino un tipo de certificación.
 
-La herramienta integra el contexto metodológico directamente en el flujo de uso: explica qué es el método compositivo, por qué se distinguen los tres tipos de horas, y cómo estimar la carga usando fuentes internacionales calibradas (Penn State HIA Estimator, Wake Forest Workload Estimator 2.0, Massey University). Las fundamentaciones académicas aparecen junto a cada decisión de diseño (perfil de estudiante, estimación de horas) en vez de estar en una sección separada, de modo que el usuario accede a la justificación en el momento en que la necesita. Incluye una bibliografía con 10 referencias que respaldan las decisiones de la calculadora. Funciona enteramente en el navegador, sin guardar datos en servidor.
+La orientación por perfil de estudiante se basa en datos institucionales reales (Planilla Master UMCE Virtual 2026, 342 sesiones, 12 programas) y en evidencia de la literatura. La calculadora **no prescribe porcentajes fijos** de sincronía: una búsqueda sistemática confirmó que ningún marco internacional establece ratios sincrónico/asincrónico obligatorios por nivel formativo. Los marcos consultados son:
+
+- **ECTS** (European Credit Transfer System): distingue solo entre horas de contacto y trabajo autónomo; no diferencia tipos de horas por modalidad en línea ni prescribe proporciones para asincronía.
+- **Manual SCT-Chile** (CRUCH, 2013): distingue "docencia directa" y "trabajo autónomo" — dos tipos, no tres — y no fija porcentajes para la modalidad virtual.
+- **CNA Chile** (Criterios programas a distancia, 2017): exige coherencia entre créditos declarados y carga real, y que las instituciones declaren sus expectativas de interacción, pero no cuantifica proporciones.
+- **Quality Matters** (QM Rubric, 8.ª ed.): requiere que el curso declare las expectativas de interacción con claridad; no establece porcentajes mínimos ni máximos de sincronía.
+- **Salmon (E-tivities)** y **Hase/Kenyon (heutagogía)**: sustentan el principio de que a mayor autonomía del estudiante, menor necesidad de sincronía prescriptiva; no proporcionan cifras.
+
+Adicionalmente, un metaanálisis publicado en *International Review of Research in Open and Distributed Learning* (IRRODL, 2021, 27 tamaños de efecto) reveló que los estudiantes de posgrado **se benefician más** de la interacción sincrónica en resultados afectivos (sentido de pertenencia, motivación, cohesión grupal) que los de pregrado — lo que contradice la asunción simple de "postgrado = menos sincronía". El efecto es moderado, pero estadísticamente robusto. Esto refuerza que la orientación de sincronía depende del contexto y el objetivo del curso, no de un umbral fijo por nivel.
+
+Lo que existe son principios pedagógicos (pedagogía→andragogía→heutagogía) que fundamentan la *dirección* de la orientación, pero no cifras específicas. La herramienta ofrece orientación contextualizada, no umbrales normativos.
+
+La herramienta integra el contexto metodológico directamente en el flujo de uso: explica qué es el método compositivo, por qué se distinguen los tres tipos de horas, y cómo estimar la carga usando fuentes internacionales calibradas (Penn State HIA Estimator, Wake Forest Workload Estimator 2.0, Massey University). Las fundamentaciones académicas aparecen junto a cada decisión de diseño (perfil de estudiante, estimación de horas) en vez de estar en una sección separada, de modo que el usuario accede a la justificación en el momento en que la necesita. Incluye una sección "Antecedentes" que explica el problema de la sobrecarga agregada y el argumento de la modularización (ver sección 8.1). Incluye una bibliografía con 10 referencias que respaldan las decisiones de la calculadora. Funciona enteramente en el navegador, sin guardar datos en servidor.
+
+La calculadora incorpora también un campo "actividades concurrentes" que permite proyectar la carga sincrónica agregada del estudiante cuando participa en más de una actividad curricular simultánea. Esto convierte a la herramienta en un instrumento de diseño a nivel de programa, no solo de asignatura. Una vista de agregación a nivel de programa completo está planificada como próxima fase de desarrollo.
 
 ### 5.2 Planificador de diseño instruccional
 
 Un asistente de 4 pasos que parte de los créditos SCT calculados y ayuda a distribuir las horas en actividades concretas:
 
-- **Paso 1:** El usuario define los SCT, las semanas y el perfil de estudiante (pregrado, postgrado o educación continua). Esto establece el presupuesto total de horas y las reglas de balance síncrono/asíncrono.
+- **Paso 1:** El usuario define los SCT, las semanas y el perfil de estudiante (pregrado, postgrado o educación continua). Esto establece el presupuesto total de horas y la orientación de balance síncrono/asíncrono adecuada para ese perfil.
 - **Paso 2:** El usuario selecciona actividades de un catálogo de 37 e-actividades organizadas en 7 categorías (análisis, investigación, interacción, colaboración, reflexión, insumos, evaluación). Cada actividad tiene un rango de tiempo referencial basado en fuentes internacionales calibradas (Penn State, Wake Forest, FAU, FGCU, Massey University) y en la experiencia de la UDFV.
 - **Paso 3:** El usuario revisa la distribución resultante: cuántas horas van a contenido pasivo, cuántas a actividades colaborativas, cuántas son sincrónicas y cuántas asincrónicas. Un gráfico muestra el balance visual.
-- **Paso 4:** El planificador ejecuta 6 verificaciones automáticas basadas en los principios del modelo virtual UMCE: que haya al menos una actividad de interacción (EC), al menos una de colaboración (ED), que el contenido pasivo no supere el 60% de la carga, que haya evaluación formativa, y que el balance síncrono/asíncrono esté dentro del rango definido para el perfil de estudiante. Este balance se verifica contra las tres categorías de horas (sincrónicas, asincrónicas y autónomas), no solo contra dos, lo que permite detectar si el diseño sobrecarga la sincronía o, al contrario, si la autonomía supera el tercio recomendado.
+- **Paso 4:** El planificador ejecuta verificaciones automáticas basadas en los principios del modelo virtual UMCE: que haya al menos una actividad de interacción (EC), al menos una de colaboración (ED), que el contenido pasivo no supere el 60% de la carga, que haya evaluación formativa, y que el balance síncrono/asíncrono sea coherente con el perfil de estudiante declarado. Este balance se verifica contra las tres categorías de horas (sincrónicas, asincrónicas y autónomas), no solo contra dos, lo que permite detectar si el diseño sobrecarga la sincronía o si la autonomía supera el tercio recomendado. La verificación no aplica umbrales porcentuales fijos: ofrece orientación contextualizada basada en los datos de la Planilla Master 2026 y en el continuo pedagogía→andragogía→heutagogía.
 
-Los rangos de sincronía se diferencian por perfil: pregrado requiere al menos 15% de actividad sincrónica, postgrado permite hasta 50%, y educación continua permite hasta 30% (máxima flexibilidad para profesionales en ejercicio).
+La orientación de sincronía se diferencia por perfil de estudiante, con base en datos institucionales y literatura, sin establecer porcentajes prescriptivos. El planificador muestra al usuario si la distribución propuesta es coherente con el perfil declarado y sugiere ajustes cuando la carga sincrónica proyectada es excesiva o insuficiente para ese contexto.
 
 El planificador no genera automáticamente el curso en Moodle. Su salida es un plan de distribución de horas que el diseñador instruccional puede usar como base para el PIAC.
 
@@ -160,10 +176,10 @@ Carga semanal sostenible: ~10 horas/semana por módulo (máximo 12).
 | Fase | Período | Descripción |
 |------|---------|-------------|
 | Fase 1 | 2026 | La estructura semestral se mantiene. Cada actividad curricular completada puede generar certificación propia. Las herramientas de la UDFV están diseñadas para operar en este escenario. |
-| Fase 2 | 2027-2028 | Módulos de 8 semanas apilables, microcredenciales como salidas intermedias, electivos compartidos entre programas. |
+| Fase 2 | 2027-2028 | Módulos de 8 semanas apilables, con certificación modular (microcredenciales) como salidas intermedias, electivos compartidos entre programas. |
 | Fase 3 | 2029+ | Movilidad interna UMCE, movilidad interinstitucional CUECH (Programa Súbete), Reconocimiento de Aprendizajes Previos (RAP). |
 
-Las fases 2 y 3 son proyecciones a mediano plazo. La calculadora ya permite simular los 4 tipos de unidad curricular (semestral, módulo de 8 semanas, microcredencial de 5, CUECH Súbete de 16) para que los equipos académicos puedan anticipar cómo cambiaría la distribución de créditos en cada escenario.
+Las fases 2 y 3 son proyecciones a mediano plazo. La calculadora ya permite simular 4 duraciones de referencia (semestral de 18 semanas, módulo de 8, bloque breve de 5, CUECH Súbete de 16) para que los equipos académicos puedan anticipar cómo cambiaría la distribución de créditos en cada escenario.
 
 ---
 
@@ -193,6 +209,36 @@ El segundo es la **ausencia de criterio pedagógico en la distribución de horas
 
 Las herramientas que la UDFV está desarrollando intentan abordar ambos problemas: la calculadora para la estimación de carga (Momento 1), el planificador para la distribución pedagógica (Momento 3), y el marco QA para verificar que lo implementado sea coherente con lo planificado (Momentos 4 y 5).
 
+### 8.1 El problema de la sobrecarga agregada
+
+Existe un tercer problema que los dos anteriores no capturan: cada actividad curricular es diseñada de forma aislada, pero nadie agrega la carga total que el estudiante enfrenta semana a semana cuando cursa varias actividades en paralelo.
+
+El análisis de la **Planilla Master UMCE Virtual 2026** (342 sesiones, 12 programas) permite dimensionar este problema con datos reales. Las duraciones de sesión son bimodales: 1,5 horas (110 sesiones) y 3,0 horas (125 sesiones) concentran la mayor parte de la oferta, en proporciones casi idénticas. Con este patrón, un estudiante típico enfrenta:
+
+| Programa | Sesiones síncronas/semana | Carga sincrónica/semana |
+|----------|--------------------------|------------------------|
+| Postgrado (perfil típico) | 3-4 sesiones | 6-9 horas (hasta 12 hrs) |
+| Prosecución | hasta 6 sesiones | hasta 15 horas |
+
+Los programas con bloques de 3 horas generan las cargas más altas cuando los estudiantes tienen 3 o 4 actividades concurrentes. Los casos más cargados identificados son Mg. Educación Especial 2026 y Mg. Política Educativa 2025, que alcanzan 12 horas semanales de sincronía. En prosecución (nivel pregrado), los casos más cargados llegan a 15 horas semanales. Cada docente toma decisiones razonables en el diseño de su propia asignatura; el problema no está en las asignaturas individuales, sino en que nadie tiene la vista del total semanal que enfrenta el estudiante.
+
+La **Resolución Exenta N° 2025-00-1542** (Mg. Ed. Intercultural, noviembre 2025) ilustra cómo esto ocurre en un programa real e introduce además un hallazgo relevante para la calculadora. El semestre 1 mezcla actividades curriculares de 18 semanas (distribuidas) y 8 semanas (concentradas). Si ambas corren en paralelo durante las 8 semanas de coincidencia, la carga estudiantil sube a 14 hrs sincrónicas + 20 hrs asincrónicas + 5 hrs autónomas = **39 hrs/semana** — para luego caer a 7 hrs/semana en las semanas restantes. Ningún instrumento actual hace visible ese pico. Se trata de un programa vespertino para profesionales en ejercicio. La sobrecarga no es un error de diseño de ninguna asignatura individual: es la consecuencia estructural de no agregar.
+
+Esta misma resolución confirma que el formato institucional de los planes de estudios ya declara exactamente tres tipos de horas — Sincrónicas, Asincrónicas, Trabajo Autónomo — con duración en semanas por actividad curricular. La calculadora refleja exactamente esa estructura, lo que facilita la lectura cruzada entre herramienta y resolución y valida el enfoque de tres columnas adoptado.
+
+### 8.2 La modularización como solución estructural a la sobrecarga
+
+La modularización no solo reorganiza el calendario: **reduce directamente la sobrecarga agregada** al secuenciar las actividades en vez de superponerlas. El mismo contenido, los mismos créditos y las mismas horas totales producen una experiencia muy diferente dependiendo de si las actividades son simultáneas o secuenciales:
+
+| Escenario | Actividades/semana | Carga sincrónica/semana |
+|-----------|-------------------|------------------------|
+| Semestral (4 actividades × 3h síncronas) | 4 simultáneas | 12 hrs/semana (en umbral de alerta) |
+| Modular (2 actividades × 3h, secuenciadas) | 2 en cada bloque | 6 hrs/semana (sostenible) |
+
+Los totales SCT son idénticos. La diferencia es que el diseño modular distribuye la carga en el tiempo en vez de concentrarla. Para estudiantes en programas vespertinos o de prosecución —trabajadores, en muchos casos con familia— la diferencia entre 12 y 6 horas semanales de sincronía no es marginal: es la diferencia entre una experiencia sostenible y una que genera abandono.
+
+Este es el argumento empírico que complementa el argumento institucional ya resuelto (las Resoluciones Exentas de 2019 ya decidieron la modularización). La discusión pendiente es operativa: **cuándo y cómo transicionar a un calendario modular real**, especialmente para los programas que ya operan con estructura semestral.
+
 ---
 
 ## 9. Pendientes y próximos pasos
@@ -205,6 +251,7 @@ Las herramientas que la UDFV está desarrollando intentan abordar ambos problema
 | Validación de herramientas con académicos de los programas | UDFV + Mesa 1 | En curso (Osvaldo Molina ya probó calculadora y planificador) |
 | Presentación de avances a consejeros universitarios | Coordinadores de 3 mesas | Prevista para fines de abril |
 | Respuesta a solicitud del Director de Docencia | David (UDFV) | Este documento |
+| Desarrollar vista de agregación a nivel de programa: curva de carga semanal para todas las actividades de un semestre | UDFV | En diseño (próxima fase) |
 
 ---
 
@@ -214,6 +261,7 @@ Las herramientas que la UDFV está desarrollando intentan abordar ambos problema
 |-------------|---------|-----------|--------|--------|
 | Calculadora SCT | M1 | UDFV | UGCI (pendiente) | Prototipo funcional |
 | Planificador instruccional | M3 | UDFV | Mesa 1 (en curso) | Prototipo funcional |
+| Vista de carga a nivel de programa | M1/M3 | UDFV | Mesa 1 (pendiente) | En diseño |
 | Fundamentos pedagógicos | Referencia | UDFV | Mesa 1 (en curso) | Documento de trabajo |
 | Sistema QA (77 indicadores) | M4 | UDFV + Sepúlveda Parrini (2024) | Mesa 1 (pendiente) | En desarrollo |
 | Rúbrica de evaluación | M4 | UDFV | Pilotaje 2024 completado | En desarrollo |
@@ -224,3 +272,20 @@ Todas las herramientas están disponibles en [umce.online/virtualizacion](https:
 ---
 
 *Documento de referencia interna. Elaborado con base en la Guía SCT UGCI (borrador abr-2026), Manual SCT-Chile (CRUCH, 2013), resoluciones exentas UMCE, actas de Mesa 1, y correspondencia institucional UGCI-UDFV.*
+
+---
+
+## Referencias seleccionadas
+
+- CRUCH. (2013). *Manual SCT-Chile: Metodología para la estimación de la carga de trabajo del estudiante*, 2.ª ed. Consejo de Rectores de las Universidades Chilenas.
+- CNA Chile. (2017). *Criterios de evaluación para programas de pregrado a distancia*. Diario Oficial N° 41.925.
+- European Commission. (2015). *ECTS Users' Guide*. Publications Office of the European Union.
+- Hase, S., & Kenyon, C. (2000). From andragogy to heutagogy. *Ultibase Articles*.
+- International Review of Research in Open and Distributed Learning (IRRODL). (2021). Metaanálisis sobre efectividad de la interacción sincrónica en educación a distancia (27 tamaños de efecto). *IRRODL*.
+- Quality Matters. (2023). *QM Higher Education Rubric*, 8.ª ed. MarylandOnline.
+- Salmon, G. (2013). *E-tivities: The Key to Active Online Learning*, 2.ª ed. Routledge.
+- Sepúlveda Parrini, F. (2024). *Marco evaluativo de calidad para cursos virtuales UMCE* (Proyecto UMC20992). Universidad Metropolitana de Ciencias de la Educación.
+- UMCE. (2011). *Resolución Exenta N° 002140*: 1 crédito SCT = 27 horas cronológicas.
+- UMCE. (2019). *Resoluciones Exentas N° 100062 y N° 100241*: Rediseño curricular modularizado.
+- UMCE. (2025). *Resolución Exenta N° 2025-00-1542*: Plan de estudios Mg. Educación Intercultural.
+- UMCE — Dirección de Docencia. (2020). *Doc. N° 004-2020*: Orientaciones para PAC virtuales.
