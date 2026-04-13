@@ -137,7 +137,7 @@
         <div>
           <p class="fade-up text-xs font-bold uppercase tracking-widest text-white/50 mb-3">Momento 1 del flujo &mdash; Antes de la resoluci&oacute;n exenta</p>
           <h1 class="fade-up font-heading text-4xl md:text-5xl font-extrabold mb-4">Calculadora SCT</h1>
-          <p class="fade-up text-white/80 text-lg max-w-2xl">Verifica que los cr&eacute;ditos y las horas de tu curso sean coherentes, siguiendo la Gu&iacute;a de la UGCI. Para usar esta herramienta <strong class="text-white">no necesitas tener el dise&ntilde;o del curso listo</strong> &mdash; solo necesitas saber los cr&eacute;ditos declarados.</p>
+          <p class="fade-up text-white/80 text-lg max-w-2xl">Verifica que los cr&eacute;ditos y las horas de tu curso sean coherentes, siguiendo la Gu&iacute;a de la UGCI. Necesitas una <strong class="text-white">estimaci&oacute;n de las horas semanales de tu curso</strong> y los cr&eacute;ditos declarados (o estimados).</p>
           <div class="fade-up mt-4 flex flex-wrap gap-3">
             <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-white/70 bg-white/10 rounded-lg px-3 py-1.5">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -266,7 +266,7 @@
       <!-- Contexto metodológico -->
       <div class="bg-gray-50 rounded-xl p-5 mb-2 text-sm text-gray-700 leading-relaxed space-y-3">
         <p>En el sistema SCT-Chile, <strong>1 cr&eacute;dito equivale a 27 horas cronol&oacute;gicas de trabajo real del estudiante</strong> (Res. Exenta N&deg; 002140, UMCE, 2011; derivado de la Declaraci&oacute;n de Valpara&iacute;so, CRUCH, 2003). Ese n&uacute;mero incluye <em>todo</em> lo que el estudiante hace para aprender: sesiones en vivo, participar en foros, leer, estudiar, preparar evaluaciones.</p>
-        <p>Esta calculadora usa el <strong>m&eacute;todo compositivo</strong> (bottom-up) del Manual SCT-Chile (CRUCH, 2013): en vez de partir de los cr&eacute;ditos y repartir horas, se estiman primero las horas reales por semana y se derivan los cr&eacute;ditos. Para eso necesitas distinguir tres tipos de horas, porque cada uno tiene implicancias distintas para el dise&ntilde;o instruccional:</p>
+        <p>Esta calculadora sigue el <strong>m&eacute;todo compositivo</strong> del Manual SCT-Chile (CRUCH, 2013): primero estimas las horas reales de trabajo del estudiante por semana, la herramienta calcula cu&aacute;ntos cr&eacute;ditos corresponden, y luego los contrasta con los cr&eacute;ditos declarados en la resoluci&oacute;n exenta. Para eso necesitas distinguir tres tipos de horas, porque cada uno tiene implicancias distintas para el dise&ntilde;o instruccional:</p>
         <div class="grid sm:grid-cols-3 gap-3 mt-1">
           <div class="bg-white rounded-lg p-3 border border-blue-100">
             <div class="font-bold text-sm mb-1" style="color:#0033A1">Sincr&oacute;nicas (HS)</div>
@@ -278,7 +278,7 @@
           </div>
           <div class="bg-white rounded-lg p-3 border border-green-100">
             <div class="font-bold text-sm mb-1" style="color:#059669">Trabajo aut&oacute;nomo (HAut)</div>
-            <p class="text-xs text-gray-600">Trabajo individual sin mediaci&oacute;n: lectura, estudio, reflexi&oacute;n. Seg&uacute;n la normativa institucional, estas horas &laquo;al ser propias del estudiante, no contemplan ser remuneradas&raquo; (Doc. N&deg; 004-2020, Direcci&oacute;n de Docencia).</p>
+            <p class="text-xs text-gray-600">Trabajo individual sin mediaci&oacute;n docente directa: lectura, estudio, reflexi&oacute;n, preparaci&oacute;n de evaluaciones. Es el tiempo que el estudiante dedica por cuenta propia a consolidar lo aprendido.</p>
           </div>
         </div>
         <p>La f&oacute;rmula es: <strong>SCT = (HS + HAs + HAut) &times; NS &divide; 27</strong>, donde NS es el n&uacute;mero de semanas. El resultado se redondea al entero superior (criterio operativo UGCI). Si los cr&eacute;ditos calculados no coinciden con los declarados en la resoluci&oacute;n exenta, hay una inconsistencia que conviene resolver antes de dise&ntilde;ar el curso.</p>
@@ -308,15 +308,6 @@
           </div>
         </div>
 
-        <!-- Creditos declarados — OBLIGATORIO Y PROMINENTE -->
-        <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1.5">&iquest;Cu&aacute;ntos cr&eacute;ditos SCT tiene seg&uacute;n la resoluci&oacute;n exenta?</label>
-          <div class="flex items-center gap-3">
-            <input type="number" id="sctDeclarados" value="3" min="1" max="60" class="w-28 px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-center font-bold text-xl">
-            <span class="text-sm text-gray-500">cr&eacute;ditos SCT. Si a&uacute;n no tienes resoluci&oacute;n, usa el valor estimado &mdash; la calculadora te dir&aacute; si las horas son coherentes.</span>
-          </div>
-        </div>
-
         <!-- Perfil de estudiantes -->
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-1.5">&iquest;Qu&eacute; tipo de estudiantes tiene?</label>
@@ -340,8 +331,8 @@
             <div class="fundamentacion-content">
               <p>El perfil del estudiante orienta las decisiones de dise&ntilde;o sobre cu&aacute;ntas horas sincr&oacute;nicas son sostenibles. No existe un marco internacional ni chileno que prescriba porcentajes espec&iacute;ficos de sincron&iacute;a por nivel educativo (ni el ECTS, ni el Manual SCT-Chile, ni la CNA establecen proporciones). Lo que s&iacute; tiene respaldo es el principio general: a mayor madurez y autonom&iacute;a del estudiante, menor necesidad de estructura sincr&oacute;nica obligatoria.</p>
               <p class="mt-2">En pregrado, los estudiantes suelen dedicarse a tiempo completo y cursan m&uacute;ltiples actividades en paralelo. En postgrado, los participantes son profesionales en ejercicio con horarios restringidos que se conectan en horario vespertino. En educaci&oacute;n continua, la disponibilidad es variable y la flexibilidad horaria es prioritaria.</p>
-              <p class="mt-2">Un meta-an&aacute;lisis de 27 estudios (IRRODL, 2021) mostr&oacute; que el nivel del estudiante modera el efecto del sincronismo: los estudiantes de postgrado se benefician m&aacute;s de la interacci&oacute;n sincr&oacute;nica en t&eacute;rminos de compromiso afectivo (aprendizaje entre pares profesionales), lo que matiza la idea simple de que &laquo;postgrado = menos sincr&oacute;nico&raquo;. La decisi&oacute;n debe equilibrar el valor pedag&oacute;gico de la interacci&oacute;n sincr&oacute;nica con la sostenibilidad de la carga para el perfil del estudiante.</p>
-              <p class="fundamentacion-refs">IRRODL (2021). Meta-an&aacute;lisis aprendizaje sincr&oacute;nico; Hase, S. &amp; Kenyon, C. (2000). Heutagog&iacute;a; Manual SCT-Chile (CRUCH, 2013).</p>
+              <p class="mt-2">La evidencia sugiere que el nivel del estudiante modera el efecto de la sincron&iacute;a: estudiantes de postgrado pueden beneficiarse m&aacute;s de la interacci&oacute;n sincr&oacute;nica en t&eacute;rminos de compromiso y aprendizaje entre pares profesionales (Nieuwoudt, 2020), lo que matiza la idea simple de que &laquo;postgrado = menos sincr&oacute;nico&raquo;. La decisi&oacute;n debe equilibrar el valor pedag&oacute;gico de la interacci&oacute;n sincr&oacute;nica con la sostenibilidad de la carga para el perfil del estudiante.</p>
+              <p class="fundamentacion-refs">Nieuwoudt (2020); Hase, S. &amp; Kenyon, C. (2000). Heutagog&iacute;a; Manual SCT-Chile (CRUCH, 2013).</p>
             </div>
           </details>
         </div>
@@ -363,7 +354,7 @@
               <input type="radio" name="formato" value="bloque_breve">
               <div>
                 <div class="text-sm font-semibold flex items-center gap-1.5">Bloque breve <span class="text-xs font-semibold bg-amber-100 text-amber-700 rounded px-1.5 py-0.5 leading-tight" title="No cuenta con formato PAC institucional a&uacute;n. Incluido como horizonte de la modularizaci&oacute;n.">Proyectivo</span></div>
-                <div class="text-xs text-gray-400">5 semanas, duraci&oacute;n t&iacute;pica para microcredenciales</div>
+                <div class="text-xs text-gray-400">5 semanas, concentrado</div>
               </div>
             </label>
             <label class="radio-card flex items-center gap-2">
@@ -403,14 +394,14 @@
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Semanas <span class="text-gray-400 font-normal text-xs">(NS)</span></label>
             <input type="number" id="ns" value="18" min="1" max="52" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
-            <p class="text-xs text-gray-400 mt-1">Duraci&oacute;n del m&oacute;dulo</p>
+            <p class="text-xs text-gray-400 mt-1">Duraci&oacute;n de la actividad curricular</p>
           </div>
         </div>
         <details class="fundamentacion-panel">
           <summary>&iquest;C&oacute;mo estimar estas horas?</summary>
           <div class="fundamentacion-content">
             <p>Si no tienes certeza de cu&aacute;ntas horas toma cada tipo de actividad, puedes usar como referencia los estimadores de carga acad&eacute;mica de Penn State (HIA Estimator App), Wake Forest (Workload Estimator 2.0, Rice &amp; Artus, 2016) o Massey University. Estas herramientas proporcionan rangos calibrados para actividades t&iacute;picas: lectura acad&eacute;mica, escritura, participaci&oacute;n en foros, evaluaciones, etc.</p>
-            <p class="mt-2">La <strong>regla del tercio</strong> es una orientaci&oacute;n institucional: las horas de trabajo aut&oacute;nomo deber&iacute;an representar aproximadamente un tercio de la carga total. Esto asegura equilibrio entre actividades dirigidas (sincr&oacute;nicas + asincr&oacute;nicas) y aprendizaje autodirigido. Si tu curso es de 4.5 hrs/semana, aproximadamente 1.5 hrs deber&iacute;an ser aut&oacute;nomas.</p>
+            <p class="mt-2">Como <strong>criterio orientador</strong>, las horas de trabajo aut&oacute;nomo deber&iacute;an representar entre el 25% y el 40% de la carga total (Doc. N&deg; 004-2020, Direcci&oacute;n de Docencia). Esto asegura equilibrio entre actividades dirigidas (sincr&oacute;nicas + asincr&oacute;nicas) y aprendizaje autodirigido. Si tu curso es de 4.5 hrs/semana, entre 1.1 y 1.8 hrs deber&iacute;an ser aut&oacute;nomas.</p>
             <p class="mt-2">El Manual SCT-Chile (CRUCH, 2013) recomienda adem&aacute;s contrastar la carga <em>planificada</em> (la que calculas aqu&iacute;) con la carga <em>percibida</em> por los estudiantes una vez que el curso est&aacute; en operaci&oacute;n, para ajustar iterativamente.</p>
             <p class="fundamentacion-refs">Penn State HIA Estimator; Rice, M. &amp; Artus, S. (2016). Wake Forest Workload Estimator; Manual SCT-Chile (CRUCH, 2013); Doc. N&deg; 004-2020 (Direcci&oacute;n de Docencia, UMCE).</p>
           </div>
@@ -426,6 +417,15 @@
             <p class="mt-2" style="font-size:0.75rem; color:#6B7280;">Referencia: An&aacute;lisis Planilla Master UMCE Virtual 2026 (342 sesiones, 12 programas). Los programas con sesiones de 1.5-2 hrs presentan cargas agregadas de 4.5-8 hrs/sem; los de 3 hrs alcanzan 9-12 hrs/sem.</p>
           </div>
         </details>
+
+        <!-- Creditos declarados — punto de comparación (después de las horas, siguiendo método compositivo) -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">&iquest;Cu&aacute;ntos cr&eacute;ditos SCT tiene seg&uacute;n la resoluci&oacute;n exenta?</label>
+          <div class="flex items-center gap-3">
+            <input type="number" id="sctDeclarados" value="3" min="1" max="60" class="w-28 px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-center font-bold text-xl">
+            <span class="text-sm text-gray-500">cr&eacute;ditos SCT. Si a&uacute;n no tienes resoluci&oacute;n, usa el valor estimado. La calculadora comparar&aacute; este n&uacute;mero con los cr&eacute;ditos que resultan de tus horas.</span>
+          </div>
+        </div>
 
         <!-- Panel de orientación dinámica -->
         <div id="orientacionPanel" class="bg-amber-50 border border-amber-200 rounded-xl p-5">
@@ -468,13 +468,13 @@
             </div>
           </div>
 
-          <p class="text-xs text-gray-400 mt-3">F&oacute;rmula: SCT = (HS + HAs + HAut) &times; NS &divide; 27. Carga recomendada: m&aacute;x. 10 hrs/semana. Alerta: sobre 12 hrs/semana.</p>
+          <p class="text-xs text-gray-400 mt-3">F&oacute;rmula: SCT = (HS + HAs + HAut) &times; NS &divide; 27. Carga recomendada: m&aacute;x. 10 hrs/semana. Alerta: m&aacute;s de 12 hrs/semana.</p>
         </div>
 
 
         <div class="flex justify-end pt-4">
           <button class="btn-primary" onclick="goToStep(2)">
-            Calcular SCT &rarr;
+            Ver an&aacute;lisis detallado &rarr;
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
           </button>
         </div>
@@ -496,16 +496,16 @@
           <p class="text-gray-500 text-sm">cr&eacute;ditos SCT</p>
           <div class="mt-4 grid grid-cols-4 gap-3">
             <div class="bg-white rounded-lg p-3">
-              <div class="text-xl font-bold text-umce-azul" id="resultHS">36</div>
-              <div class="text-xs text-gray-400">HS (sincr&oacute;nico)</div>
+              <div class="text-xl font-bold text-umce-azul" id="resultHS">&mdash;</div>
+              <div class="text-xs text-gray-400">HS total</div>
             </div>
             <div class="bg-white rounded-lg p-3">
-              <div class="text-xl font-bold text-umce-azul" id="resultHAs">45</div>
-              <div class="text-xs text-gray-400">HAs (asincr&oacute;nico)</div>
+              <div class="text-xl font-bold text-umce-azul" id="resultHAs">&mdash;</div>
+              <div class="text-xs text-gray-400">HAs total</div>
             </div>
             <div class="bg-white rounded-lg p-3">
-              <div class="text-xl font-bold text-umce-azul" id="resultHAut">0</div>
-              <div class="text-xs text-gray-400">HAut (aut&oacute;nomo)</div>
+              <div class="text-xl font-bold text-umce-azul" id="resultHAut">&mdash;</div>
+              <div class="text-xs text-gray-400">HAut total</div>
             </div>
             <div class="bg-white rounded-lg p-3">
               <div class="text-xl font-bold text-umce-azul" id="resultNS">18</div>
@@ -520,11 +520,11 @@
           <div class="space-y-2 text-sm">
             <div class="flex justify-between py-1.5 border-b border-gray-200">
               <span class="text-gray-600">HS + HAs + HAut (horas por semana)</span>
-              <span class="font-bold text-gray-800" id="calcStep1">81</span>
+              <span class="font-bold text-gray-800" id="calcStep1">&mdash;</span>
             </div>
             <div class="flex justify-between py-1.5 border-b border-gray-200">
               <span class="text-gray-600">(HS + HAs + HAut) &times; NS (total)</span>
-              <span class="font-bold text-gray-800" id="calcStep2">81</span>
+              <span class="font-bold text-gray-800" id="calcStep2">&mdash;</span>
             </div>
             <div class="flex justify-between py-1.5 border-b border-gray-200">
               <span class="text-gray-600">Divisi&oacute;n entre 27 hrs/cr&eacute;dito (valor exacto)</span>
@@ -684,8 +684,8 @@
 
         <!-- Marco normativo -->
         <div class="bg-gray-50 rounded-lg p-4 text-xs text-gray-500 space-y-1">
-          <p><strong>Base normativa:</strong> Sistema de Cr&eacute;ditos Transferibles SCT-Chile (Declaraci&oacute;n de Valpara&iacute;so, 2003). Gu&iacute;a Pr&aacute;ctica SCT Chile (CRUCH, 2007).</p>
-          <p><strong>Valor adoptado:</strong> 1 SCT = 27 horas de trabajo real del estudiante (Res. Exentas UMCE N&deg; 100062 y N&deg; 100241, 2019).</p>
+          <p><strong>Base normativa:</strong> Sistema de Cr&eacute;ditos Transferibles SCT-Chile (Declaraci&oacute;n de Valpara&iacute;so, CRUCH, 2003). Manual SCT-Chile, 2.&ordf; ed. (CRUCH, 2013).</p>
+          <p><strong>Valor adoptado:</strong> 1 SCT = 27 horas cronol&oacute;gicas de trabajo del estudiante (Res. Exenta N&deg; 002140, UMCE, 2011; reafirmado en Res. Exentas N&deg; 100062 y N&deg; 100241, 2019).</p>
           <p><strong>Criterio de redondeo:</strong> Entero superior (Math.ceil), adoptado como criterio operativo consensuado.</p>
           <p><strong>Herramienta:</strong> Calculadora SCT UMCE v1.0 &mdash; Producto de Mesa 1, Mesas de Virtualizaci&oacute;n 2026.</p>
         </div>
@@ -714,7 +714,7 @@
     <div class="wizard-step" id="step4">
       <div class="explain-box">
         <div class="explain-title">Etapa 4 &mdash; Verificaci&oacute;n de consistencia</div>
-        <p>Se verifican tres niveles: (1) distribuci&oacute;n entre horas sincr&oacute;nicas, asincr&oacute;nicas y aut&oacute;nomas, (2) proporci&oacute;n de trabajo aut&oacute;nomo (regla del tercio), y (3) sostenibilidad de la carga semanal seg&uacute;n los est&aacute;ndares institucionales.</p>
+        <p>Se verifican tres niveles: (1) distribuci&oacute;n entre horas sincr&oacute;nicas, asincr&oacute;nicas y aut&oacute;nomas, (2) proporci&oacute;n de trabajo aut&oacute;nomo (criterio orientador: 25-40%), y (3) sostenibilidad de la carga semanal.</p>
       </div>
 
       <div class="space-y-5">
@@ -800,7 +800,7 @@
 
         <div class="bg-white rounded-xl p-5 border border-slate-200">
           <div class="font-bold text-umce-azul mb-2">El problema de la carga agregada</div>
-          <p class="text-sm text-gray-600 leading-relaxed">Cada actividad curricular se dise&ntilde;a en forma aislada: el acad&eacute;mico calcula cu&aacute;ntas horas semanales tomar&aacute; su asignatura, y la calculadora verifica que ese n&uacute;mero sea coherente con los cr&eacute;ditos SCT. El problema es que <strong>nadie suma la carga que el estudiante enfrenta en paralelo</strong> desde todas las actividades que cursa simult&aacute;neamente.</p>
+          <p class="text-sm text-gray-600 leading-relaxed">Cada actividad curricular se dise&ntilde;a en forma aislada: el acad&eacute;mico calcula cu&aacute;ntas horas semanales tomar&aacute; su actividad curricular, y la calculadora verifica que ese n&uacute;mero sea coherente con los cr&eacute;ditos SCT. El problema es que <strong>nadie suma la carga que el estudiante enfrenta en paralelo</strong> desde todas las actividades que cursa simult&aacute;neamente.</p>
           <p class="text-sm text-gray-600 leading-relaxed mt-2">Si cada actividad tiene 1.5 hrs sincr&oacute;nicas semanales y el estudiante cursa 4 actividades en paralelo, la carga sincr&oacute;nica real es de 6 hrs semanales &mdash;antes de contar horas asincr&oacute;nicas ni trabajo aut&oacute;nomo. Este problema es especialmente cr&iacute;tico en programas de postgrado, donde los participantes son profesionales con jornada laboral completa.</p>
         </div>
 
@@ -813,7 +813,7 @@
             <li>Los estudiantes de prosecuci&oacute;n y pregrado difieren ampliamente (2-7 sesiones, 2.8-15 hrs/semana).</li>
             <li>Los casos m&aacute;s intensivos ya est&aacute;n en el umbral de alerta de 12 hrs/semana <em>solo con sesiones sincr&oacute;nicas</em>, sin sumar el resto de la carga.</li>
           </ul>
-          <p class="text-sm text-gray-600 leading-relaxed mt-2">Una <strong>resoluci&oacute;n exenta real</strong> (Mg. Ed. Intercultural, noviembre 2025) ya usa las tres columnas de esta calculadora (Sincr&oacute;nicas, Asincr&oacute;nicas, Trabajo Aut&oacute;nomo) y combina formatos de 18 semanas y 8 semanas. Primer semestre: 3 actividades simult&aacute;neas = 14 hrs sincr&oacute;nicas + 20 hrs asincr&oacute;nicas + 5 hrs aut&oacute;nomas = <strong>39 hrs/semana para profesionales en ejercicio</strong>.</p>
+          <p class="text-sm text-gray-600 leading-relaxed mt-2">Una <strong>resoluci&oacute;n exenta</strong> de un programa de postgrado (2025) ya usa las tres columnas de esta calculadora (Sincr&oacute;nicas, Asincr&oacute;nicas, Trabajo Aut&oacute;nomo) y combina formatos de 18 semanas y 8 semanas. En su primer semestre, con 3 actividades simult&aacute;neas, la carga semanal puede alcanzar las <strong>39 hrs/semana para profesionales en ejercicio</strong>.</p>
         </div>
 
         <div class="bg-white rounded-xl p-5 border border-slate-200">
@@ -850,7 +850,7 @@
         <p>CRUCH. (2013). <em>Manual para la implementaci&oacute;n del Sistema de Cr&eacute;ditos Acad&eacute;micos Transferibles SCT-Chile</em>, 2.&ordf; ed. M&eacute;todos anal&iacute;tico (top-down) y compositivo (bottom-up), instrumentos de encuesta, rango 24-31 hrs/cr&eacute;dito.</p>
         <p>Direcci&oacute;n de Docencia, UMCE. (2020). <em>Doc. N&deg; 004-2020: Orientaciones para PAC virtuales</em>. Define la distribuci&oacute;n de horas sincr&oacute;nicas, asincr&oacute;nicas y aut&oacute;nomas.</p>
         <p>Hase, S. &amp; Kenyon, C. (2000). From andragogy to heutagogy. <em>UltiBASE</em>. Fundamento del aprendizaje autodirigido en adultos profesionales.</p>
-        <p>International Review of Research in Open and Distributed Learning [IRRODL]. (2021). Meta-an&aacute;lisis sobre aprendizaje sincr&oacute;nico en educaci&oacute;n en l&iacute;nea (27 tama&ntilde;os de efecto): el nivel educativo del estudiante modera el efecto del aprendizaje sincr&oacute;nico; sin umbrales prescriptivos de porcentaje.</p>
+        <p>Nieuwoudt, J. E. (2020). Investigating synchronous and asynchronous class attendance as predictors of academic success in online education. <em>Australasian Journal of Educational Technology, 36</em>(3), 15-25. Evidencia sobre el efecto moderador del formato sincr&oacute;nico seg&uacute;n nivel educativo.</p>
         <p>Knowles, M. (1984). <em>The Adult Learner: A Neglected Species</em>, 3.&ordf; ed. Gulf Publishing. Fundamento de la andragog&iacute;a: aprendizaje autodirigido en adultos profesionales.</p>
         <p>Martin, F., Polly, D. &amp; Ritzhaupt, A. (2020). Bichronous Online Learning: Blending Asynchronous and Synchronous Online Learning. <em>EDUCAUSE Review</em>. Modelo que integra modalidades sincr&oacute;nicas y asincr&oacute;nicas seg&uacute;n necesidades pedag&oacute;gicas y perfil del estudiante.</p>
         <p>UDFV, UMCE. (2026). <em>Planilla Master de Apoyo UMCE Virtual 2026</em> (n=342 sesiones sincr&oacute;nicas, 12 programas). Datos institucionales sobre carga sincr&oacute;nica real de programas de postgrado y pregrado.</p>
@@ -1146,9 +1146,9 @@
 
       // Resultado principal
       document.getElementById('resultSCT').textContent = sct;
-      document.getElementById('resultHS').textContent = hs;
-      document.getElementById('resultHAs').textContent = has;
-      document.getElementById('resultHAut').textContent = haut;
+      document.getElementById('resultHS').textContent = (hs * ns).toFixed(0);
+      document.getElementById('resultHAs').textContent = (has * ns).toFixed(0);
+      document.getElementById('resultHAut').textContent = (haut * ns).toFixed(0);
       document.getElementById('resultNS').textContent = ns;
 
       // Pasos del calculo
@@ -1308,7 +1308,7 @@
         { entrada: 'Horas sincr\u00f3nicas por semana (HS)', proc: 'Dato declarado', resultado: 'Par\u00e1metro de entrada', valor: hs + ' hrs/sem' },
         { entrada: 'Horas asincr\u00f3nicas por semana (HAs)', proc: 'Dato declarado', resultado: 'Par\u00e1metro de entrada', valor: has + ' hrs/sem' },
         { entrada: 'Horas trabajo aut\u00f3nomo por semana (HAut)', proc: 'Dato declarado', resultado: 'Par\u00e1metro de entrada', valor: haut + ' hrs/sem' },
-        { entrada: 'N\u00famero de semanas (NS)', proc: 'Duraci\u00f3n del m\u00f3dulo', resultado: 'Par\u00e1metro de entrada', valor: ns + ' semanas' },
+        { entrada: 'N\u00famero de semanas (NS)', proc: 'Duraci\u00f3n de la actividad curricular', resultado: 'Par\u00e1metro de entrada', valor: ns + ' semanas' },
         { entrada: 'HS + HAs + HAut (carga semanal)', proc: hs + ' + ' + has + ' + ' + haut, resultado: 'Carga semanal total', valor: weekly.toFixed(1) + ' hrs/sem' },
         { entrada: '(HS + HAs + HAut) \u00d7 NS (horas totales)', proc: '(' + weekly.toFixed(1) + ') \u00d7 ' + ns, resultado: 'Total horas semestre', valor: total.toFixed(1) + ' hrs' },
         { entrada: 'Divisi\u00f3n entre 27 (valor exacto)', proc: total.toFixed(1) + ' \u00f7 27', resultado: 'SCT sin redondear', valor: sctExact.toFixed(3) },
@@ -1358,7 +1358,7 @@
         {
           ok: weeklyRecomOk,
           label: 'Carga semanal recomendada (\u226410 hrs/sem)',
-          desc: 'Actual: ' + weekly.toFixed(1) + ' hrs/semana. El est\u00e1ndar institucional es m\u00e1ximo 10 hrs/semana.',
+          desc: 'Actual: ' + weekly.toFixed(1) + ' hrs/semana. El umbral recomendado es m\u00e1ximo 10 hrs/semana por actividad.',
           warn: !weeklyOk
         },
         {
@@ -1370,7 +1370,7 @@
         {
           ok: autOk,
           label: 'Proporci\u00f3n de trabajo aut\u00f3nomo (HAut entre 25\u201340%)',
-          desc: 'HAut actual: ' + Math.round(autPct * 100) + '% de la carga total. La normativa institucional sugiere aproximadamente un tercio de la carga total (25\u201340%).'
+          desc: 'HAut actual: ' + Math.round(autPct * 100) + '% de la carga total. El criterio orientador es que represente entre el 25% y el 40% de la carga total (Doc. N\u00b0 004-2020).'
         },
         {
           ok: true,
@@ -1392,9 +1392,10 @@
           + '</div>';
       }).join('');
 
-      // Semaforo global (solo sobre checks duros)
-      var passed = checks.filter(function(c) { return c.ok; }).length;
-      var total = checks.length;
+      // Semaforo global (solo sobre checks duros, excluyendo el informativo)
+      var hardChecks = checks.slice(0, 3);
+      var passed = hardChecks.filter(function(c) { return c.ok; }).length;
+      var total = hardChecks.length;
       var globalCard = document.getElementById('globalSemCard');
       var globalIcon = document.getElementById('globalSemIcon');
       var globalTitle = document.getElementById('globalSemTitle');
@@ -1430,9 +1431,10 @@
       var recs = [];
       if (!weeklyOk) recs.push('Reducir la carga semanal por debajo de 12 hrs/semana. Opciones: aumentar el n\u00famero de semanas, reducir actividades o redistribuir la carga.');
       else if (!weeklyRecomOk) recs.push('La carga est\u00e1 entre 10 y 12 hrs/semana. Evaluar si es sostenible para el perfil de estudiantes (especialmente postgrado).');
-      if (!autOk && autPct < 0.25) recs.push('El trabajo aut\u00f3nomo (HAut) es menor al recomendado. La normativa institucional sugiere que sea aproximadamente un tercio de la carga total.');
+      if (!autOk && autPct < 0.25) recs.push('El trabajo aut\u00f3nomo (HAut) es menor al 25% recomendado. El criterio orientador es que represente entre el 25% y el 40% de la carga total.');
       if (!autOk && autPct > 0.40) recs.push('El trabajo aut\u00f3nomo (HAut) supera el 40%. Verificar que haya suficiente interacci\u00f3n docente (HS + HAs).');
-      if (hs > 2 && formatVal === 'semestral') recs.push('En formato semestral, sesiones sincr\u00f3nicas de m\u00e1s de 2 hrs por actividad pueden generar carga agregada alta cuando el estudiante cursa 3-4 actividades. Considerar si el formato modular ser\u00eda m\u00e1s adecuado, o reducir a 1.5-2 hrs.');
+      var projectedSyncCheck = hs * actConc;
+      if (projectedSyncCheck > 10 && formatVal === 'semestral') recs.push('En formato semestral, con ' + actConc + ' actividades concurrentes y ' + hs.toFixed(1) + ' hrs sincr\u00f3nicas/actividad, la carga sincr\u00f3nica agregada estimada es de ' + projectedSyncCheck.toFixed(1) + ' hrs/semana. Considerar reducir HS o adoptar formato modular.');
       if (recs.length === 0) recs.push('No hay recomendaciones cr\u00edticas. El dise\u00f1o cumple con los est\u00e1ndares institucionales. Exportar el informe de la Etapa 3 para adjuntar al PAC.');
 
       var recsSection = document.getElementById('recsSection');
