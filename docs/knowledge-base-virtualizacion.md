@@ -94,6 +94,8 @@ La calculadora UMCE implementa ambos: parte del top-down y valida con bottom-up.
 
 **Dónde se aplica en umce.online**: El planificador web en /virtualizacion usa esta fórmula para validar que el diseño instruccional es coherente con los créditos declarados.
 
+**Evolución v3 (13-abr-2026)**: La propuesta v2 planteaba un rediseño completo que construía la malla crediticia desde competencias del perfil de egreso (Bloom → DOK × conocimiento → Laurillard → horas). Una auditoría crítica identificó problemas de scope creep, ratios sin fundamentar y contradicciones internas. La propuesta v3 consolidada resuelve esto mediante tres modos coexistentes: **Modo A** (curso individual, la calculadora actual mejorada con selector de tipo de actividad y doble formato UGCI), **Modo B** (vista de semestre con múltiples ACs y carga agregada), y **Modo C** (estimación desde competencias con checkboxes de actividad × slider de nivel cognitivo). Bases teóricas nuevas incorporadas: DOK (Webb), Hess Cognitive Rigor Matrix, van den Akker (niveles curriculares), De Jong & Ferguson-Hessler (tipos de conocimiento), Diamond (diseño curricular), Beer (tipos de aprendizaje → carga). Ver `propuesta-calculadora-sct-v3-consolidada.md`.
+
 ---
 
 ### 2.e 27 horas por crédito SCT (Res. Exenta 002140)

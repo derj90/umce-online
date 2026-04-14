@@ -271,6 +271,27 @@ Todas las herramientas están disponibles en [umce.online/virtualizacion](https:
 
 ---
 
+## Evolución conceptual — 13 abril 2026
+
+### Análisis de vacío normativo
+Se revisaron sistemáticamente las fuentes normativas (Guía UGCI, Manual SCT-Chile, CNA Criterios Virtuales, Plan de Seguimiento SCT) confirmando que ninguna formaliza el puente competencias → horas para programas nuevos. El Manual SCT-Chile FAQ 5 (p.109) autoriza estimación prospectiva pero no la operacionaliza.
+
+### Propuesta v3: tres modos coexistentes
+- **Modo A**: Calculadora actual mejorada (selector tipo actividad + doble formato UGCI)
+- **Modo B**: Vista de semestre (múltiples ACs + carga agregada)
+- **Modo C**: Estimación desde competencias (checkboxes actividad × slider nivel cognitivo → horas automáticas)
+
+### Bases teóricas incorporadas
+DOK (Webb), Anderson & Krathwohl (dimensión conocimiento), Laurillard (6 tipos), Wake Forest (calibración horas), Hess Cognitive Rigor Matrix, van den Akker (niveles curriculares).
+
+### Documentos generados
+- `concepto-calculadora-sct-v2.md` — propuesta inicial (superada por v3)
+- `impacto-rediseno-calculadora-sct.md` — análisis de impacto
+- `propuesta-mockups-calculadora-sct-v2.md` — mockups v2 (superados por v3)
+- `propuesta-calculadora-sct-v3-consolidada.md` — propuesta definitiva
+
+---
+
 *Documento de referencia interna. Elaborado con base en la Guía SCT UGCI (borrador abr-2026), Manual SCT-Chile (CRUCH, 2013), resoluciones exentas UMCE, actas de Mesa 1, y correspondencia institucional UGCI-UDFV.*
 
 ---

@@ -1,7 +1,7 @@
 # Bibliografía Académica — Virtualización UMCE
 ## Referencias que sustentan las decisiones de diseño
 
-**Fecha de compilación**: 7 de abril de 2026
+**Fecha de compilación**: 13 de abril de 2026 (actualizada con referencias del rediseño Calculadora SCT v2)
 **Compilador**: UDFV — Investigación con fuentes verificadas
 **Nota metodológica**: Este documento distingue entre **[ACADÉMICA]** (artículos revisados por pares, libros científicos), **[INSTITUCIONAL]** (documentos técnicos de universidades e instituciones de educación superior), y **[NORMATIVA]** (resoluciones, decretos, regulaciones oficiales). Las entradas que provienen de Zotero indican el `item_key` entre corchetes. Cuando no se encontró un ítem en Zotero, se indica **[Sin entrada Zotero]**.
 
@@ -395,12 +395,113 @@ Centro de Perfeccionamiento, Experimentación e Investigaciones Pedagógicas —
 Centro de Perfeccionamiento, Experimentación e Investigaciones Pedagógicas — CPEIP. (s.f.). *Sistema de Reconocimiento de la Carrera Docente*. MINEDUC. https://www.cpeip.cl/sistema-reconocimiento/
 > Sustenta la relevancia de las credenciales verificables para el avance en la Carrera Docente de egresados de pedagogía UMCE. Referenciado en investigacion-microcredenciales-ob3-abril2026.
 
-### 8.3 Informe de acreditación institucional
+### 8.3 Normativa y marcos de calidad complementarios
+
+**[INSTITUCIONAL]** [Sin entrada Zotero]
+CRUCH. (2015). *Manual para la implementación del Sistema de Créditos Académicos Transferibles SCT-Chile* (3.ª ed.). Consejo de Rectores de Universidades Chilenas.
+> Tercera edición del manual oficial que actualiza los métodos analítico (top-down) y compositivo (bottom-up) para asignación de créditos SCT. Complementa la 2.ª ed. (2013) referenciada en sección 2.1. Relevante para el rediseño de la Calculadora SCT v2.
+> **[Sin entrada Zotero]**
+
+**[INSTITUCIONAL]** [Sin entrada Zotero]
+EADTU. (2018). *Quality assessment for e-learning: A benchmarking approach* (3rd ed.). European Association of Distance Teaching Universities.
+> Marco europeo de evaluación de calidad para e-learning que complementa los estándares OSCQR y QM ya adoptados. Referencia comparativa para el proceso SGIC-UDFV-QA-001 y la dimensión de calidad de la Calculadora SCT v2.
+> **[Sin entrada Zotero]**
+
+**[INSTITUCIONAL]** [Sin entrada Zotero]
+UNESCO-IESALC. (2020). *COVID-19 and higher education: Today and tomorrow*. UNESCO.
+> Diagnóstico y proyección del impacto de COVID-19 en la educación superior global. Sustenta el contexto de aceleración de la virtualización que motiva las herramientas de /virtualizacion y la necesidad de instrumentos de planificación de carga como la Calculadora SCT.
+> **[Sin entrada Zotero]**
+
+### 8.4 Informe de acreditación institucional
 
 **[INSTITUCIONAL]**
 Roepke, [nombre], et al. (s.f.). *Informe de Evaluación Externa — Universidad Metropolitana de Ciencias de la Educación*. [Comité de Pares Evaluadores, CNA].
 > Contexto de acreditación institucional UMCE. Provee el marco de evaluación externa que las herramientas de /virtualizacion buscan fortalecer.
 > **Zotero key**: `AGJ4RZ49` (adjunto PDF)
+
+---
+
+## 9. Taxonomías Cognitivas y Clasificación de Complejidad
+
+### 9.1 Taxonomías de objetivos de aprendizaje
+
+**[ACADÉMICA]** [Sin entrada Zotero]
+Anderson, L. W., & Krathwohl, D. R. (Eds.). (2001). *A taxonomy for learning, teaching, and assessing: A revision of Bloom's taxonomy of educational objectives*. Longman.
+> Revisión canónica de la taxonomía de Bloom con la tabla bidimensional (proceso cognitivo × tipo de conocimiento). Sustenta la clasificación automática de verbos y la inferencia de nivel cognitivo en la Calculadora SCT v2. Referencia central del motor de estimación de complejidad por actividad curricular.
+
+**[ACADÉMICA]** [Sin entrada Zotero]
+Biggs, J., & Tang, C. (2011). *Teaching for quality learning at university* (4th ed.). McGraw-Hill / Open University Press.
+> Introduce el concepto de alineamiento constructivo (constructive alignment) entre resultados de aprendizaje, actividades y evaluación. Sustenta la lógica de coherencia interna de la Calculadora SCT v2 y la validación de que las actividades propuestas tributen efectivamente a las competencias declaradas.
+
+**[ACADÉMICA]** [Sin entrada Zotero]
+Churches, A. (2008). Bloom's digital taxonomy. *Educational Origami*.
+> Extensión de la taxonomía revisada de Bloom al contexto digital, con verbos específicos para actividades mediadas por tecnología (colaborar, publicar, negociar, moderar). Sustenta la clasificación de verbos en contextos de aprendizaje virtual de la Calculadora SCT v2.
+
+**[ACADÉMICA]** [Sin entrada Zotero]
+Fink, L. D. (2013). *Creating significant learning experiences: An integrated approach to designing college courses* (2nd ed.). Jossey-Bass.
+> Propone una taxonomía no jerárquica de aprendizaje significativo (foundational knowledge, application, integration, human dimension, caring, learning how to learn). Complementa la taxonomía de Bloom con dimensiones afectivas y metacognitivas relevantes para la estimación de carga en actividades de reflexión y aprendizaje autodirigido.
+
+**[ACADÉMICA]** [Sin entrada Zotero]
+Marzano, R. J., & Kendall, J. S. (2007). *The new taxonomy of educational objectives* (2nd ed.). Corwin Press.
+> Taxonomía alternativa que integra niveles de procesamiento (retrieval, comprehension, analysis, knowledge utilization, metacognition, self-system thinking) con dominios de conocimiento. Referencia comparativa para la calibración del motor de complejidad cognitiva de la Calculadora SCT v2.
+
+**[ACADÉMICA]** [Sin entrada Zotero]
+Webb, N. L. (2002). *Depth-of-knowledge levels for four content areas*. Wisconsin Center for Education Research.
+> Define cuatro niveles de profundidad de conocimiento (DOK): recall, skill/concept, strategic thinking, extended thinking. Sustenta la inferencia automática de nivel DOK por actividad curricular en la Calculadora SCT v2, complementando la clasificación Bloom con una dimensión de profundidad cognitiva.
+
+### 9.1b Referencias adicionales — Propuesta v3 (13-abr-2026)
+
+**[ACADÉMICA]** [Sin entrada Zotero]
+van den Akker, J. (2003). Curriculum perspectives: An introduction. In J. van den Akker, W. Kuiper, & U. Hameyer (Eds.), *Curriculum landscapes and trends* (pp. 1-10). Kluwer Academic.
+> Distingue niveles curriculares (supra, macro, meso, micro, nano) relevantes para la propuesta v3 de la Calculadora SCT, que opera en el nivel meso (programa) y micro (actividad curricular). Sustenta el diseño de tres modos coexistentes que abordan diferentes niveles curriculares.
+
+**[ACADÉMICA]** [Sin entrada Zotero]
+Hess, K. K., Jones, B. S., & Carlock, D. (2009). Cognitive rigor: Blending the strengths of Bloom's taxonomy and Webb's depth of knowledge to enhance classroom-level processes. ERIC. (ED517804).
+> Propone la Hess Cognitive Rigor Matrix, que cruza los niveles de Bloom con los DOK de Webb. Sustenta la matriz DOK x dimensión de conocimiento utilizada en el Modo C de la Calculadora SCT v3 para estimar horas desde competencias.
+
+**[ACADÉMICA]** [Sin entrada Zotero]
+De Jong, T., & Ferguson-Hessler, M. G. M. (1996). Types and qualities of knowledge. *Educational Psychologist*, *31*(2), 105-113.
+> Tipología de conocimiento (situacional, conceptual, procedimental, estratégico) que complementa la dimensión de conocimiento de Anderson & Krathwohl. Sustenta la discriminación de tipos de conocimiento en el motor de estimación de carga del Modo C.
+
+**[ACADÉMICA]** [Sin entrada Zotero]
+Diamond, R. M. (2008). *Designing and assessing courses and curricula: A practical guide* (3rd ed.). Jossey-Bass.
+> Guía práctica para el diseño curricular basado en competencias y resultados de aprendizaje. Sustenta el flujo de diseño de programa completo que la propuesta v2 intentaba cubrir y que la v3 modulariza en el Modo C.
+
+**[ACADÉMICA]** [Sin entrada Zotero]
+Beer, C. (2019). Using learning types to estimate course workload. Lancaster University.
+> Propone el uso de los tipos de aprendizaje de Laurillard como base para estimar la carga de trabajo de un curso. Sustenta la calibración de horas por tipo de actividad Laurillard en el motor de estimación de la Calculadora SCT v3.
+
+### 9.2 Estimación de carga y learning design
+
+**[ACADÉMICA]** [Sin entrada Zotero]
+Boring, R. L., & Blackman, H. S. (2021). Cognitive task analysis and workload classification. *MethodsX*, *8*, 101427. https://doi.org/10.1016/j.mex.2021.101427
+> Metodología de análisis cognitivo de tareas y clasificación de carga de trabajo. Sustenta el enfoque de estimación de horas basado en complejidad cognitiva (no solo en tipo de actividad) adoptado en la Calculadora SCT v2.
+
+**[ACADÉMICA]** [Sin entrada Zotero]
+Kyndt, E., Dochy, F., Struyven, K., & Cascallar, E. (2011). The perception of workload and task complexity and its influence on students' approaches to learning. *European Journal of Psychology of Education*, *26*(3), 393–415.
+> Evidencia empírica sobre cómo la percepción de carga y complejidad influye en los enfoques de aprendizaje de los estudiantes. Sustenta la inclusión de indicadores de complejidad cognitiva por semestre en la vista de programa de la Calculadora SCT v2, para prevenir sobrecarga cognitiva (no solo temporal).
+
+**[ACADÉMICA]** [Sin entrada Zotero]
+Laurillard, D. (2012). *Teaching as a design science: Building pedagogical patterns for learning and technology*. Routledge.
+> Define seis tipos de aprendizaje (acquisition, inquiry, practice, production, discussion, collaboration) como base para el diseño de actividades. Sustenta la clasificación de tipo Laurillard dominante por actividad curricular en la Calculadora SCT v2, permitiendo estimar la distribución sync/async/auto según el tipo de actividad pedagógica.
+
+**[INSTITUCIONAL]** [Sin entrada Zotero]
+Wagenaar, R. (Ed.). (2019). *Educational structures, learning outcomes, workload and the calculation of ECTS credits*. University of Groningen / Tuning Project.
+> Marco del proyecto Tuning para el cálculo de créditos ECTS basado en resultados de aprendizaje y carga de trabajo. Referencia comparativa internacional para la metodología de la Calculadora SCT v2, que adapta principios ECTS al contexto SCT-Chile.
+
+**[ACADÉMICA]** [Sin entrada Zotero]
+Young, C., & Perovic, N. (2015). Rapid and creative course design: As easy as ABC? *Procedia - Social and Behavioral Sciences*, *228*, 390–395.
+> Metodología ABC Learning Design de UCL para diseño rápido de cursos basado en los tipos de aprendizaje de Laurillard. Sustenta el flujo de diseño de la Calculadora SCT v2, donde la clasificación Laurillard informa la distribución de horas por tipo de actividad.
+
+### 9.3 Marcos de competencias digitales
+
+**[INSTITUCIONAL]** [Sin entrada Zotero]
+UNESCO. (2018). *ICT competency framework for teachers* (version 3). UNESCO.
+> Marco de competencias TIC para docentes en tres niveles (adquisición, profundización, creación de conocimiento) y seis aspectos. Sustenta la dimensión de competencias digitales docentes integrada en los criterios de calidad del proceso SGIC-UDFV-DI-001 y en la evaluación de factibilidad de actividades virtuales de la Calculadora SCT v2.
+
+**[INSTITUCIONAL]** [Sin entrada Zotero]
+Vuorikari, R., Kluzer, S., & Punie, Y. (2022). *DigComp 2.2: The digital competence framework for citizens* (EUR 31006 EN). Publications Office of the European Union.
+> Marco europeo de competencia digital ciudadana, versión 2.2 con 250+ ejemplos de conocimientos, habilidades y actitudes. Referencia comparativa para la evaluación de competencias digitales de estudiantes y docentes en el contexto de virtualización UMCE.
 
 ---
 
@@ -427,9 +528,24 @@ Roepke, [nombre], et al. (s.f.). *Informe de Evaluación Externa — Universidad
 - `Durán certificación competencia digital` → artículo en Zotero (key `UXCYNV29`)
 - `Sánchez criterios pedagógicos herramientas` → artículo en Zotero (key `XTWBMBYW`)
 
-**Conclusión sobre Zotero**: La biblioteca contiene mayoritariamente adjuntos (PDFs) sin metadatos padre indexados correctamente para los temas de esta bibliografía. Las referencias clave (CRUCH, resoluciones UMCE, Salmon, Mishra & Koehler, Siemens, Guardia et al., Wiggins & McTighe, 1EdTech OB 3.0, W3C VC) no tienen ítems en Zotero y se documentan como **[Sin entrada Zotero]** con datos extraídos de los documentos del proyecto.
+**Búsquedas adicionales** (abril 2026, Calculadora SCT v2):
+- `Anderson Krathwohl taxonomy revised Bloom` → Sin resultados
+- `Webb depth of knowledge DOK` → Sin resultados
+- `Marzano Kendall new taxonomy` → Sin resultados
+- `Biggs Tang constructive alignment` → Sin resultados
+- `Churches Bloom digital taxonomy` → Sin resultados
+- `Fink significant learning experiences` → Sin resultados
+- `Laurillard teaching design science` → Sin resultados
+- `Young Perovic ABC learning design` → Sin resultados
+- `Boring Blackman cognitive task analysis workload` → Sin resultados
+- `Kyndt Dochy workload task complexity` → Sin resultados
+- `Wagenaar ECTS Tuning workload` → Sin resultados
+- `DigComp Vuorikari digital competence` → Sin resultados
+- `UNESCO ICT competency framework teachers` → Sin resultados
+
+**Conclusión sobre Zotero**: La biblioteca contiene mayoritariamente adjuntos (PDFs) sin metadatos padre indexados correctamente para los temas de esta bibliografía. Las referencias clave (CRUCH, resoluciones UMCE, Salmon, Mishra & Koehler, Siemens, Guardia et al., Wiggins & McTighe, 1EdTech OB 3.0, W3C VC, Anderson & Krathwohl, Webb, Laurillard, DigComp) no tienen ítems en Zotero y se documentan como **[Sin entrada Zotero]** con datos extraídos de los documentos del proyecto y del rediseño de la Calculadora SCT v2.
 
 ---
 
-*Documento compilado para umce.online — Sección /virtualizacion*
-*Fuentes verificadas: RESEARCH_R02, investigacion-microcredenciales-ob3-abril2026, NARRATIVA-MESA1-BORRADOR, PRD-calculadora-sct, 00_INDICE SGIC, procesos SGIC-UDFV*
+*Documento compilado para umce.online -- Seccion /virtualizacion*
+*Fuentes verificadas: RESEARCH_R02, investigacion-microcredenciales-ob3-abril2026, NARRATIVA-MESA1-BORRADOR, PRD-calculadora-sct, 00_INDICE SGIC, procesos SGIC-UDFV, Guia_Calculo_SCT_Chile_UMCE (UGCI), rediseno Calculadora SCT v2*
