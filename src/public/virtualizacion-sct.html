@@ -1162,7 +1162,7 @@ function renderOverview() {
     return `
       <div class="${s.cls} border p-3 rounded-lg flex items-center justify-between">
         <div class="text-sm">
-          <strong>${s.label} en W${a.semana}:</strong>
+          <strong>${s.label} en S${a.semana}:</strong>
           ${fmt(a.valor)} ${s.unit} (${s.ref}).
         </div>
         <button onclick="scrollToWeek(${a.semana})" class="text-xs underline">ver en calendario</button>
@@ -1281,7 +1281,7 @@ function renderLoadChart() {
       'empty': 'bg-gray-100'
     };
     bars += `<div class="load-bar relative ${colorMap[cls]} cursor-help" style="width:${weekPx-2}px; height:${barH}px; margin-right:2px"
-                  title="W${w}: ${fmt(h)} h/sem"></div>`;
+                  title="S${w}: ${fmt(h)} h/sem"></div>`;
   }
 
   const chartHtml = `
@@ -1298,7 +1298,7 @@ function renderLoadChart() {
         <div class="absolute bottom-0 left-0 flex items-end" style="height:${chartH}px">${bars}</div>
       </div>
       <div class="flex mt-1">
-        ${Array.from({length:n}, (_,i) => `<div class="text-[9px] text-center text-gray-500" style="width:${weekPx-2}px; margin-right:2px">${(i+1)%4===1?'W'+(i+1):''}</div>`).join('')}
+        ${Array.from({length:n}, (_,i) => `<div class="text-[9px] text-center text-gray-500" style="width:${weekPx-2}px; margin-right:2px">${(i+1)%4===1?'S'+(i+1):''}</div>`).join('')}
       </div>
     </div>`;
 
@@ -1576,8 +1576,8 @@ function renderImpacto(draft) {
 
   document.getElementById('ac-impacto').className = `text-sm p-3 rounded-lg border ${bgCls}`;
   document.getElementById('ac-impacto').innerHTML = `
-    <strong>Impacto:</strong> esta AC aporta ${fmt(hsem)} h/sem en W${w0}–W${w1}.
-    Pico proyectado: W${maxWeek} con ${fmt(maxLoad)} h/sem → <strong>${clsLabel}</strong>
+    <strong>Impacto:</strong> esta AC aporta ${fmt(hsem)} h/sem en S${w0}–S${w1}.
+    Pico proyectado: S${maxWeek} con ${fmt(maxLoad)} h/sem → <strong>${clsLabel}</strong>
     (objetivo ${p.carga_objetivo} h/sem).`;
 }
 
