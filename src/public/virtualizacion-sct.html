@@ -204,6 +204,9 @@
       </div>
       <div class="flex items-center gap-2">
         <button onclick="toggleRecomendado()" id="btn-recomendado" class="text-sm px-3 py-1.5 border rounded-lg hover:bg-gray-50">⟲ modo recomendado</button>
+        <button onclick="startWizard()" class="text-sm px-3 py-1.5 border rounded-lg hover:bg-gray-50">+ Nuevo programa</button>
+        <button onclick="deleteCurrentProgram()" class="text-sm px-3 py-1.5 border border-red-200 text-red-700 rounded-lg hover:bg-red-50">🗑 Eliminar programa</button>
+        <button onclick="openProgramsMenu()" id="btn-programs-menu" class="text-sm px-3 py-1.5 border rounded-lg hover:bg-gray-50 hidden">Mis programas ▾</button>
       </div>
     </div>
   </div>
@@ -927,6 +930,32 @@ function openProgram(id) {
   document.getElementById('breadcrumb').textContent = currentProgram.nombre;
   showView('view-overview');
   renderOverview();
+  const menuBtn = document.getElementById('btn-programs-menu');
+  if (menuBtn) menuBtn.classList.toggle('hidden', state.programs.length < 2);
+}
+
+function deleteCurrentProgram() {
+  if (!currentProgram) return;
+  if (!confirm(`¿Eliminar el programa "${currentProgram.nombre}" y todas sus AC?`)) return;
+  const deletedId = currentProgram.id;
+  state.programs = state.programs.filter(p => p.id !== deletedId);
+  saveState();
+  currentProgram = null;
+  if (state.programs.length > 0) {
+    openProgram(state.programs[0].id);
+  } else {
+    startWizard();
+  }
+}
+
+function openProgramsMenu() {
+  if (state.programs.length < 2) return;
+  const names = state.programs.map((p, i) => `${i+1}. ${p.nombre}${currentProgram && p.id===currentProgram.id?' (actual)':''}`).join('\n');
+  const choice = prompt(`Mis programas (elegir numero):\n\n${names}\n\nNumero:`);
+  const idx = parseInt(choice) - 1;
+  if (Number.isInteger(idx) && state.programs[idx]) {
+    openProgram(state.programs[idx].id);
+  }
 }
 
 
