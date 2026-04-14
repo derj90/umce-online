@@ -1738,10 +1738,10 @@
   </section>
 
   <!-- Qué sigue -->
-  <section class="py-12 bg-gray-50">
-    <div class="max-w-3xl mx-auto px-6">
+  <section class="py-12 bg-gray-50 no-print">
+    <div class="max-w-5xl mx-auto px-6">
       <p class="text-xs font-bold uppercase tracking-widest mb-5" style="color: #0033A1;">¿Qu&eacute; sigue despu&eacute;s de validar los cr&eacute;ditos?</p>
-      <div class="grid sm:grid-cols-3 gap-4">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white rounded-xl border border-gray-100 p-4">
           <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm text-white mb-3" style="background: #059669;">2</div>
           <p class="font-semibold text-sm text-gray-800 mb-1">Dise&ntilde;ar el PAC</p>
@@ -1753,16 +1753,29 @@
           <p class="text-xs text-gray-500">Una vez aprobado el PAC, el dise&ntilde;ador instruccional y el acad&eacute;mico construyen el PIAC semana a semana.</p>
           <p class="text-xs font-semibold mt-2" style="color: #7C3AED;">Ir al Planificador &rarr;</p>
         </a>
-        <a href="/virtualizacion/fundamentos" class="bg-white rounded-xl border border-gray-100 p-4 hover:border-gray-300 transition-colors group">
-          <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm text-white mb-3" style="background: #D97706;">?</div>
-          <p class="font-semibold text-sm text-gray-800 mb-1 group-hover:text-umce-azul">Fundamentos del SCT</p>
-          <p class="text-xs text-gray-500">Si necesitas entender por qu&eacute; 27 horas por cr&eacute;dito, c&oacute;mo funciona la modularizaci&oacute;n o el flujo SGIC.</p>
-          <p class="text-xs font-semibold mt-2 text-gray-400">Ver Fundamentos &rarr;</p>
+        <a href="/virtualizacion/qa" class="bg-white rounded-xl border border-green-100 p-4 hover:border-green-300 transition-colors group">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm text-white mb-3" style="background: #059669;">4</div>
+          <p class="font-semibold text-sm text-gray-800 mb-1 group-hover:text-umce-azul">Sistema QA</p>
+          <p class="text-xs text-gray-500">Cuando el PIAC est&aacute; listo, el sistema QA audita el curso antes de publicarlo al estudiantado.</p>
+          <p class="text-xs font-semibold mt-2" style="color: #059669;">Ir al QA &rarr;</p>
+        </a>
+        <a href="/virtualizacion/asistente" class="bg-white rounded-xl border border-sky-100 p-4 hover:border-sky-300 transition-colors group">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm text-white mb-3" style="background: #0369A1;">?</div>
+          <p class="font-semibold text-sm text-gray-800 mb-1 group-hover:text-umce-azul">Asistente de virtualizaci&oacute;n</p>
+          <p class="text-xs text-gray-500">Consulta dudas sobre SCT, modularizaci&oacute;n, coherencia pedag&oacute;gica o el flujo SGIC.</p>
+          <p class="text-xs font-semibold mt-2" style="color: #0369A1;">Preguntar al asistente &rarr;</p>
+        </a>
+      </div>
+      <div class="mt-6 text-center">
+        <a href="/virtualizacion/fundamentos" class="inline-flex items-center gap-2 text-xs font-semibold text-gray-500 hover:text-umce-azul transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          Fundamentos del SCT: 27 horas, modularizaci&oacute;n y flujo SGIC &rarr;
         </a>
       </div>
     </div>
   </section>
 
+  <div id="chatbot-placeholder"></div>
   <div id="footer-placeholder"></div>
 
   <script src="/shared/shared.js"></script>
