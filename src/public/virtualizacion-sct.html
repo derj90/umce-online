@@ -159,9 +159,10 @@
 
     <!-- Step 3: Carga -->
     <div class="wizard-step hidden" data-step="3">
-      <h2 class="text-2xl font-bold mb-6">Carga semanal objetivo del estudiante</h2>
+      <h2 class="text-2xl font-bold mb-6">Carga semanal de referencia</h2>
       <div class="bg-white rounded-lg border p-6 space-y-4">
         <p class="text-sm text-gray-700" id="wiz-carga-default-text"></p>
+        <p class="text-[11px] text-gray-500 -mt-2">Es una referencia para diseño (HS + HAs + HAut). <strong>No dispara alertas</strong>: las alertas de sobrecarga usan el tope sincrónico del perfil, configurable aparte.</p>
         <div class="flex items-center gap-3">
           <input type="number" id="wiz-carga" min="1" max="40" step="0.5" class="w-28 border rounded-lg px-3 py-2 text-lg font-bold">
           <span class="text-gray-600">h/sem</span>
@@ -359,9 +360,24 @@
         </div>
       </div>
 
-      <!-- 6. Siguiente paso -->
+      <!-- 6. Alertas: sincronico vs total -->
       <div>
-        <h3 class="font-bold text-base text-gray-900 mb-2">6. Siguiente paso: Planificador</h3>
+        <h3 class="font-bold text-base text-gray-900 mb-2">6. Alertas: tope sincrónico ≠ carga total</h3>
+        <p class="mb-2">
+          La calculadora distingue dos dimensiones que no se deben confundir:
+        </p>
+        <ul class="list-disc pl-5 space-y-1 mb-3">
+          <li><strong>Carga semanal total</strong> (HS + HAs + HAut): referencia de diseño por perfil (~13 pregrado, ~11 postgrado, ~8 edu continua h/sem). <strong>No dispara alertas</strong> — se usa como orientación al dimensionar el gradiente.</li>
+          <li><strong>Tope de horas sincrónicas semanales</strong>: umbral que <strong>sí</strong> dispara alerta amarilla o roja. Apunta a evitar que el estudiante acumule demasiadas sesiones en vivo simultáneas (clases, laboratorios, foros sincrónicos) en una misma semana, independientemente de si la carga total está "dentro del objetivo".</li>
+        </ul>
+        <p class="text-xs text-gray-600">
+          Fundamento: la literatura sobre <em>bichronous learning</em> (Martin, Polly &amp; Ritzhaupt, 2020) muestra que el exceso sincrónico fatiga más que el exceso de horas totales bien distribuidas entre asincrónicas y autónomas. Las cargas viejas de &ldquo;sobrecarga/subcarga total &plusmn;% sobre objetivo&rdquo; se retiraron por generar falsos positivos en la realidad chilena, donde la carga nominal CRUCH (11 h/sem postgrado) suele superarse en la práctica sin que eso sea problemático <strong>si la fracción sincrónica se mantiene acotada</strong>.
+        </p>
+      </div>
+
+      <!-- 7. Siguiente paso -->
+      <div>
+        <h3 class="font-bold text-base text-gray-900 mb-2">7. Siguiente paso: Planificador</h3>
         <p>
           Esta calculadora resuelve la <strong>distribución de carga</strong>. El paso siguiente
           del ciclo es el <strong>Planificador de e-actividades</strong> (catálogo de 37 e-actividades
@@ -370,9 +386,9 @@
         </p>
       </div>
 
-      <!-- 7. Referencias -->
+      <!-- 8. Referencias -->
       <div>
-        <h3 class="font-bold text-base text-gray-900 mb-2">7. Referencias</h3>
+        <h3 class="font-bold text-base text-gray-900 mb-2">8. Referencias</h3>
         <ul class="text-xs text-gray-700 space-y-1.5 list-disc pl-5">
           <li>CRUCH (2003). <em>Declaración de Valparaíso: hacia un Sistema de Créditos Transferibles.</em></li>
           <li>CRUCH (2013). <em>Manual para la implementación del Sistema de Créditos Transferibles SCT-Chile.</em></li>
@@ -679,14 +695,6 @@ const BANDS = {
   }
 };
 
-const THRESHOLDS = {
-  sobrecarga_amarilla: 0.20,  // +20%
-  sobrecarga_roja: 0.40,       // +40%
-  subcarga_amarilla: 0.40,     // -40%
-  subcarga_roja: 0.70,         // -70%
-  ventana_semanas: 4
-};
-
 const CUECH = { sct: 2, duracion: 16, ht: 54 };
 
 const FASE_LABELS = { arranque: 'Arranque', construccion: 'Construcción', consolidacion: 'Consolidación', cierre: 'Cierre' };
@@ -867,17 +875,6 @@ function faseDeSemana(w, totalWeeks) {
   if (pct < 0.50) return 'construccion';
   if (pct < 0.80) return 'consolidacion';
   return 'cierre';
-}
-
-// Clasifica carga semanal por umbrales
-function classifyLoad(hsem, objetivo) {
-  if (hsem === 0) return 'empty';
-  const pct = (hsem - objetivo) / objetivo;
-  if (pct >= THRESHOLDS.sobrecarga_roja) return 'red_over';
-  if (pct >= THRESHOLDS.sobrecarga_amarilla) return 'yellow_over';
-  if (pct <= -THRESHOLDS.subcarga_roja) return 'red_under';
-  if (pct <= -THRESHOLDS.subcarga_amarilla) return 'yellow_under';
-  return 'green';
 }
 
 // Detecta alertas: exceso de horas sincronicas semanales
@@ -1077,7 +1074,7 @@ function wizardNext(from) {
     const prof = PROFILES[wizardState.perfil];
     document.getElementById('wiz-carga').value = prof.carga_objetivo;
     document.getElementById('wiz-carga-default-text').innerHTML =
-      `El default del perfil <strong>${prof.nombre}</strong> es <strong>${prof.carga_objetivo} h/sem</strong>. Puedes dejarlo o sobrescribir.`;
+      `Default del perfil <strong>${prof.nombre}</strong>: <strong>${prof.carga_objetivo} h/sem</strong> totales (HS + HAs + HAut). Se puede sobrescribir.`;
     renderGradientPreview();
     setWizardStep(3);
   } else if (from === 3) {
@@ -1139,7 +1136,7 @@ function renderConfirmPanel() {
     ${s.facultad ? `<div class="flex justify-between py-1"><span class="text-gray-600">Facultad:</span><strong>${escapeHtml(s.facultad)}</strong></div>` : ''}
     <div class="flex justify-between py-1"><span class="text-gray-600">Perfil:</span><strong>${prof.nombre}</strong></div>
     <div class="flex justify-between py-1"><span class="text-gray-600">Duración:</span><strong>${s.duracion} ${prof.unidad}</strong></div>
-    <div class="flex justify-between py-1"><span class="text-gray-600">Carga objetivo:</span><strong>${s.carga} h/sem ${s.carga === prof.carga_objetivo ? '(default)' : '(override)'}</strong></div>
+    <div class="flex justify-between py-1"><span class="text-gray-600">Carga de referencia:</span><strong>${s.carga} h/sem ${s.carga === prof.carga_objetivo ? '(default)' : '(override)'}</strong></div>
   `;
 }
 
