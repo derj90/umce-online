@@ -262,6 +262,278 @@
 <!-- ═══════════════════════════════════════════════════════════════════
      FUNDAMENTO TEORICO — SCT-Chile
      ═══════════════════════════════════════════════════════════════════ -->
+<section id="view-presentacion" class="max-w-[1400px] mx-auto px-6 pt-4">
+  <div class="bg-white border rounded-lg overflow-hidden">
+    <header class="border-b px-6 py-4 bg-gray-50 flex items-center justify-between">
+      <div>
+        <h2 class="font-bold text-lg">Presentación de la herramienta</h2>
+        <p class="text-xs text-gray-600 mt-0.5">Cómo funciona, qué está sustentado y qué falta.</p>
+      </div>
+      <button id="toggle-presentacion-btn" class="text-sm text-blue-700 hover:text-blue-900" onclick="togglePresentacion()">Mostrar</button>
+    </header>
+    <div id="presentacion-body" class="hidden px-6 py-6 space-y-8 text-sm leading-relaxed text-gray-800">
+
+      <!-- Aviso: declaración de estado -->
+      <div class="border-l-4 border-amber-400 bg-amber-50 px-4 py-3 rounded-r">
+        <p class="text-[13px] text-amber-900">
+          <strong>Demo navegable.</strong> Esta herramienta es un prototipo funcional.
+          Los valores nominales (carga de referencia, umbrales sincrónicos, modalidad default,
+          gradiente) son <strong>decisiones de diseño UDFV pendientes de validar con UGCI</strong>.
+          Las secciones 4 y 5 de abajo distinguen explícitamente qué está respaldado y qué es convención.
+        </p>
+      </div>
+
+      <!-- 1. Qué es -->
+      <div>
+        <h3 class="font-bold text-base text-gray-900 mb-2">1. Qué es</h3>
+        <p>
+          Aplicación web de diseño curricular que ayuda al coordinador de programa a
+          <strong>distribuir la carga del estudiante</strong> entre sus asignaturas o
+          actividades curriculares (AC) y ver el resultado en <strong>SCT-Chile</strong>
+          antes de implementarlo en un LMS.
+        </p>
+        <p class="mt-2">
+          Resuelve una pregunta concreta: <em>¿cómo queda la carga semanal del estudiante
+          cuando se superponen todas las AC que tiene en curso?</em>
+        </p>
+        <p class="mt-2 text-xs text-gray-600">
+          Es el <strong>Momento 1</strong> del flujo <code class="bg-gray-100 px-1 rounded">/virtualizacion</code>
+          (horas y créditos). No reemplaza el PAC ni el PIAC, que vienen después.
+        </p>
+      </div>
+
+      <!-- 2. Cómo funciona -->
+      <div>
+        <h3 class="font-bold text-base text-gray-900 mb-2">2. Cómo funciona — flujo del usuario</h3>
+
+        <div class="space-y-3">
+          <div class="border rounded p-3 bg-gray-50/60">
+            <div class="font-semibold text-gray-900">2.1 Wizard de creación de programa (4 pasos)</div>
+            <ol class="list-decimal pl-5 text-xs text-gray-700 mt-1 space-y-0.5">
+              <li><strong>Perfil</strong>: pregrado / postgrado / educación continua.</li>
+              <li><strong>Datos básicos</strong>: nombre, código, duración.</li>
+              <li><strong>Carga semanal de referencia</strong>: orientación de diseño (no dispara alertas).</li>
+              <li><strong>Revisión</strong>: resumen antes de confirmar.</li>
+            </ol>
+          </div>
+
+          <div class="border rounded p-3 bg-gray-50/60">
+            <div class="font-semibold text-gray-900">2.2 Vista de programa (overview)</div>
+            <ul class="list-disc pl-5 text-xs text-gray-700 mt-1 space-y-0.5">
+              <li><strong>Gantt de AC</strong>: barras horizontales por AC × semana. Muestra h/sem, SCT y desglose HS/HAs/HAut.</li>
+              <li><strong>Gráfico de carga semanal</strong>: total en gris (referencia) + sincrónica coloreada (verde/amarillo/rojo) con línea de tope.</li>
+              <li><strong>Panel de alertas</strong>: semanas en exceso o acercándose al tope sincrónico.</li>
+            </ul>
+          </div>
+
+          <div class="border rounded p-3 bg-gray-50/60">
+            <div class="font-semibold text-gray-900">2.3 Drawer de edición de AC</div>
+            <ul class="list-disc pl-5 text-xs text-gray-700 mt-1 space-y-0.5">
+              <li>Metadatos (nombre, formato, semana, duración).</li>
+              <li>6 sliders por tipo de Laurillard (adquisición, indagación, práctica, producción, discusión, colaboración).</li>
+              <li>Modalidad temporal: 3 inputs % (sync + async + auto = 100).</li>
+              <li>Lectura viva: SCT emergente, clasificación semanal, recomendación contextual por fase.</li>
+            </ul>
+          </div>
+
+          <div class="border rounded p-3 bg-gray-50/60">
+            <div class="font-semibold text-gray-900">2.4 Interacciones vivas</div>
+            <ul class="list-disc pl-5 text-xs text-gray-700 mt-1 space-y-0.5">
+              <li>Arrastrar una barra del Gantt recalcula alertas y gráfico en tiempo real.</li>
+              <li>Redimensionar ajusta la duración con el handle derecho.</li>
+              <li>Editar sliders recalcula SCT y horas al instante.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Fórmula -->
+      <div>
+        <h3 class="font-bold text-base text-gray-900 mb-2">3. Fórmula y métricas</h3>
+
+        <div class="space-y-3">
+          <div class="border rounded p-3">
+            <div class="font-semibold text-gray-900 text-xs mb-1">SCT por AC</div>
+            <code class="block text-xs bg-gray-100 p-2 rounded text-gray-800">
+              horas_totales = (Σ h/sem por tipo Laurillard) × duración en semanas<br>
+              SCT = ⌈horas_totales / 27⌉
+            </code>
+            <p class="text-[11px] text-gray-600 mt-1">El divisor 27 proviene de CRUCH: 1 SCT = 27 horas cronológicas reales.</p>
+          </div>
+
+          <div class="border rounded p-3">
+            <div class="font-semibold text-gray-900 text-xs mb-1">Carga semanal total (referencia)</div>
+            <code class="block text-xs bg-gray-100 p-2 rounded text-gray-800">
+              carga_total(semana w) = Σ h/sem de AC activas en w
+            </code>
+            <p class="text-[11px] text-gray-600 mt-1">Se compara visualmente contra la carga de referencia del perfil. <strong>No dispara alertas</strong>.</p>
+          </div>
+
+          <div class="border rounded p-3">
+            <div class="font-semibold text-gray-900 text-xs mb-1">Carga sincrónica semanal (alerta)</div>
+            <code class="block text-xs bg-gray-100 p-2 rounded text-gray-800">
+              carga_sync(w) = Σ (h/sem × % modalidad sync) de AC activas en w
+            </code>
+            <p class="text-[11px] text-gray-600 mt-1">
+              Amarillo (acercándose): 9 / 8 / 6 h/sem — Rojo (exceso): 13 / 11 / 8 h/sem
+              (pregrado / postgrado / edu continua).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Sustento -->
+      <div>
+        <h3 class="font-bold text-base text-gray-900 mb-2">4. Sustento — qué está respaldado y qué es decisión de diseño</h3>
+
+        <div class="space-y-4">
+          <!-- 4.1 Respaldado -->
+          <div>
+            <div class="font-semibold text-green-900 text-sm mb-2 flex items-center gap-2">
+              <span class="inline-block w-2 h-2 rounded-full bg-green-500"></span>
+              4.1 Respaldado por normativa o literatura
+            </div>
+            <div class="overflow-x-auto">
+              <table class="text-xs w-full border-collapse">
+                <thead>
+                  <tr class="bg-green-50 text-left">
+                    <th class="border px-2 py-1">Elemento</th>
+                    <th class="border px-2 py-1">Fuente</th>
+                  </tr>
+                </thead>
+                <tbody class="text-gray-800">
+                  <tr><td class="border px-2 py-1"><code>SCT = ⌈horas_totales / 27⌉</code></td><td class="border px-2 py-1">CRUCH, Manual SCT-Chile (2013)</td></tr>
+                  <tr><td class="border px-2 py-1">Adopción del SCT en UMCE</td><td class="border px-2 py-1">Resolución Exenta N° 002140 (2011)</td></tr>
+                  <tr><td class="border px-2 py-1">Modularización</td><td class="border px-2 py-1">Resoluciones Exentas N° 100062 y N° 100241 (2019)</td></tr>
+                  <tr><td class="border px-2 py-1">Formato CUECH (2 SCT, 16 sem, 54 h)</td><td class="border px-2 py-1">Estándar Consorcio de Universidades del Estado</td></tr>
+                  <tr><td class="border px-2 py-1">6 tipos de actividad pedagógica</td><td class="border px-2 py-1">Laurillard (2012). <em>Teaching as a Design Science</em></td></tr>
+                  <tr><td class="border px-2 py-1">Distinción sync/async/auto ortogonal a tipos</td><td class="border px-2 py-1">Martin, Polly &amp; Ritzhaupt (2020). <em>Bichronous Online Learning</em></td></tr>
+                  <tr><td class="border px-2 py-1">Alertar por exceso sincrónico (no total)</td><td class="border px-2 py-1">Martin et al. 2020 + heurística validada en práctica chilena</td></tr>
+                  <tr><td class="border px-2 py-1">Fases + gradientes por fase</td><td class="border px-2 py-1">Salmon (2013). <em>E-tivities</em></td></tr>
+                  <tr><td class="border px-2 py-1">Autonomía pregrado vs postgrado</td><td class="border px-2 py-1">Knowles (1984); Hase &amp; Kenyon (2000)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 4.2 Decisiones de diseño sin respaldo -->
+          <div>
+            <div class="font-semibold text-amber-900 text-sm mb-2 flex items-center gap-2">
+              <span class="inline-block w-2 h-2 rounded-full bg-amber-500"></span>
+              4.2 Decisiones de diseño sin respaldo documental
+            </div>
+            <p class="text-xs text-gray-600 mb-2">
+              Convenciones operativas elegidas por UDFV. <strong>No están en CRUCH ni en normativa UMCE</strong>.
+              Pendientes de calibrar con UGCI antes de adoptarlas como estándar institucional.
+            </p>
+            <div class="overflow-x-auto">
+              <table class="text-xs w-full border-collapse">
+                <thead>
+                  <tr class="bg-amber-50 text-left">
+                    <th class="border px-2 py-1">Decisión</th>
+                    <th class="border px-2 py-1">Valor actual</th>
+                    <th class="border px-2 py-1">Justificación (débil)</th>
+                  </tr>
+                </thead>
+                <tbody class="text-gray-800">
+                  <tr><td class="border px-2 py-1">Carga nominal pregrado</td><td class="border px-2 py-1">13 h/sem</td><td class="border px-2 py-1">No hay resolución UMCE explícita</td></tr>
+                  <tr><td class="border px-2 py-1">Carga nominal postgrado</td><td class="border px-2 py-1">11 h/sem</td><td class="border px-2 py-1">Referencia CRUCH 2013 interpretada como semanal</td></tr>
+                  <tr><td class="border px-2 py-1">Carga nominal edu continua</td><td class="border px-2 py-1">8 h/sem</td><td class="border px-2 py-1">Convención propia</td></tr>
+                  <tr><td class="border px-2 py-1">Umbral amarillo sincrónico</td><td class="border px-2 py-1">9 / 8 / 6 h/sem</td><td class="border px-2 py-1">~70% del tope rojo (heurística)</td></tr>
+                  <tr><td class="border px-2 py-1">Umbral rojo sincrónico</td><td class="border px-2 py-1">13 / 11 / 8 h/sem</td><td class="border px-2 py-1">Copia del nominal total. <strong>No validado con datos de bienestar estudiantil</strong>.</td></tr>
+                  <tr><td class="border px-2 py-1">Modalidad default pregrado</td><td class="border px-2 py-1">30/30/40</td><td class="border px-2 py-1">Estimación UDFV</td></tr>
+                  <tr><td class="border px-2 py-1">Modalidad default postgrado</td><td class="border px-2 py-1">20/30/50</td><td class="border px-2 py-1">Estimación UDFV</td></tr>
+                  <tr><td class="border px-2 py-1">Modalidad default edu continua</td><td class="border px-2 py-1">20/40/40</td><td class="border px-2 py-1">Estimación UDFV</td></tr>
+                  <tr><td class="border px-2 py-1">Matriz de gradiente (4 fases × 6 tipos)</td><td class="border px-2 py-1">ver código</td><td class="border px-2 py-1">Proporciones a ojo; coherencia narrativa</td></tr>
+                  <tr><td class="border px-2 py-1">% de fases (20/30/30/20)</td><td class="border px-2 py-1">fijo</td><td class="border px-2 py-1">Convención propia</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 4.3 Modelo propio declarado -->
+          <div>
+            <div class="font-semibold text-blue-900 text-sm mb-2 flex items-center gap-2">
+              <span class="inline-block w-2 h-2 rounded-full bg-blue-500"></span>
+              4.3 Modelo teórico propio (declarado como tal)
+            </div>
+            <ul class="list-disc pl-5 text-xs text-gray-700 space-y-1">
+              <li><strong>Bandas interpretativas</strong> (ensayo / paper / tesis): etiquetas narrativas UDFV, no criterios oficiales.</li>
+              <li><strong>Alertar sobre sincrónico y no sobre total</strong>: decisión UDFV con respaldo en literatura bichrónica, pero sin política UMCE explícita.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Qué falta -->
+      <div>
+        <h3 class="font-bold text-base text-gray-900 mb-2">5. Qué falta</h3>
+
+        <div class="grid md:grid-cols-3 gap-3">
+          <div class="border rounded p-3 bg-red-50/40">
+            <div class="font-semibold text-red-900 text-xs mb-2">Sustentación pendiente</div>
+            <ul class="list-disc pl-4 text-xs text-gray-700 space-y-1">
+              <li>Validar 13/11/8 h/sem con UGCI</li>
+              <li>Calibrar umbrales sincrónicos con evidencia</li>
+              <li>Justificar % de modalidad default</li>
+              <li>Documentar gradiente celda por celda</li>
+            </ul>
+          </div>
+
+          <div class="border rounded p-3 bg-amber-50/40">
+            <div class="font-semibold text-amber-900 text-xs mb-2">Funcionalidad pendiente</div>
+            <ul class="list-disc pl-4 text-xs text-gray-700 space-y-1">
+              <li>Config institucional (mockup 5)</li>
+              <li>Config por programa completa (mockup 4)</li>
+              <li>Bitácora auditable</li>
+              <li>Exportar/importar JSON</li>
+              <li>Persistencia en servidor (hoy es localStorage)</li>
+              <li>Integración con PIAC / PAC</li>
+              <li>Validar con programa real (ej: MEMAT)</li>
+            </ul>
+          </div>
+
+          <div class="border rounded p-3 bg-gray-50">
+            <div class="font-semibold text-gray-900 text-xs mb-2">Limitaciones conocidas</div>
+            <ul class="list-disc pl-4 text-xs text-gray-700 space-y-1">
+              <li>No hay ventana móvil de 4 semanas (alertas por semana individual)</li>
+              <li>Asume todos los estudiantes con carga completa</li>
+              <li>No modela evaluaciones puntuales de alto costo</li>
+              <li>Sin migración automática entre versiones de schema</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Qué está listo -->
+      <div>
+        <h3 class="font-bold text-base text-gray-900 mb-2">6. Qué está listo para mostrar</h3>
+        <ul class="list-disc pl-5 text-xs text-gray-700 space-y-1">
+          <li>Fórmula SCT contrastable contra resoluciones reales (ej: MEMAT 5-8 SCT por asignatura).</li>
+          <li>Gantt interactivo con drag &amp; resize y preview en vivo.</li>
+          <li>Alertas sincrónicas por semana con clasificación verde/amarillo/rojo.</li>
+          <li>Modalidad temporal (HS/HAs/HAut) visible en Gantt y drawer.</li>
+          <li>Formato CUECH nativo con valores bloqueados correctamente.</li>
+        </ul>
+      </div>
+
+      <!-- 7. Qué NO conviene presentar como producto -->
+      <div>
+        <div class="border-l-4 border-red-400 bg-red-50/40 px-4 py-3 rounded-r">
+          <div class="font-bold text-base text-red-900 mb-2">7. Qué no conviene presentar como producto terminado</div>
+          <ul class="list-disc pl-5 text-xs text-gray-800 space-y-1">
+            <li>Umbrales numéricos (13/11/8, 9/8/6): declararlos <strong>provisionales</strong>.</li>
+            <li>Plantillas narrativas de recomendación por fase: propuestas UDFV, no posición institucional.</li>
+            <li>Bandas interpretativas (ensayo / paper / tesis): ayudas visuales, no criterios oficiales.</li>
+            <li>Matriz de gradiente completa: punto de partida, no prescripción.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <section id="view-fundamento" class="max-w-[1400px] mx-auto px-6 pb-16 pt-4">
   <div class="bg-white border rounded-lg overflow-hidden">
     <header class="border-b px-6 py-4 bg-gray-50 flex items-center justify-between">
@@ -926,6 +1198,14 @@ function goHome() {
 function toggleFundamento() {
   const body = document.getElementById('fundamento-body');
   const btn = document.getElementById('toggle-fundamento-btn');
+  if (!body || !btn) return;
+  const hidden = body.classList.toggle('hidden');
+  btn.textContent = hidden ? 'Mostrar' : 'Ocultar';
+}
+
+function togglePresentacion() {
+  const body = document.getElementById('presentacion-body');
+  const btn = document.getElementById('toggle-presentacion-btn');
   if (!body || !btn) return;
   const hidden = body.classList.toggle('hidden');
   btn.textContent = hidden ? 'Mostrar' : 'Ocultar';
