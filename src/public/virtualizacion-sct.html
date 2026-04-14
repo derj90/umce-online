@@ -256,6 +256,41 @@
       </details>
     </div>
 
+    <!-- Selector de modo de cálculo (Fase 5.7-A) -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8" id="modeSelector">
+      <h2 class="font-heading text-xl font-bold text-gray-900 mb-1">¿Cómo quieres calcular los SCT?</h2>
+      <p class="text-sm text-gray-600 mb-4">Elige el modo según el punto del proceso en que te encuentras. El Modo A es el más común y el único operativo en esta versión; los demás estarán disponibles próximamente.</p>
+      <div class="grid md:grid-cols-3 gap-3" id="modeCards">
+        <label class="radio-card selected flex flex-col gap-1" data-mode="modoA">
+          <input type="radio" name="sctMode" value="modoA" checked class="sr-only">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">A</span>
+            <span class="text-sm font-semibold text-gray-900">Curso individual</span>
+          </div>
+          <p class="text-xs text-gray-500 leading-relaxed">Ya tienes definidas las horas semanales (sincrónicas, asincrónicas y autónomas) y quieres verificar que los créditos SCT sean coherentes. 3&ndash;5 minutos.</p>
+          <span class="text-[11px] font-semibold text-green-700 mt-1">Disponible</span>
+        </label>
+        <label class="radio-card flex flex-col gap-1 opacity-60 cursor-not-allowed" data-mode="modoB">
+          <input type="radio" name="sctMode" value="modoB" disabled class="sr-only">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-200 text-gray-500 font-bold text-sm">B</span>
+            <span class="text-sm font-semibold text-gray-700">Semestre completo</span>
+          </div>
+          <p class="text-xs text-gray-500 leading-relaxed">Ya conoces las actividades curriculares del semestre pero no tienes detalle por actividad. Se apoya en horas promedio por tipo. 10&ndash;15 minutos.</p>
+          <span class="text-[11px] font-semibold text-gray-500 mt-1">Próximamente</span>
+        </label>
+        <label class="radio-card flex flex-col gap-1 opacity-60 cursor-not-allowed" data-mode="modoC">
+          <input type="radio" name="sctMode" value="modoC" disabled class="sr-only">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-200 text-gray-500 font-bold text-sm">C</span>
+            <span class="text-sm font-semibold text-gray-700">Diseño desde competencias</span>
+          </div>
+          <p class="text-xs text-gray-500 leading-relaxed">Partes desde las competencias del perfil de egreso y construyes el plan de estudios con SCT estimados. 15&ndash;25 minutos.</p>
+          <span class="text-[11px] font-semibold text-gray-500 mt-1">Próximamente</span>
+        </label>
+      </div>
+    </div>
+
     <!-- ==================== ETAPA 1: Estimacion de carga ==================== -->
     <div class="wizard-step active" id="step1">
       <div class="explain-box">
@@ -374,6 +409,34 @@
           <p class="text-xs text-gray-400 mt-1">Incluye esta actividad. Permite estimar la carga sincr&oacute;nica total que el estudiante enfrenta en su semana.</p>
         </div>
 
+        <!-- Tipo de actividad (Fase 5.7-A extendida) — presets que auto-llenan hs/has/haut -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">&iquest;Qu&eacute; tipo de actividad predomina?</label>
+          <p class="text-xs text-gray-400 mb-2">Elegir un tipo auto-llena las horas semanales como punto de partida. Puedes ajustarlas despu&eacute;s.</p>
+          <div class="grid sm:grid-cols-5 gap-2" id="activityTypeSelector">
+            <label class="radio-card flex items-center gap-2" data-type="expositiva">
+              <input type="radio" name="activityType" value="expositiva">
+              <div><div class="text-sm font-semibold">Expositiva</div><div class="text-xs text-gray-400">Clase magistral, demostraciones</div></div>
+            </label>
+            <label class="radio-card flex items-center gap-2" data-type="taller">
+              <input type="radio" name="activityType" value="taller">
+              <div><div class="text-sm font-semibold">Taller</div><div class="text-xs text-gray-400">Pr&aacute;ctica guiada, laboratorio</div></div>
+            </label>
+            <label class="radio-card flex items-center gap-2" data-type="seminario">
+              <input type="radio" name="activityType" value="seminario">
+              <div><div class="text-sm font-semibold">Seminario</div><div class="text-xs text-gray-400">Discusi&oacute;n dirigida, debate</div></div>
+            </label>
+            <label class="radio-card flex items-center gap-2" data-type="proyecto">
+              <input type="radio" name="activityType" value="proyecto">
+              <div><div class="text-sm font-semibold">Proyecto</div><div class="text-xs text-gray-400">Producci&oacute;n aut&oacute;noma, investigaci&oacute;n</div></div>
+            </label>
+            <label class="radio-card selected flex items-center gap-2" data-type="mixto">
+              <input type="radio" name="activityType" value="mixto" checked>
+              <div><div class="text-sm font-semibold">Mixto</div><div class="text-xs text-gray-400">Combinaci&oacute;n equilibrada</div></div>
+            </label>
+          </div>
+        </div>
+
         <!-- Horas por semana y semanas -->
         <div class="grid sm:grid-cols-4 gap-4">
           <div>
@@ -389,11 +452,15 @@
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-1.5">HAut aut&oacute;nomo <span class="text-gray-400 font-normal text-xs">(hrs/sem)</span></label>
             <input type="number" id="haut" value="1" min="0" max="40" step="0.5" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+              <div id="hautWarning" class="mt-1 p-2 rounded-lg border text-xs hidden" role="alert" aria-live="polite">
+                <span id="hautWarningMsg"></span>
+              </div>
             <p class="text-xs text-gray-400 mt-1">Lecturas, estudio, reflexi&oacute;n, repaso</p>
           </div>
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Semanas <span class="text-gray-400 font-normal text-xs">(NS)</span></label>
             <input type="number" id="ns" value="18" min="1" max="52" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+              <p id="nsOverrideHint" class="text-xs text-amber-600 mt-1 hidden" aria-live="polite">&#9888; Est&aacute;s usando un n&uacute;mero de semanas distinto al default del formato seleccionado. Si es intencional, docum&eacute;ntalo en el PAC.</p>
             <p class="text-xs text-gray-400 mt-1">Duraci&oacute;n de la actividad curricular</p>
           </div>
         </div>
@@ -536,6 +603,48 @@
             </div>
           </div>
           <p class="text-xs text-gray-400 mt-3">Redondeo al entero superior (Math.ceil) adoptado como criterio operativo consensuado por la UGCI para asignaci&oacute;n de cr&eacute;ditos.</p>
+        </div>
+
+        <!-- Doble formato UGCI / Extendido (Fase 5.7-A extendida) -->
+        <div class="bg-white border border-gray-200 rounded-xl p-5">
+          <h3 class="font-heading font-bold text-gray-800 mb-3">Distribuci&oacute;n en ambos formatos</h3>
+          <p class="text-xs text-gray-500 mb-4">Misma carga total, dos formas de reportarla: el formato bipartito del Manual SCT-Chile UGCI (HP/HA) y el formato extendido tripartito UMCE (Sincr&oacute;nico/Asincr&oacute;nico/Aut&oacute;nomo) que distingue el acompa&ntilde;amiento asincr&oacute;nico.</p>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <!-- UGCI bipartito -->
+            <div class="border border-gray-200 rounded-lg p-4">
+              <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Formato UGCI (bipartito)</div>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-gray-600">HP &mdash; Horas presenciales/directas</span>
+                  <span class="font-bold text-gray-800" id="formatoHP">&mdash;</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">HA &mdash; Horas aut&oacute;nomas</span>
+                  <span class="font-bold text-gray-800" id="formatoHA">&mdash;</span>
+                </div>
+              </div>
+              <p class="text-xs text-gray-400 mt-2">Clasificaci&oacute;n oficial del Manual SCT-Chile (CRUCH, 2013). HA agrupa el trabajo asincr&oacute;nico y aut&oacute;nomo.</p>
+            </div>
+            <!-- Extendido tripartito UMCE -->
+            <div class="border border-gray-200 rounded-lg p-4">
+              <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Formato extendido (tripartito)</div>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Sincr&oacute;nico</span>
+                  <span class="font-bold text-gray-800" id="formatoSinc">&mdash;</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Asincr&oacute;nico guiado</span>
+                  <span class="font-bold text-gray-800" id="formatoAsinc">&mdash;</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Aut&oacute;nomo</span>
+                  <span class="font-bold text-gray-800" id="formatoAut">&mdash;</span>
+                </div>
+              </div>
+              <p class="text-xs text-gray-400 mt-2">Distinci&oacute;n UMCE para planificaci&oacute;n virtual: separa el trabajo asincr&oacute;nico con retroalimentaci&oacute;n del trabajo aut&oacute;nomo del estudiante.</p>
+            </div>
+          </div>
         </div>
 
         <!-- Distribucion grafico donut -->
@@ -688,6 +797,56 @@
           <p><strong>Valor adoptado:</strong> 1 SCT = 27 horas cronol&oacute;gicas de trabajo del estudiante (Res. Exenta N&deg; 002140, UMCE, 2011; reafirmado en Res. Exentas N&deg; 100062 y N&deg; 100241, 2019).</p>
           <p><strong>Criterio de redondeo:</strong> Entero superior (Math.ceil), adoptado como criterio operativo consensuado.</p>
           <p><strong>Herramienta:</strong> Calculadora SCT UMCE v1.0 &mdash; Unidad de Desarrollo y Formaci&oacute;n Virtual, UMCE, 2026.</p>
+        </div>
+
+        <!-- Anexo metodológico (Bloque 2 del informe, Fase 5.7-A) -->
+        <div class="mt-6 pt-4 border-t-2 border-gray-200 print-only" id="anexoMetodologico">
+          <h3 class="font-heading font-bold text-gray-800 text-lg mb-2">Anexo metodol&oacute;gico</h3>
+          <p class="text-xs text-gray-500 mb-2 italic">Este anexo acompa&ntilde;a la ficha de validaci&oacute;n SCT como respaldo del criterio pedag&oacute;gico usado en la estimaci&oacute;n de horas. No forma parte de la Resoluci&oacute;n Exenta; es material de apoyo para el Programa de Actividad Curricular (PAC).</p>
+          <p class="text-xs text-gray-600 mb-4" id="anexoContexto">Formato: &mdash; &nbsp;|&nbsp; Perfil: &mdash; &nbsp;|&nbsp; Tipo de actividad: &mdash;</p>
+
+          <!-- Distribución por tipo de hora -->
+          <div class="mb-4">
+            <h4 class="font-bold text-sm text-gray-700 mb-2">Distribuci&oacute;n del trabajo del estudiante</h4>
+            <table class="w-full text-xs border border-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="text-left p-2 border border-gray-200">Tipo de hora</th>
+                  <th class="text-center p-2 border border-gray-200">Hrs/sem</th>
+                  <th class="text-center p-2 border border-gray-200">Total (&times; NS)</th>
+                  <th class="text-center p-2 border border-gray-200">% del total</th>
+                </tr>
+              </thead>
+              <tbody id="anexoDistribucion"></tbody>
+            </table>
+            <p class="text-xs text-gray-500 mt-2">Criterio orientador de trabajo aut&oacute;nomo: 25&ndash;40% del total (Doc. N. 004-2020 UMCE).</p>
+          </div>
+
+          <!-- Marco teórico -->
+          <div class="mb-4">
+            <h4 class="font-bold text-sm text-gray-700 mb-2">Marco te&oacute;rico de la estimaci&oacute;n</h4>
+            <p class="text-xs text-gray-600 leading-relaxed mb-2">La estimaci&oacute;n de horas fue realizada considerando el m&eacute;todo compositivo del Manual SCT-Chile (CRUCH, 2013), que integra tres dimensiones del trabajo acad&eacute;mico:</p>
+            <ul class="text-xs text-gray-600 list-disc pl-5 space-y-1">
+              <li><strong>Sincr&oacute;nicas (HS):</strong> actividades en tiempo real con mediaci&oacute;n docente directa (clases, tutor&iacute;as sincr&oacute;nicas).</li>
+              <li><strong>Asincr&oacute;nicas (HAs):</strong> actividades con interacci&oacute;n sin coincidencia horaria (foros moderados, trabajo colaborativo con retroalimentaci&oacute;n).</li>
+              <li><strong>Trabajo aut&oacute;nomo (HAut):</strong> trabajo individual sin mediaci&oacute;n docente directa (lectura, estudio, reflexi&oacute;n).</li>
+            </ul>
+            <p class="text-xs text-gray-600 leading-relaxed mt-2">Para estimar la carga del trabajo aut&oacute;nomo se puede apoyar en el Course Workload Estimator (Barre &amp; Esarey, 2012; Wake Forest University), que cuantifica tiempo de lectura seg&uacute;n densidad del texto, tiempo de escritura seg&uacute;n nivel de referenciaci&oacute;n, y tiempo de proyectos/evaluaciones.</p>
+            <p class="text-xs text-gray-600 leading-relaxed mt-2">La distribuci&oacute;n por tipo de actividad de aprendizaje puede orientarse con la tipolog&iacute;a de Laurillard (2012): adquisici&oacute;n, investigaci&oacute;n, pr&aacute;ctica, producci&oacute;n, discusi&oacute;n y colaboraci&oacute;n. El nivel cognitivo puede caracterizarse con la taxonom&iacute;a revisada de Bloom (Anderson &amp; Krathwohl, 2001) y el Depth of Knowledge (Webb, 2002) para diferenciar la profundidad del procesamiento exigido.</p>
+          </div>
+
+          <!-- Referencias -->
+          <div class="mb-2">
+            <h4 class="font-bold text-sm text-gray-700 mb-2">Referencias</h4>
+            <ul class="text-xs text-gray-500 space-y-1 leading-relaxed">
+              <li>Anderson, L. W., &amp; Krathwohl, D. R. (Eds.). (2001). <em>A taxonomy for learning, teaching, and assessing: A revision of Bloom&rsquo;s taxonomy of educational objectives</em>. Longman.</li>
+              <li>Barre, E., &amp; Esarey, J. (2012). <em>Course workload estimator</em>. Wake Forest University, Center for the Advancement of Teaching.</li>
+              <li>CRUCH. (2013). <em>Manual para la implementaci&oacute;n del Sistema de Cr&eacute;ditos Transferibles SCT-Chile</em> (2.&ordf; ed.). Consejo de Rectores de las Universidades Chilenas.</li>
+              <li>Laurillard, D. (2012). <em>Teaching as a design science: Building pedagogical patterns for learning and technology</em>. Routledge.</li>
+              <li>UMCE. (2011). <em>Resoluci&oacute;n Exenta N&deg; 002140</em>. Universidad Metropolitana de Ciencias de la Educaci&oacute;n.</li>
+              <li>Webb, N. L. (2002). <em>Depth-of-Knowledge levels for four content areas</em>. Wisconsin Center for Education Research.</li>
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -904,6 +1063,70 @@
     // ================================
     var currentStep = 1, maxStepReached = 1;
 
+    // Estado global compartido entre modos (Fase 5.7-A)
+    var SCTState = {
+      mode: 'modoA',
+      profile: 'pregrado',
+      formato: 'semestral',
+      programName: '',
+      semester: '',
+      modoA: {
+        courseName: '',
+        courseCode: '',
+        activityType: 'mixto',
+        hs: 1.5,
+        has: 2,
+        haut: 1,
+        ns: 18,
+        sctDeclarados: 3,
+        actConcurrentes: 3
+      },
+      modoB: { semesterLabel: '', acs: [] },
+      modoC: { programName: '', programCode: '', discipline: 'educacion', numSemesters: 2, acs: [] }
+    };
+
+    // Helper seguro para leer value por id
+    function getVal(id) {
+      var el = document.getElementById(id);
+      return el ? el.value : '';
+    }
+
+    // Sincroniza SCTState.modoA con los inputs actuales del DOM (Modo A)
+    function syncSharedState() {
+      var profileRadio = document.querySelector('input[name=profile]:checked');
+      if (profileRadio) SCTState.profile = profileRadio.value;
+      var formatRadio = document.querySelector('input[name=formato]:checked');
+      if (formatRadio) SCTState.formato = formatRadio.value;
+      SCTState.programName = getVal('programName');
+      SCTState.semester = getVal('semester');
+      SCTState.modoA.courseName = getVal('courseName');
+      SCTState.modoA.courseCode = getVal('courseCode');
+      var actTypeRadio = document.querySelector('input[name=activityType]:checked');
+      if (actTypeRadio) SCTState.modoA.activityType = actTypeRadio.value;
+      SCTState.modoA.hs = parseFloat(getVal('hs')) || 0;
+      SCTState.modoA.has = parseFloat(getVal('has')) || 0;
+      SCTState.modoA.haut = parseFloat(getVal('haut')) || 0;
+      SCTState.modoA.ns = parseInt(getVal('ns')) || 1;
+      SCTState.modoA.sctDeclarados = parseInt(getVal('sctDeclarados')) || 0;
+      SCTState.modoA.actConcurrentes = parseInt(getVal('actConcurrentes')) || 1;
+    }
+
+    // Cambia el modo activo (Fase 5.7-A: andamio, solo Modo A operativo)
+    function switchMode(newMode) {
+      if (newMode !== 'modoA' && newMode !== 'modoB' && newMode !== 'modoC') return;
+      SCTState.mode = newMode;
+      // Actualiza visual del selector
+      var cards = document.querySelectorAll('#modeCards .radio-card');
+      cards.forEach(function(c) {
+        if (c.getAttribute('data-mode') === newMode) {
+          c.classList.add('selected');
+        } else {
+          c.classList.remove('selected');
+        }
+      });
+      // En esta fase, solo Modo A tiene wizard. B y C se implementan en fases 5.7-B y 5.7-C.
+    }
+
     // ================================
     // Inicializacion
     // ================================
@@ -923,6 +1146,17 @@
       modulo:         { semanas: 8,  sctFijo: null },
       bloque_breve:   { semanas: 5,  sctFijo: null },
       cuech:          { semanas: 16, sctFijo: 2    }
+    };
+
+    // Presets de tipo de actividad (Fase 5.7-A extendida)
+    // hs = sincrónicas, has = asincrónicas, haut = autónomo
+    // Laurillard: adquisicion | practica | discusion | produccion (mixto no fuerza)
+    var ACTIVITY_PRESETS = {
+      expositiva: { hs: 2.0, has: 1.0, haut: 1.5, laurillard: 'adquisicion', label: 'Expositiva', desc: 'Clase magistral, demostraciones, conferencias' },
+      taller:     { hs: 1.5, has: 2.0, haut: 1.0, laurillard: 'practica',    label: 'Taller',     desc: 'Pr&aacute;ctica guiada, laboratorio, ejercicios' },
+      seminario:  { hs: 2.0, has: 2.0, haut: 0.5, laurillard: 'discusion',   label: 'Seminario',  desc: 'Discusi&oacute;n dirigida, debate, an&aacute;lisis colectivo' },
+      proyecto:   { hs: 1.0, has: 1.5, haut: 2.5, laurillard: 'produccion',  label: 'Proyecto',   desc: 'Producci&oacute;n aut&oacute;noma, investigaci&oacute;n, dise&ntilde;o' },
+      mixto:      { hs: 1.5, has: 2.0, haut: 1.0, laurillard: null,          label: 'Mixto',      desc: 'Combinaci&oacute;n equilibrada (default)' }
     };
 
     function bindInputs() {
@@ -961,20 +1195,129 @@
           updatePreview();
         });
       });
+
+      // Selector de tipo de actividad (Fase 5.7-A extendida) — auto-llena hs/has/haut
+      document.querySelectorAll('#activityTypeSelector .radio-card').forEach(function(card) {
+        card.addEventListener('click', function() {
+          document.querySelectorAll('#activityTypeSelector .radio-card').forEach(function(c) { c.classList.remove('selected'); });
+          card.classList.add('selected');
+          var radio = card.querySelector('input[type=radio]');
+          if (radio) radio.checked = true;
+          var preset = ACTIVITY_PRESETS[radio ? radio.value : 'mixto'];
+          if (preset) {
+            document.getElementById('hs').value = preset.hs;
+            document.getElementById('has').value = preset.has;
+            document.getElementById('haut').value = preset.haut;
+          }
+          updatePreview();
+        });
+      });
+
+      // Selector de modo (Fase 5.7-A): solo Modo A habilitado en esta versión
+      document.querySelectorAll('#modeCards .radio-card').forEach(function(card) {
+        card.addEventListener('click', function() {
+          var radio = card.querySelector('input[type=radio]');
+          if (!radio || radio.disabled) return;
+          switchMode(radio.value);
+        });
+      });
     }
 
     // ================================
     // Preview en tiempo real (Etapa 1)
     // ================================
+
+    // Valida que H_aut represente 25-40% del total (Doc. N. 004-2020 UMCE)
+    function checkAutonomia(hs, has, haut) {
+      var total = hs + has + haut;
+      if (total <= 0) return { ok: true, ratio: 0, level: 'ok', msg: '' };
+      var ratio = haut / total;
+      if (ratio < 0.25) {
+        return { ok: false, ratio: ratio, level: 'low', msg: 'El trabajo aut\u00f3nomo representa menos del 25% del total. El Doc. N. 004-2020 sugiere 25-40% para consolidar aprendizajes.' };
+      }
+      if (ratio > 0.40) {
+        return { ok: false, ratio: ratio, level: 'high', msg: 'El trabajo aut\u00f3nomo supera el 40% del total. El Doc. N. 004-2020 sugiere 25-40%; porcentajes altos pueden indicar poca mediaci\u00f3n docente.' };
+      }
+      return { ok: true, ratio: ratio, level: 'ok', msg: '' };
+    }
+
+    // Actualiza banner de advertencia de H_aut (Fase 5.7-A)
+    function updateAutonomiaWarning(hs, has, haut) {
+      var banner = document.getElementById('hautWarning');
+      var msgEl = document.getElementById('hautWarningMsg');
+      if (!banner || !msgEl) return;
+      var result = checkAutonomia(hs, has, haut);
+      if (result.ok) {
+        banner.classList.add('hidden');
+        banner.classList.remove('bg-amber-50', 'border-amber-300', 'text-amber-800', 'bg-red-50', 'border-red-300', 'text-red-800');
+        return;
+      }
+      banner.classList.remove('hidden');
+      banner.classList.remove('bg-amber-50', 'border-amber-300', 'text-amber-800', 'bg-red-50', 'border-red-300', 'text-red-800');
+      if (result.level === 'low') {
+        banner.classList.add('bg-amber-50', 'border-amber-300', 'text-amber-800');
+      } else {
+        banner.classList.add('bg-red-50', 'border-red-300', 'text-red-800');
+      }
+      msgEl.textContent = result.msg + ' (actual: ' + (result.ratio * 100).toFixed(0) + '%)';
+    }
+
+    // Helper: lee el valor del radio seleccionado de un grupo (Fase 5.7-A extendida)
+    function getCheckedRadio(name) {
+      var el = document.querySelector('input[name="' + name + '"]:checked');
+      return el ? el.value : null;
+    }
+
+    // Helper: nivel de semáforo según carga semanal (Fase 5.7-A extendida)
+    // Umbrales genéricos: verde <= 10 hrs/sem, amarillo <= 12 hrs/sem, rojo > 12
+    // Los umbrales por perfil se diferenciarán en Fase 5.7-B con SEMAFORO_THRESHOLDS.
+    function getSemaforoLevel(weekly) {
+      if (weekly <= 10) return 'verde';
+      if (weekly <= 12) return 'amarillo';
+      return 'rojo';
+    }
+
+    // Motor de cálculo SCT — función pura (Fase 5.7-A extendida)
+    // Fuente única de la fórmula canónica SCT-Chile:
+    //   SCT = ceil( (HS + HAs + HAut) × NS / 27 )
+    // Ref.: Res. Exenta UMCE N° 002140 (2011); Manual SCT-Chile, CRUCH (2013).
+    // Retorna objeto con totales bipartitos (UGCI) y tripartitos (extendido).
+    function calcSCT(hs, has, haut, ns) {
+      var weekly = hs + has + haut;
+      var htTotal = weekly * ns;
+      var sctExact = htTotal / 27;
+      var sct = Math.ceil(sctExact);
+      // Formato UGCI bipartito: HP = sincrónicas, HA = asincrónicas + autónomas
+      var hp = hs * ns;
+      var ha = (has + haut) * ns;
+      // Formato extendido tripartito
+      var hSinc = hs * ns;
+      var hAsinc = has * ns;
+      var hAut = haut * ns;
+      return {
+        sct: sct,
+        sctExact: sctExact,
+        htTotal: htTotal,
+        weekly: weekly,
+        hp: hp,
+        ha: ha,
+        hSinc: hSinc,
+        hAsinc: hAsinc,
+        hAut: hAut
+      };
+    }
+
     function updatePreview() {
+      syncSharedState();
       var hs = parseFloat(document.getElementById('hs') ? document.getElementById('hs').value : 0) || 0;
       var has = parseFloat(document.getElementById('has') ? document.getElementById('has').value : 0) || 0;
       var haut = parseFloat(document.getElementById('haut') ? document.getElementById('haut').value : 0) || 0;
       var ns = parseInt(document.getElementById('ns').value) || 1;
-      var total = (hs + has + haut) * ns;
-      var sctExact = total / 27;
-      var sct = Math.ceil(sctExact);
-      var weekly = hs + has + haut;
+      var calc = calcSCT(hs, has, haut, ns);
+      var total = calc.htTotal;
+      var sctExact = calc.sctExact;
+      var sct = calc.sct;
+      var weekly = calc.weekly;
 
       document.getElementById('previewTotal').textContent = total.toFixed(0);
       document.getElementById('previewSCT').textContent = sct;
@@ -1004,6 +1347,26 @@
 
       // Panel de orientacion dinamica
       updateOrientacionPanel(hs, weekly);
+
+      // Validaciones Fase 5.7-A
+      updateAutonomiaWarning(hs, has, haut);
+      updateNsOverrideHint();
+    }
+
+    // Muestra aviso si el usuario modificó ns fuera del default del formato (Fase 5.7-A)
+    function updateNsOverrideHint() {
+      var formatRadio = document.querySelector('input[name=formato]:checked');
+      var hint = document.getElementById('nsOverrideHint');
+      if (!formatRadio || !hint) return;
+      var fmt = FORMATOS[formatRadio.value];
+      var nsEl = document.getElementById('ns');
+      if (!fmt || !nsEl) return;
+      var current = parseInt(nsEl.value) || 0;
+      if (current !== fmt.semanas) {
+        hint.classList.remove('hidden');
+      } else {
+        hint.classList.add('hidden');
+      }
     }
 
     function updateOrientacionPanel(hs, weekly) {
@@ -1137,10 +1500,11 @@
       var has = parseFloat(document.getElementById('has') ? document.getElementById('has').value : 0) || 0;
       var haut = parseFloat(document.getElementById('haut') ? document.getElementById('haut').value : 0) || 0;
       var ns = parseInt(document.getElementById('ns').value) || 1;
-      var total = (hs + has + haut) * ns;
-      var sctExact = total / 27;
-      var sct = Math.ceil(sctExact);
-      var weekly = hs + has + haut;
+      var calc = calcSCT(hs, has, haut, ns);
+      var total = calc.htTotal;
+      var sctExact = calc.sctExact;
+      var sct = calc.sct;
+      var weekly = calc.weekly;
 
       // Resultado principal
       document.getElementById('resultSCT').textContent = sct;
@@ -1178,6 +1542,9 @@
 
       // Barras semanales
       renderWeeklyBars(weekly, ns);
+
+      // Doble formato UGCI / Extendido (Fase 5.7-A extendida)
+      updateDualFormat(calc);
     }
 
     function renderDonut(hsTotal, hasTotal, hautTotal) {
@@ -1280,14 +1647,16 @@
     // Etapa 3: Presentacion
     // ================================
     function updatePresentation() {
+      syncSharedState();
       var hs = parseFloat(document.getElementById('hs') ? document.getElementById('hs').value : 0) || 0;
       var has = parseFloat(document.getElementById('has') ? document.getElementById('has').value : 0) || 0;
       var haut = parseFloat(document.getElementById('haut') ? document.getElementById('haut').value : 0) || 0;
       var ns = parseInt(document.getElementById('ns').value) || 1;
-      var weekly = hs + has + haut;
-      var total = weekly * ns;
-      var sctExact = total / 27;
-      var sct = Math.ceil(sctExact);
+      var calc = calcSCT(hs, has, haut, ns);
+      var weekly = calc.weekly;
+      var total = calc.htTotal;
+      var sctExact = calc.sctExact;
+      var sct = calc.sct;
 
       document.getElementById('printName').textContent = document.getElementById('courseName').value || '\u2014';
       document.getElementById('printCode').textContent = document.getElementById('courseCode').value || '\u2014';
@@ -1315,6 +1684,59 @@
       document.getElementById('trazabilidadBody').innerHTML = rows.map(function(r) {
         return '<tr><td class="text-gray-600">' + r.entrada + '</td><td class="font-mono text-xs text-gray-500">' + r.proc + '</td><td>' + r.resultado + '</td><td class="text-right font-semibold">' + r.valor + '</td></tr>';
       }).join('');
+
+      updateAnexoMetodologico();
+    }
+
+    // Pobla la tabla de distribución del Anexo Metodológico (Fase 5.7-A)
+    // Labels legibles para contexto del anexo (Fase 5.7-A extendida)
+    var FORMATO_LABELS = { semestral: 'Semestral', modulo: 'M\u00f3dulo', bloque_breve: 'Bloque breve', cuech: 'CUECH S\u00fabete' };
+    var PROFILE_LABELS = { pregrado: 'Pregrado', postgrado: 'Postgrado', continua: 'Educaci\u00f3n continua' };
+    var ACTIVITY_LABELS = { expositiva: 'Expositiva', taller: 'Taller', seminario: 'Seminario', proyecto: 'Proyecto', mixto: 'Mixto' };
+
+    function updateAnexoMetodologico() {
+      var ctxEl = document.getElementById('anexoContexto');
+      if (ctxEl) {
+        var fmt = FORMATO_LABELS[SCTState.formato] || SCTState.formato || '\u2014';
+        var prof = PROFILE_LABELS[SCTState.profile] || SCTState.profile || '\u2014';
+        var act = ACTIVITY_LABELS[SCTState.modoA.activityType] || SCTState.modoA.activityType || '\u2014';
+        ctxEl.innerHTML = 'Formato: <strong>' + fmt + '</strong> &nbsp;|&nbsp; Perfil: <strong>' + prof + '</strong> &nbsp;|&nbsp; Tipo de actividad: <strong>' + act + '</strong>';
+      }
+      var tbody = document.getElementById('anexoDistribucion');
+      if (!tbody) return;
+      var hs = SCTState.modoA.hs;
+      var has = SCTState.modoA.has;
+      var haut = SCTState.modoA.haut;
+      var ns = SCTState.modoA.ns;
+      var weekly = hs + has + haut;
+      if (weekly <= 0) { tbody.innerHTML = ''; return; }
+      var rows = [
+        { label: 'Sincr\u00f3nicas (HS)', hrs: hs },
+        { label: 'Asincr\u00f3nicas (HAs)', hrs: has },
+        { label: 'Trabajo aut\u00f3nomo (HAut)', hrs: haut }
+      ];
+      var html = '';
+      var i;
+      for (i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        var total = r.hrs * ns;
+        var pct = (r.hrs / weekly) * 100;
+        html += '<tr>' +
+                '<td class="p-2 border border-gray-200">' + r.label + '</td>' +
+                '<td class="text-center p-2 border border-gray-200">' + r.hrs.toFixed(1) + '</td>' +
+                '<td class="text-center p-2 border border-gray-200">' + total.toFixed(1) + '</td>' +
+                '<td class="text-center p-2 border border-gray-200">' + pct.toFixed(0) + '%</td>' +
+                '</tr>';
+      }
+      var totalWeekly = weekly.toFixed(1);
+      var totalGlobal = (weekly * ns).toFixed(1);
+      html += '<tr class="bg-gray-50 font-semibold">' +
+              '<td class="p-2 border border-gray-200">Total</td>' +
+              '<td class="text-center p-2 border border-gray-200">' + totalWeekly + '</td>' +
+              '<td class="text-center p-2 border border-gray-200">' + totalGlobal + '</td>' +
+              '<td class="text-center p-2 border border-gray-200">100%</td>' +
+              '</tr>';
+      tbody.innerHTML = html;
     }
 
     // ================================
@@ -1510,6 +1932,21 @@
       updatePreview();
       goToStep(1);
     };
+
+    // Actualiza el bloque de doble formato UGCI/Extendido (Fase 5.7-A extendida)
+    function updateDualFormat(calc) {
+      if (!calc) return;
+      var elHP = document.getElementById('formatoHP');
+      var elHA = document.getElementById('formatoHA');
+      var elSinc = document.getElementById('formatoSinc');
+      var elAsinc = document.getElementById('formatoAsinc');
+      var elAut = document.getElementById('formatoAut');
+      if (elHP) elHP.textContent = calc.hp + ' hrs';
+      if (elHA) elHA.textContent = calc.ha + ' hrs';
+      if (elSinc) elSinc.textContent = calc.hSinc + ' hrs';
+      if (elAsinc) elAsinc.textContent = calc.hAsinc + ' hrs';
+      if (elAut) elAut.textContent = calc.hAut + ' hrs';
+    }
 
     // Start
     init();

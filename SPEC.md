@@ -421,6 +421,77 @@ Cache personalizado por estudiante (completions, grades, submissions) se llena e
 
 ---
 
+## Fase 5.7: Calculadora SCT-Chile v3
+
+**Estado**: PENDIENTE
+**Ultima sesion**: —
+**Objetivo**: Redisenar la calculadora SCT para soportar 3 modos coexistentes (A: curso individual, B: semestre, C: estimacion desde competencias)
+
+### Leer antes de empezar
+- `docs/propuesta-calculadora-sct-v3-consolidada.md` — Propuesta completa v3.1 (documento base)
+- `docs/plan-componentes-modoA-modoB-shell.md` — Plan tecnico Shell + Modo A + Modo B
+- `docs/plan-componente-modoC.md` — Plan tecnico Modo C
+- `docs/plan-componentes-motor-informe-datos.md` — SCTEngine, ReportGenerator, DataLayer
+- `docs/plan-cambios-landing-navegacion.md` — Cambios a landing y navegacion
+- `docs/mapa-conexiones-virtualizacion.md` — Mapa de conexiones con ecosistema
+- `src/public/virtualizacion-sct.html` — Calculadora actual (v1, ~1519 lineas)
+- `src/public/virtualizacion.html` — Landing de virtualizacion
+- `docs/fuentes/ugci/V1_Guia_Calculo_SCT_Chile_UMCE.docx` — Guia UGCI (fuente primaria)
+
+### Fase 5.7-A: Shell y Modo A (mejoras sobre v1)
+
+- [x] **5.7.1** Selector de modo (3 radio cards) — A operativo, B y C placeholder "proximamente" (13-abr-2026)
+- [x] **5.7.2** Estado compartido SCTState + switchMode() + syncSharedState() + getVal()
+- [x] **5.7.3** Modo A: campo semanas con override manual + aviso cuando difiere del default
+- [x] **5.7.4** Modo A: validacion H_aut 25-40% con banner adaptativo (Doc. N. 004-2020)
+- [x] **5.7.5** Modo A: informe Bloque 2 anexo metodologico (distribucion + marco teorico Laurillard/DOK/Bloom + 6 referencias)
+
+### Fase 5.7-A extendida (Opcion C — 13-abr-2026)
+
+- [x] **E1** Extraer helpers puros: calcSCT(), getCheckedRadio(), getSemaforoLevel() — elimina duplicacion de formula en 3 sitios
+- [x] **E2** activityType + ACTIVITY_PRESETS + selector tipo de actividad (5 radio cards: expositiva/taller/seminario/proyecto/mixto)
+- [x] **E3** Doble formato en Etapa 2: UGCI bipartito (HP/HA) + extendido tripartito (Sinc/Asinc/Aut) via updateDualFormat()
+- [x] **E4** Contexto Formato+Perfil+TipoActividad en Bloque 2 anexo metodologico (FORMATO_LABELS, PROFILE_LABELS, ACTIVITY_LABELS)
+- [x] **AUDIT-3** Auditoria cruzada Opus: 12/12 checks PASS — formula canonica intacta, stack vanilla limpio, IIFE scope correcto, sin regresion
+
+### Fase 5.7-B: Modo B (vista semestral)
+
+- [ ] **5.7.6** Wizard 4 pasos Modo B
+- [ ] **5.7.7** Tabla editable de ACs
+- [ ] **5.7.8** Semaforos de carga por perfil
+- [ ] **5.7.9** Vista resumen semestre
+
+### Fase 5.7-C: Modo C (estimacion desde competencias)
+
+- [ ] **5.7.10** Panel de configuracion programa
+- [ ] **5.7.11** Lista de ACs con checkboxes modalidades
+- [ ] **5.7.12** Sliders nivel cognitivo + motor calculo
+- [ ] **5.7.13** Logica invertida CUECH
+- [ ] **5.7.14** Vista de programa multi-semestre
+- [ ] **5.7.15** Alertas de coherencia
+
+### Fase 5.7-D: Motor compartido e informe
+
+- [ ] **5.7.16** SCTEngine con 12 funciones publicas
+- [ ] **5.7.17** ReportGenerator (Bloque 1 comun + Bloque 2 por modo)
+- [ ] **5.7.18** DataLayer (localStorage + JSON export/import)
+- [ ] **5.7.19** Sobre presupuestario M1→M3 (localStorage)
+
+### Fase 5.7-E: Integracion ecosistema
+
+- [ ] **5.7.20** Actualizar landing virtualizacion.html
+- [ ] **5.7.21** Actualizar navegacion entre paginas de virtualizacion
+- [ ] **5.7.22** Actualizar prompt asistente IA (server.js)
+
+### Anti-patrones de esta fase
+- NO implementar Modo C sin tener Shell + Modo A funcionando
+- NO usar const/let/arrow functions — solo var y function
+- NO agregar dependencias npm — todo client-side vanilla JS
+- NO cambiar la formula canonica (SCT = ceil(HT/27))
+- NO presentar ratios como empiricos — son heuristicos fundamentados
+
+---
+
 ## Fase 6: Integracion Acompana UMCE
 
 **Estado**: PENDIENTE
@@ -452,3 +523,4 @@ Cada sesion que trabaje en este proyecto registra aqui que se hizo.
 | 26-mar-2026 | Fase 3 | Curso virtual completo: sidebar+area principal, paleta UMCE, iconos Lucide, secciones (Inicio/Nucleos/Evaluaciones/Biblio/Info), barra quick-access, config DI (5 tabs), toggle visado, publicar/despublicar, fallbacks, chatbot generico, accesibilidad base | COMPLETADA — 13/13 pasos |
 | 26-mar-2026 | Fase 4 | Motor cron: 7 tablas nuevas (5 cache+notifications+mapping), cron 6h (refresh snapshots/recordings/calendar), detector cambios con alertas auto, endpoints notifications, panel alertas PIAC, SESSION_SECRET fijo | COMPLETADA — 11/11 pasos |
 | 26-mar-2026 | Fase 5 | Experiencia personalizada: identidad Moodle (email→userid), completion+grades+recordings+calendar en API, barras progresion sidebar, notas inline, grabaciones por sesion, calendario eventos, badge notificaciones, boton refresh, chatbot contextual con datos del curso | COMPLETADA — 12/12 pasos |
+| 13-abr-2026 | Pre-5.7 | Propuesta v3.1 completa, 4 planes tecnicos, mapa de conexiones, auditoria de coherencia (8 items), actualizacion bibliografia y docs | Planificacion completa — pendiente implementacion |
