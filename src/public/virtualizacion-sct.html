@@ -102,17 +102,20 @@
       <div class="grid md:grid-cols-3 gap-4">
         <button class="profile-card" data-profile="pregrado">
           <div class="font-bold text-xl mb-1">Pregrado</div>
-          <div class="text-sm text-gray-600 mb-4">~13 h/sem · semestres</div>
+          <div class="text-sm text-gray-600 mb-1">Semestres · tope sincrónico 13 h/sem</div>
+          <div class="text-[11px] text-gray-500 mb-3">alerta amarilla sobre 9 h/sem sincrónicas</div>
           <p class="text-sm text-gray-700">Andamiaje fuerte, práctica continua, progresión extendida.</p>
         </button>
         <button class="profile-card" data-profile="postgrado">
           <div class="font-bold text-xl mb-1">Postgrado</div>
-          <div class="text-sm text-gray-600 mb-4">~11 h/sem · semestres</div>
+          <div class="text-sm text-gray-600 mb-1">Semestres · tope sincrónico 11 h/sem</div>
+          <div class="text-[11px] text-gray-500 mb-3">alerta amarilla sobre 8 h/sem sincrónicas</div>
           <p class="text-sm text-gray-700">Experticia previa, indagación y producción hacia tesis.</p>
         </button>
         <button class="profile-card" data-profile="edu_continua">
           <div class="font-bold text-xl mb-1">Educación continua</div>
-          <div class="text-sm text-gray-600 mb-4">~8 h/sem · por etapas</div>
+          <div class="text-sm text-gray-600 mb-1">Por etapas · tope sincrónico 8 h/sem</div>
+          <div class="text-[11px] text-gray-500 mb-3">alerta amarilla sobre 6 h/sem sincrónicas</div>
           <p class="text-sm text-gray-700">Aplicación profesional inmediata, corto plazo.</p>
         </button>
       </div>
@@ -1173,8 +1176,9 @@ function renderOverview() {
   const prof = PROFILES[p.perfil];
 
   document.getElementById('ov-nombre').textContent = p.nombre;
+  const thMeta = syncThresholds(p);
   document.getElementById('ov-meta').textContent =
-    `${p.codigo ? p.codigo + ' · ' : ''}${prof.nombre} · ${p.duracion} ${p.unidad} · ${p.carga_objetivo} h/sem obj.`;
+    `${p.codigo ? p.codigo + ' · ' : ''}${prof.nombre} · ${p.duracion} ${p.unidad} · tope sincrónico ${thMeta.roja} h/sem (alerta ${thMeta.amarilla})`;
 
   document.getElementById('ov-sct-total').textContent = programSCT(p);
   const filterVal = document.getElementById('filter-formato').value;
