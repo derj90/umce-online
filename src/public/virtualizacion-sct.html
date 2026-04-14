@@ -5699,37 +5699,18 @@
           ponderacionCuech: ac.ponderacionCuech
         };
       } else if (modsActivas.length === 0) {
-        // Fallback: distribucion por area disciplinar (no marca nada)
-        var fb = SCTEngine.getDefaultDistribution(ac.area);
-        var fbMods = fb.modalidades.slice();
-        var fbNiveles = {};
-        var fbProp = {};
-        for (var fmi = 0; fmi < fbMods.length; fmi++) {
-          var fm = fbMods[fmi];
-          fbNiveles[fm] = MODALITY_DEFAULTS[fm].nivelDefault;
-          fbProp[fm] = fb.proporciones[fm] * 100;
-        }
-        var nivPredF = SCTEngine.getNivelPredominante(fbMods, fbNiveles);
-        var calcF = SCTEngine.calculateFromCognitive(nivPredF, perfil, ac.modalidad, ac.ns, ac.sctOverride);
-        var distF = SCTEngine.distributeByModality(calcF.ht, fbMods, fbProp);
-        var ratiosF = SCTEngine.applyRatios(distF.horasPorModalidad, perfil);
+        // Sin modalidades y sin CUECH: no calcular, no inventar distribucion.
+        // El usuario debe marcar modalidades para obtener SCT/HT basado en carga cognitiva real.
         runResult = {
-          modalidades: fbMods,
-          niveles: fbNiveles,
-          proporciones: fbProp,
-          nivelPredominante: nivPredF,
-          ht: calcF.ht,
-          sct: calcF.sct,
-          cargaSemanal: calcF.cargaSemanalEstimada,
-          horasPorModalidad: distF.horasPorModalidad,
-          horasPorModalidadPorTipo: ratiosF.detallesPorModalidad,
-          sinc: ratiosF.triple.hSinc,
-          asinc: ratiosF.triple.hAsinc,
-          aut: ratiosF.triple.hAut,
-          triple: ratiosF.triple,
-          ugci: ratiosF.ugci,
-          multiplicador: calcF.multiplicador,
-          fallbackArea: true
+          modalidades: [], niveles: {}, proporciones: {},
+          nivelPredominante: 0,
+          ht: 0, sct: 0, cargaSemanal: 0,
+          horasPorModalidad: {},
+          horasPorModalidadPorTipo: {},
+          sinc: 0, asinc: 0, aut: 0,
+          triple: { hSinc: 0, hAsinc: 0, hAut: 0 },
+          ugci: { hPresencial: 0, hSinc: 0, hAsinc: 0, hAut: 0 },
+          sinModalidades: true
         };
       } else {
         var nivPredN = SCTEngine.getNivelPredominante(modsActivas, niveles);
@@ -5804,11 +5785,12 @@
       var esCuech = isCuechFormat(SCTState.modoC.formato);
       var numSem = SCTState.modoC.numSemesters;
       var r = ac.resultado;
-      var nivPred = r ? r.nivelPredominante : '--';
+      var isEmpty = !r || r.sinModalidades;
+      var nivPred = (r && !r.sinModalidades) ? r.nivelPredominante : '--';
       var sctShow = r ? r.sct : 0;
       var htShow = r ? r.ht.toFixed(1) : '0.0';
       var cargaShow = r ? r.cargaSemanal.toFixed(1) : '0.0';
-      var semaforo = r ? mcSemaforoColor(r.cargaSemanal, SCTState.modoC.profile) : 'empty';
+      var semaforo = (r && !r.sinModalidades) ? mcSemaforoColor(r.cargaSemanal, SCTState.modoC.profile) : 'empty';
 
       var card = document.createElement('article');
       card.className = 'border border-gray-200 rounded-lg bg-white';
@@ -5960,7 +5942,7 @@
         modHtml += '<span class="text-xs ' + (sumaOk ? 'text-green-700' : 'text-red-700 font-semibold') + '" aria-live="polite">Suma: ' + sumaP.toFixed(0) + '%' + (sumaOk ? ' <svg class="inline w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ' (debe sumar 100%)') + '</span>';
         modHtml += '<button type="button" class="ac-redistribuir px-2 py-1 text-[11px] border border-gray-300 rounded hover:bg-gray-50">Redistribuir equitativamente</button>';
       } else {
-        modHtml += '<span class="text-xs text-gray-500 italic">Sin modalidades marcadas. Se usara distribucion sugerida por area: <strong>' + mcEscapeHtml(ac.area) + '</strong>.</span>';
+        modHtml += '<span class="text-xs text-amber-700 italic">Marque al menos una modalidad para calcular SCT basado en carga cognitiva.</span>';
       }
       modHtml += '</div>';
 
@@ -5970,6 +5952,18 @@
       // ---- Panel de resultados ----
       var resultadoBox = document.createElement('div');
       resultadoBox.className = 'border border-gray-200 rounded-lg p-3 bg-gray-50';
+      if (r && r.sinModalidades && !esCuech) {
+        var resHtml = '<h5 class="text-xs font-semibold text-gray-700 mb-2">Resultado estimado</h5>';
+        resHtml += '<div class="bg-white rounded p-4 text-center border border-dashed border-gray-300">';
+        resHtml += '<p class="text-sm text-gray-500">Marque al menos una modalidad para calcular los creditos SCT.</p>';
+        resHtml += '<p class="text-[11px] text-gray-400 mt-1">El SCT se deriva de la carga cognitiva: niveles DOK y proporcion por modalidad.</p>';
+        resHtml += '</div>';
+        resultadoBox.innerHTML = resHtml;
+        body.appendChild(resultadoBox);
+        card.appendChild(body);
+        container.appendChild(card);
+        return;
+      }
       if (r) {
         var cargaColor = mcSemaforoColor(r.cargaSemanal, SCTState.modoC.profile);
         var resHtml = '<h5 class="text-xs font-semibold text-gray-700 mb-2">Resultado estimado</h5>';
@@ -5980,7 +5974,6 @@
         resHtml += '</div>';
 
         var baseText = 'Basado en: Nivel ' + r.nivelPredominante + ' (' + mcEscapeHtml(HOURS_BY_LEVEL[r.nivelPredominante].label) + '), ' + mcEscapeHtml(PROFILE_PARAMS[SCTState.modoC.profile].label) + ', ' + ac.ns + ' semanas';
-        if (r.fallbackArea) baseText += ' &mdash; distribucion sugerida para area ' + mcEscapeHtml(ac.area);
         if (r.htOverride) baseText += ' &mdash; HT ajustado manualmente';
         resHtml += '<p class="text-[11px] text-gray-600 mb-2">' + baseText + '</p>';
 

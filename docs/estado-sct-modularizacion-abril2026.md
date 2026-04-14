@@ -271,24 +271,63 @@ Todas las herramientas están disponibles en [umce.online/virtualizacion](https:
 
 ---
 
-## Evolución conceptual — 13 abril 2026
+## Evolución conceptual — 13-14 abril 2026
 
 ### Análisis de vacío normativo
 Se revisaron sistemáticamente las fuentes normativas (Guía UGCI, Manual SCT-Chile, CNA Criterios Virtuales, Plan de Seguimiento SCT) confirmando que ninguna formaliza el puente competencias → horas para programas nuevos. El Manual SCT-Chile FAQ 5 (p.109) autoriza estimación prospectiva pero no la operacionaliza.
 
-### Propuesta v3: tres modos coexistentes
-- **Modo A**: Calculadora actual mejorada (selector tipo actividad + doble formato UGCI)
-- **Modo B**: Vista de semestre (múltiples ACs + carga agregada)
-- **Modo C**: Estimación desde competencias (checkboxes actividad × slider nivel cognitivo → horas automáticas)
+### Cambio de paradigma: de verificar a construir
+
+La Calculadora v1 responde a una sola pregunta: "¿los créditos que declaré cuadran con las horas que ingresé?". Esto funciona cuando el curso ya existe y solo se quiere validar. Pero deja sin resolver tres situaciones que aparecen todos los días en la UMCE: (1) ver la carga del estudiante a nivel de semestre completo, (2) estimar créditos para programas nuevos sin cohortes previas, y (3) tomar decisiones de diseño con fundamento pedagógico, no solo aritmético.
+
+La v3 reorganiza la calculadora en **tres modos coexistentes** que responden cada uno a una pregunta distinta. Los tres comparten la fórmula institucional (SCT = ceil(HT/27)) y el formato UGCI de salida; lo que cambia es el punto de partida.
+
+### Los tres modos, en simple
+
+**Modo A — "Tengo un curso, ¿cuántos SCT son?"**
+Para cuándo se usa: ya están definidas las horas semanales (sincrónicas, asincrónicas, autónomas) y se quiere verificar que los créditos declarados cuadren. Es la calculadora de siempre, con tres mejoras: selector de tipo de actividad (expositiva, taller, seminario, proyecto, mixto) que pre-llena las horas sugeridas, doble formato de salida (UGCI bipartito HP/HA para resoluciones + tripartito sincrónico/asincrónico/autónomo para diseño instruccional), e informe imprimible con anexo metodológico. Tiempo de uso: 3-5 minutos. Usuario típico: coordinador con prisa, UGCI validando un PAC, diseñador verificando un dato.
+
+**Modo B — "Tengo un semestre completo, ¿la carga está balanceada?"**
+Para cuándo se usa: se está diseñando o revisando un plan de estudios y se necesita ver la carga agregada que va a enfrentar el estudiante cuando curse varias actividades en paralelo. El coordinador ingresa las actividades curriculares del semestre como filas de una tabla y la herramienta calcula la carga semanal total, con semáforos (verde/amarillo/rojo) ajustados por perfil de estudiante. Esta vista es la que hoy no existe y que la sección 8.1 identificó como el tercer problema estructural (sobrecarga agregada). Tiempo de uso: 10-15 minutos para 4-5 actividades. Usuario típico: coordinador de programa, UGCI verificando balance semestral.
+
+**Modo C — "Tengo un programa nuevo, ¿cuánto debería valer cada curso?"**
+Para cuándo se usa: se está diseñando un programa desde cero, no hay cohortes previas que informen las horas, pero sí está definido el perfil de egreso y las competencias. En vez de ingresar horas, el coordinador marca qué hace cognitivamente el estudiante (recordar, aplicar, analizar, crear) y en qué modalidades de trabajo (estudio individual, producción escrita, práctica aplicada, trabajo colaborativo, producción integrada). El motor estima las horas a partir del nivel cognitivo predominante y devuelve los SCT fundamentados. Tiempo de uso: 15-25 minutos para un programa completo. Usuario típico: coordinador diseñando un programa nuevo, equipo de rediseño curricular.
+
+Este es el aporte teórico original de la propuesta. Mientras los Modos A y B trabajan con horas ingresadas manualmente, el Modo C **estima las horas a partir de la naturaleza cognitiva de lo que se le pide al estudiante**. El supuesto central —que actividades de mayor complejidad cognitiva requieren más tiempo— está respaldado empíricamente por el estudio CTAWC (Boring y Blackman, 2021).
+
+### Diferencia clave entre los tres modos
+
+| Modo | Pregunta que responde | Entrada | Salida |
+|------|----------------------|---------|--------|
+| A | ¿Cuántos SCT es este curso? | Horas conocidas × semanas | SCT verificados |
+| B | ¿Está balanceado el semestre? | Varias ACs con horas | Carga agregada + semáforos |
+| C | ¿Cuánto debería valer este curso? | Competencias y nivel cognitivo | Horas estimadas + SCT fundamentados |
+
+Los modos no se excluyen: un coordinador puede usar el Modo A para verificar un curso puntual, el Modo B para revisar su semestre, y el Modo C para diseñar un programa nuevo desde el perfil de egreso. La interfaz ofrece los tres como opciones de entrada, con navegación libre entre ellos.
 
 ### Bases teóricas incorporadas
-DOK (Webb), Anderson & Krathwohl (dimensión conocimiento), Laurillard (6 tipos), Wake Forest (calibración horas), Hess Cognitive Rigor Matrix, van den Akker (niveles curriculares).
+DOK (Webb, 1997/2002), Anderson & Krathwohl (dimensión del conocimiento), Laurillard (seis tipos de actividad de aprendizaje), Wake Forest Workload Estimator 2.0 (calibración de horas), Hess Cognitive Rigor Matrix (2009, cruce Bloom × DOK), van den Akker (2003, niveles curriculares macro/meso/micro).
+
+### Estado de implementación (al 14 abril 2026)
+
+| Modo | Estado | Última actualización |
+|------|--------|---------------------|
+| Modo A — Shell + mejoras sobre v1 | Operativo | 13-abr-2026 |
+| Modo B — Vista semestral | Pendiente | — |
+| Modo C — Estimación desde competencias | Operativo end-to-end | 14-abr-2026 |
+| Motor compartido + DataLayer | Pendiente | — |
+| Integración con landing y asistente IA | Pendiente | — |
+
+El Modo A incorpora selector de tipo de actividad, doble formato UGCI, validación del rango 25-40% de horas autónomas (Doc. N° 004-2020) e informe con anexo metodológico. El Modo C incluye motor cognitivo calibrado (HOURS_BY_LEVEL 1-4), 5 modalidades de trabajo, lógica invertida para formato CUECH Súbete (SCT fijos = 2, HT = 54 horas), alertas de coherencia nivel-modalidad, vista multi-semestre y migración silenciosa de datos en formato legacy. Ambos modos pasaron auditoría cruzada con Opus (12/12 checks en cada uno).
 
 ### Documentos generados
+- `propuesta-calculadora-sct-v3-consolidada.md` — propuesta definitiva v3.1 (documento base)
+- `plan-componentes-modoA-modoB-shell.md` — plan técnico Modo A y Modo B
+- `plan-componente-modoC.md` — plan técnico Modo C
+- `plan-cambios-landing-navegacion.md` — plan de actualización de la landing
 - `concepto-calculadora-sct-v2.md` — propuesta inicial (superada por v3)
 - `impacto-rediseno-calculadora-sct.md` — análisis de impacto
 - `propuesta-mockups-calculadora-sct-v2.md` — mockups v2 (superados por v3)
-- `propuesta-calculadora-sct-v3-consolidada.md` — propuesta definitiva
 
 ---
 
