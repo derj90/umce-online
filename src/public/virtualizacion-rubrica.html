@@ -120,6 +120,131 @@
       font-style: italic;
       margin-top: 0.5rem;
     }
+
+    /* Indicadores detallados — acordeón */
+    .ind-dim {
+      background: #FFFFFF;
+      border: 1px solid #E5E7EB;
+      border-radius: 0.75rem;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+    .ind-dim > summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      font-weight: 600;
+    }
+    .ind-dim > summary::-webkit-details-marker { display: none; }
+    .ind-dim > summary::after {
+      content: '▸';
+      color: #9CA3AF;
+      transition: transform 0.2s ease;
+      font-size: 0.875rem;
+    }
+    .ind-dim[open] > summary::after { transform: rotate(90deg); }
+    .ind-dim-head {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 1;
+      min-width: 0;
+    }
+    .ind-dim-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.5rem;
+      font-weight: 700;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+    .ind-subdim {
+      border-top: 1px solid #F3F4F6;
+      padding: 0.75rem 1.25rem 1rem;
+    }
+    .ind-subdim-title {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .ind-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px dashed #F3F4F6;
+      font-size: 0.875rem;
+      align-items: start;
+    }
+    .ind-row:last-child { border-bottom: none; }
+    .ind-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #4B5563;
+      background: #F3F4F6;
+      padding: 0.125rem 0.5rem;
+      border-radius: 0.25rem;
+      white-space: nowrap;
+    }
+    .ind-text { color: #1F2937; line-height: 1.5; }
+    .ind-meta {
+      display: flex;
+      gap: 0.375rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+    }
+    .ind-tag {
+      font-size: 0.6875rem;
+      padding: 0.125rem 0.5rem;
+      border-radius: 999px;
+      white-space: nowrap;
+      font-weight: 600;
+    }
+    .tag-alta    { background: #FEE2E2; color: #991B1B; }
+    .tag-media   { background: #FEF3C7; color: #92400E; }
+    .tag-baja    { background: #E0E7FF; color: #3730A3; }
+    .tag-obs     { background: #F3F4F6; color: #4B5563; }
+    .tag-when    { background: #ECFDF5; color: #065F46; }
+    @media (max-width: 640px) {
+      .ind-row { grid-template-columns: 1fr; }
+      .ind-meta { justify-content: flex-start; }
+    }
+
+    .ind-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .ind-filter-btn {
+      font-size: 0.75rem;
+      padding: 0.375rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid #E5E7EB;
+      background: #fff;
+      color: #4B5563;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .ind-filter-btn:hover { border-color: #9CA3AF; }
+    .ind-filter-btn.active {
+      background: var(--palette-primary, #0033A1);
+      color: #fff;
+      border-color: var(--palette-primary, #0033A1);
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900 antialiased">
@@ -167,7 +292,7 @@
           <div class="text-white/60 text-xs mt-0.5">cursos evaluados</div>
         </div>
         <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 text-center">
-          <div class="text-2xl font-extrabold font-heading">20</div>
+          <div class="text-2xl font-extrabold font-heading">19</div>
           <div class="text-white/60 text-xs mt-0.5">subdimensiones</div>
         </div>
       </div>
@@ -342,9 +467,40 @@
         </div>
       </div>
 
-      <div class="fade-up bg-gray-50 border border-gray-200 rounded-xl p-5 text-sm text-gray-600">
+      <div class="fade-up bg-gray-50 border border-gray-200 rounded-xl p-5 text-sm text-gray-600 space-y-2">
         <p><strong>Referencia:</strong> Sepúlveda Parrini, P. (2024). <em>Marco Evaluativo de Cursos Virtuales UMCE: Instrumento de aseguramiento de calidad</em>. Unidad de Desarrollo y Formaci&oacute;n Virtual, Universidad Metropolitana de Ciencias de la Educaci&oacute;n. Proyecto de Fortalecimiento Institucional UMC20992.</p>
+        <p class="text-xs text-gray-500"><strong>Documentos fuente:</strong> <em>07_Marco Evaluativo Virtual. Paloma Sep&uacute;lveda.pdf</em> (marco te&oacute;rico) &middot; <em>08_R&uacute;brica Marco Evaluativo, post pilotaje.xlsx</em> (instrumento con los 77 indicadores) &middot; <em>Informe I y II_Dise&ntilde;o e Implementaci&oacute;n del Marco Evaluativo</em> (resultados del pilotaje).</p>
       </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       SECCIÓN 6: INDICADORES DETALLADOS
+  ================================================ -->
+  <section id="indicadores" class="anchor-offset bg-gray-50 py-16">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="fade-up text-center mb-8">
+        <p class="text-sm font-semibold uppercase tracking-widest mb-2" style="color: var(--palette-primary);">Instrumento completo</p>
+        <h2 class="font-heading text-3xl font-bold mb-2">Los 77 Indicadores, uno por uno</h2>
+        <p class="text-gray-500 text-sm max-w-2xl mx-auto">Despliega cada dimensi&oacute;n para ver sus subdimensiones y los indicadores concretos que componen el Marco Evaluativo. Cada indicador se eval&uacute;a en la escala Likert 0&ndash;4.</p>
+      </div>
+
+      <div class="fade-up ind-filters" role="group" aria-label="Filtro por jerarqu&iacute;a">
+        <span class="text-xs font-semibold text-gray-600 mr-1">Jerarqu&iacute;a:</span>
+        <button class="ind-filter-btn active" data-filter="todas">Todas</button>
+        <button class="ind-filter-btn" data-filter="alta">Alta (29)</button>
+        <button class="ind-filter-btn" data-filter="media">Media (31)</button>
+        <button class="ind-filter-btn" data-filter="baja">Baja (16)</button>
+        <button class="ind-filter-btn" data-filter="observaci&oacute;n">Observaci&oacute;n (1)</button>
+      </div>
+
+      <div id="indicadores-accordion" class="fade-up">
+        <div class="text-center py-8 text-gray-400 text-sm" id="indicadores-loading">Cargando indicadores&hellip;</div>
+      </div>
+
+      <p class="fade-up text-xs text-gray-500 mt-6 text-center">
+        Fuente de datos: <a href="/data/rubrica-indicadores.json" class="underline hover:text-umce-azul" target="_blank" rel="noopener">/data/rubrica-indicadores.json</a> &middot; extra&iacute;do de <em>08_R&uacute;brica Marco Evaluativo, post pilotaje.xlsx</em> (Sep&uacute;lveda Parrini, 2024).
+      </p>
     </div>
   </section>
 
@@ -449,7 +605,7 @@
     var dimensiones = [
       { id: 'd1', nombre: 'Experiencia de interacción con la plataforma', subdimensiones: 4, indicadores: 18, color: '#0033A1', emoji: '🖥️', desc: 'Navegación, usabilidad y diseño del entorno virtual de aprendizaje.' },
       { id: 'd2', nombre: 'Accesibilidad', subdimensiones: 4, indicadores: 17, color: '#059669', emoji: '♿', desc: 'Acceso multimodal: subtítulos, lengua de señas, audiodescripción y ajustes.' },
-      { id: 'd3', nombre: 'Coherencia didáctica', subdimensiones: 5, indicadores: 16, color: '#7C3AED', emoji: '📚', desc: 'Alineación entre objetivos, actividades y evaluaciones del curso.' },
+      { id: 'd3', nombre: 'Coherencia didáctica', subdimensiones: 4, indicadores: 16, color: '#7C3AED', emoji: '📚', desc: 'Alineación entre objetivos, actividades y evaluaciones del curso.' },
       { id: 'd4', nombre: 'Competencias para la docencia virtual', subdimensiones: 2, indicadores: 7, color: '#D97706', emoji: '👩‍🏫', desc: 'Competencias pedagógicas del docente en el aula virtual y sesiones síncronas.' },
       { id: 'd5', nombre: 'Perspectiva de género y equidad', subdimensiones: 2, indicadores: 11, color: '#DB2777', emoji: '⚖️', desc: 'Lenguaje inclusivo, representación equitativa y contenidos no sexistas.' },
       { id: 'd6', nombre: 'Corresponsabilidad social y cuidados digitales', subdimensiones: 3, indicadores: 8, color: '#DC2626', emoji: '🤝', desc: 'Reconocimiento de cargas de cuidado y contextos de vida de los estudiantes.' }
@@ -660,12 +816,111 @@
       dimKey.innerHTML = keyHtml;
     }
 
+    // ── INDICADORES DETALLADOS (acordeón) ─────────────────────────────────────
+
+    var indicadoresData = null;
+    var activeFilter = 'todas';
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function buildIndicadoresAccordion() {
+      var mount = document.getElementById('indicadores-accordion');
+      if (!indicadoresData) return;
+
+      var dims = indicadoresData.dimensiones;
+      var subdims = indicadoresData.subdimensiones;
+      var inds = indicadoresData.indicadores;
+
+      // Dimension color/emoji from the existing `dimensiones` array above
+      var dimMeta = {};
+      dimensiones.forEach(function(d) {
+        var num = parseInt(d.id.substring(1), 10);
+        dimMeta[num] = { color: d.color, emoji: d.emoji, short: d.id.toUpperCase() };
+      });
+
+      var html = '';
+      dims.forEach(function(dim) {
+        var dIds = inds.filter(function(i) {
+          return i.d === dim.id && (activeFilter === 'todas' || i.jerarquia === activeFilter);
+        });
+        var totalDim = inds.filter(function(i) { return i.d === dim.id; }).length;
+        var meta = dimMeta[dim.id] || { color: '#6B7280', emoji: '', short: 'D' + dim.id };
+
+        if (dIds.length === 0 && activeFilter !== 'todas') return;
+
+        html += '<details class="ind-dim"' + (activeFilter !== 'todas' ? ' open' : '') + '>';
+        html += '  <summary>';
+        html += '    <span class="ind-dim-head">';
+        html += '      <span class="ind-dim-badge" style="background:' + meta.color + '20;color:' + meta.color + '">' + meta.short + '</span>';
+        html += '      <span>';
+        html += '        <span class="text-sm text-gray-800 block">' + escapeHtml(dim.nombre) + '</span>';
+        html += '        <span class="text-xs text-gray-500 font-normal">' + dIds.length + (activeFilter !== 'todas' ? ' de ' + totalDim : '') + ' indicadores</span>';
+        html += '      </span>';
+        html += '    </span>';
+        html += '  </summary>';
+
+        var dSubs = subdims.filter(function(s) { return s.d === dim.id; });
+        dSubs.forEach(function(sub) {
+          var sInds = dIds.filter(function(i) { return i.sd === sub.sd; });
+          if (sInds.length === 0) return;
+
+          html += '  <div class="ind-subdim">';
+          html += '    <p class="ind-subdim-title" style="color:' + meta.color + '">' + dim.id + '.' + sub.sd + ' &mdash; ' + escapeHtml(sub.nombre) + '</p>';
+          sInds.forEach(function(ind) {
+            var jerClass = 'tag-' + (ind.jerarquia === 'observación' ? 'obs' : ind.jerarquia);
+            var jerLabel = ind.jerarquia.charAt(0).toUpperCase() + ind.jerarquia.slice(1);
+            html += '    <div class="ind-row">';
+            html += '      <span class="ind-code">' + ind.codigo + '</span>';
+            html += '      <span class="ind-text">' + escapeHtml(ind.texto) + '</span>';
+            html += '      <span class="ind-meta">';
+            html += '        <span class="ind-tag ' + jerClass + '" title="Importancia">' + jerLabel + '</span>';
+            if (ind.cuando_evaluar) {
+              html += '        <span class="ind-tag tag-when" title="Cuándo evaluar">' + escapeHtml(ind.cuando_evaluar) + '</span>';
+            }
+            html += '      </span>';
+            html += '    </div>';
+          });
+          html += '  </div>';
+        });
+
+        html += '</details>';
+      });
+
+      mount.innerHTML = html || '<p class="text-center py-8 text-gray-400 text-sm">Sin indicadores para este filtro.</p>';
+    }
+
+    function initIndicadores() {
+      fetch('/data/rubrica-indicadores.json')
+        .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
+        .then(function(data) {
+          indicadoresData = data;
+          buildIndicadoresAccordion();
+        })
+        .catch(function(err) {
+          var mount = document.getElementById('indicadores-accordion');
+          mount.innerHTML = '<p class="text-center py-8 text-red-500 text-sm">No se pudieron cargar los indicadores (' + err + ').</p>';
+        });
+
+      var btns = document.querySelectorAll('.ind-filter-btn');
+      btns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          btns.forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          activeFilter = btn.getAttribute('data-filter');
+          buildIndicadoresAccordion();
+        });
+      });
+    }
+
     // ── INIT ──────────────────────────────────────────────────────────────────
 
     document.addEventListener('DOMContentLoaded', function() {
       buildRadar();
       buildDimensionCards();
       buildTable();
+      initIndicadores();
     });
 
   })();

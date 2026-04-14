@@ -1,0 +1,919 @@
+{
+  "fuente": {
+    "autor": "Sepúlveda Parrini, P. (2024)",
+    "titulo": "Marco Evaluativo de Cursos Virtuales UMCE: Instrumento de aseguramiento de calidad",
+    "institucion": "Unidad de Desarrollo y Formación Virtual, Universidad Metropolitana de Ciencias de la Educación",
+    "proyecto": "Proyecto de Fortalecimiento Institucional UMC20992",
+    "archivo_rubrica": "08_Rúbrica Marco Evaluativo, post pilotaje.xlsx",
+    "archivo_marco": "07_Marco Evaluativo Virtual (1). Paloma Sepúlveda.pdf",
+    "fecha_pilotaje": "noviembre–diciembre 2024"
+  },
+  "escala": {
+    "0": "No evaluable (no aplica evaluar)",
+    "1": "No existe, observa o utiliza nunca",
+    "2": "Existe, se observa o se utiliza algunas veces",
+    "3": "Existe, se observa o se utiliza la mayoría de las veces",
+    "4": "Existe, se observa o se utiliza siempre"
+  },
+  "jerarquia_codigos": {
+    "alta": 3,
+    "media": 2,
+    "baja": 1
+  },
+  "dimensiones": [
+    {
+      "id": 1,
+      "nombre": "Experiencia de interacción con la plataforma"
+    },
+    {
+      "id": 2,
+      "nombre": "Accesibilidad"
+    },
+    {
+      "id": 3,
+      "nombre": "Coherencia didáctica"
+    },
+    {
+      "id": 4,
+      "nombre": "Competencias para la docencia virtual"
+    },
+    {
+      "id": 5,
+      "nombre": "Perspectiva de género y equidad"
+    },
+    {
+      "id": 6,
+      "nombre": "Corresponsabilidad social y cuidados digitales"
+    }
+  ],
+  "subdimensiones": [
+    {
+      "d": 1,
+      "sd": 1,
+      "nombre": "Funcionalidad"
+    },
+    {
+      "d": 1,
+      "sd": 2,
+      "nombre": "Usabilidad"
+    },
+    {
+      "d": 1,
+      "sd": 3,
+      "nombre": "Confiabilidad"
+    },
+    {
+      "d": 1,
+      "sd": 4,
+      "nombre": "Estética accesible"
+    },
+    {
+      "d": 2,
+      "sd": 1,
+      "nombre": "Accesibilidad multimodal"
+    },
+    {
+      "d": 2,
+      "sd": 2,
+      "nombre": "Diseño Universal de Aprendizaje (DUA)"
+    },
+    {
+      "d": 2,
+      "sd": 3,
+      "nombre": "Recursos Educativos Abiertos (REA)"
+    },
+    {
+      "d": 2,
+      "sd": 4,
+      "nombre": "Políticas sobre privacidad y uso de datos"
+    },
+    {
+      "d": 3,
+      "sd": 1,
+      "nombre": "Contenidos disponibles en la plataforma"
+    },
+    {
+      "d": 3,
+      "sd": 2,
+      "nombre": "Evaluación y retroalimentación efectiva"
+    },
+    {
+      "d": 3,
+      "sd": 3,
+      "nombre": "Estructura del cursado"
+    },
+    {
+      "d": 3,
+      "sd": 4,
+      "nombre": "Sesión síncrona"
+    },
+    {
+      "d": 4,
+      "sd": 1,
+      "nombre": "Competencias tecnológicas"
+    },
+    {
+      "d": 4,
+      "sd": 2,
+      "nombre": "Competencias pedagógicas"
+    },
+    {
+      "d": 5,
+      "sd": 1,
+      "nombre": "Trato no discriminatorio"
+    },
+    {
+      "d": 5,
+      "sd": 2,
+      "nombre": "Bienestar y cuidados digitales"
+    },
+    {
+      "d": 6,
+      "sd": 1,
+      "nombre": "Normas académicas y éticas"
+    },
+    {
+      "d": 6,
+      "sd": 2,
+      "nombre": "Convivencia digital"
+    },
+    {
+      "d": 6,
+      "sd": 3,
+      "nombre": "Corresponsabilidad social y cuidados"
+    }
+  ],
+  "indicadores": [
+    {
+      "codigo": "D1.1.1",
+      "d": 1,
+      "sd": 1,
+      "n": 1,
+      "texto": "Los botones de la plataforma funcionan correctamente.",
+      "jerarquia": "alta",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D1.1.2",
+      "d": 1,
+      "sd": 1,
+      "n": 2,
+      "texto": "Las imágenes utilizadas se visualizan correctamente y en excelente calidad (sin pixelear).",
+      "jerarquia": "media",
+      "que_evaluar": "Recursos educativos",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D1.1.3",
+      "d": 1,
+      "sd": 1,
+      "n": 3,
+      "texto": "El acceso a la plataforma (usuario/a y contraseña) es expedito.",
+      "jerarquia": "media",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D1.1.4",
+      "d": 1,
+      "sd": 1,
+      "n": 4,
+      "texto": "Los enlaces multimedia e interactivos se repoducen correctamente.",
+      "jerarquia": "alta",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D1.1.5",
+      "d": 1,
+      "sd": 1,
+      "n": 5,
+      "texto": "Las pestañas o pop-up del curso se cargan correctamente.",
+      "jerarquia": "alta",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D1.2.1",
+      "d": 1,
+      "sd": 2,
+      "n": 1,
+      "texto": "La navegación es simple (pocos clic) e intuitiva.",
+      "jerarquia": "media",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D1.2.2",
+      "d": 1,
+      "sd": 2,
+      "n": 2,
+      "texto": "Existe un orden lógico en los contenidos y actividades de la Actividad Curricular (Núcleos, temas, subtemas)",
+      "jerarquia": "alta",
+      "que_evaluar": "Menú izquierda",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D1.2.3",
+      "d": 1,
+      "sd": 2,
+      "n": 3,
+      "texto": "Presenta una jerarquía evidente y autocomprensible (índice).",
+      "jerarquia": "alta",
+      "que_evaluar": "Menú izquierda",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D1.2.4",
+      "d": 1,
+      "sd": 2,
+      "n": 4,
+      "texto": "Presenta acceso a biblioteca institucional y sistema de gestión administrativa (Ucampus).",
+      "jerarquia": "alta",
+      "que_evaluar": "Menú derecha",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D1.3.1",
+      "d": 1,
+      "sd": 3,
+      "n": 1,
+      "texto": "Los componentes del curso están claramente identificados (contenidos, calificaciones, canales de comunicación, servicios de apoyo, actividades, enlaces, etc.)",
+      "jerarquia": "alta",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D1.3.2",
+      "d": 1,
+      "sd": 3,
+      "n": 2,
+      "texto": "En la plataforma está visible la información de contacto de las personas de referencia que entregan soporte o ayuda en el uso de las plataformas y dispositivos.",
+      "jerarquia": "alta",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D1.3.3",
+      "d": 1,
+      "sd": 3,
+      "n": 3,
+      "texto": "Existen guías, tutoriales u orientaciones sobre el uso y las posibilidades de la plataforma.",
+      "jerarquia": "media",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D1.4.1",
+      "d": 1,
+      "sd": 4,
+      "n": 1,
+      "texto": "El diseño gráfico es minimalista (con suficientes espacios en blanco en la pantalla).",
+      "jerarquia": "baja",
+      "que_evaluar": "Recursos educativos",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D1.4.2",
+      "d": 1,
+      "sd": 4,
+      "n": 2,
+      "texto": "Existe un adecuado contraste de colores entre texto y fondo.",
+      "jerarquia": "media",
+      "que_evaluar": "Recursos educativos",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D1.4.3",
+      "d": 1,
+      "sd": 4,
+      "n": 3,
+      "texto": "El tipo y tamaño de fuente es legible (>12).",
+      "jerarquia": "media",
+      "que_evaluar": "Recursos educativos",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D1.4.4",
+      "d": 1,
+      "sd": 4,
+      "n": 4,
+      "texto": "Se utiliza la negrita (no cursiva) para destacar información o conceptos escritos.",
+      "jerarquia": "media",
+      "que_evaluar": "Núcleos",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D1.4.5",
+      "d": 1,
+      "sd": 4,
+      "n": 5,
+      "texto": "La imágenes y diagramas están alineados a la izquierda.",
+      "jerarquia": "media",
+      "que_evaluar": "Recursos educativos",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D1.4.6",
+      "d": 1,
+      "sd": 4,
+      "n": 6,
+      "texto": "Los encabezados están destacados y se relacionan con las jerarquías.",
+      "jerarquia": "media",
+      "que_evaluar": "Menú izquierda",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D2.1.1",
+      "d": 2,
+      "sd": 1,
+      "n": 1,
+      "texto": "Existe interpretación en lengua de signos para los videos.",
+      "jerarquia": "media",
+      "que_evaluar": "Recursos educativos",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D2.1.2",
+      "d": 2,
+      "sd": 1,
+      "n": 2,
+      "texto": "Existen subtítulos en castellano para los videos.",
+      "jerarquia": "media",
+      "que_evaluar": "Recursos educativos",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D2.1.3",
+      "d": 2,
+      "sd": 1,
+      "n": 3,
+      "texto": "Existe audio-descripción en castellano para los textos.",
+      "jerarquia": "media",
+      "que_evaluar": "Recursos educativos",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D2.1.4",
+      "d": 2,
+      "sd": 1,
+      "n": 4,
+      "texto": "Las instrucciones y botones para aciones están adecuados para ser utillizados en teclado de voz, Braille o sistemas tecnológicos compensatorios.",
+      "jerarquia": "baja",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D2.2.1",
+      "d": 2,
+      "sd": 2,
+      "n": 1,
+      "texto": "Se utilizan diversos formatos para presentar los recursos disponibles en la plataforma (texto, audio, visual, audiovisual).",
+      "jerarquia": "alta",
+      "que_evaluar": "Núcleos",
+      "cuando_evaluar": "Post dictación"
+    },
+    {
+      "codigo": "D2.2.2",
+      "d": 2,
+      "sd": 2,
+      "n": 2,
+      "texto": "Existe una variedad de formatos en las actividades de evaluación propuestas (ensayos, investigaciones, portafolio, etc.)",
+      "jerarquia": "alta",
+      "que_evaluar": "Núcleos",
+      "cuando_evaluar": "Post dictación"
+    },
+    {
+      "codigo": "D2.2.3",
+      "d": 2,
+      "sd": 2,
+      "n": 3,
+      "texto": "Existe una variedad en los tipos de actividades de evaluación (trabajos grupales, individuales, parejas, colaborativos)",
+      "jerarquia": "alta",
+      "que_evaluar": "Núcleos",
+      "cuando_evaluar": "Post dictación"
+    },
+    {
+      "codigo": "D2.2.4",
+      "d": 2,
+      "sd": 2,
+      "n": 4,
+      "texto": "Existen diversos de medios y formatos (texto, audios, videos) en la entrega de la retroalimentación a través de la plataforma.",
+      "jerarquia": "observación",
+      "que_evaluar": "Núcleos",
+      "cuando_evaluar": "Post dictación"
+    },
+    {
+      "codigo": "D2.2.5",
+      "d": 2,
+      "sd": 2,
+      "n": 5,
+      "texto": "Se utilizan diversas estrategias didácticas para estimular la participación (foros, test, entrega de tareas, actividades interactivas, etc.).",
+      "jerarquia": "alta",
+      "que_evaluar": "Núcleos",
+      "cuando_evaluar": "Post dictación"
+    },
+    {
+      "codigo": "D2.3.1",
+      "d": 2,
+      "sd": 3,
+      "n": 1,
+      "texto": "Se utilizan Recursos Educativos en Abierto -REA- (repositorio de recursos, bancos e imágenes, sonidos, etc.), evitando la utilización de recursos anónimos o que no se puedan referenciar.",
+      "jerarquia": "media",
+      "que_evaluar": "Recursos educativos",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D2.3.2",
+      "d": 2,
+      "sd": 3,
+      "n": 2,
+      "texto": "Las autorías de textos, imágenes, vídeos están enunciadas de forma clara y visible.",
+      "jerarquia": "alta",
+      "que_evaluar": "Recursos educativos",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D2.3.3",
+      "d": 2,
+      "sd": 3,
+      "n": 3,
+      "texto": "Se utiliza las licencias libres Creative Commons (cc) en los recursos o contenidos utilizados y producidos.",
+      "jerarquia": "media",
+      "que_evaluar": "Recursos educativos",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D2.3.4",
+      "d": 2,
+      "sd": 3,
+      "n": 4,
+      "texto": "Las herramientas digitales complementarias al aprendizaje sugeridos priorizan el libre acceso y código abierto.",
+      "jerarquia": "baja",
+      "que_evaluar": "Recursos educativos",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D2.4.1",
+      "d": 2,
+      "sd": 4,
+      "n": 1,
+      "texto": "Se sugieren herramientas digitales complementarias al aprendizaje, con información disponible sobre la transparencia en el uso de los datos personales.",
+      "jerarquia": "baja",
+      "que_evaluar": "Recursos educativos",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D2.4.2",
+      "d": 2,
+      "sd": 4,
+      "n": 2,
+      "texto": "Se sugieren herramientas digitales complementarias al aprendizaje, que promuevan la privacidad en el uso de los datos personales.",
+      "jerarquia": "baja",
+      "que_evaluar": "Recursos educativos",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D2.4.3",
+      "d": 2,
+      "sd": 4,
+      "n": 3,
+      "texto": "Existen políticas de consentimiento para la utilización de información personal (imágenes, grabación, envío de información, etc.).",
+      "jerarquia": "media",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D2.4.4",
+      "d": 2,
+      "sd": 4,
+      "n": 4,
+      "texto": "Existen políticas sobre el uso de imágenes e información sensible (de menores de edad y datos sensibles de colegios, etc.).",
+      "jerarquia": "alta",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D3.1.1",
+      "d": 3,
+      "sd": 1,
+      "n": 1,
+      "texto": "Los objetivos o resultados formativos de la AC son visibles y autocomprensibles.",
+      "jerarquia": "media",
+      "que_evaluar": "Núcleos",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D3.1.2",
+      "d": 3,
+      "sd": 1,
+      "n": 2,
+      "texto": "Las instrucciones son unívocas y autocomprensibles.",
+      "jerarquia": "alta",
+      "que_evaluar": "Núcleos",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D3.1.3",
+      "d": 3,
+      "sd": 1,
+      "n": 3,
+      "texto": "Existe un correcto equilibrio entre textos, imágenes y recursos multimedia.",
+      "jerarquia": "baja",
+      "que_evaluar": "Recursos educativos",
+      "cuando_evaluar": "Post sesión sincrónica"
+    },
+    {
+      "codigo": "D3.1.4",
+      "d": 3,
+      "sd": 1,
+      "n": 4,
+      "texto": "Las grabaciones de la sesión sincrónica están disponibles en la plataforma.",
+      "jerarquia": "alta",
+      "que_evaluar": "Núcleos",
+      "cuando_evaluar": "Post sesión sincrónica"
+    },
+    {
+      "codigo": "D3.2.1",
+      "d": 3,
+      "sd": 2,
+      "n": 1,
+      "texto": "Existe un instrumento de evaluación o pauta para cada actividad formativa.",
+      "jerarquia": "alta",
+      "que_evaluar": "Núcleos",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D3.2.2",
+      "d": 3,
+      "sd": 2,
+      "n": 2,
+      "texto": "La retroalimentación entregada a través de la plataforma se realiza de forma personalizada a cada estudiante.",
+      "jerarquia": "media",
+      "que_evaluar": "Núcleos",
+      "cuando_evaluar": "Post dictación"
+    },
+    {
+      "codigo": "D3.2.3",
+      "d": 3,
+      "sd": 2,
+      "n": 3,
+      "texto": "El contenido de la retroalimentación enfatiza en las fortalezas y áreas de mejora individuales.",
+      "jerarquia": "media",
+      "que_evaluar": "Núcleos",
+      "cuando_evaluar": "Post dictación"
+    },
+    {
+      "codigo": "D3.2.4",
+      "d": 3,
+      "sd": 2,
+      "n": 4,
+      "texto": "Se utilizan espacios de comunicación asincrónica (foros u otros) entre el estudiantado y con el profesorado.",
+      "jerarquia": "baja",
+      "que_evaluar": "Núcleos",
+      "cuando_evaluar": "Post dictación"
+    },
+    {
+      "codigo": "D3.3.1",
+      "d": 3,
+      "sd": 3,
+      "n": 1,
+      "texto": "El cronograma o ruta de aprendizaje del curso es visible y autocomprensible.",
+      "jerarquia": "alta",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D3.3.2",
+      "d": 3,
+      "sd": 3,
+      "n": 2,
+      "texto": "El cronograma o ruta de aprendizaje facilita el trabajo autónomo del estudiantado (calendario de actividades, finalización actividades, tiempos de dedicación)",
+      "jerarquia": "media",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D3.3.3",
+      "d": 3,
+      "sd": 3,
+      "n": 3,
+      "texto": "Existe fechas para la realización de tutorías individuales y/o grupales.",
+      "jerarquia": "baja",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Post dictación"
+    },
+    {
+      "codigo": "D3.3.4",
+      "d": 3,
+      "sd": 3,
+      "n": 4,
+      "texto": "Existen herramientas o espacios en la plataforma para la autoevaluación.",
+      "jerarquia": "baja",
+      "que_evaluar": "Núcleos",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D3.4.1",
+      "d": 3,
+      "sd": 4,
+      "n": 1,
+      "texto": "El enlace para la sesión está disponible y accesible.",
+      "jerarquia": "alta",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D3.4.2",
+      "d": 3,
+      "sd": 4,
+      "n": 2,
+      "texto": "Existe un espacio en la plataforma para marcar asistencia de forma autónoma.",
+      "jerarquia": "baja",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D3.4.3",
+      "d": 3,
+      "sd": 4,
+      "n": 3,
+      "texto": "Los documentos que deben ser trabajados de forma autónoma previo a la sesión síncrona (PPT, vídeos, textos, etc.) están disponibles en la plataforma con al menos una semana de antelación.",
+      "jerarquia": "baja",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D3.4.4",
+      "d": 3,
+      "sd": 4,
+      "n": 4,
+      "texto": "Los documentos que son trabajados durante la sesión sincrónica (PPT, vídeos, textos, etc.) están disponibles en la plataforma al día siguiente.",
+      "jerarquia": "baja",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D4.1.1",
+      "d": 4,
+      "sd": 1,
+      "n": 1,
+      "texto": "El profesorado muestra un dominio de la plataforma LMS (subir archivos, crear recursos, etc.) que le permite ser autónomo/a y desarrollar correctamente la clase.",
+      "jerarquia": "alta",
+      "que_evaluar": "Sesión sincrónica",
+      "cuando_evaluar": "Durante sesión sincrónica"
+    },
+    {
+      "codigo": "D4.1.2",
+      "d": 4,
+      "sd": 1,
+      "n": 2,
+      "texto": "El profesorado muestra un dominio de las funciones y posibilidades de Zoom (grabación, compartir pantalla, crear grupos, etc.), que le permite ser autónomo/a y desarrollar correctamente la clase.",
+      "jerarquia": "alta",
+      "que_evaluar": "Sesión sincrónica",
+      "cuando_evaluar": "Durante sesión sincrónica"
+    },
+    {
+      "codigo": "D4.1.3",
+      "d": 4,
+      "sd": 1,
+      "n": 3,
+      "texto": "El profesorado muestra un dominio de herramientas tecnológicas complementarias (Menti, Kahoot, Gdrive, etc.) que le permite ser autónomo/a y desarrollar correctamente la clase.",
+      "jerarquia": "baja",
+      "que_evaluar": "Sesión sincrónica",
+      "cuando_evaluar": "Durante sesión sincrónica"
+    },
+    {
+      "codigo": "D4.2.1",
+      "d": 4,
+      "sd": 2,
+      "n": 1,
+      "texto": "El profesorado utiliza estrategias didácticas variadas (magistral, trabajo individual, trabajo grupal, quizzes, actividades interactivas, etc.) durante la sesión síncrona.",
+      "jerarquia": "alta",
+      "que_evaluar": "Sesión sincrónica",
+      "cuando_evaluar": "Durante sesión sincrónica"
+    },
+    {
+      "codigo": "D4.2.2",
+      "d": 4,
+      "sd": 2,
+      "n": 2,
+      "texto": "Al comenzar la sesión síncrona se informa sobre los objetivos y la estructura de la sesión.",
+      "jerarquia": "alta",
+      "que_evaluar": "Sesión sincrónica",
+      "cuando_evaluar": "Durante sesión sincrónica"
+    },
+    {
+      "codigo": "D4.2.3",
+      "d": 4,
+      "sd": 2,
+      "n": 3,
+      "texto": "El profesorado realiza actividades que promuevan la participación del estudiantado (preguntas, experiencias previas, mostrar creación, etc.).",
+      "jerarquia": "media",
+      "que_evaluar": "Sesión sincrónica",
+      "cuando_evaluar": "Durante sesión sincrónica"
+    },
+    {
+      "codigo": "D4.2.4",
+      "d": 4,
+      "sd": 2,
+      "n": 4,
+      "texto": "El profesorado promueve la toma de decisiones conjuntas entre el estudiantado y profesorado.",
+      "jerarquia": "media",
+      "que_evaluar": "Sesión sincrónica",
+      "cuando_evaluar": "Durante sesión sincrónica"
+    },
+    {
+      "codigo": "D5.1.1",
+      "d": 5,
+      "sd": 1,
+      "n": 1,
+      "texto": "Se utiliza el nombre sentido o elegido por la persona (sin presunciones sobre la orientación sexual o identidad de género).",
+      "jerarquia": "alta",
+      "que_evaluar": "Sesión sincrónica",
+      "cuando_evaluar": "Durante sesión sincrónica"
+    },
+    {
+      "codigo": "D5.1.2",
+      "d": 5,
+      "sd": 1,
+      "n": 2,
+      "texto": "Se utilizan los pronombres declarados por cada estudiante (ella/elle/el).",
+      "jerarquia": "baja",
+      "que_evaluar": "Sesión sincrónica",
+      "cuando_evaluar": "Durante sesión sincrónica"
+    },
+    {
+      "codigo": "D5.1.3",
+      "d": 5,
+      "sd": 1,
+      "n": 3,
+      "texto": "El lenguaje escrito en la plataforma y en los contenidos es no sexista, inclusivo y no discriminatorio (no masculino genérico, uso de pronombres no binarios, etc.).",
+      "jerarquia": "media",
+      "que_evaluar": "Página curso - Recursos educativos",
+      "cuando_evaluar": "Pre dictación - Durante dictación"
+    },
+    {
+      "codigo": "D5.1.4",
+      "d": 5,
+      "sd": 1,
+      "n": 4,
+      "texto": "Las imágenes disponibles en la plataforma y en los contenidos son no sexistas, inclusivas y no discriminatorias (evitar estereotipos por sexo, raza, origen, clase social, etc.)",
+      "jerarquia": "alta",
+      "que_evaluar": "Página curso - Recursos educativos",
+      "cuando_evaluar": "Pre dictación - Durante dictación"
+    },
+    {
+      "codigo": "D5.1.5",
+      "d": 5,
+      "sd": 1,
+      "n": 5,
+      "texto": "Las imágenes y textos que se refieren a los pueblos originarios evitan su connotación folcklórica (no con un fin decorativo, no reducido a símbolos, sin explicaciones de contexto, etc.)",
+      "jerarquia": "media",
+      "que_evaluar": "Recursos educativos",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D5.2.1",
+      "d": 5,
+      "sd": 2,
+      "n": 1,
+      "texto": "En la plataforma está visible la información de contacto de las personas de referencia que entregan soporte o ayuda en caso de situaciones de acoso, violencia o discriminación (Oficina de Género).",
+      "jerarquia": "alta",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D5.2.2",
+      "d": 5,
+      "sd": 2,
+      "n": 2,
+      "texto": "En los recursos educativos y clases síncronas existen avisos que advierten sobre contenido sensible.",
+      "jerarquia": "media",
+      "que_evaluar": "Recursos educativos - Sesión sincrónica",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D5.2.3",
+      "d": 5,
+      "sd": 2,
+      "n": 3,
+      "texto": "En cada sesión síncrona se incorpora una pausa de un tiempo adecuado (5 minutos si dura <2 horas, 15 minutos si la sesión dura >2 horas).",
+      "jerarquia": "media",
+      "que_evaluar": "Sesión sincrónica",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D5.2.4",
+      "d": 5,
+      "sd": 2,
+      "n": 4,
+      "texto": "El profesorado utiliza estrategias para resolver conflictos o situaciones problemáticas que puedan ocurrir durante la sesión.",
+      "jerarquia": "media",
+      "que_evaluar": "Sesión sincrónica",
+      "cuando_evaluar": "Durante dictación"
+    },
+    {
+      "codigo": "D5.2.5",
+      "d": 5,
+      "sd": 2,
+      "n": 5,
+      "texto": "Existe información sobre los protocolos de denuncia para casos de ciberviolencias.",
+      "jerarquia": "alta",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D5.2.6",
+      "d": 5,
+      "sd": 2,
+      "n": 6,
+      "texto": "Existen contenidos o información sobre estrategias para la autodefensa digital y uso ético de Internet.",
+      "jerarquia": "media",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D6.1.1",
+      "d": 6,
+      "sd": 1,
+      "n": 1,
+      "texto": "Existen protocolos sobre normas académicas (probidad, plagio, copia, suplantación, colaboración no autorizada, representación no autorizasa derechos de autoría, comerciar productos academicos, etc.).",
+      "jerarquia": "alta",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D6.1.2",
+      "d": 6,
+      "sd": 1,
+      "n": 2,
+      "texto": "Existen protocolos sobre el correcto uso educativo de la inteligencia artificial.",
+      "jerarquia": "alta",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D6.2.1",
+      "d": 6,
+      "sd": 2,
+      "n": 1,
+      "texto": "Existen protocolos sobre las interacciones digitales adecuadas al contexto académico (puntualidad, identificación con el nombre, cámaras, etc.).",
+      "jerarquia": "media",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D6.2.2",
+      "d": 6,
+      "sd": 2,
+      "n": 2,
+      "texto": "Existen acuerdos sobre uso de canales de comunicación complementarios a la LMS (WhatsApp, correo, etc.)",
+      "jerarquia": "media",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D6.2.3",
+      "d": 6,
+      "sd": 2,
+      "n": 3,
+      "texto": "Existen protocolos sobre una correcta conciliación digital (tiempos de respuesta, horarios hábiles, etc.).",
+      "jerarquia": "media",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D6.3.1",
+      "d": 6,
+      "sd": 3,
+      "n": 1,
+      "texto": "Existe una política de desconexión digital.",
+      "jerarquia": "baja",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D6.3.2",
+      "d": 6,
+      "sd": 3,
+      "n": 2,
+      "texto": "Existen espacios o actividades destinadas a la sensibilización, formación o aciones para formentar la corresponsabildad de los cuidados.",
+      "jerarquia": "baja",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    },
+    {
+      "codigo": "D6.3.3",
+      "d": 6,
+      "sd": 3,
+      "n": 3,
+      "texto": "Existen guías para orientar al estudiantado en las labores de conciliación y brechas digitales que dificultan el aprendizaje.",
+      "jerarquia": "media",
+      "que_evaluar": "Página curso",
+      "cuando_evaluar": "Pre dictación"
+    }
+  ],
+  "total_indicadores": 77
+}
