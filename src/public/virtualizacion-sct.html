@@ -1072,7 +1072,7 @@
               </tbody>
               <tfoot>
                 <tr class="bg-gray-50 border-t-2 border-gray-300 font-bold">
-                  <td class="px-3 py-2.5 text-gray-700 text-xs" colspan="2">Total semestre</td>
+                  <td class="px-3 py-2.5 text-gray-700 text-xs" colspan="2">Totales programa</td>
                   <td class="text-center px-2 py-2.5 text-umce-azul text-xs" id="totalHS">--</td>
                   <td class="text-center px-2 py-2.5 text-purple-600 text-xs" id="totalHAs">--</td>
                   <td class="text-center px-2 py-2.5 text-emerald-600 text-xs" id="totalHAut">--</td>
@@ -1107,7 +1107,7 @@
             </div>
             <div class="stat-card">
               <div class="stat-value" id="bWeeklyLoad" style="color:#059669">--</div>
-              <div class="stat-label">Hrs/sem agregada</div>
+              <div class="stat-label">Hrs/sem simult&aacute;neas</div>
             </div>
             <div class="stat-card">
               <div class="semaforo verde text-lg w-10 h-10 mx-auto flex items-center justify-center" id="bSemaforoIcon">?</div>
@@ -1273,9 +1273,9 @@
           </div>
         </div>
 
-        <!-- Carga semanal agregada (barras) -->
+        <!-- Carga semanal simult&aacute;nea (barras) -->
         <div class="bg-white border border-gray-200 rounded-xl p-5">
-          <h3 class="font-heading font-bold text-gray-800 mb-3">Carga semanal agregada</h3>
+          <h3 class="font-heading font-bold text-gray-800 mb-3">Carga semanal simult&aacute;nea</h3>
           <div id="weeklyBarsB">
             <!-- Generado por renderWeeklyBars() en P4 -->
           </div>
@@ -1407,7 +1407,7 @@
           <span class="semaforo" id="bRptSemaforo">?</span>
           <div>
             <div class="font-bold text-gray-800" id="bRptSemaforoTitle">--</div>
-            <div class="text-sm text-gray-500" id="bRptSemaforoDesc">Carga semanal agregada: <span id="bRptWeeklyLoad">--</span> hrs/sem</div>
+            <div class="text-sm text-gray-500" id="bRptSemaforoDesc">Carga semanal simult&aacute;nea: <span id="bRptWeeklyLoad">--</span> hrs/sem</div>
           </div>
         </div>
 
@@ -2843,7 +2843,7 @@
       var rows = tbody.querySelectorAll('tr[data-id]');
 
       var sumHS = 0, sumHAs = 0, sumHAut = 0, sumSCT = 0, sumHT = 0;
-      var sumWeeklyWeighted = 0, sumNs = 0;
+      var sumSimultaneous = 0, sumNs = 0;
       var acsState = [];
 
       for (var i = 0; i < rows.length; i++) {
@@ -2861,14 +2861,15 @@
         sumHAut += haut * ns;
         sumSCT  += calc.sct;
         sumHT   += calc.htTotal;
-        sumWeeklyWeighted += calc.weekly * ns;
+        // Carga simultanea del estudiante: suma directa de hrs/sem de cada AC
+        sumSimultaneous += calc.weekly;
         sumNs   += ns;
 
         acsState.push({ id: row.getAttribute('data-id'), name: name, modality: modality, hs: hs, has: has, haut: haut, ns: ns });
       }
 
-      // Semanas promedio para carga semanal agregada (promedio ponderado)
-      var avgWeekly = sumNs > 0 ? sumWeeklyWeighted / sumNs : 0;
+      // Carga semanal simultanea: suma directa (lo que el estudiante enfrenta cada semana)
+      var simultaneousWeekly = sumSimultaneous;
       var avgNs = rows.length > 0 ? (sumNs / rows.length) : 18;
 
       // Actualizar totales en el tfoot
@@ -2895,9 +2896,9 @@
 
       if (elBTotalSCT) elBTotalSCT.textContent = sumSCT;
       if (elBTotalHT)  elBTotalHT.textContent  = sumHT.toFixed(0);
-      if (elBWeekly)   elBWeekly.textContent   = avgWeekly.toFixed(1);
+      if (elBWeekly)   elBWeekly.textContent   = simultaneousWeekly.toFixed(1);
 
-      var aggLevel = getAggregateLevel(avgWeekly, profile);
+      var aggLevel = getAggregateLevel(simultaneousWeekly, profile);
       if (elBSemIcon) {
         elBSemIcon.className = 'semaforo text-lg w-10 h-10 mx-auto flex items-center justify-center ' + aggLevel;
         elBSemIcon.innerHTML = semaforoEmoji(aggLevel);
@@ -2911,7 +2912,7 @@
       SCTState.modoB.acs = acsState;
 
       // Actualizar widget sobre presupuestario (P8)
-      renderPresupuestoWidget(profile, avgWeekly);
+      renderPresupuestoWidget(profile, simultaneousWeekly);
 
       // Persistir estado tras cada recalculo (P8)
       DataLayer.save();
@@ -3045,22 +3046,15 @@
       if (elFmtHaut)   elFmtHaut.textContent   = sumHAut.toFixed(0)   + ' hrs';
       if (elFmtHText)  elFmtHText.textContent  = sumHT.toFixed(0)     + ' hrs';
 
-      // Promedio semanal ponderado para semaforos
-      var sumNs2 = 0;
-      var sumWeightedSinc = 0, sumWeightedAsinc = 0, sumWeightedAut = 0, sumWeightedTotal = 0;
+      // Carga semanal simultanea por dimension: suma directa por AC
+      var simSinc = 0, simAsinc = 0, simAut = 0, simTotal = 0;
       for (var n = 0; n < rowData.length; n++) {
         var rd2 = rowData[n];
-        sumNs2            += rd2.ns;
-        sumWeightedSinc   += rd2.hs   * rd2.ns;
-        sumWeightedAsinc  += rd2.has  * rd2.ns;
-        sumWeightedAut    += rd2.haut * rd2.ns;
-        sumWeightedTotal  += rd2.weekly * rd2.ns;
+        simSinc  += rd2.hs;
+        simAsinc += rd2.has;
+        simAut   += rd2.haut;
+        simTotal += rd2.weekly;
       }
-      var avgNs2       = rows.length > 0 ? sumNs2 / rows.length : 18;
-      var avgWkSinc    = avgNs2 > 0 ? sumWeightedSinc  / sumNs2 * avgNs2 / avgNs2 : 0;
-      var avgWkAsinc   = avgNs2 > 0 ? sumWeightedAsinc / sumNs2 * avgNs2 / avgNs2 : 0;
-      var avgWkAut     = avgNs2 > 0 ? sumWeightedAut   / sumNs2 * avgNs2 / avgNs2 : 0;
-      var avgWkTotal   = sumNs2 > 0 ? sumWeightedTotal / sumNs2 : 0;
 
       // Semaforos dimensionales
       function setSemaforo(id, level) {
@@ -3069,10 +3063,10 @@
         el.className = 'semaforo ' + level;
         el.innerHTML = semaforoEmoji(level);
       }
-      setSemaforo('modoB-semTotal', getAggregateLevel(avgWkTotal, profile));
-      setSemaforo('modoB-semSinc',  getWeeklyLevel(avgWkSinc,  profile));
-      setSemaforo('modoB-semAsinc', getWeeklyLevel(avgWkAsinc, profile));
-      setSemaforo('modoB-semAut',   getWeeklyLevel(avgWkAut,   profile));
+      setSemaforo('modoB-semTotal', getAggregateLevel(simTotal, profile));
+      setSemaforo('modoB-semSinc',  getWeeklyLevel(simSinc,  profile));
+      setSemaforo('modoB-semAsinc', getWeeklyLevel(simAsinc, profile));
+      setSemaforo('modoB-semAut',   getWeeklyLevel(simAut,   profile));
 
       // Alertas por AC
       var alertList = document.getElementById('modoB-alertList');
@@ -3084,7 +3078,7 @@
           if (lvl3 !== 'verde') {
             var alertColor = lvl3 === 'amarillo' ? 'text-yellow-700' : 'text-red-700';
             alertHtml += '<li class="' + alertColor + '">' +
-              (rd3.name || ('AC ' + (a+1))) + ': ' + rd3.weekly.toFixed(1) + ' hrs/sem &mdash; carga ' + (lvl3 === 'amarillo' ? 'en alerta' : 'excesiva') +
+              (rd3.name || ('AC ' + (a+1))) + ': ' + rd3.weekly.toFixed(1) + ' hrs/sem simult&aacute;neas &mdash; carga ' + (lvl3 === 'amarillo' ? 'en alerta' : 'excesiva') +
               '</li>';
           }
         }
@@ -3138,7 +3132,7 @@
       var rows = tbody.querySelectorAll('tr[data-id]');
 
       var sumHS = 0, sumHAs = 0, sumHAut = 0, sumSCT = 0, sumHT = 0;
-      var sumWeightedTotal = 0, sumNs = 0;
+      var simultaneousWeekly = 0, sumNs = 0;
       var rowData = [];
 
       for (var i = 0; i < rows.length; i++) {
@@ -3156,12 +3150,11 @@
         sumHAut += haut* ns;
         sumSCT  += calc.sct;
         sumHT   += calc.htTotal;
-        sumWeightedTotal += calc.weekly * ns;
+        // Carga simultanea: suma directa de hrs/sem por AC
+        simultaneousWeekly += calc.weekly;
         sumNs   += ns;
         rowData.push({ name: name, modality: modality, hs: hs, has: has, haut: haut, ns: ns, sct: calc.sct, ht: calc.htTotal, weekly: calc.weekly });
       }
-
-      var avgWeekly = sumNs > 0 ? sumWeightedTotal / sumNs : 0;
       var profileLabels = { pregrado: 'Pregrado', postgrado: 'Postgrado', continua: 'Educaci\u00f3n Continua' };
 
       // Fecha
@@ -3219,8 +3212,8 @@
       if (elRptSCT)  elRptSCT.textContent  = sumSCT;
       if (elRptHT)   elRptHT.textContent   = sumHT.toFixed(0);
 
-      // Semaforo global
-      var aggLevel = getAggregateLevel(avgWeekly, profile);
+      // Semaforo global basado en carga simultanea del estudiante
+      var aggLevel = getAggregateLevel(simultaneousWeekly, profile);
       var rptSemEl    = document.getElementById('bRptSemaforo');
       var rptTitleEl  = document.getElementById('bRptSemaforoTitle');
       var rptDescEl   = document.getElementById('bRptSemaforoDesc');
@@ -3232,7 +3225,7 @@
       }
       var aggTitles = { verde: 'Carga semestral adecuada', amarillo: 'Carga semestral en zona de alerta', rojo: 'Carga semestral excesiva' };
       if (rptTitleEl) rptTitleEl.textContent = aggTitles[aggLevel] || '--';
-      if (rptWeeklyEl) rptWeeklyEl.textContent = avgWeekly.toFixed(1);
+      if (rptWeeklyEl) rptWeeklyEl.textContent = simultaneousWeekly.toFixed(1);
     }
 
     // ================================
@@ -4222,6 +4215,19 @@
         });
       }
 
+      // Carga simultanea del programa: peak semestre (max) y promedio entre semestres no vacios
+      var peakSemesterWeekly = 0, sumSemesterWeekly = 0, nonEmptySemesters = 0;
+      for (var pi = 0; pi < semesterBreakdown.length; pi++) {
+        if (semesterBreakdown[pi].weekly > peakSemesterWeekly) {
+          peakSemesterWeekly = semesterBreakdown[pi].weekly;
+        }
+        if (semesterBreakdown[pi].acCount > 0) {
+          sumSemesterWeekly += semesterBreakdown[pi].weekly;
+          nonEmptySemesters += 1;
+        }
+      }
+      var avgSemesterWeekly = nonEmptySemesters > 0 ? (sumSemesterWeekly / nonEmptySemesters) : 0;
+
       // Distribucion de modalidades
       var modPresencial  = modalities.presencial  || 0;
       var modSincronico  = modalities.sincronico  || 0;
@@ -4277,6 +4283,8 @@
         totalHt:             totalHt,
         totalWeekly:         totalWeekly,
         avgWeekly:           avgWeekly,
+        peakSemesterWeekly:  peakSemesterWeekly,
+        avgSemesterWeekly:   avgSemesterWeekly,
         semesterBreakdown:   semesterBreakdown,
         modalityDistribution: modalityDistribution,
         cuechConversion:     cuechConversion,
@@ -4284,19 +4292,19 @@
       };
 
       report.semaforos = {
-        aggregate:   _rg_getSemaforoNorm(avgWeekly, profile, true),
+        aggregate:   _rg_getSemaforoNorm(peakSemesterWeekly, profile, true),
         perSemester: []
       };
       for (var psi = 0; psi < semesterBreakdown.length; psi++) {
         report.semaforos.perSemester.push(semesterBreakdown[psi].semaforo);
       }
 
-      // Budget usando avgWeekly como proxy de uso
+      // Budget usando peak semester (peor semestre) como proxy de uso
       var aggThrBudget = (typeof SCTEngine.getProfileThresholds === 'function')
         ? SCTEngine.getProfileThresholds(profile).aggregate
         : (AGGREGATE_THRESHOLDS[profile] || AGGREGATE_THRESHOLDS.pregrado);
       var budgetVal   = aggThrBudget.yellow;
-      var usedVal     = Math.round(avgWeekly * 100) / 100;
+      var usedVal     = Math.round(peakSemesterWeekly * 100) / 100;
       var budgetPct   = budgetVal > 0 ? Math.round((usedVal / budgetVal) * 100) : 0;
       var budgetStatus = usedVal < budgetVal * 0.8 ? 'under' : (usedVal <= budgetVal ? 'ok' : 'over');
       report.budget = { budget: budgetVal, used: usedVal, remaining: Math.round((budgetVal - usedVal) * 100) / 100, pct: budgetPct, status: budgetStatus };
@@ -4314,10 +4322,10 @@
         var sbr = semesterBreakdown[ali];
         if (sbr.semaforo.level === 'red') {
           alerts.push({ severity: 'error', code: 'SEM_OVERLOAD_' + sbr.semester,
-            message: 'Semestre ' + sbr.semester + ': carga semanal total (' + sbr.weekly.toFixed(1) + ' hrs) excede el umbral cr\u00edtico.' });
+            message: 'Semestre ' + sbr.semester + ': carga semanal simult\u00e1nea (' + sbr.weekly.toFixed(1) + ' hrs) excede el umbral cr\u00edtico.' });
         } else if (sbr.semaforo.level === 'yellow') {
           alerts.push({ severity: 'warn', code: 'SEM_HIGH_' + sbr.semester,
-            message: 'Semestre ' + sbr.semester + ': carga semanal total (' + sbr.weekly.toFixed(1) + ' hrs) en zona de alerta.' });
+            message: 'Semestre ' + sbr.semester + ': carga semanal simult\u00e1nea (' + sbr.weekly.toFixed(1) + ' hrs) en zona de alerta.' });
         }
       }
       // H_autonoma fuera de 25-40
