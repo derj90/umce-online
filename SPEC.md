@@ -463,12 +463,16 @@ Cache personalizado por estudiante (completions, grades, submissions) se llena e
 
 ### Fase 5.7-C: Modo C (estimacion desde competencias)
 
-- [ ] **5.7.10** Panel de configuracion programa
-- [ ] **5.7.11** Lista de ACs con checkboxes modalidades
-- [ ] **5.7.12** Sliders nivel cognitivo + motor calculo
-- [ ] **5.7.13** Logica invertida CUECH
-- [ ] **5.7.14** Vista de programa multi-semestre
-- [ ] **5.7.15** Alertas de coherencia
+- [x] **5.7.10** Panel de configuracion programa (14-abr-2026)
+- [x] **5.7.11** Lista de ACs con checkboxes 5 modalidades de trabajo (14-abr-2026)
+- [x] **5.7.12** Sliders 4 niveles DOK + motor `SCTEngine.calculateFromCognitive` (14-abr-2026)
+- [x] **5.7.13** Logica invertida CUECH (SCT=2, HT=54, ponderacion por_nivel/equitativa) (14-abr-2026)
+- [x] **5.7.14** Vista de programa multi-semestre (semesterBreakdown + nivelPromedio + pctNivel4) (14-abr-2026)
+- [x] **5.7.15** Alertas de coherencia (6 codigos en COHERENCE_ALERTS) (14-abr-2026)
+- [x] **5.7.16** ReportGenerator.generateModoC v2 + renderBloqueC con 5 modalidades + triple Laurillard (14-abr-2026)
+- [x] **5.7.17** Migracion silenciosa formato legacy (semestral→semestral_18, cuech→cuech_16) + normalizacion ACs (14-abr-2026)
+- [x] **5.7.18** importFromModoB infiriendo modalidades desde triple {hs,has,haut} (14-abr-2026)
+- [x] **AUDIT-Modo C** Auditoria cruzada Opus: 12/12 PASS — SCT canonico, HOURS_BY_LEVEL, CUECH invertido, 5 modalidades, motor cognitivo, 6 alertas, multi-semestre, migracion, importB, ReportGenerator, ES5 estricto (14-abr-2026)
 
 ### Fase 5.7-D: Motor compartido e informe
 
@@ -524,3 +528,4 @@ Cada sesion que trabaje en este proyecto registra aqui que se hizo.
 | 26-mar-2026 | Fase 4 | Motor cron: 7 tablas nuevas (5 cache+notifications+mapping), cron 6h (refresh snapshots/recordings/calendar), detector cambios con alertas auto, endpoints notifications, panel alertas PIAC, SESSION_SECRET fijo | COMPLETADA — 11/11 pasos |
 | 26-mar-2026 | Fase 5 | Experiencia personalizada: identidad Moodle (email→userid), completion+grades+recordings+calendar en API, barras progresion sidebar, notas inline, grabaciones por sesion, calendario eventos, badge notificaciones, boton refresh, chatbot contextual con datos del curso | COMPLETADA — 12/12 pasos |
 | 13-abr-2026 | Pre-5.7 | Propuesta v3.1 completa, 4 planes tecnicos, mapa de conexiones, auditoria de coherencia (8 items), actualizacion bibliografia y docs | Planificacion completa — pendiente implementacion |
+| 14-abr-2026 | Fase 5.7-C | Modo C completo end-to-end: motor cognitivo (HOURS_BY_LEVEL 1-4), 5 modalidades de trabajo, CUECH invertido, alertas coherencia (6 codigos), vista multi-semestre, migracion legacy, importFromModoB, ReportGenerator v2 (workModalityDistribution + semesterBreakdown), normalizacion ACs en init, hardening CUECH+sin-modalidades. Auditoria Opus 12/12 PASS | COMPLETADA — F1-F10 |
