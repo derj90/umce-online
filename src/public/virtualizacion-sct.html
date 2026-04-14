@@ -1453,6 +1453,193 @@
 
   </div><!-- /max-w-3xl -->
 
+  <!-- =========================================================== -->
+  <!-- MODO C — Diseño de programa multi-semestre                  -->
+  <!-- Shell/panel unificado (NO wizard). Se muestra cuando        -->
+  <!-- switchMode('modoC') retira la clase .hidden.                -->
+  <!-- =========================================================== -->
+  <section id="modoC-container" class="mode-panel hidden no-print" role="region" aria-label="Modo C - Programa multi-semestre">
+    <div class="max-w-6xl mx-auto px-6 py-8">
+
+      <!-- Cabecera -->
+      <header class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div>
+          <h3 class="font-heading text-lg font-bold text-gray-900">Modo C &mdash; Dise&ntilde;o de programa multi-semestre</h3>
+          <p class="text-xs text-gray-600 mt-0.5">Distribuye actividades curriculares en m&uacute;ltiples semestres con validaci&oacute;n de coherencia cognitiva, sobre presupuestario y compatibilidad CUECH.</p>
+        </div>
+        <div class="flex gap-2" role="toolbar" aria-label="Acciones globales de Modo C">
+          <button type="button" id="modoC-reset" class="px-3 py-1.5 text-xs border border-gray-300 rounded hover:bg-gray-50" title="Reiniciar todos los datos del Modo C">Reiniciar</button>
+          <button type="button" id="modoC-importB" class="px-3 py-1.5 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled title="Importar actividades curriculares desde el Modo B (disponible cuando haya ACs en Modo B)">Importar desde Modo B</button>
+        </div>
+      </header>
+
+      <!-- BLOQUE 1: Contexto del programa -->
+      <fieldset class="border border-gray-200 rounded-lg p-4 mb-4" aria-labelledby="cCtxLegend">
+        <legend id="cCtxLegend" class="text-xs font-semibold text-gray-700 px-2">Contexto del programa</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div>
+            <label for="cProgramName" class="text-xs font-medium text-gray-700">Nombre del programa</label>
+            <input id="cProgramName" type="text" class="mt-1 w-full border border-gray-300 rounded px-2 py-1.5 text-sm" placeholder="Ej: Magíster en Educación" title="Nombre oficial del programa formativo" aria-label="Nombre del programa formativo">
+          </div>
+          <div>
+            <label for="cProfileSelector" class="text-xs font-medium text-gray-700">Perfil</label>
+            <select id="cProfileSelector" class="mt-1 w-full border border-gray-300 rounded px-2 py-1.5 text-sm" title="Perfil del programa (afecta umbrales de validaci&oacute;n)" aria-label="Perfil del programa">
+              <option value="pregrado">Pregrado</option>
+              <option value="postgrado">Postgrado</option>
+              <option value="continua">Formaci&oacute;n continua</option>
+            </select>
+          </div>
+          <div>
+            <label for="cFormatSelector" class="text-xs font-medium text-gray-700">Formato</label>
+            <select id="cFormatSelector" class="mt-1 w-full border border-gray-300 rounded px-2 py-1.5 text-sm" title="Formato temporal del programa (semestral, trimestral, CUECH, etc.)" aria-label="Formato temporal del programa">
+              <!-- Opciones generadas por JS desde FORMATOS en P11 -->
+            </select>
+          </div>
+          <div>
+            <label for="cNumSemesters" class="text-xs font-medium text-gray-700">N&uacute;mero de semestres</label>
+            <input id="cNumSemesters" type="number" min="1" max="12" value="4" class="mt-1 w-full border border-gray-300 rounded px-2 py-1.5 text-sm" title="Cantidad de semestres del programa (1 a 12)" aria-label="N&uacute;mero total de semestres del programa">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- BLOQUE 2: Distribución global por modalidad (sliders) -->
+      <fieldset class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4" aria-labelledby="cModLegend">
+        <legend id="cModLegend" class="text-xs font-semibold text-gray-700 px-2">Distribuci&oacute;n global por modalidad</legend>
+        <p class="text-xs text-gray-500 mb-3">Ajusta el porcentaje de horas por modalidad. La suma debe totalizar 100%. H_aut&oacute;noma recomendada: 25-40% (validaci&oacute;n autom&aacute;tica).</p>
+        <div id="cModalitySliders" class="grid grid-cols-1 md:grid-cols-4 gap-3" role="group" aria-label="Sliders de distribuci&oacute;n por modalidad">
+          <!-- Sliders generados por JS en P11 (presencial, sincr&oacute;nico, asincr&oacute;nico, aut&oacute;nomo) -->
+          <p class="text-xs text-gray-400 italic col-span-full">Los controles de modalidad se activar&aacute;n al seleccionar un formato.</p>
+        </div>
+        <div class="mt-3 flex items-center justify-between">
+          <p id="cModalityTotal" class="text-xs text-gray-600" aria-live="polite">Suma: 100%</p>
+          <p id="cAutonomiaWarning" class="text-xs text-amber-700 hidden" role="alert">Advertencia: H_aut&oacute;noma fuera del rango 25-40%</p>
+        </div>
+      </fieldset>
+
+      <!-- BLOQUE 3: Lista maestra de Actividades Curriculares -->
+      <section class="border border-gray-200 rounded-lg overflow-hidden mb-4" aria-labelledby="cAcsLegend">
+        <header class="bg-blue-50 border-b border-blue-100 px-4 py-2 flex items-center justify-between">
+          <h4 id="cAcsLegend" class="text-sm font-semibold text-gray-800">Actividades curriculares disponibles</h4>
+          <button type="button" id="modoC-addAC" class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700" title="Agregar una nueva actividad curricular a la lista maestra">+ Agregar AC</button>
+        </header>
+        <div class="overflow-x-auto">
+          <table id="modoC-acTable" class="w-full text-sm" aria-label="Lista de actividades curriculares del programa">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-2 py-2 text-left text-xs font-semibold text-gray-600">Incluir</th>
+                <th scope="col" class="px-2 py-2 text-left text-xs font-semibold text-gray-600">Nombre</th>
+                <th scope="col" class="px-2 py-2 text-left text-xs font-semibold text-gray-600">Preset</th>
+                <th scope="col" class="px-2 py-2 text-left text-xs font-semibold text-gray-600">Semestre destino</th>
+                <th scope="col" class="px-2 py-2 text-right text-xs font-semibold text-gray-600" title="Horas sincr&oacute;nicas semanales">HS</th>
+                <th scope="col" class="px-2 py-2 text-right text-xs font-semibold text-gray-600" title="Horas asincr&oacute;nicas semanales">HAs</th>
+                <th scope="col" class="px-2 py-2 text-right text-xs font-semibold text-gray-600" title="Horas aut&oacute;nomas semanales">HAut</th>
+                <th scope="col" class="px-2 py-2 text-right text-xs font-semibold text-gray-600" title="N&uacute;mero de semanas">NS</th>
+                <th scope="col" class="px-2 py-2 text-right text-xs font-semibold text-gray-600" title="Cr&eacute;ditos SCT calculados">SCT</th>
+                <th scope="col" class="px-2 py-2 text-right text-xs font-semibold text-gray-600">Acci&oacute;n</th>
+              </tr>
+            </thead>
+            <tbody id="modoC-acTableBody">
+              <!-- Fila placeholder (reemplazada por JS en P11) -->
+              <tr id="modoC-acTablePlaceholder">
+                <td colspan="10" class="px-3 py-6 text-center text-xs text-gray-400 italic">A&uacute;n no hay actividades curriculares. Pulsa &laquo;+ Agregar AC&raquo; o importa desde Modo B.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- BLOQUE 4: Grid multi-semestre -->
+      <section class="border border-gray-200 rounded-lg overflow-hidden mb-4" aria-labelledby="cGridLegend">
+        <header class="bg-green-50 border-b border-green-100 px-4 py-2">
+          <h4 id="cGridLegend" class="text-sm font-semibold text-gray-800">Distribuci&oacute;n por semestre</h4>
+          <p class="text-xs text-gray-600 mt-0.5">Visualiza la carga SCT y horas semanales agregadas por semestre. Los colores de sem&aacute;foro reflejan el estado respecto al sobre presupuestario.</p>
+        </header>
+        <div id="modoC-semesterGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 p-4" role="list" aria-label="Tarjetas de distribuci&oacute;n por semestre">
+          <!-- Tarjetas placeholder (reemplazadas por JS en P11) -->
+          <article class="semester-card placeholder border border-dashed border-gray-300 rounded-lg p-3 text-center" role="listitem" data-semester="1">
+            <div class="text-xs font-semibold text-gray-500 mb-1">Semestre 1</div>
+            <div class="text-2xl font-bold text-gray-300">0 <span class="text-xs font-normal">SCT</span></div>
+            <div class="text-[11px] text-gray-400 mt-1">0 hrs/sem &bull; 0 ACs</div>
+            <span class="semaforo semaforo-empty inline-block mt-2" aria-label="Sin datos">&mdash;</span>
+          </article>
+          <article class="semester-card placeholder border border-dashed border-gray-300 rounded-lg p-3 text-center" role="listitem" data-semester="2">
+            <div class="text-xs font-semibold text-gray-500 mb-1">Semestre 2</div>
+            <div class="text-2xl font-bold text-gray-300">0 <span class="text-xs font-normal">SCT</span></div>
+            <div class="text-[11px] text-gray-400 mt-1">0 hrs/sem &bull; 0 ACs</div>
+            <span class="semaforo semaforo-empty inline-block mt-2" aria-label="Sin datos">&mdash;</span>
+          </article>
+          <article class="semester-card placeholder border border-dashed border-gray-300 rounded-lg p-3 text-center" role="listitem" data-semester="3">
+            <div class="text-xs font-semibold text-gray-500 mb-1">Semestre 3</div>
+            <div class="text-2xl font-bold text-gray-300">0 <span class="text-xs font-normal">SCT</span></div>
+            <div class="text-[11px] text-gray-400 mt-1">0 hrs/sem &bull; 0 ACs</div>
+            <span class="semaforo semaforo-empty inline-block mt-2" aria-label="Sin datos">&mdash;</span>
+          </article>
+          <article class="semester-card placeholder border border-dashed border-gray-300 rounded-lg p-3 text-center" role="listitem" data-semester="4">
+            <div class="text-xs font-semibold text-gray-500 mb-1">Semestre 4</div>
+            <div class="text-2xl font-bold text-gray-300">0 <span class="text-xs font-normal">SCT</span></div>
+            <div class="text-[11px] text-gray-400 mt-1">0 hrs/sem &bull; 0 ACs</div>
+            <span class="semaforo semaforo-empty inline-block mt-2" aria-label="Sin datos">&mdash;</span>
+          </article>
+        </div>
+      </section>
+
+      <!-- BLOQUE 5: Panel de alertas de coherencia -->
+      <section id="modoC-alertsPanel" class="border border-amber-200 bg-amber-50 rounded-lg p-4 mb-4 hidden" role="alert" aria-live="polite" aria-labelledby="cAlertsLegend">
+        <h4 id="cAlertsLegend" class="text-sm font-semibold text-amber-800 mb-2 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          Alertas de coherencia
+        </h4>
+        <ul id="modoC-alertsList" class="text-xs text-amber-700 space-y-1 list-disc list-inside"></ul>
+      </section>
+
+      <!-- BLOQUE 6: Detector CUECH (visible si formato = cuech) -->
+      <section id="modoC-cuechPanel" class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4 hidden" role="region" aria-labelledby="cCuechLegend">
+        <h4 id="cCuechLegend" class="text-sm font-semibold text-purple-800 mb-2">Equivalencia CUECH</h4>
+        <p class="text-xs text-purple-700 mb-2" id="cuechEquivText">Programa detectado en formato CUECH. Conversi&oacute;n SCT &harr; CUECH aplicada autom&aacute;ticamente.</p>
+        <div class="overflow-x-auto">
+          <table class="text-xs w-full" aria-label="Tabla de equivalencia SCT a CUECH por semestre">
+            <thead>
+              <tr class="border-b border-purple-200">
+                <th scope="col" class="text-left py-1 font-semibold text-purple-800">Semestre</th>
+                <th scope="col" class="text-right py-1 font-semibold text-purple-800">SCT</th>
+                <th scope="col" class="text-right py-1 font-semibold text-purple-800">CUECH equivalente</th>
+              </tr>
+            </thead>
+            <tbody id="cuechTableBody">
+              <!-- Filas generadas por JS en P11 -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- BLOQUE 7: Resumen del programa + acciones -->
+      <div class="bg-umce-azul text-white rounded-lg p-4 flex flex-wrap items-center justify-between gap-4" style="background: #0033A1;" role="region" aria-label="Resumen total del programa">
+        <div>
+          <p class="text-xs opacity-80">Total del programa</p>
+          <p class="text-3xl font-extrabold"><span id="cTotalSct">0</span> <span class="text-base font-semibold opacity-90">SCT</span></p>
+          <p class="text-xs opacity-80 mt-0.5"><span id="cTotalHours">0</span> horas totales &bull; <span id="cTotalAcs">0</span> ACs &bull; <span id="cTotalSemesters">0</span> semestres</p>
+        </div>
+        <div class="flex flex-wrap gap-2" role="toolbar" aria-label="Exportar e imprimir">
+          <button type="button" id="modoC-exportJSON" class="px-3 py-2 text-xs bg-white text-umce-azul font-semibold rounded hover:bg-gray-100" style="color: #0033A1;" title="Exportar datos del programa en formato JSON">Exportar JSON</button>
+          <button type="button" id="modoC-exportHTML" class="px-3 py-2 text-xs bg-white text-umce-azul font-semibold rounded hover:bg-gray-100" style="color: #0033A1;" title="Imprimir informe completo del programa">Imprimir informe</button>
+        </div>
+      </div>
+
+      <!-- Bloque 2-C: Informe detallado (rendered by ReportGenerator.renderBloqueC) -->
+      <div id="modoC-bloque2Render" class="mt-6 hidden">
+        <!-- Contenido generado por ReportGenerator.renderBloqueC -->
+      </div>
+
+      <div class="mt-4 flex gap-2 justify-end">
+        <button type="button" id="modoC-toggleBloque2" class="px-3 py-2 text-xs bg-gray-700 text-white rounded hover:bg-gray-800">
+          Ver informe detallado
+        </button>
+      </div>
+
+    </div>
+  </section>
+  <!-- /Modo C -->
+
   <!-- Contexto educativo (fuera del wizard) -->
   <section class="bg-gray-50 py-12 mt-4 no-print">
     <div class="max-w-3xl mx-auto px-6">
@@ -1618,7 +1805,14 @@
         formato: 'semestral',
         acs: []
       },
-      modoC: { programName: '', programCode: '', discipline: 'educacion', numSemesters: 2, acs: [] }
+      modoC: {
+        programName: '',
+        profile: 'pregrado',
+        formato: 'semestral',
+        numSemesters: 4,
+        modalities: { presencial: 40, sincronico: 20, asincronico: 20, autonomo: 20 },
+        acs: []
+      }
     };
 
     // SCTEngine — namespace compartido por los 3 modos (Fase 5.7-D)
@@ -3118,7 +3312,6 @@
     // Modo B — switchMode actualizado
     // ================================
     function switchMode(newMode) {
-      if (newMode === 'modoC') return; // fase 5.7-C pendiente
       SCTState.mode = newMode;
 
       // Actualizar visual de las radio cards del selector de modo
@@ -3151,12 +3344,20 @@
         var progB = document.getElementById('modoB-progress');
         if (progB) progB.classList.add('hidden');
 
+        // Ocultar Modo C
+        var modoCPanelA = document.getElementById('modoC-container');
+        if (modoCPanelA) modoCPanelA.classList.add('hidden');
+
       } else if (newMode === 'modoB') {
         // Ocultar wizard Modo A (steps 1-4)
         for (var ai = 1; ai <= 4; ai++) {
           var stepA = document.getElementById('step' + ai);
           if (stepA) stepA.classList.remove('active');
         }
+
+        // Ocultar Modo C
+        var modoCEl = document.getElementById('modoC-container');
+        if (modoCEl) modoCEl.classList.add('hidden');
 
         // Mostrar barra de progreso Modo B
         var progBar = document.getElementById('modoB-progress');
@@ -3169,6 +3370,27 @@
           if (sbCheck && sbCheck.classList.contains('active')) { anyBActive = true; break; }
         }
         if (!anyBActive) goToStepB(1);
+
+      } else if (newMode === 'modoC') {
+        // Ocultar wizard Modo A
+        for (var cai = 1; cai <= 4; cai++) {
+          var stepCA = document.getElementById('step' + cai);
+          if (stepCA) stepCA.classList.remove('active');
+        }
+        // Ocultar wizard Modo B
+        for (var cbi = 1; cbi <= 4; cbi++) {
+          var sbC = document.getElementById('stepB' + cbi);
+          if (sbC) { sbC.classList.remove('active'); sbC.classList.add('hidden'); }
+        }
+        var progBC = document.getElementById('modoB-progress');
+        if (progBC) progBC.classList.add('hidden');
+
+        // Mostrar Modo C
+        var cPanel = document.getElementById('modoC-container');
+        if (cPanel) cPanel.classList.remove('hidden');
+
+        // Refresh totales
+        if (typeof updateProgramTotals === 'function') updateProgramTotals();
       }
     }
 
@@ -3925,16 +4147,213 @@
       return report;
     };
 
-    // Stub minimo para Modo C — se completa en P11/P12
+    // Implementacion completa de Modo C — programa multi-semestre
     ReportGenerator.generateModoC = function(data) {
       if (!data) return null;
-      return _rg_baseReport('modoC', {
+      var profile      = data.profile      || 'pregrado';
+      var formato      = data.formato      || 'semestral';
+      var numSemesters = data.numSemesters || 1;
+      var allAcs       = data.acs          || [];
+      var modalities   = data.modalities   || {};
+
+      // Filtrar ACs incluidas
+      var includedAcs = [];
+      for (var fi = 0; fi < allAcs.length; fi++) {
+        if (allAcs[fi].included) { includedAcs.push(allAcs[fi]); }
+      }
+
+      // Calcular por AC
+      var computedAcs = [];
+      var totalSct = 0, totalHt = 0, totalWeekly = 0;
+      for (var ci = 0; ci < includedAcs.length; ci++) {
+        var ac = includedAcs[ci];
+        var calc = SCTEngine.calculateFromWeekly(ac.hs || 0, ac.has || 0, ac.haut || 0, ac.ns || 1);
+        var acEntry = {
+          id: ac.id, name: ac.name || '', preset: ac.preset || '',
+          semester: ac.semester || 1,
+          hs: ac.hs || 0, has: ac.has || 0, haut: ac.haut || 0, ns: ac.ns || 1,
+          sct: calc.sct, weekly: calc.weekly, htTotal: calc.htTotal
+        };
+        computedAcs.push(acEntry);
+        totalSct    += calc.sct;
+        totalHt     += calc.htTotal;
+        totalWeekly += calc.weekly;
+      }
+      var avgWeekly = includedAcs.length > 0 ? totalWeekly / includedAcs.length : 0;
+
+      // Breakdown por semestre
+      var semesterBreakdown = [];
+      for (var si = 1; si <= numSemesters; si++) {
+        var semAcs = [], semSct = 0, semWeekly = 0, semHt = 0;
+        for (var sai = 0; sai < computedAcs.length; sai++) {
+          if (computedAcs[sai].semester === si) {
+            semAcs.push({ name: computedAcs[sai].name, sct: computedAcs[sai].sct, weekly: computedAcs[sai].weekly });
+            semSct     += computedAcs[sai].sct;
+            semWeekly  += computedAcs[sai].weekly;
+            semHt      += computedAcs[sai].htTotal;
+          }
+        }
+        // Semaforo por semestre (usando aggregate thresholds sobre totalWeekly del semestre)
+        var aggThr = (typeof SCTEngine.getProfileThresholds === 'function')
+          ? SCTEngine.getProfileThresholds(profile).aggregate
+          : (AGGREGATE_THRESHOLDS[profile] || AGGREGATE_THRESHOLDS.pregrado);
+        var semLevel = semWeekly <= aggThr.green ? 'green' : (semWeekly <= aggThr.yellow ? 'yellow' : 'red');
+        semesterBreakdown.push({
+          semester: si,
+          sct:      semSct,
+          weekly:   semWeekly,
+          htTotal:  semHt,
+          acCount:  semAcs.length,
+          acs:      semAcs,
+          semaforo: { level: semLevel, threshold: aggThr }
+        });
+      }
+
+      // Distribucion de modalidades
+      var modPresencial  = modalities.presencial  || 0;
+      var modSincronico  = modalities.sincronico  || 0;
+      var modAsincronico = modalities.asincronico || 0;
+      var modAutonomo    = modalities.autonomo    || 0;
+      var modalityDistribution = {
+        presencial:   { pct: modPresencial,  estimatedHours: Math.round(totalHt * modPresencial  / 100) },
+        sincronico:   { pct: modSincronico,  estimatedHours: Math.round(totalHt * modSincronico  / 100) },
+        asincronico:  { pct: modAsincronico, estimatedHours: Math.round(totalHt * modAsincronico / 100) },
+        autonomo:     { pct: modAutonomo,    estimatedHours: Math.round(totalHt * modAutonomo    / 100), warning: (modAutonomo < 25 || modAutonomo > 40) }
+      };
+
+      // Calculo de % autonomia global desde ACs
+      var sumHautTotal = 0;
+      for (var pai = 0; pai < includedAcs.length; pai++) {
+        sumHautTotal += (includedAcs[pai].haut || 0) * (includedAcs[pai].ns || 1);
+      }
+      var pctAutonomia = totalHt > 0 ? Math.round((sumHautTotal / totalHt) * 100) : 0;
+
+      // Conversion CUECH
+      var cuechConversion = [];
+      if (formato === 'cuech') {
+        for (var cui = 0; cui < semesterBreakdown.length; cui++) {
+          var sb = semesterBreakdown[cui];
+          cuechConversion.push({ semester: sb.semester, sct: sb.sct, cuech: Math.round(sb.sct * 4 / 3) });
+        }
+      }
+
+      // Formato display
+      var flabels = { semestral: 'Semestral', modulo: 'M\u00f3dulo', bloque_breve: 'Bloque breve', cuech: 'CUECH S\u00fabete' };
+      var esCuech = (formato === 'cuech');
+      var equivStr = '';
+      if (esCuech && totalSct > 0) {
+        equivStr = totalSct + ' SCT \u2248 ' + Math.round(totalSct * 4 / 3) + ' CUECH';
+      }
+
+      // Construir report base
+      var report = _rg_baseReport('modoC', {
         programName:  data.programName || '',
-        semester:     data.semester    || '',
-        profile:      data.profile     || 'pregrado',
-        formato:      data.formato     || 'semestral',
+        semester:     '',
+        profile:      profile,
+        formato:      formato,
         activityType: ''
       });
+      // Extender contexto con campos propios de Modo C
+      report.context.numSemesters = numSemesters;
+      report.context.modalities   = modalities;
+
+      report.computed = {
+        acCount:             includedAcs.length,
+        includedAcs:         computedAcs,
+        totalSct:            totalSct,
+        totalHt:             totalHt,
+        totalWeekly:         totalWeekly,
+        avgWeekly:           avgWeekly,
+        semesterBreakdown:   semesterBreakdown,
+        modalityDistribution: modalityDistribution,
+        cuechConversion:     cuechConversion,
+        pctAutonomia:        pctAutonomia
+      };
+
+      report.semaforos = {
+        aggregate:   _rg_getSemaforoNorm(avgWeekly, profile, true),
+        perSemester: []
+      };
+      for (var psi = 0; psi < semesterBreakdown.length; psi++) {
+        report.semaforos.perSemester.push(semesterBreakdown[psi].semaforo);
+      }
+
+      // Budget usando avgWeekly como proxy de uso
+      var aggThrBudget = (typeof SCTEngine.getProfileThresholds === 'function')
+        ? SCTEngine.getProfileThresholds(profile).aggregate
+        : (AGGREGATE_THRESHOLDS[profile] || AGGREGATE_THRESHOLDS.pregrado);
+      var budgetVal   = aggThrBudget.yellow;
+      var usedVal     = Math.round(avgWeekly * 100) / 100;
+      var budgetPct   = budgetVal > 0 ? Math.round((usedVal / budgetVal) * 100) : 0;
+      var budgetStatus = usedVal < budgetVal * 0.8 ? 'under' : (usedVal <= budgetVal ? 'ok' : 'over');
+      report.budget = { budget: budgetVal, used: usedVal, remaining: Math.round((budgetVal - usedVal) * 100) / 100, pct: budgetPct, status: budgetStatus };
+
+      report.formatoDisplay = {
+        esCuech:       esCuech,
+        formatoLabel:  flabels[formato] || formato,
+        equivalencia:  equivStr
+      };
+
+      // Alertas
+      var alerts = [];
+      // Semestres con exceso
+      for (var ali = 0; ali < semesterBreakdown.length; ali++) {
+        var sbr = semesterBreakdown[ali];
+        if (sbr.semaforo.level === 'red') {
+          alerts.push({ severity: 'error', code: 'SEM_OVERLOAD_' + sbr.semester,
+            message: 'Semestre ' + sbr.semester + ': carga semanal total (' + sbr.weekly.toFixed(1) + ' hrs) excede el umbral cr\u00edtico.' });
+        } else if (sbr.semaforo.level === 'yellow') {
+          alerts.push({ severity: 'warn', code: 'SEM_HIGH_' + sbr.semester,
+            message: 'Semestre ' + sbr.semester + ': carga semanal total (' + sbr.weekly.toFixed(1) + ' hrs) en zona de alerta.' });
+        }
+      }
+      // H_autonoma fuera de 25-40
+      if (modAutonomo > 0 && (modAutonomo < 25 || modAutonomo > 40)) {
+        alerts.push({ severity: 'warn', code: 'AUT_RANGE',
+          message: 'Distribuci\u00f3n aut\u00f3noma (' + modAutonomo + '%) fuera del rango recomendado 25-40% (Doc. N\u00b0 004-2020).' });
+      }
+      // ACs sin nombre o sin semestre valido
+      for (var nai = 0; nai < includedAcs.length; nai++) {
+        var nac = includedAcs[nai];
+        if (!nac.name || nac.name.trim() === '') {
+          alerts.push({ severity: 'warn', code: 'AC_NO_NAME', message: 'Hay actividades curriculares sin nombre. Completar antes de exportar.' });
+          break;
+        }
+      }
+      for (var sti = 0; sti < includedAcs.length; sti++) {
+        var stac = includedAcs[sti];
+        if (!stac.semester || stac.semester < 1 || stac.semester > numSemesters) {
+          alerts.push({ severity: 'warn', code: 'AC_SEM_INVALID', message: 'Hay ACs con semestre inv\u00e1lido o fuera del rango del programa.' });
+          break;
+        }
+      }
+      // Programa extenso
+      if (totalSct > 120) {
+        alerts.push({ severity: 'info', code: 'PROG_EXTENSO',
+          message: 'Programa extenso (' + totalSct + ' SCT). Considerar distribuir la carga m\u00e1s uniformemente entre semestres.' });
+      }
+      // Sin ACs incluidas
+      if (includedAcs.length === 0) {
+        alerts.push({ severity: 'info', code: 'NO_ACS_INCLUDED', message: 'No hay actividades curriculares incluidas en el c\u00e1lculo.' });
+      }
+      // Coherencia por AC via SCTEngine.detectCoherenceAlerts
+      if (typeof SCTEngine.detectCoherenceAlerts === 'function') {
+        for (var cai = 0; cai < includedAcs.length; cai++) {
+          var cac = includedAcs[cai];
+          var extra = SCTEngine.detectCoherenceAlerts({
+            hs: cac.hs, has: cac.has, haut: cac.haut, ns: cac.ns, sct: cac.sct, profile: profile
+          });
+          if (extra && extra.length) {
+            for (var eai = 0; eai < extra.length; eai++) {
+              var ea = extra[eai];
+              alerts.push({ severity: ea.severity, code: ea.code + '_AC' + cai, message: (cac.name ? '[' + cac.name + '] ' : '') + ea.message });
+            }
+          }
+        }
+      }
+
+      report.alerts = alerts;
+      return report;
     };
 
     // Dispatcher — llama a generateModoA/B/C segun mode y retorna el shape unificado
@@ -4032,6 +4451,179 @@
         + ' &nbsp;|&nbsp; Perfil: <strong>' + (plabels[ctx.profile]    || ctx.profile    || '\u2014') + '</strong>'
         + ' &nbsp;|&nbsp; Tipo de actividad: <strong>' + (alabels[ctx.activityType] || ctx.activityType || '\u2014') + '</strong>'
         + '</span>';
+    };
+
+    // Renderiza el bloque visual detallado de Modo C (grid semestres + tabla ACs + modalidades + cuech + alertas)
+    ReportGenerator.renderBloqueC = function(report, targetEl) {
+      if (!report || report.mode !== 'modoC') return;
+      if (!targetEl) { targetEl = document.getElementById('modoC-bloque2Render'); }
+      if (!targetEl) return;
+
+      var c   = report.computed  || {};
+      var ctx = report.context   || {};
+      var plabels = { pregrado: 'Pregrado', postgrado: 'Postgrado', continua: 'Formaci\u00f3n Continua' };
+      var flabels = { semestral: 'Semestral', modulo: 'M\u00f3dulo', bloque_breve: 'Bloque breve', cuech: 'CUECH S\u00fabete' };
+      var semColors  = { green: '#059669', yellow: '#D97706', red: '#DC2626' };
+      var semBgColors = { green: '#D1FAE5', yellow: '#FEF3C7', red: '#FEE2E2' };
+      var semLabels  = { green: 'Adecuado', yellow: 'Alerta', red: 'Sobrecarga' };
+      var aggLevel   = (report.semaforos && report.semaforos.aggregate) ? report.semaforos.aggregate.level : 'green';
+      var aggColor   = semColors[aggLevel] || semColors.green;
+
+      var html = '<div style="font-family:Arial,sans-serif;font-size:13px;line-height:1.5;color:#111;">';
+
+      // 1. Header
+      html += '<div style="background:#0033A1;color:#fff;border-radius:8px 8px 0 0;padding:16px 20px;margin-bottom:0;">'
+        + '<div style="font-size:16px;font-weight:700;">'
+        + (ctx.programName || 'Programa sin nombre')
+        + '</div>'
+        + '<div style="font-size:11px;opacity:.85;margin-top:4px;">'
+        + 'Perfil: ' + (plabels[ctx.profile] || ctx.profile || '\u2014')
+        + ' &nbsp;&bull;&nbsp; Formato: ' + (flabels[ctx.formato] || ctx.formato || '\u2014')
+        + ' &nbsp;&bull;&nbsp; Semestres: ' + (ctx.numSemesters || '\u2014')
+        + '</div>'
+        + '<div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;">'
+        + '<div><span style="font-size:10px;opacity:.7;text-transform:uppercase;">SCT Total</span><br>'
+        + '<strong style="font-size:26px;">' + (c.totalSct || 0) + '</strong></div>'
+        + '<div><span style="font-size:10px;opacity:.7;text-transform:uppercase;">Horas Totales</span><br>'
+        + '<strong style="font-size:20px;">' + (c.totalHt ? c.totalHt.toFixed(0) : '0') + ' hrs</strong></div>'
+        + '<div><span style="font-size:10px;opacity:.7;text-transform:uppercase;">ACs incluidas</span><br>'
+        + '<strong style="font-size:20px;">' + (c.acCount || 0) + '</strong></div>'
+        + '<div><span style="font-size:10px;opacity:.7;text-transform:uppercase;">Carga prom. semanal</span><br>'
+        + '<strong style="font-size:20px;color:' + aggColor + ';">' + (c.avgWeekly ? c.avgWeekly.toFixed(1) : '0') + ' hrs/sem</strong></div>'
+        + '<div><span style="font-size:10px;opacity:.7;text-transform:uppercase;">Autonom\u00eda</span><br>'
+        + '<strong style="font-size:20px;">' + (c.pctAutonomia || 0) + '%</strong></div>'
+        + '</div></div>';
+
+      // 2. Breakdown semestral
+      var breakdown = c.semesterBreakdown || [];
+      if (breakdown.length > 0) {
+        html += '<div style="border:1px solid #E5E7EB;border-top:none;padding:16px 20px;background:#fff;">';
+        html += '<div style="font-weight:700;font-size:13px;margin-bottom:10px;color:#374151;">Distribuci\u00f3n por semestre</div>';
+        html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;">';
+        for (var bri = 0; bri < breakdown.length; bri++) {
+          var sb  = breakdown[bri];
+          var sbc = semColors[sb.semaforo.level]   || semColors.green;
+          var sbbg = semBgColors[sb.semaforo.level] || semBgColors.green;
+          html += '<div style="border:1px solid ' + sbc + ';border-radius:6px;padding:10px;background:' + sbbg + ';text-align:center;">'
+            + '<div style="font-size:11px;font-weight:700;color:#374151;">Semestre ' + sb.semester + '</div>'
+            + '<div style="font-size:22px;font-weight:800;color:#0033A1;margin:4px 0;">' + sb.sct + '<span style="font-size:11px;font-weight:400;"> SCT</span></div>'
+            + '<div style="font-size:11px;color:#6B7280;">' + sb.weekly.toFixed(1) + ' hrs/sem &bull; ' + sb.acCount + ' ACs</div>'
+            + '<div style="font-size:10px;font-weight:600;color:' + sbc + ';margin-top:4px;">' + (semLabels[sb.semaforo.level] || '\u2014') + '</div>'
+            + '</div>';
+        }
+        html += '</div></div>';
+      }
+
+      // 3. Tabla de ACs incluidas
+      var iacList = c.includedAcs || [];
+      if (iacList.length > 0) {
+        html += '<div style="border:1px solid #E5E7EB;border-top:none;padding:16px 20px;background:#F9FAFB;">';
+        html += '<div style="font-weight:700;font-size:13px;margin-bottom:8px;color:#374151;">Actividades curriculares incluidas</div>';
+        html += '<div style="overflow-x:auto;">';
+        html += '<table style="border-collapse:collapse;width:100%;font-size:12px;">';
+        html += '<thead><tr style="background:#F3F4F6;">'
+          + '<th style="border:1px solid #D1D5DB;padding:6px 8px;text-align:left;">Nombre</th>'
+          + '<th style="border:1px solid #D1D5DB;padding:6px 8px;text-align:left;">Preset</th>'
+          + '<th style="border:1px solid #D1D5DB;padding:6px 8px;text-align:center;">Semestre</th>'
+          + '<th style="border:1px solid #D1D5DB;padding:6px 8px;text-align:right;">HS</th>'
+          + '<th style="border:1px solid #D1D5DB;padding:6px 8px;text-align:right;">HAs</th>'
+          + '<th style="border:1px solid #D1D5DB;padding:6px 8px;text-align:right;">HAut</th>'
+          + '<th style="border:1px solid #D1D5DB;padding:6px 8px;text-align:right;">NS</th>'
+          + '<th style="border:1px solid #D1D5DB;padding:6px 8px;text-align:right;">SCT</th>'
+          + '</tr></thead><tbody>';
+        for (var iai = 0; iai < iacList.length; iai++) {
+          var iac = iacList[iai];
+          var rowbg = iai % 2 === 0 ? '#fff' : '#F9FAFB';
+          html += '<tr style="background:' + rowbg + ';">'
+            + '<td style="border:1px solid #E5E7EB;padding:5px 8px;">' + (iac.name || '\u2014') + '</td>'
+            + '<td style="border:1px solid #E5E7EB;padding:5px 8px;">' + (iac.preset || '\u2014') + '</td>'
+            + '<td style="border:1px solid #E5E7EB;padding:5px 8px;text-align:center;">' + (iac.semester || '\u2014') + '</td>'
+            + '<td style="border:1px solid #E5E7EB;padding:5px 8px;text-align:right;">' + (iac.hs || 0) + '</td>'
+            + '<td style="border:1px solid #E5E7EB;padding:5px 8px;text-align:right;">' + (iac.has || 0) + '</td>'
+            + '<td style="border:1px solid #E5E7EB;padding:5px 8px;text-align:right;">' + (iac.haut || 0) + '</td>'
+            + '<td style="border:1px solid #E5E7EB;padding:5px 8px;text-align:right;">' + (iac.ns || 0) + '</td>'
+            + '<td style="border:1px solid #E5E7EB;padding:5px 8px;text-align:right;font-weight:700;">' + (iac.sct || 0) + '</td>'
+            + '</tr>';
+        }
+        html += '</tbody></table></div></div>';
+      }
+
+      // 4. Distribucion de modalidades
+      var modDist = c.modalityDistribution || {};
+      var modKeys = ['presencial', 'sincronico', 'asincronico', 'autonomo'];
+      var modLabels = { presencial: 'Presencial', sincronico: 'Sincr\u00f3nico', asincronico: 'Asincr\u00f3nico', autonomo: 'Aut\u00f3nomo' };
+      var modBarColors = { presencial: '#3B82F6', sincronico: '#8B5CF6', asincronico: '#F59E0B', autonomo: '#10B981' };
+      html += '<div style="border:1px solid #E5E7EB;border-top:none;padding:16px 20px;background:#fff;">';
+      html += '<div style="font-weight:700;font-size:13px;margin-bottom:8px;color:#374151;">Distribuci\u00f3n por modalidad</div>';
+      for (var mki = 0; mki < modKeys.length; mki++) {
+        var mk  = modKeys[mki];
+        var mde = modDist[mk] || {};
+        var mpct = mde.pct || 0;
+        var mhrs = mde.estimatedHours || 0;
+        var mwarn = mde.warning ? ' (fuera de rango 25-40%)' : '';
+        var mcolor = modBarColors[mk] || '#6B7280';
+        html += '<div style="margin-bottom:8px;">'
+          + '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px;">'
+          + '<span>' + modLabels[mk] + (mwarn ? ' <span style="color:#D97706;font-size:10px;">\u26A0 ' + mwarn + '</span>' : '') + '</span>'
+          + '<span style="color:#6B7280;">' + mpct + '% &mdash; ~' + mhrs + ' hrs</span>'
+          + '</div>'
+          + '<div style="background:#E5E7EB;border-radius:4px;height:12px;overflow:hidden;">'
+          + '<div style="width:' + Math.min(mpct, 100) + '%;background:' + mcolor + ';height:100%;transition:width .3s;"></div>'
+          + '</div></div>';
+      }
+      html += '</div>';
+
+      // 5. Panel CUECH
+      var cuechConv = c.cuechConversion || [];
+      var fmtDisplay = report.formatoDisplay || {};
+      if (fmtDisplay.esCuech && cuechConv.length > 0) {
+        html += '<div style="border:1px solid #DDD6FE;border-top:none;padding:16px 20px;background:#F5F3FF;">';
+        html += '<div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#6D28D9;">Equivalencia CUECH</div>';
+        if (fmtDisplay.equivalencia) {
+          html += '<div style="font-size:12px;color:#7C3AED;margin-bottom:8px;">' + fmtDisplay.equivalencia + '</div>';
+        }
+        html += '<table style="border-collapse:collapse;font-size:12px;width:auto;">';
+        html += '<thead><tr style="background:#EDE9FE;">'
+          + '<th style="border:1px solid #DDD6FE;padding:4px 10px;text-align:left;">Semestre</th>'
+          + '<th style="border:1px solid #DDD6FE;padding:4px 10px;text-align:right;">SCT</th>'
+          + '<th style="border:1px solid #DDD6FE;padding:4px 10px;text-align:right;">CUECH equivalente</th>'
+          + '</tr></thead><tbody>';
+        for (var cuei = 0; cuei < cuechConv.length; cuei++) {
+          var cue = cuechConv[cuei];
+          html += '<tr>'
+            + '<td style="border:1px solid #EDE9FE;padding:4px 10px;">Semestre ' + cue.semester + '</td>'
+            + '<td style="border:1px solid #EDE9FE;padding:4px 10px;text-align:right;">' + cue.sct + '</td>'
+            + '<td style="border:1px solid #EDE9FE;padding:4px 10px;text-align:right;font-weight:700;">' + cue.cuech + '</td>'
+            + '</tr>';
+        }
+        html += '</tbody></table></div>';
+      }
+
+      // 6. Alertas
+      var repAlerts = report.alerts || [];
+      html += '<div style="border:1px solid #E5E7EB;border-top:none;padding:16px 20px;background:#FFFBEB;border-radius:0 0 8px 8px;">';
+      html += '<div style="font-weight:700;font-size:13px;margin-bottom:6px;color:#374151;">Alertas</div>';
+      if (repAlerts.length === 0) {
+        html += '<p style="font-size:12px;color:#6B7280;font-style:italic;">Sin alertas.</p>';
+      } else {
+        html += '<ul style="list-style:none;margin:0;padding:0;">';
+        for (var rali = 0; rali < repAlerts.length; rali++) {
+          var ra   = repAlerts[rali];
+          var rabg  = ra.severity === 'error' ? '#FEF2F2' : (ra.severity === 'warn' ? '#FFFBEB' : '#EFF6FF');
+          var rabrd = ra.severity === 'error' ? '#FECACA' : (ra.severity === 'warn' ? '#FDE68A' : '#BFDBFE');
+          var raicon = ra.severity === 'error' ? '&#10007;' : (ra.severity === 'warn' ? '&#9651;' : '&#8505;');
+          var racol  = ra.severity === 'error' ? '#DC2626' : (ra.severity === 'warn' ? '#D97706' : '#1D4ED8');
+          html += '<li style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;margin-bottom:5px;'
+            + 'background:' + rabg + ';border:1px solid ' + rabrd + ';border-radius:5px;font-size:12px;">'
+            + '<span style="color:' + racol + ';font-weight:700;flex-shrink:0;">' + raicon + '</span>'
+            + '<span>' + ra.message + '</span></li>';
+        }
+        html += '</ul>';
+      }
+      html += '</div>';
+
+      html += '</div>'; // cierre wrapper principal
+      targetEl.innerHTML = html;
     };
 
     // Retorna string HTML standalone con estilos inline listo para imprimir o descargar
@@ -4136,13 +4728,890 @@
     SCTEngine.FORMATOS = FORMATOS;
     SCTEngine.ACTIVITY_PRESETS = ACTIVITY_PRESETS;
 
+    // ================================
+    // Modo C — Programa multi-semestre (Fase P11)
+    // ================================
+
+    // Genera options desde FORMATOS en el selector cFormatSelector
+    function generateFormatOptions() {
+      var sel = document.getElementById('cFormatSelector');
+      if (!sel) return;
+      sel.innerHTML = '';
+      var keys = Object.keys(FORMATOS);
+      var labels = { semestral: 'Semestral', modulo: 'M\u00f3dulo (8 sem.)', bloque_breve: 'Bloque breve (5 sem.)', cuech: 'CUECH S\u00fabete (16 sem.)' };
+      for (var ki = 0; ki < keys.length; ki++) {
+        var k = keys[ki];
+        var opt = document.createElement('option');
+        opt.value = k;
+        opt.textContent = labels[k] || k;
+        if (k === SCTState.modoC.formato) opt.selected = true;
+        sel.appendChild(opt);
+      }
+    }
+
+    // Genera los 4 sliders de modalidad en #cModalitySliders
+    function generateModalitySliders() {
+      var container = document.getElementById('cModalitySliders');
+      if (!container) return;
+      container.innerHTML = '';
+
+      var modKeys = ['presencial', 'sincronico', 'asincronico', 'autonomo'];
+      var modLabels = { presencial: 'Presencial', sincronico: 'Sincr\u00f3nico', asincronico: 'Asincr\u00f3nico', autonomo: 'Aut\u00f3nomo' };
+      var fmt = FORMATOS[SCTState.modoC.formato] || FORMATOS.semestral;
+      var totalHsPerWeek = 10; // Estimado de referencia para "X h/semana"
+
+      for (var mi = 0; mi < modKeys.length; mi++) {
+        var key = modKeys[mi];
+        var val = SCTState.modoC.modalities[key];
+        var hrsEst = (val / 100) * totalHsPerWeek;
+
+        var wrap = document.createElement('div');
+        wrap.className = 'flex flex-col gap-1';
+
+        var lbl = document.createElement('label');
+        lbl.setAttribute('for', 'cSlider_' + key);
+        lbl.className = 'text-xs font-medium text-gray-700';
+        lbl.textContent = modLabels[key];
+
+        var inp = document.createElement('input');
+        inp.type = 'range';
+        inp.id = 'cSlider_' + key;
+        inp.min = '0';
+        inp.max = '100';
+        inp.step = '5';
+        inp.value = String(val);
+        inp.className = 'w-full';
+        inp.setAttribute('aria-label', modLabels[key] + ' porcentaje');
+
+        var row = document.createElement('div');
+        row.className = 'flex items-center justify-between text-xs text-gray-600';
+
+        var spanPct = document.createElement('span');
+        spanPct.id = 'cSliderPct_' + key;
+        spanPct.textContent = val + '%';
+
+        var spanHrs = document.createElement('span');
+        spanHrs.id = 'cSliderHrs_' + key;
+        spanHrs.className = 'text-gray-400';
+        spanHrs.textContent = '\u2248 ' + hrsEst.toFixed(1) + ' h/sem';
+
+        row.appendChild(spanPct);
+        row.appendChild(spanHrs);
+
+        wrap.appendChild(lbl);
+        wrap.appendChild(inp);
+        wrap.appendChild(row);
+        container.appendChild(wrap);
+      }
+    }
+
+    // Bind events a los sliders de modalidad
+    function bindModalitySliders() {
+      var modKeys = ['presencial', 'sincronico', 'asincronico', 'autonomo'];
+      for (var mi = 0; mi < modKeys.length; mi++) {
+        (function(key) {
+          var inp = document.getElementById('cSlider_' + key);
+          if (!inp) return;
+          inp.addEventListener('input', function() {
+            SCTState.modoC.modalities[key] = parseInt(inp.value) || 0;
+            var pctEl = document.getElementById('cSliderPct_' + key);
+            if (pctEl) pctEl.textContent = inp.value + '%';
+            updateModalityTotal();
+            updateCEstimates();
+            DataLayer.save();
+          });
+        })(modKeys[mi]);
+      }
+    }
+
+    // Actualiza total de porcentajes y advertencias de autonomia
+    function updateModalityTotal() {
+      var m = SCTState.modoC.modalities;
+      var sum = (m.presencial || 0) + (m.sincronico || 0) + (m.asincronico || 0) + (m.autonomo || 0);
+      var totalEl = document.getElementById('cModalityTotal');
+      if (totalEl) {
+        totalEl.textContent = 'Suma: ' + sum + '%';
+        totalEl.className = sum === 100
+          ? 'text-xs text-green-700'
+          : 'text-xs text-red-600 font-semibold';
+      }
+
+      // Validar H_autonoma 25-40%
+      var warnEl = document.getElementById('cAutonomiaWarning');
+      if (warnEl) {
+        var autPct = sum > 0 ? (m.autonomo / sum) * 100 : 0;
+        if (autPct < 25 || autPct > 40) {
+          warnEl.classList.remove('hidden');
+          warnEl.textContent = 'Advertencia: H_aut\u00f3noma (' + autPct.toFixed(0) + '%) fuera del rango 25-40%';
+        } else {
+          warnEl.classList.add('hidden');
+        }
+      }
+    }
+
+    // Actualiza estimados de horas en sliders (usa ~10 h/sem como referencia)
+    function updateCEstimates() {
+      var modKeys = ['presencial', 'sincronico', 'asincronico', 'autonomo'];
+      var totalRef = 10;
+      for (var mi = 0; mi < modKeys.length; mi++) {
+        var key = modKeys[mi];
+        var val = SCTState.modoC.modalities[key] || 0;
+        var hrsEl = document.getElementById('cSliderHrs_' + key);
+        if (hrsEl) {
+          hrsEl.textContent = '\u2248 ' + ((val / 100) * totalRef).toFixed(1) + ' h/sem';
+        }
+      }
+    }
+
+    // Agrega una nueva AC al array modoC.acs con defaults y re-renderiza la tabla
+    function addACRowC() {
+      var fmt = SCTState.modoC.formato;
+      var fmtData = FORMATOS[fmt] || FORMATOS.semestral;
+      var nsDefault = fmtData.semanas;
+      var id = Date.now() + Math.floor(Math.random() * 1000);
+      var newAC = {
+        id: id,
+        included: true,
+        name: '',
+        preset: 'mixto',
+        semester: 1,
+        hs: 1.5,
+        has: 2.0,
+        haut: 1.0,
+        ns: nsDefault,
+        sct: 0
+      };
+      var calc = SCTEngine.calculateFromWeekly(newAC.hs, newAC.has, newAC.haut, newAC.ns);
+      newAC.sct = calc.sct;
+      SCTState.modoC.acs.push(newAC);
+      renderACTableC();
+      renderSemesterGrid();
+      updateProgramTotals();
+      DataLayer.save();
+    }
+
+    // Renderiza la tabla de ACs de Modo C desde SCTState.modoC.acs
+    function renderACTableC() {
+      var tbody = document.getElementById('modoC-acTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      var acs = SCTState.modoC.acs;
+      if (!acs || acs.length === 0) {
+        var phRow = document.createElement('tr');
+        phRow.id = 'modoC-acTablePlaceholder';
+        var phTd = document.createElement('td');
+        phTd.colSpan = 10;
+        phTd.className = 'px-3 py-6 text-center text-xs text-gray-400 italic';
+        phTd.textContent = 'Agrega actividades curriculares para comenzar.';
+        phRow.appendChild(phTd);
+        tbody.appendChild(phRow);
+        return;
+      }
+
+      var numSem = SCTState.modoC.numSemesters;
+      var presetKeys = Object.keys(ACTIVITY_PRESETS);
+
+      for (var i = 0; i < acs.length; i++) {
+        (function(ac) {
+          var tr = document.createElement('tr');
+          tr.className = 'border-b border-gray-100 hover:bg-gray-50 act-row';
+          tr.setAttribute('data-id', String(ac.id));
+
+          // Checkbox incluir
+          var tdChk = document.createElement('td');
+          tdChk.className = 'px-2 py-1.5 text-center';
+          var chk = document.createElement('input');
+          chk.type = 'checkbox';
+          chk.checked = ac.included;
+          chk.setAttribute('aria-label', 'Incluir actividad');
+          chk.addEventListener('change', function() {
+            ac.included = chk.checked;
+            renderSemesterGrid();
+            updateProgramTotals();
+            DataLayer.save();
+          });
+          tdChk.appendChild(chk);
+
+          // Nombre
+          var tdName = document.createElement('td');
+          tdName.className = 'px-2 py-1.5';
+          var inpName = document.createElement('input');
+          inpName.type = 'text';
+          inpName.value = ac.name;
+          inpName.placeholder = 'Nombre AC';
+          inpName.className = 'w-full border border-gray-200 rounded px-1.5 py-0.5 text-xs';
+          inpName.setAttribute('aria-label', 'Nombre de la actividad curricular');
+          inpName.addEventListener('change', function() {
+            ac.name = inpName.value;
+            DataLayer.save();
+          });
+          tdName.appendChild(inpName);
+
+          // Preset
+          var tdPreset = document.createElement('td');
+          tdPreset.className = 'px-2 py-1.5';
+          var selPreset = document.createElement('select');
+          selPreset.className = 'border border-gray-200 rounded px-1 py-0.5 text-xs';
+          selPreset.setAttribute('aria-label', 'Tipo de actividad');
+          for (var pi = 0; pi < presetKeys.length; pi++) {
+            var pKey = presetKeys[pi];
+            var pOpt = document.createElement('option');
+            pOpt.value = pKey;
+            pOpt.textContent = ACTIVITY_PRESETS[pKey].label;
+            if (pKey === ac.preset) pOpt.selected = true;
+            selPreset.appendChild(pOpt);
+          }
+          selPreset.addEventListener('change', function() {
+            ac.preset = selPreset.value;
+            var pData = ACTIVITY_PRESETS[ac.preset];
+            if (pData) {
+              ac.hs = pData.hs;
+              ac.has = pData.has;
+              ac.haut = pData.haut;
+              inpHs.value = String(pData.hs);
+              inpHas.value = String(pData.has);
+              inpHaut.value = String(pData.haut);
+            }
+            updateACRowC(ac.id);
+          });
+          tdPreset.appendChild(selPreset);
+
+          // Semestre destino
+          var tdSem = document.createElement('td');
+          tdSem.className = 'px-2 py-1.5';
+          var selSem = document.createElement('select');
+          selSem.className = 'border border-gray-200 rounded px-1 py-0.5 text-xs';
+          selSem.setAttribute('aria-label', 'Semestre destino');
+          for (var si = 1; si <= numSem; si++) {
+            var sOpt = document.createElement('option');
+            sOpt.value = String(si);
+            sOpt.textContent = 'Sem. ' + si;
+            if (si === ac.semester) sOpt.selected = true;
+            selSem.appendChild(sOpt);
+          }
+          selSem.addEventListener('change', function() {
+            ac.semester = parseInt(selSem.value) || 1;
+            renderSemesterGrid();
+            updateProgramTotals();
+            DataLayer.save();
+          });
+          tdSem.appendChild(selSem);
+
+          // HS
+          var tdHs = document.createElement('td');
+          tdHs.className = 'px-2 py-1.5 text-right';
+          var inpHs = document.createElement('input');
+          inpHs.type = 'number';
+          inpHs.value = String(ac.hs);
+          inpHs.min = '0';
+          inpHs.step = '0.5';
+          inpHs.className = 'w-14 border border-gray-200 rounded px-1 py-0.5 text-xs text-right';
+          inpHs.setAttribute('aria-label', 'Horas sincronica semanales');
+          inpHs.addEventListener('change', function() {
+            ac.hs = parseFloat(inpHs.value) || 0;
+            updateACRowC(ac.id);
+          });
+          tdHs.appendChild(inpHs);
+
+          // HAs
+          var tdHas = document.createElement('td');
+          tdHas.className = 'px-2 py-1.5 text-right';
+          var inpHas = document.createElement('input');
+          inpHas.type = 'number';
+          inpHas.value = String(ac.has);
+          inpHas.min = '0';
+          inpHas.step = '0.5';
+          inpHas.className = 'w-14 border border-gray-200 rounded px-1 py-0.5 text-xs text-right';
+          inpHas.setAttribute('aria-label', 'Horas asincronica semanales');
+          inpHas.addEventListener('change', function() {
+            ac.has = parseFloat(inpHas.value) || 0;
+            updateACRowC(ac.id);
+          });
+          tdHas.appendChild(inpHas);
+
+          // HAut
+          var tdHaut = document.createElement('td');
+          tdHaut.className = 'px-2 py-1.5 text-right';
+          var inpHaut = document.createElement('input');
+          inpHaut.type = 'number';
+          inpHaut.value = String(ac.haut);
+          inpHaut.min = '0';
+          inpHaut.step = '0.5';
+          inpHaut.className = 'w-14 border border-gray-200 rounded px-1 py-0.5 text-xs text-right';
+          inpHaut.setAttribute('aria-label', 'Horas autonomas semanales');
+          inpHaut.addEventListener('change', function() {
+            ac.haut = parseFloat(inpHaut.value) || 0;
+            updateACRowC(ac.id);
+          });
+          tdHaut.appendChild(inpHaut);
+
+          // NS
+          var tdNs = document.createElement('td');
+          tdNs.className = 'px-2 py-1.5 text-right';
+          var inpNs = document.createElement('input');
+          inpNs.type = 'number';
+          inpNs.value = String(ac.ns);
+          inpNs.min = '1';
+          inpNs.step = '1';
+          inpNs.className = 'w-14 border border-gray-200 rounded px-1 py-0.5 text-xs text-right';
+          inpNs.setAttribute('aria-label', 'Numero de semanas');
+          inpNs.addEventListener('change', function() {
+            ac.ns = parseInt(inpNs.value) || 1;
+            updateACRowC(ac.id);
+          });
+          tdNs.appendChild(inpNs);
+
+          // SCT (readonly)
+          var tdSct = document.createElement('td');
+          tdSct.className = 'px-2 py-1.5 text-right';
+          var spanSct = document.createElement('span');
+          spanSct.id = 'cSct_' + ac.id;
+          spanSct.className = 'font-semibold text-blue-700';
+          spanSct.textContent = String(ac.sct);
+          tdSct.appendChild(spanSct);
+
+          // Boton eliminar
+          var tdDel = document.createElement('td');
+          tdDel.className = 'px-2 py-1.5 text-right';
+          var btnDel = document.createElement('button');
+          btnDel.type = 'button';
+          btnDel.className = 'text-red-500 hover:text-red-700 text-xs px-1.5 py-0.5 rounded';
+          btnDel.textContent = 'Quitar';
+          btnDel.setAttribute('aria-label', 'Eliminar actividad curricular');
+          btnDel.addEventListener('click', function() {
+            var newAcs = [];
+            for (var di = 0; di < SCTState.modoC.acs.length; di++) {
+              if (SCTState.modoC.acs[di].id !== ac.id) newAcs.push(SCTState.modoC.acs[di]);
+            }
+            SCTState.modoC.acs = newAcs;
+            renderACTableC();
+            renderSemesterGrid();
+            updateProgramTotals();
+            DataLayer.save();
+          });
+          tdDel.appendChild(btnDel);
+
+          tr.appendChild(tdChk);
+          tr.appendChild(tdName);
+          tr.appendChild(tdPreset);
+          tr.appendChild(tdSem);
+          tr.appendChild(tdHs);
+          tr.appendChild(tdHas);
+          tr.appendChild(tdHaut);
+          tr.appendChild(tdNs);
+          tr.appendChild(tdSct);
+          tr.appendChild(tdDel);
+          tbody.appendChild(tr);
+        })(acs[i]);
+      }
+    }
+
+    // Actualiza AC por id: recalcula SCT, actualiza span, refresca grid y totales
+    function updateACRowC(id) {
+      var acs = SCTState.modoC.acs;
+      for (var i = 0; i < acs.length; i++) {
+        if (acs[i].id === id) {
+          var ac = acs[i];
+          var calc = SCTEngine.calculateFromWeekly(ac.hs, ac.has, ac.haut, ac.ns);
+          ac.sct = calc.sct;
+          var spanEl = document.getElementById('cSct_' + id);
+          if (spanEl) spanEl.textContent = String(ac.sct);
+          break;
+        }
+      }
+      renderSemesterGrid();
+      updateProgramTotals();
+      DataLayer.save();
+    }
+
+    // Renderiza el grid de semestres con ACs asignadas y semaforo
+    function renderSemesterGrid() {
+      var grid = document.getElementById('modoC-semesterGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      var numSem = SCTState.modoC.numSemesters;
+      var profile = SCTState.modoC.profile;
+      var acs = SCTState.modoC.acs;
+
+      for (var s = 1; s <= numSem; s++) {
+        var semAcs = [];
+        for (var ai = 0; ai < acs.length; ai++) {
+          if (acs[ai].semester === s && acs[ai].included) semAcs.push(acs[ai]);
+        }
+
+        var totalSct = 0;
+        var totalWeekly = 0;
+        for (var si = 0; si < semAcs.length; si++) {
+          totalSct += semAcs[si].sct || 0;
+          totalWeekly += (semAcs[si].hs || 0) + (semAcs[si].has || 0) + (semAcs[si].haut || 0);
+        }
+
+        var semLevel = getAggregateLevel(totalWeekly, profile);
+        var semColors = { verde: '#059669', amarillo: '#D97706', rojo: '#DC2626' };
+        var semBg = { verde: '#D1FAE5', amarillo: '#FEF3C7', rojo: '#FEE2E2' };
+        var lvlColor = semColors[semLevel] || '#6B7280';
+        var lvlBg = semBg[semLevel] || '#F3F4F6';
+
+        var article = document.createElement('article');
+        article.className = 'bg-white border rounded-lg p-3';
+        article.setAttribute('role', 'listitem');
+        article.setAttribute('data-semester', String(s));
+
+        var titleDiv = document.createElement('div');
+        titleDiv.className = 'text-xs font-semibold text-gray-700 mb-1';
+        titleDiv.textContent = 'Semestre ' + s;
+
+        var sctDiv = document.createElement('div');
+        sctDiv.className = 'text-2xl font-bold mb-1';
+        sctDiv.style.color = '#0033A1';
+        sctDiv.innerHTML = String(totalSct) + ' <span class="text-xs font-normal text-gray-500">SCT</span>';
+
+        var metaDiv = document.createElement('div');
+        metaDiv.className = 'text-[11px] text-gray-500 mb-2';
+        metaDiv.textContent = totalWeekly.toFixed(1) + ' hrs/sem \u2022 ' + semAcs.length + ' ACs';
+
+        var semDiv = document.createElement('div');
+        semDiv.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:2.5rem;height:2.5rem;border-radius:50%;background:' + lvlBg + ';color:' + lvlColor + ';font-weight:800;font-size:0.85rem;margin-bottom:0.5rem;';
+        semDiv.textContent = semLevel === 'verde' ? '\u2713' : (semLevel === 'amarillo' ? '!' : '\u2717');
+        semDiv.setAttribute('aria-label', semLevel);
+
+        var acsListDiv = document.createElement('div');
+        acsListDiv.className = 'mt-1 space-y-0.5';
+        if (semAcs.length === 0) {
+          var emptyP = document.createElement('p');
+          emptyP.className = 'text-[11px] text-gray-400 italic';
+          emptyP.textContent = 'Sin actividades';
+          acsListDiv.appendChild(emptyP);
+        } else {
+          for (var li = 0; li < semAcs.length; li++) {
+            var acItem = document.createElement('div');
+            acItem.className = 'text-[11px] text-gray-600 flex justify-between';
+            var acName = semAcs[li].name || ('AC ' + (li + 1));
+            acItem.innerHTML = '<span>' + acName + '</span><span class="text-blue-600 font-semibold">' + semAcs[li].sct + ' SCT</span>';
+            acsListDiv.appendChild(acItem);
+          }
+        }
+
+        article.appendChild(titleDiv);
+        article.appendChild(sctDiv);
+        article.appendChild(metaDiv);
+        article.appendChild(semDiv);
+        article.appendChild(acsListDiv);
+        grid.appendChild(article);
+      }
+    }
+
+    // Actualiza los totales del resumen del programa
+    function updateProgramTotals() {
+      var acs = SCTState.modoC.acs;
+      var totalSct = 0;
+      var totalHours = 0;
+      var totalAcs = 0;
+
+      for (var i = 0; i < acs.length; i++) {
+        if (!acs[i].included) continue;
+        totalAcs++;
+        totalSct += acs[i].sct || 0;
+        var weekly = (acs[i].hs || 0) + (acs[i].has || 0) + (acs[i].haut || 0);
+        totalHours += weekly * (acs[i].ns || 1);
+      }
+
+      var elSct = document.getElementById('cTotalSct');
+      var elHrs = document.getElementById('cTotalHours');
+      var elAcs = document.getElementById('cTotalAcs');
+      var elSems = document.getElementById('cTotalSemesters');
+      if (elSct) elSct.textContent = String(totalSct);
+      if (elHrs) elHrs.textContent = String(Math.round(totalHours));
+      if (elAcs) elAcs.textContent = String(totalAcs);
+      if (elSems) elSems.textContent = String(SCTState.modoC.numSemesters);
+
+      updateCuechPanel();
+      updateCoherenceAlerts();
+    }
+
+    // Muestra/oculta y rellena el panel CUECH si formato = cuech
+    function updateCuechPanel() {
+      var panel = document.getElementById('modoC-cuechPanel');
+      if (!panel) return;
+      if (SCTState.modoC.formato !== 'cuech') {
+        panel.classList.add('hidden');
+        return;
+      }
+      panel.classList.remove('hidden');
+
+      var tbody = document.getElementById('cuechTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      var numSem = SCTState.modoC.numSemesters;
+      var acs = SCTState.modoC.acs;
+
+      for (var s = 1; s <= numSem; s++) {
+        var semSct = 0;
+        for (var ai = 0; ai < acs.length; ai++) {
+          if (acs[ai].semester === s && acs[ai].included) {
+            semSct += acs[ai].sct || 0;
+          }
+        }
+        var equiv = SCTEngine.calculateCUECH(semSct);
+        var tr = document.createElement('tr');
+        tr.className = 'border-b border-purple-100';
+        var tdS = document.createElement('td');
+        tdS.className = 'py-1 text-purple-700';
+        tdS.textContent = 'Semestre ' + s;
+        var tdSct = document.createElement('td');
+        tdSct.className = 'py-1 text-right';
+        tdSct.textContent = String(semSct);
+        var tdCuech = document.createElement('td');
+        tdCuech.className = 'py-1 text-right font-semibold';
+        tdCuech.textContent = String(equiv.cuech);
+        tr.appendChild(tdS);
+        tr.appendChild(tdSct);
+        tr.appendChild(tdCuech);
+        tbody.appendChild(tr);
+      }
+
+      var equivEl = document.getElementById('cuechEquivText');
+      if (equivEl) {
+        equivEl.textContent = 'Programa en formato CUECH (16 sem.). Conversi\u00f3n SCT \u2192 CUECH: 1 SCT \u2248 0.75 CUECH. Los valores se calculan por semestre.';
+      }
+    }
+
+    // Detecta alertas de coherencia pedagogica y rellena el panel de alertas
+    function updateCoherenceAlerts() {
+      var alerts = [];
+      var acs = SCTState.modoC.acs;
+      var profile = SCTState.modoC.profile;
+      var numSem = SCTState.modoC.numSemesters;
+
+      // Alertas por AC individual
+      for (var i = 0; i < acs.length; i++) {
+        if (!acs[i].included) continue;
+        var ac = acs[i];
+        if (typeof SCTEngine.detectCoherenceAlerts === 'function') {
+          var acAlerts = SCTEngine.detectCoherenceAlerts({
+            hs: ac.hs, has: ac.has, haut: ac.haut, ns: ac.ns, sct: ac.sct,
+            activityType: ac.preset, profile: profile
+          });
+          var acName = ac.name || ('AC ' + (i + 1));
+          for (var ai2 = 0; ai2 < acAlerts.length; ai2++) {
+            alerts.push({ severity: acAlerts[ai2].severity, message: acName + ': ' + acAlerts[ai2].message });
+          }
+        }
+      }
+
+      // Alertas por semestre: sobrepresupuestario
+      var thr = AGGREGATE_THRESHOLDS[profile] || AGGREGATE_THRESHOLDS.pregrado;
+      for (var s = 1; s <= numSem; s++) {
+        var semWeekly = 0;
+        var semCount = 0;
+        for (var si = 0; si < acs.length; si++) {
+          if (acs[si].semester === s && acs[si].included) {
+            semWeekly += (acs[si].hs || 0) + (acs[si].has || 0) + (acs[si].haut || 0);
+            semCount++;
+          }
+        }
+        if (semCount > 0 && semWeekly > thr.yellow) {
+          alerts.push({ severity: 'error', message: 'Semestre ' + s + ': carga agregada (' + semWeekly.toFixed(1) + ' h/sem) supera el umbral m\u00e1ximo del perfil ' + profile + ' (' + thr.yellow + ' h/sem).' });
+        } else if (semCount > 0 && semWeekly > thr.green) {
+          alerts.push({ severity: 'warn', message: 'Semestre ' + s + ': carga agregada (' + semWeekly.toFixed(1) + ' h/sem) en zona de alerta para el perfil ' + profile + '.' });
+        }
+      }
+
+      // Alerta H_aut global
+      var m = SCTState.modoC.modalities;
+      var mSum = (m.presencial || 0) + (m.sincronico || 0) + (m.asincronico || 0) + (m.autonomo || 0);
+      if (mSum > 0) {
+        var autPct = (m.autonomo / mSum) * 100;
+        if (autPct < 25 || autPct > 40) {
+          alerts.push({ severity: 'warn', message: 'Distribuci\u00f3n global de modalidades: H_aut\u00f3noma (' + autPct.toFixed(0) + '%) fuera del rango recomendado 25-40% (Doc. N\u00b0 004-2020).' });
+        }
+      }
+
+      // ACs sin nombre
+      for (var ni = 0; ni < acs.length; ni++) {
+        if (acs[ni].included && !acs[ni].name) {
+          alerts.push({ severity: 'info', message: 'Hay actividades curriculares sin nombre asignado.' });
+          break;
+        }
+      }
+
+      var panel = document.getElementById('modoC-alertsPanel');
+      var list = document.getElementById('modoC-alertsList');
+      if (!panel || !list) return;
+
+      if (alerts.length === 0) {
+        panel.classList.add('hidden');
+        list.innerHTML = '';
+        return;
+      }
+
+      panel.classList.remove('hidden');
+      list.innerHTML = '';
+      var severityColors = { error: 'text-red-700', warn: 'text-amber-700', info: 'text-blue-700' };
+      var severityIcons = { error: '\u2717 ', warn: '\u26a0 ', info: '\u2139 ' };
+      for (var ali = 0; ali < alerts.length; ali++) {
+        var li = document.createElement('li');
+        li.className = severityColors[alerts[ali].severity] || 'text-gray-700';
+        li.textContent = (severityIcons[alerts[ali].severity] || '') + alerts[ali].message;
+        list.appendChild(li);
+      }
+    }
+
+    // Importa ACs desde Modo B al Modo C
+    function importFromModoB() {
+      var bAcs = SCTState.modoB.acs;
+      if (!bAcs || bAcs.length === 0) {
+        window.alert('No hay actividades curriculares en Modo B para importar.');
+        return;
+      }
+      if (SCTState.modoC.acs.length > 0) {
+        var ok = window.confirm('Importar desde Modo B sobreescribira las ACs actuales del Modo C. \u00bfContinuar?');
+        if (!ok) return;
+      }
+      SCTState.modoC.acs = [];
+      for (var i = 0; i < bAcs.length; i++) {
+        var bAc = bAcs[i];
+        var fmtData = FORMATOS[SCTState.modoC.formato] || FORMATOS.semestral;
+        var nsVal = bAc.ns || fmtData.semanas;
+        var newAC = {
+          id: Date.now() + i,
+          included: true,
+          name: bAc.name || bAc.courseName || '',
+          preset: bAc.activityType || 'mixto',
+          semester: 1,
+          hs: bAc.hs || 1.5,
+          has: bAc.has || 2.0,
+          haut: bAc.haut || 1.0,
+          ns: nsVal,
+          sct: bAc.sct || 0
+        };
+        var calc = SCTEngine.calculateFromWeekly(newAC.hs, newAC.has, newAC.haut, newAC.ns);
+        newAC.sct = calc.sct;
+        SCTState.modoC.acs.push(newAC);
+      }
+      renderACTableC();
+      renderSemesterGrid();
+      updateProgramTotals();
+      DataLayer.save();
+    }
+
+    // Reset total del estado Modo C
+    function resetModoC() {
+      var ok = window.confirm('Esto eliminar\u00e1 todos los datos del Modo C. \u00bfContinuar?');
+      if (!ok) return;
+      SCTState.modoC = {
+        programName: '',
+        profile: 'pregrado',
+        formato: 'semestral',
+        numSemesters: 4,
+        modalities: { presencial: 40, sincronico: 20, asincronico: 20, autonomo: 20 },
+        acs: []
+      };
+      var elProg = document.getElementById('cProgramName');
+      if (elProg) elProg.value = '';
+      var elProf = document.getElementById('cProfileSelector');
+      if (elProf) elProf.value = 'pregrado';
+      var elFmt = document.getElementById('cFormatSelector');
+      if (elFmt) elFmt.value = 'semestral';
+      var elNs = document.getElementById('cNumSemesters');
+      if (elNs) elNs.value = '4';
+      generateModalitySliders();
+      bindModalitySliders();
+      updateModalityTotal();
+      renderACTableC();
+      renderSemesterGrid();
+      updateProgramTotals();
+      DataLayer.save();
+    }
+
+    // Exporta Modo C como JSON descargable
+    function exportModoC() {
+      var report = ReportGenerator.generate('modoC', SCTState.modoC);
+      var data = ReportGenerator.exportJSON(report);
+      if (!data) data = { version: '3.0', timestamp: new Date().toISOString(), state: SCTState.modoC };
+      DataLayer.downloadFile(JSON.stringify(data, null, 2), 'sct-modoC-' + Date.now() + '.json', 'application/json');
+    }
+
+    // Imprime informe Modo C en ventana nueva
+    function printModoC() {
+      var report = ReportGenerator.generate('modoC', SCTState.modoC);
+      var html = ReportGenerator.exportHTML(report);
+      if (!html) {
+        window.alert('No hay datos suficientes para generar el informe. Agrega actividades curriculares primero.');
+        return;
+      }
+      var w = window.open('', '_blank');
+      if (w) {
+        w.document.write(html);
+        w.document.close();
+      }
+    }
+
+    // Inicializa Modo C: habilita radio, pobla selectores, genera sliders, bind eventos
+    function initModoC() {
+      // Habilitar radio de Modo C
+      var radioCList = document.querySelectorAll('#modeCards input[value="modoC"]');
+      for (var r = 0; r < radioCList.length; r++) {
+        radioCList[r].disabled = false;
+      }
+      // Habilitar label
+      var cardC = document.querySelector('[data-mode="modoC"]');
+      if (cardC) {
+        cardC.classList.remove('opacity-60', 'cursor-not-allowed');
+        cardC.removeAttribute('title');
+        var statusSpanC = cardC.querySelector('span.text-\\[11px\\]');
+        if (statusSpanC) {
+          statusSpanC.classList.remove('text-gray-500');
+          statusSpanC.classList.add('text-green-700');
+          statusSpanC.textContent = 'Disponible';
+        }
+        var circleC = cardC.querySelector('span.rounded-full');
+        if (circleC) {
+          circleC.classList.remove('bg-gray-200', 'text-gray-500');
+          circleC.classList.add('bg-blue-100', 'text-blue-700');
+        }
+        var titleC = cardC.querySelector('span.font-semibold.text-gray-700');
+        if (titleC) {
+          titleC.classList.remove('text-gray-700');
+          titleC.classList.add('text-gray-900');
+        }
+      }
+
+      // Poblar selector de formato desde FORMATOS
+      generateFormatOptions();
+
+      // Restaurar valores de SCTState a inputs de contexto
+      var elProg = document.getElementById('cProgramName');
+      if (elProg && SCTState.modoC.programName) elProg.value = SCTState.modoC.programName;
+      var elProf = document.getElementById('cProfileSelector');
+      if (elProf) elProf.value = SCTState.modoC.profile || 'pregrado';
+      var elFmt = document.getElementById('cFormatSelector');
+      if (elFmt) elFmt.value = SCTState.modoC.formato || 'semestral';
+      var elNs = document.getElementById('cNumSemesters');
+      if (elNs) elNs.value = String(SCTState.modoC.numSemesters || 4);
+
+      // Generar sliders de modalidad
+      generateModalitySliders();
+      bindModalitySliders();
+      updateModalityTotal();
+
+      // Bind inputs de contexto
+      var pn = document.getElementById('cProgramName');
+      if (pn) pn.addEventListener('input', function() {
+        SCTState.modoC.programName = pn.value;
+        DataLayer.save();
+      });
+
+      var prof = document.getElementById('cProfileSelector');
+      if (prof) prof.addEventListener('change', function() {
+        SCTState.modoC.profile = prof.value;
+        renderSemesterGrid();
+        updateProgramTotals();
+        DataLayer.save();
+      });
+
+      var fmt = document.getElementById('cFormatSelector');
+      if (fmt) fmt.addEventListener('change', function() {
+        SCTState.modoC.formato = fmt.value;
+        var fmtData = FORMATOS[fmt.value] || FORMATOS.semestral;
+        // Actualizar NS de todas las ACs al nuevo formato
+        for (var i = 0; i < SCTState.modoC.acs.length; i++) {
+          SCTState.modoC.acs[i].ns = fmtData.semanas;
+          var calc = SCTEngine.calculateFromWeekly(
+            SCTState.modoC.acs[i].hs, SCTState.modoC.acs[i].has,
+            SCTState.modoC.acs[i].haut, SCTState.modoC.acs[i].ns
+          );
+          SCTState.modoC.acs[i].sct = calc.sct;
+        }
+        renderACTableC();
+        renderSemesterGrid();
+        updateProgramTotals();
+        DataLayer.save();
+      });
+
+      var nsInp = document.getElementById('cNumSemesters');
+      if (nsInp) nsInp.addEventListener('change', function() {
+        var n = parseInt(nsInp.value) || 1;
+        if (n < 1) n = 1;
+        if (n > 12) n = 12;
+        SCTState.modoC.numSemesters = n;
+        // Corregir ACs que apuntan a semestres inexistentes
+        for (var i = 0; i < SCTState.modoC.acs.length; i++) {
+          if (SCTState.modoC.acs[i].semester > n) SCTState.modoC.acs[i].semester = n;
+        }
+        renderACTableC();
+        renderSemesterGrid();
+        updateProgramTotals();
+        DataLayer.save();
+      });
+
+      // Boton agregar AC
+      var addBtn = document.getElementById('modoC-addAC');
+      if (addBtn) addBtn.addEventListener('click', function() { addACRowC(); });
+
+      // Boton reset
+      var resetBtn = document.getElementById('modoC-reset');
+      if (resetBtn) resetBtn.addEventListener('click', function() { resetModoC(); });
+
+      // Boton importar desde B
+      var importBBtn = document.getElementById('modoC-importB');
+      if (importBBtn) {
+        importBBtn.addEventListener('click', function() { importFromModoB(); });
+        importBBtn.disabled = !(SCTState.modoB.acs && SCTState.modoB.acs.length > 0);
+      }
+
+      // Boton exportar JSON
+      var exportJSONBtn = document.getElementById('modoC-exportJSON');
+      if (exportJSONBtn) exportJSONBtn.addEventListener('click', function() { exportModoC(); });
+
+      // Boton imprimir HTML
+      var exportHTMLBtn = document.getElementById('modoC-exportHTML');
+      if (exportHTMLBtn) exportHTMLBtn.addEventListener('click', function() { printModoC(); });
+
+      // Boton toggle Bloque 2-C (informe detallado)
+      var toggleBtn = document.getElementById('modoC-toggleBloque2');
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+          var panel = document.getElementById('modoC-bloque2Render');
+          if (!panel) return;
+          if (panel.classList.contains('hidden')) {
+            var report = ReportGenerator.generate('modoC', SCTState.modoC);
+            ReportGenerator.renderBloqueC(report, panel);
+            panel.classList.remove('hidden');
+            toggleBtn.textContent = 'Ocultar informe detallado';
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else {
+            panel.classList.add('hidden');
+            toggleBtn.textContent = 'Ver informe detallado';
+          }
+        });
+      }
+
+      // Render inicial
+      renderACTableC();
+      renderSemesterGrid();
+      updateProgramTotals();
+    }
+    // Fin Modo C ================================
+
     // Exponer funciones invocadas desde onclick inline de Modo B (IIFE scope → window)
     window.goToStepB = goToStepB;
     window.addACRow = addACRow;
 
+    // Exponer funciones de Modo C invocadas desde onclick inline (IIFE scope → window)
+    window.addACRowC = addACRowC;
+    window.resetModoC = resetModoC;
+    window.exportModoC = exportModoC;
+    window.printModoC = printModoC;
+    window.importFromModoBtoC = importFromModoB;
+
     // Start
     init();
     initModoB();
+    initModoC();
   })();
   </script>
 </body>
