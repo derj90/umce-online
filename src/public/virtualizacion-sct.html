@@ -270,7 +270,7 @@
           <p class="text-xs text-gray-500 leading-relaxed">Ya tienes definidas las horas semanales (sincrónicas, asincrónicas y autónomas) y quieres verificar que los créditos SCT sean coherentes. 3&ndash;5 minutos.</p>
           <span class="text-[11px] font-semibold text-green-700 mt-1">Disponible</span>
         </label>
-        <label class="radio-card flex flex-col gap-1 opacity-60 cursor-not-allowed" data-mode="modoB">
+        <label id="modeCardB" class="radio-card flex flex-col gap-1 opacity-60 cursor-not-allowed" data-mode="modoB">
           <input type="radio" name="sctMode" value="modoB" disabled class="sr-only">
           <div class="flex items-center gap-2">
             <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-200 text-gray-500 font-bold text-sm">B</span>
@@ -922,6 +922,519 @@
       </div>
     </div>
 
+    <!-- ==================== MODO B: Barra de progreso ==================== -->
+    <div class="flex flex-col gap-2 mb-6 hidden" id="modoB-progress">
+      <div class="flex items-center gap-2">
+        <div class="progress-dot active" id="dotB1" onclick="goToStepB(1)">1</div>
+        <div class="progress-line" id="lineB1"></div>
+        <div class="progress-dot" id="dotB2" onclick="goToStepB(2)">2</div>
+        <div class="progress-line" id="lineB2"></div>
+        <div class="progress-dot" id="dotB3" onclick="goToStepB(3)">3</div>
+        <div class="progress-line" id="lineB3"></div>
+        <div class="progress-dot" id="dotB4" onclick="goToStepB(4)">4</div>
+      </div>
+      <div class="flex justify-between text-xs text-gray-400 px-1">
+        <span>Configuraci&oacute;n</span>
+        <span>Actividades</span>
+        <span>Resultados</span>
+        <span>Informe</span>
+      </div>
+    </div>
+
+    <!-- ==================== MODO B: Wizard 4 pasos ==================== -->
+    <!-- Estos steps se muestran solo cuando SCTState.mode === 'modoB' -->
+
+    <!-- ETAPA B1: Configuraci&oacute;n del semestre -->
+    <div class="wizard-step hidden" id="stepB1">
+      <div class="explain-box">
+        <div class="explain-title">Paso 1 &mdash; Configuraci&oacute;n del semestre</div>
+        <p>Estos datos aplican a todas las actividades del semestre. Luego agregar&aacute;s cada AC individualmente.</p>
+      </div>
+
+      <div class="space-y-6">
+
+        <!-- Programa y semestre -->
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Programa / carrera</label>
+            <input type="text" id="bProgramName" placeholder="Ej: Ped. en Ed. B&aacute;sica" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Semestre / per&iacute;odo</label>
+            <input type="text" id="bSemester" placeholder="Ej: 2do sem. 2026" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+          </div>
+        </div>
+
+        <!-- Perfil de estudiantes -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Perfil de estudiantes <span class="text-gray-400 font-normal text-xs">(aplica a todas las ACs)</span></label>
+          <div class="grid sm:grid-cols-3 gap-2" id="bProfileSelector">
+            <label class="radio-card selected flex items-center gap-2">
+              <input type="radio" name="bProfile" value="pregrado" checked>
+              <div>
+                <div class="text-sm font-semibold">Pregrado</div>
+                <div class="text-xs text-gray-400">Dedicaci&oacute;n completa</div>
+              </div>
+            </label>
+            <label class="radio-card flex items-center gap-2">
+              <input type="radio" name="bProfile" value="postgrado">
+              <div>
+                <div class="text-sm font-semibold">Postgrado</div>
+                <div class="text-xs text-gray-400">Profesionales en ejercicio</div>
+              </div>
+            </label>
+            <label class="radio-card flex items-center gap-2">
+              <input type="radio" name="bProfile" value="continua">
+              <div>
+                <div class="text-sm font-semibold">Ed. Continua</div>
+                <div class="text-xs text-gray-400">M&aacute;xima flexibilidad</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Formato base del semestre -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Formato base del semestre</label>
+          <p class="text-xs text-gray-400 mb-2">Se aplica como default a cada AC nueva. Puedes cambiarlo por AC individual.</p>
+          <div class="grid sm:grid-cols-2 gap-2" id="bFormatSelector">
+            <label class="radio-card selected flex items-center gap-2">
+              <input type="radio" name="bFormato" value="semestral" checked>
+              <div>
+                <div class="text-sm font-semibold">Semestral <span class="text-xs text-gray-400 font-normal">(18 sem)</span></div>
+              </div>
+            </label>
+            <label class="radio-card flex items-center gap-2">
+              <input type="radio" name="bFormato" value="modulo">
+              <div>
+                <div class="text-sm font-semibold">Modular <span class="text-xs text-gray-400 font-normal">(8 sem)</span></div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Bot&oacute;n Importar desde Modo A -->
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-center justify-between gap-4">
+          <div>
+            <div class="text-sm font-semibold text-gray-800">Importar desde Modo A</div>
+            <p class="text-xs text-gray-500 mt-0.5">Si ya calculaste una AC en Modo A, puedes importarla como primera fila de la tabla.</p>
+          </div>
+          <button class="btn-secondary text-xs" id="modoB-importFromA" disabled>
+            Importar desde Modo A
+          </button>
+        </div>
+        <p class="text-xs text-gray-400 -mt-4" id="modoB-importHint">El bot&oacute;n se habilita cuando hay datos en el Modo A (HS &gt; 0).</p>
+
+        <div class="flex justify-end pt-2">
+          <button class="btn-primary" onclick="goToStepB(2)">
+            Agregar actividades curriculares
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ETAPA B2: Tabla editable de ACs -->
+    <div class="wizard-step hidden" id="stepB2">
+      <div class="explain-box">
+        <div class="explain-title">Paso 2 &mdash; Actividades del semestre</div>
+        <p>Agrega cada actividad curricular del semestre. El c&aacute;lculo SCT se actualiza en tiempo real al editar las horas.</p>
+      </div>
+
+      <div class="space-y-6">
+
+        <!-- Tabla de ACs -->
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm" id="modoB-acTable">
+              <thead>
+                <tr class="bg-gray-50 border-b border-gray-200">
+                  <th class="text-left px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-gray-500 min-w-[160px]">Actividad curricular</th>
+                  <th class="text-center px-2 py-2.5 text-xs font-bold uppercase tracking-wide text-gray-500 w-24">Modalidad</th>
+                  <th class="text-center px-2 py-2.5 text-xs font-bold uppercase tracking-wide text-gray-500 w-14">HS</th>
+                  <th class="text-center px-2 py-2.5 text-xs font-bold uppercase tracking-wide text-gray-500 w-14">HAs</th>
+                  <th class="text-center px-2 py-2.5 text-xs font-bold uppercase tracking-wide text-gray-500 w-14">HAut</th>
+                  <th class="text-center px-2 py-2.5 text-xs font-bold uppercase tracking-wide text-gray-500 w-12">Sem</th>
+                  <th class="text-center px-2 py-2.5 text-xs font-bold uppercase tracking-wide text-gray-500 w-12">SCT</th>
+                  <th class="text-center px-2 py-2.5 text-xs font-bold uppercase tracking-wide text-gray-500 w-12">HT</th>
+                  <th class="text-center px-2 py-2.5 text-xs font-bold uppercase tracking-wide text-gray-500 w-10">
+                    <span class="sr-only">Sem&aacute;foro</span>
+                    <svg class="w-3.5 h-3.5 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"/></svg>
+                  </th>
+                  <th class="text-center px-2 py-2.5 text-xs font-bold uppercase tracking-wide text-gray-500 w-8">
+                    <span class="sr-only">Eliminar</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="modoB-acTableBody">
+                <!-- Filas din&aacute;micas via addACRow() — generadas por JS en P4 -->
+              </tbody>
+              <tfoot>
+                <tr class="bg-gray-50 border-t-2 border-gray-300 font-bold">
+                  <td class="px-3 py-2.5 text-gray-700 text-xs" colspan="2">Total semestre</td>
+                  <td class="text-center px-2 py-2.5 text-umce-azul text-xs" id="totalHS">--</td>
+                  <td class="text-center px-2 py-2.5 text-purple-600 text-xs" id="totalHAs">--</td>
+                  <td class="text-center px-2 py-2.5 text-emerald-600 text-xs" id="totalHAut">--</td>
+                  <td class="text-center px-2 py-2.5 text-gray-500 text-xs" id="totalSem">--</td>
+                  <td class="text-center px-2 py-2.5 text-umce-azul font-extrabold" id="totalSCT">--</td>
+                  <td class="text-center px-2 py-2.5 text-gray-700 text-xs" id="totalHT">--</td>
+                  <td colspan="2"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- Bot&oacute;n agregar AC -->
+          <div class="px-3 py-3 border-t border-gray-100">
+            <button class="btn-secondary text-xs" id="modoB-addAC" onclick="addACRow()">
+              + Agregar actividad curricular
+            </button>
+          </div>
+        </div>
+
+        <!-- Panel de carga agregada -->
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-5" id="bAggregatePanel">
+          <div class="text-sm font-semibold text-umce-azul mb-3">Carga agregada del semestre</div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="stat-card">
+              <div class="stat-value text-umce-azul" id="bTotalSCT">--</div>
+              <div class="stat-label">SCT semestre</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="bTotalHT" style="color:#374151">--</div>
+              <div class="stat-label">Horas totales</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="bWeeklyLoad" style="color:#059669">--</div>
+              <div class="stat-label">Hrs/sem agregada</div>
+            </div>
+            <div class="stat-card">
+              <div class="semaforo verde text-lg w-10 h-10 mx-auto flex items-center justify-center" id="bSemaforoIcon">?</div>
+              <div class="stat-label mt-1 text-center" id="bSemaforoLabel">--</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navegaci&oacute;n -->
+        <div class="flex justify-between pt-2">
+          <button class="btn-secondary" onclick="goToStepB(1)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            Volver
+          </button>
+          <button class="btn-primary" onclick="goToStepB(3)">
+            Ver resultados del semestre
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ETAPA B3: Resultados del semestre -->
+    <div class="wizard-step hidden" id="stepB3">
+      <div class="explain-box">
+        <div class="explain-title">Paso 3 &mdash; Resultados del semestre</div>
+        <p>Vista consolidada de todas las actividades curriculares: distribuci&oacute;n de horas, sem&aacute;foros de carga y formatos de salida.</p>
+      </div>
+
+      <div class="space-y-6">
+
+        <!-- Tabla resumen por AC -->
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <div class="px-5 py-3 bg-gray-50 border-b border-gray-200">
+            <h3 class="font-heading font-bold text-gray-700 text-sm">Resumen por actividad curricular</h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm traz-table border border-gray-200 rounded-lg overflow-hidden">
+              <thead>
+                <tr>
+                  <th class="text-left">Actividad curricular</th>
+                  <th class="text-center">Tipo</th>
+                  <th class="text-center">SCT</th>
+                  <th class="text-center">HT</th>
+                  <th class="text-center">Carga semanal</th>
+                </tr>
+              </thead>
+              <tbody id="bResultsTableBody">
+                <!-- Filas generadas por renderBResults() en P4 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Distribuci&oacute;n del semestre (donut) -->
+        <div class="bg-white border border-gray-200 rounded-xl p-5">
+          <h3 class="font-heading font-bold text-gray-800 mb-4">Distribuci&oacute;n del semestre</h3>
+          <div class="flex flex-col sm:flex-row items-center gap-6">
+            <svg id="donutChartB" viewBox="0 0 200 200" class="w-36 h-36 flex-shrink-0">
+              <!-- Generado por renderDonut() en P4 -->
+            </svg>
+            <div class="flex-1 space-y-2 text-sm" id="donutLegendB">
+              <div class="flex items-center gap-2">
+                <span class="inline-block w-3 h-3 rounded-full flex-shrink-0" style="background:#0033A1"></span>
+                <span class="text-gray-600">Sincr&oacute;nicas:</span>
+                <span class="font-bold text-umce-azul" id="bLegendSinc">-- hrs</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="inline-block w-3 h-3 rounded-full flex-shrink-0" style="background:#7C3AED"></span>
+                <span class="text-gray-600">Asincr&oacute;nicas:</span>
+                <span class="font-bold text-purple-600" id="bLegendAsinc">-- hrs</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="inline-block w-3 h-3 rounded-full flex-shrink-0" style="background:#059669"></span>
+                <span class="text-gray-600">Aut&oacute;nomas:</span>
+                <span class="font-bold text-emerald-600" id="bLegendAut">-- hrs</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Doble formato del semestre -->
+        <div class="bg-white border border-gray-200 rounded-xl p-5">
+          <h3 class="font-heading font-bold text-gray-800 mb-4">Formatos de horas &mdash; semestre</h3>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <!-- Formato UGCI bipartito -->
+            <div class="border border-blue-200 rounded-lg p-4 bg-blue-50/30">
+              <div class="text-xs font-bold uppercase tracking-wide text-umce-azul mb-3">Formato UGCI (Resoluci&oacute;n Exenta)</div>
+              <table class="w-full text-sm">
+                <tbody>
+                  <tr class="border-b border-blue-100">
+                    <td class="py-2 text-gray-600">HP (horas presenciales)</td>
+                    <td class="py-2 text-right font-bold" id="bFmtHP">--</td>
+                  </tr>
+                  <tr class="border-b border-blue-100">
+                    <td class="py-2 text-gray-600">HA (horas aut&oacute;nomas)</td>
+                    <td class="py-2 text-right font-bold" id="bFmtHA">--</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 font-semibold">HT (total)</td>
+                    <td class="py-2 text-right font-bold text-umce-azul" id="bFmtHT">--</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="text-xs text-gray-400 mt-2">HP = sincr&oacute;nicas. HA = asincr&oacute;nicas + aut&oacute;nomas.</p>
+            </div>
+            <!-- Formato extendido tripartito -->
+            <div class="border border-purple-200 rounded-lg p-4 bg-purple-50/30">
+              <div class="text-xs font-bold uppercase tracking-wide text-purple-700 mb-3">Formato extendido (Dise&ntilde;o instruccional)</div>
+              <table class="w-full text-sm">
+                <tbody>
+                  <tr class="border-b border-purple-100">
+                    <td class="py-2 text-gray-600">H. sincr&oacute;nicas</td>
+                    <td class="py-2 text-right font-bold" id="bFmtHsinc">--</td>
+                  </tr>
+                  <tr class="border-b border-purple-100">
+                    <td class="py-2 text-gray-600">H. asincr&oacute;nicas</td>
+                    <td class="py-2 text-right font-bold" id="bFmtHasinc">--</td>
+                  </tr>
+                  <tr class="border-b border-purple-100">
+                    <td class="py-2 text-gray-600">H. aut&oacute;nomas</td>
+                    <td class="py-2 text-right font-bold" id="bFmtHaut">--</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 font-semibold">HT (total)</td>
+                    <td class="py-2 text-right font-bold text-purple-700" id="bFmtHT_ext">--</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="text-xs text-gray-400 mt-2">Desglose para dise&ntilde;o de actividades.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sem&aacute;foros agregados del semestre -->
+        <div class="bg-white border border-gray-200 rounded-xl p-5" id="modoB-semaforos">
+          <h3 class="font-heading font-bold text-gray-800 mb-4">Sem&aacute;foros de carga &mdash; semestre</h3>
+          <div class="grid sm:grid-cols-4 gap-4">
+            <div class="flex flex-col items-center gap-1">
+              <span class="semaforo" id="modoB-semTotal">?</span>
+              <span class="text-xs text-gray-500 text-center">Carga total<br>semanal</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <span class="semaforo" id="modoB-semSinc">?</span>
+              <span class="text-xs text-gray-500 text-center">Horas<br>sincr&oacute;nicas</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <span class="semaforo" id="modoB-semAsinc">?</span>
+              <span class="text-xs text-gray-500 text-center">Horas<br>asincr&oacute;nicas</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <span class="semaforo" id="modoB-semAut">?</span>
+              <span class="text-xs text-gray-500 text-center">Trabajo<br>aut&oacute;nomo</span>
+            </div>
+          </div>
+          <!-- Lista de alertas por AC -->
+          <div class="mt-4" id="modoB-alertas">
+            <h4 class="text-xs font-bold uppercase tracking-wide text-gray-500 mb-2">Alertas por actividad</h4>
+            <ul class="text-sm space-y-1" id="modoB-alertList">
+              <!-- Poblado por JS en P4 -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- Carga semanal agregada (barras) -->
+        <div class="bg-white border border-gray-200 rounded-xl p-5">
+          <h3 class="font-heading font-bold text-gray-800 mb-3">Carga semanal agregada</h3>
+          <div id="weeklyBarsB">
+            <!-- Generado por renderWeeklyBars() en P4 -->
+          </div>
+        </div>
+
+        <!-- Navegaci&oacute;n -->
+        <div class="flex justify-between pt-2">
+          <button class="btn-secondary" onclick="goToStepB(2)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            Volver
+          </button>
+          <button class="btn-primary" onclick="goToStepB(4)">
+            Ver informe del semestre
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ETAPA B4: Informe del semestre -->
+    <div class="wizard-step hidden" id="stepB4">
+      <div class="explain-box no-print">
+        <div class="explain-title">Paso 4 &mdash; Informe del semestre</div>
+        <p>Informe formal del c&aacute;lculo SCT del semestre. Puedes imprimirlo o exportar los datos en formato JSON.</p>
+      </div>
+
+      <!-- Informe imprimible -->
+      <div class="bg-white border border-gray-200 rounded-xl p-6 space-y-5">
+
+        <!-- Encabezado del informe -->
+        <div class="flex items-start justify-between gap-4 border-b pb-4" id="modoB-reportHeader">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wide text-gray-400 mb-1">Universidad Metropolitana de Ciencias de la Educaci&oacute;n</div>
+            <h2 class="font-heading font-extrabold text-xl text-umce-azul">Informe de C&aacute;lculo SCT &mdash; Semestre</h2>
+            <div class="text-sm text-gray-500 mt-1">Unidad de Desarrollo y Formaci&oacute;n Virtual &mdash; UMCE</div>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <div class="text-xs text-gray-400" id="bPrintDate"></div>
+            <div class="text-xs text-gray-400">umce.online/virtualizacion/sct</div>
+          </div>
+        </div>
+
+        <!-- Datos del semestre -->
+        <div>
+          <h3 class="font-heading font-bold text-gray-700 mb-3 text-sm uppercase tracking-wide">Datos del semestre</h3>
+          <div class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+            <div class="flex gap-2"><span class="text-gray-400 w-24 flex-shrink-0">Programa:</span><span class="font-semibold" id="bPrintProgram">&mdash;</span></div>
+            <div class="flex gap-2"><span class="text-gray-400 w-24 flex-shrink-0">Per&iacute;odo:</span><span class="font-semibold" id="bPrintSemester">&mdash;</span></div>
+            <div class="flex gap-2"><span class="text-gray-400 w-24 flex-shrink-0">Perfil:</span><span class="font-semibold" id="bPrintProfile">&mdash;</span></div>
+            <div class="flex gap-2"><span class="text-gray-400 w-24 flex-shrink-0">Modo:</span><span class="font-semibold">B &mdash; Calcular un semestre</span></div>
+          </div>
+        </div>
+
+        <!-- Resultado destacado del semestre -->
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 flex flex-wrap items-center gap-4" id="modoB-reportTotals">
+          <div class="flex items-center gap-3">
+            <div class="text-5xl font-extrabold text-umce-azul" id="bPrintTotalSCT">--</div>
+            <div>
+              <div class="font-bold text-umce-azul">cr&eacute;ditos SCT &mdash; semestre</div>
+              <div class="text-sm text-gray-500 mt-0.5" id="bPrintTotalHT">-- hrs totales &bull; -- ACs</div>
+            </div>
+          </div>
+          <div class="flex-1 grid grid-cols-2 gap-2 text-xs min-w-[160px]">
+            <div class="bg-white rounded-lg p-2 border border-blue-100 text-center">
+              <div class="font-bold text-umce-azul" id="bPrintHP">--</div>
+              <div class="text-gray-400">HP (UGCI)</div>
+            </div>
+            <div class="bg-white rounded-lg p-2 border border-blue-100 text-center">
+              <div class="font-bold text-gray-700" id="bPrintHA">--</div>
+              <div class="text-gray-400">HA (UGCI)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de ACs (Bloque 2 Modo B) -->
+        <div id="modoB-reportTable">
+          <h3 class="font-heading font-bold text-gray-700 mb-3 text-sm uppercase tracking-wide">Actividades curriculares del semestre</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full traz-table border border-gray-200 rounded-lg overflow-hidden text-sm">
+              <thead>
+                <tr>
+                  <th class="text-left">Actividad curricular</th>
+                  <th class="text-center">Tipo</th>
+                  <th class="text-center">HS</th>
+                  <th class="text-center">HAs</th>
+                  <th class="text-center">HAut</th>
+                  <th class="text-center">NS</th>
+                  <th class="text-center">SCT</th>
+                  <th class="text-center">HT</th>
+                </tr>
+              </thead>
+              <tbody id="bReportTableBody">
+                <!-- Poblado por renderBReport() en P4 -->
+              </tbody>
+              <tfoot>
+                <tr class="border-t-2 border-gray-300 font-bold bg-gray-50">
+                  <td class="px-3 py-2 text-gray-700" colspan="2">TOTALES</td>
+                  <td class="text-center px-2 py-2 text-umce-azul" id="bRptTotalHS">--</td>
+                  <td class="text-center px-2 py-2 text-purple-600" id="bRptTotalHAs">--</td>
+                  <td class="text-center px-2 py-2 text-emerald-600" id="bRptTotalHAut">--</td>
+                  <td class="text-center px-2 py-2 text-gray-500">--</td>
+                  <td class="text-center px-2 py-2 text-umce-azul font-extrabold" id="bRptTotalSCT">--</td>
+                  <td class="text-center px-2 py-2 text-gray-700" id="bRptTotalHT">--</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- Sem&aacute;foro global del semestre -->
+        <div class="bg-gray-50 rounded-xl p-4 flex items-center gap-4">
+          <span class="semaforo" id="bRptSemaforo">?</span>
+          <div>
+            <div class="font-bold text-gray-800" id="bRptSemaforoTitle">--</div>
+            <div class="text-sm text-gray-500" id="bRptSemaforoDesc">Carga semanal agregada: <span id="bRptWeeklyLoad">--</span> hrs/sem</div>
+          </div>
+        </div>
+
+        <!-- Anexo metodol&oacute;gico (Bloque 2 Modo B) -->
+        <div class="mt-6 pt-4 border-t-2 border-gray-200 print-only" id="modoB-reportAnexo">
+          <h3 class="font-heading font-bold text-gray-800 text-lg mb-2">Anexo metodol&oacute;gico</h3>
+          <p class="text-xs text-gray-500 mb-3 italic">Este anexo acompa&ntilde;a la ficha de validaci&oacute;n SCT del semestre como respaldo del criterio pedag&oacute;gico. Modo de c&aacute;lculo: B (agregaci&oacute;n de m&uacute;ltiples ACs).</p>
+          <p class="text-xs text-gray-600"><strong>F&oacute;rmula:</strong> SCT = ceil((HS + HAs + HAut) &times; NS &divide; 27). Redondeo al entero superior (criterio operativo UGCI).</p>
+          <p class="text-xs text-gray-600 mt-1"><strong>Base normativa:</strong> Sistema SCT-Chile (Declaraci&oacute;n de Valpara&iacute;so, CRUCH, 2003). Manual SCT-Chile, 2.&ordf; ed. (CRUCH, 2013). Res. Exenta N&deg; 002140, UMCE, 2011.</p>
+          <p class="text-xs text-gray-600 mt-1"><strong>Herramienta:</strong> Calculadora SCT UMCE v3.0 &mdash; Unidad de Desarrollo y Formaci&oacute;n Virtual, UMCE, 2026.</p>
+        </div>
+
+        <!-- Marco normativo -->
+        <div class="bg-gray-50 rounded-lg p-4 text-xs text-gray-500 space-y-1 no-print">
+          <p><strong>F&oacute;rmula:</strong> SCT = ceil(HT &divide; 27). 1 SCT = 27 horas cronol&oacute;gicas.</p>
+          <p><strong>Modo de c&aacute;lculo:</strong> B &mdash; Calcular un semestre (agregaci&oacute;n de m&uacute;ltiples ACs).</p>
+        </div>
+
+      </div>
+
+      <!-- Botones de acci&oacute;n (no se imprimen) -->
+      <div class="flex flex-wrap justify-between gap-3 pt-5 no-print">
+        <button class="btn-secondary" onclick="goToStepB(3)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          Volver
+        </button>
+        <div class="flex flex-wrap gap-2">
+          <button class="btn-secondary" onclick="window.print()">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            Imprimir / PDF
+          </button>
+          <button class="btn-secondary" id="modoB-exportJSON" onclick="">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Exportar JSON
+          </button>
+          <button class="btn-primary" onclick="resetCalcB()">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Nuevo c&aacute;lculo
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /max-w-3xl -->
 
   <!-- Contexto educativo (fuera del wizard) -->
@@ -1081,9 +1594,20 @@
         sctDeclarados: 3,
         actConcurrentes: 3
       },
-      modoB: { semesterLabel: '', acs: [] },
+      modoB: {
+        semesterLabel: '',
+        programName: '',
+        semester: '',
+        profile: 'pregrado',
+        formato: 'semestral',
+        acs: []
+      },
       modoC: { programName: '', programCode: '', discipline: 'educacion', numSemesters: 2, acs: [] }
     };
+
+    // SCTEngine — namespace compartido por los 3 modos (Fase 5.7-D)
+    // Esta fase inicial empaqueta lo ya existente sin cambiar firmas ni comportamiento.
+    var SCTEngine = {};
 
     // Helper seguro para leer value por id
     function getVal(id) {
@@ -1111,21 +1635,7 @@
       SCTState.modoA.actConcurrentes = parseInt(getVal('actConcurrentes')) || 1;
     }
 
-    // Cambia el modo activo (Fase 5.7-A: andamio, solo Modo A operativo)
-    function switchMode(newMode) {
-      if (newMode !== 'modoA' && newMode !== 'modoB' && newMode !== 'modoC') return;
-      SCTState.mode = newMode;
-      // Actualiza visual del selector
-      var cards = document.querySelectorAll('#modeCards .radio-card');
-      cards.forEach(function(c) {
-        if (c.getAttribute('data-mode') === newMode) {
-          c.classList.add('selected');
-        } else {
-          c.classList.remove('selected');
-        }
-      });
-      // En esta fase, solo Modo A tiene wizard. B y C se implementan en fases 5.7-B y 5.7-C.
-    }
+    // switchMode se redefine completo en Modo B JS (Fase 5.7-B) mas abajo en este script.
 
     // ================================
     // Inicializacion
@@ -1282,11 +1792,18 @@
     //   SCT = ceil( (HS + HAs + HAut) × NS / 27 )
     // Ref.: Res. Exenta UMCE N° 002140 (2011); Manual SCT-Chile, CRUCH (2013).
     // Retorna objeto con totales bipartitos (UGCI) y tripartitos (extendido).
-    function calcSCT(hs, has, haut, ns) {
+
+    // Calcula SCT final a partir de horas totales (puro)
+    SCTEngine.calculateSCT = function(ht) {
+      return Math.ceil(ht / 27);
+    };
+
+    // Lógica canónica SCT-Chile empaquetada en SCTEngine (Fase 5.7-D)
+    SCTEngine.calculateFromWeekly = function(hs, has, haut, ns) {
       var weekly = hs + has + haut;
       var htTotal = weekly * ns;
       var sctExact = htTotal / 27;
-      var sct = Math.ceil(sctExact);
+      var sct = SCTEngine.calculateSCT(htTotal);
       // Formato UGCI bipartito: HP = sincrónicas, HA = asincrónicas + autónomas
       var hp = hs * ns;
       var ha = (has + haut) * ns;
@@ -1305,7 +1822,10 @@
         hAsinc: hAsinc,
         hAut: hAut
       };
-    }
+    };
+
+    // Wrapper de compatibilidad — callers existentes no cambian
+    function calcSCT(hs, has, haut, ns) { return SCTEngine.calculateFromWeekly(hs, has, haut, ns); }
 
     function updatePreview() {
       syncSharedState();
@@ -1948,8 +2468,813 @@
       if (elAut) elAut.textContent = calc.hAut + ' hrs';
     }
 
+    // ================================
+    // Modo B — constantes de semaforo
+    // ================================
+
+    // Umbrales de carga semanal por AC individual
+    var SEMAFORO_THRESHOLDS = {
+      pregrado:  { green: 10, yellow: 12 },
+      postgrado: { green: 12, yellow: 15 },
+      continua:  { green: 8,  yellow: 10 }
+    };
+
+    // Umbrales de carga agregada del semestre (suma de todas las ACs)
+    var AGGREGATE_THRESHOLDS = {
+      pregrado:  { green: 45, yellow: 55 },
+      postgrado: { green: 50, yellow: 60 },
+      continua:  { green: 35, yellow: 45 }
+    };
+
+    // Contador de IDs de filas
+    var _acRowCounter = 0;
+
+    // Devuelve 'verde'|'amarillo'|'rojo' para carga semanal individual por perfil
+    function getWeeklyLevel(weekly, profile) {
+      var t = SEMAFORO_THRESHOLDS[profile] || SEMAFORO_THRESHOLDS.pregrado;
+      if (weekly <= t.green) return 'verde';
+      if (weekly <= t.yellow) return 'amarillo';
+      return 'rojo';
+    }
+
+    // Devuelve 'verde'|'amarillo'|'rojo' para carga agregada del semestre
+    function getAggregateLevel(totalWeekly, profile) {
+      var t = AGGREGATE_THRESHOLDS[profile] || AGGREGATE_THRESHOLDS.pregrado;
+      if (totalWeekly <= t.green) return 'verde';
+      if (totalWeekly <= t.yellow) return 'amarillo';
+      return 'rojo';
+    }
+
+    // Emoji de semaforo
+    function semaforoEmoji(level) {
+      if (level === 'verde') return '&#10003;';
+      if (level === 'amarillo') return '!';
+      return '&#10007;';
+    }
+
+    // ================================
+    // Modo B — addACRow
+    // ================================
+    function addACRow(acData) {
+      var profile = SCTState.modoB.profile || 'pregrado';
+      var formato = SCTState.modoB.formato || 'semestral';
+      var defaultNs = formato === 'modulo' ? 8 : 18;
+      if (!acData) {
+        acData = { name: '', modality: 'virtual', hs: 1.5, has: 2, haut: 1, ns: defaultNs };
+      }
+      _acRowCounter++;
+      var rowId = 'acrow-' + _acRowCounter;
+
+      var tbody = document.getElementById('modoB-acTableBody');
+      if (!tbody) return;
+
+      var tr = document.createElement('tr');
+      tr.className = 'act-row border-b border-gray-100';
+      tr.setAttribute('data-id', rowId);
+
+      tr.innerHTML =
+        '<td class="px-2 py-1.5">' +
+          '<input type="text" class="ac-name w-full px-2 py-1 text-xs border border-gray-200 rounded focus:outline-none focus:border-blue-400" placeholder="Nombre AC" value="' + acData.name + '">' +
+        '</td>' +
+        '<td class="px-2 py-1.5">' +
+          '<select class="ac-modality text-xs border border-gray-200 rounded px-1 py-1 w-full focus:outline-none">' +
+            '<option value="presencial"' + (acData.modality === 'presencial' ? ' selected' : '') + '>Presencial</option>' +
+            '<option value="semipresencial"' + (acData.modality === 'semipresencial' ? ' selected' : '') + '>Semipresencial</option>' +
+            '<option value="virtual"' + (acData.modality === 'virtual' ? ' selected' : '') + '>Virtual</option>' +
+            '<option value="virtual_async"' + (acData.modality === 'virtual_async' ? ' selected' : '') + '>Virtual as&iacute;nc.</option>' +
+            '<option value="cuech"' + (acData.modality === 'cuech' ? ' selected' : '') + '>CUECH</option>' +
+          '</select>' +
+        '</td>' +
+        '<td class="px-1 py-1.5">' +
+          '<input type="number" class="ac-hs w-14 px-1 py-1 text-xs text-center border border-gray-200 rounded focus:outline-none focus:border-blue-400" min="0" step="0.5" value="' + acData.hs + '">' +
+        '</td>' +
+        '<td class="px-1 py-1.5">' +
+          '<input type="number" class="ac-has w-14 px-1 py-1 text-xs text-center border border-gray-200 rounded focus:outline-none focus:border-blue-400" min="0" step="0.5" value="' + acData.has + '">' +
+        '</td>' +
+        '<td class="px-1 py-1.5">' +
+          '<input type="number" class="ac-haut w-14 px-1 py-1 text-xs text-center border border-gray-200 rounded focus:outline-none focus:border-blue-400" min="0" step="0.5" value="' + acData.haut + '">' +
+        '</td>' +
+        '<td class="px-1 py-1.5">' +
+          '<input type="number" class="ac-ns w-12 px-1 py-1 text-xs text-center border border-gray-200 rounded focus:outline-none focus:border-blue-400" min="1" step="1" value="' + acData.ns + '">' +
+        '</td>' +
+        '<td class="text-center px-2 py-1.5 text-xs font-bold text-umce-azul ac-sct">--</td>' +
+        '<td class="text-center px-2 py-1.5 text-xs text-gray-600 ac-ht">--</td>' +
+        '<td class="text-center px-2 py-1.5 ac-semaforo"><span class="text-base">?</span></td>' +
+        '<td class="text-center px-1 py-1.5">' +
+          '<button class="ac-delete text-gray-400 hover:text-red-500 font-bold text-sm px-1" title="Eliminar">&times;</button>' +
+        '</td>';
+
+      tbody.appendChild(tr);
+
+      // Listeners
+      var inputs = tr.querySelectorAll('input, select');
+      for (var i = 0; i < inputs.length; i++) {
+        inputs[i].addEventListener('input', (function(row) {
+          return function() {
+            updateRowCalc(row);
+            updateACTotals();
+          };
+        })(tr));
+      }
+      tr.querySelector('.ac-delete').addEventListener('click', (function(row) {
+        return function() {
+          row.parentNode.removeChild(row);
+          updateACTotals();
+        };
+      })(tr));
+
+      // Calcular al insertar
+      updateRowCalc(tr);
+      updateACTotals();
+    }
+
+    // ================================
+    // Modo B — updateRowCalc
+    // ================================
+    function updateRowCalc(rowEl) {
+      var profile = SCTState.modoB.profile || 'pregrado';
+      var hs  = parseFloat(rowEl.querySelector('.ac-hs').value)  || 0;
+      var has = parseFloat(rowEl.querySelector('.ac-has').value) || 0;
+      var haut= parseFloat(rowEl.querySelector('.ac-haut').value)|| 0;
+      var ns  = parseInt(rowEl.querySelector('.ac-ns').value)    || 1;
+
+      var calc = SCTEngine.calculateFromWeekly(hs, has, haut, ns);
+
+      rowEl.querySelector('.ac-sct').textContent = calc.sct;
+      rowEl.querySelector('.ac-ht').textContent  = calc.htTotal.toFixed(0);
+
+      var level = getWeeklyLevel(calc.weekly, profile);
+      var semCell = rowEl.querySelector('.ac-semaforo');
+      semCell.innerHTML = '<span class="semaforo ' + level + ' w-7 h-7 text-xs flex items-center justify-center">' + semaforoEmoji(level) + '</span>';
+    }
+
+    // ================================
+    // Modo B — updateACTotals
+    // ================================
+    function updateACTotals() {
+      var profile = SCTState.modoB.profile || 'pregrado';
+      var tbody = document.getElementById('modoB-acTableBody');
+      if (!tbody) return;
+      var rows = tbody.querySelectorAll('tr[data-id]');
+
+      var sumHS = 0, sumHAs = 0, sumHAut = 0, sumSCT = 0, sumHT = 0;
+      var sumWeeklyWeighted = 0, sumNs = 0;
+      var acsState = [];
+
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var hs  = parseFloat(row.querySelector('.ac-hs').value)  || 0;
+        var has = parseFloat(row.querySelector('.ac-has').value) || 0;
+        var haut= parseFloat(row.querySelector('.ac-haut').value)|| 0;
+        var ns  = parseInt(row.querySelector('.ac-ns').value)    || 1;
+        var modality = row.querySelector('.ac-modality') ? row.querySelector('.ac-modality').value : 'virtual';
+        var name = row.querySelector('.ac-name') ? row.querySelector('.ac-name').value : '';
+
+        var calc = SCTEngine.calculateFromWeekly(hs, has, haut, ns);
+        sumHS   += hs * ns;
+        sumHAs  += has * ns;
+        sumHAut += haut * ns;
+        sumSCT  += calc.sct;
+        sumHT   += calc.htTotal;
+        sumWeeklyWeighted += calc.weekly * ns;
+        sumNs   += ns;
+
+        acsState.push({ id: row.getAttribute('data-id'), name: name, modality: modality, hs: hs, has: has, haut: haut, ns: ns });
+      }
+
+      // Semanas promedio para carga semanal agregada (promedio ponderado)
+      var avgWeekly = sumNs > 0 ? sumWeeklyWeighted / sumNs : 0;
+      var avgNs = rows.length > 0 ? (sumNs / rows.length) : 18;
+
+      // Actualizar totales en el tfoot
+      var elHS   = document.getElementById('totalHS');
+      var elHAs  = document.getElementById('totalHAs');
+      var elHAut = document.getElementById('totalHAut');
+      var elSem  = document.getElementById('totalSem');
+      var elSCT  = document.getElementById('totalSCT');
+      var elHT   = document.getElementById('totalHT');
+
+      if (elHS)   elHS.textContent   = sumHS.toFixed(0);
+      if (elHAs)  elHAs.textContent  = sumHAs.toFixed(0);
+      if (elHAut) elHAut.textContent = sumHAut.toFixed(0);
+      if (elSem)  elSem.textContent  = avgNs.toFixed(0);
+      if (elSCT)  elSCT.textContent  = sumSCT;
+      if (elHT)   elHT.textContent   = sumHT.toFixed(0);
+
+      // Actualizar panel agregado
+      var elBTotalSCT   = document.getElementById('bTotalSCT');
+      var elBTotalHT    = document.getElementById('bTotalHT');
+      var elBWeekly     = document.getElementById('bWeeklyLoad');
+      var elBSemIcon    = document.getElementById('bSemaforoIcon');
+      var elBSemLabel   = document.getElementById('bSemaforoLabel');
+
+      if (elBTotalSCT) elBTotalSCT.textContent = sumSCT;
+      if (elBTotalHT)  elBTotalHT.textContent  = sumHT.toFixed(0);
+      if (elBWeekly)   elBWeekly.textContent   = avgWeekly.toFixed(1);
+
+      var aggLevel = getAggregateLevel(avgWeekly, profile);
+      if (elBSemIcon) {
+        elBSemIcon.className = 'semaforo text-lg w-10 h-10 mx-auto flex items-center justify-center ' + aggLevel;
+        elBSemIcon.innerHTML = semaforoEmoji(aggLevel);
+      }
+      if (elBSemLabel) {
+        var aggLabels = { verde: 'Carga adecuada', amarillo: 'Revisar', rojo: 'Sobrecarga' };
+        elBSemLabel.textContent = aggLabels[aggLevel] || '--';
+      }
+
+      // Sincronizar estado
+      SCTState.modoB.acs = acsState;
+    }
+
+    // ================================
+    // Modo B — renderBResults (etapa B3)
+    // ================================
+    function renderBResults() {
+      var profile = SCTState.modoB.profile || 'pregrado';
+      var tbody = document.getElementById('modoB-acTableBody');
+      if (!tbody) return;
+      var rows = tbody.querySelectorAll('tr[data-id]');
+
+      var sumHSinc = 0, sumHAsinc = 0, sumHAut = 0, sumHT = 0, sumSCT = 0;
+      var rowData = [];
+
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var hs  = parseFloat(row.querySelector('.ac-hs').value)  || 0;
+        var has = parseFloat(row.querySelector('.ac-has').value) || 0;
+        var haut= parseFloat(row.querySelector('.ac-haut').value)|| 0;
+        var ns  = parseInt(row.querySelector('.ac-ns').value)    || 1;
+        var name = row.querySelector('.ac-name') ? row.querySelector('.ac-name').value : ('AC ' + (i+1));
+        var modality = row.querySelector('.ac-modality') ? row.querySelector('.ac-modality').value : 'virtual';
+
+        var calc = SCTEngine.calculateFromWeekly(hs, has, haut, ns);
+        sumHSinc  += calc.hSinc;
+        sumHAsinc += calc.hAsinc;
+        sumHAut   += calc.hAut;
+        sumHT     += calc.htTotal;
+        sumSCT    += calc.sct;
+        rowData.push({ name: name, modality: modality, sct: calc.sct, ht: calc.htTotal, weekly: calc.weekly, hs: hs, has: has, haut: haut, ns: ns, calc: calc });
+      }
+
+      // Tabla resumen por AC (#bResultsTableBody)
+      var resTbody = document.getElementById('bResultsTableBody');
+      if (resTbody) {
+        var html = '';
+        for (var j = 0; j < rowData.length; j++) {
+          var rd = rowData[j];
+          var lvl = getWeeklyLevel(rd.weekly, profile);
+          var badge = '<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ' +
+            (lvl === 'verde' ? 'bg-green-100 text-green-700' : lvl === 'amarillo' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700') + '">' +
+            semaforoEmoji(lvl) + '</span>';
+          html += '<tr class="border-b border-gray-100">' +
+            '<td class="px-3 py-2 text-sm">' + (rd.name || '&mdash;') + '</td>' +
+            '<td class="text-center px-2 py-2 text-xs text-gray-500">' + rd.modality + '</td>' +
+            '<td class="text-center px-2 py-2 font-bold text-umce-azul">' + rd.sct + '</td>' +
+            '<td class="text-center px-2 py-2 text-xs">' + rd.ht.toFixed(0) + '</td>' +
+            '<td class="text-center px-2 py-2">' + badge + '</td>' +
+            '</tr>';
+        }
+        if (html === '') html = '<tr><td colspan="5" class="text-center py-4 text-gray-400 text-sm">Sin actividades. Vuelve al paso 2 y agrega ACs.</td></tr>';
+        resTbody.innerHTML = html;
+      }
+
+      // Donut (#donutChartB)
+      var svgB = document.getElementById('donutChartB');
+      if (svgB) {
+        // Limpiar
+        var toRemove = svgB.querySelectorAll('.donut-seg, .center-txt');
+        for (var k = 0; k < toRemove.length; k++) toRemove[k].parentNode.removeChild(toRemove[k]);
+
+        var total = sumHSinc + sumHAsinc + sumHAut;
+        if (total > 0) {
+          var circ = 2 * Math.PI * 70;
+          var segs = [
+            { val: sumHSinc,  color: '#0033A1' },
+            { val: sumHAsinc, color: '#7C3AED' },
+            { val: sumHAut,   color: '#059669' }
+          ];
+          var offset = 0;
+          for (var s = 0; s < segs.length; s++) {
+            var seg = segs[s];
+            var frac = seg.val / total;
+            var dash = frac * circ;
+            var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', '100');
+            circle.setAttribute('cy', '100');
+            circle.setAttribute('r', '70');
+            circle.setAttribute('fill', 'none');
+            circle.setAttribute('stroke', seg.color);
+            circle.setAttribute('stroke-width', '28');
+            circle.setAttribute('stroke-dasharray', dash + ' ' + (circ - dash));
+            circle.setAttribute('stroke-dashoffset', -offset);
+            circle.setAttribute('transform', 'rotate(-90 100 100)');
+            circle.classList.add('donut-segment', 'donut-seg');
+            svgB.appendChild(circle);
+            offset += dash;
+          }
+          var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          t.setAttribute('x', '100');
+          t.setAttribute('y', '100');
+          t.setAttribute('text-anchor', 'middle');
+          t.setAttribute('dominant-baseline', 'middle');
+          t.setAttribute('font-size', '16');
+          t.setAttribute('font-weight', '800');
+          t.setAttribute('fill', '#1f2937');
+          t.classList.add('center-txt');
+          t.textContent = total.toFixed(0) + 'h';
+          svgB.appendChild(t);
+        }
+      }
+
+      // Leyenda
+      var elSinc  = document.getElementById('bLegendSinc');
+      var elAsinc = document.getElementById('bLegendAsinc');
+      var elAut   = document.getElementById('bLegendAut');
+      if (elSinc)  elSinc.textContent  = sumHSinc.toFixed(0)  + ' hrs';
+      if (elAsinc) elAsinc.textContent = sumHAsinc.toFixed(0) + ' hrs';
+      if (elAut)   elAut.textContent   = sumHAut.toFixed(0)   + ' hrs';
+
+      // Formato UGCI bipartito
+      var sumHP = sumHSinc;
+      var sumHA = sumHAsinc + sumHAut;
+      var elFmtHP = document.getElementById('bFmtHP');
+      var elFmtHA = document.getElementById('bFmtHA');
+      var elFmtHT = document.getElementById('bFmtHT');
+      if (elFmtHP) elFmtHP.textContent = sumHP.toFixed(0)   + ' hrs';
+      if (elFmtHA) elFmtHA.textContent = sumHA.toFixed(0)   + ' hrs';
+      if (elFmtHT) elFmtHT.textContent = sumHT.toFixed(0)   + ' hrs';
+
+      // Formato extendido tripartito
+      var elFmtHsinc  = document.getElementById('bFmtHsinc');
+      var elFmtHasinc = document.getElementById('bFmtHasinc');
+      var elFmtHaut   = document.getElementById('bFmtHaut');
+      var elFmtHText  = document.getElementById('bFmtHT_ext');
+      if (elFmtHsinc)  elFmtHsinc.textContent  = sumHSinc.toFixed(0)  + ' hrs';
+      if (elFmtHasinc) elFmtHasinc.textContent = sumHAsinc.toFixed(0) + ' hrs';
+      if (elFmtHaut)   elFmtHaut.textContent   = sumHAut.toFixed(0)   + ' hrs';
+      if (elFmtHText)  elFmtHText.textContent  = sumHT.toFixed(0)     + ' hrs';
+
+      // Promedio semanal ponderado para semaforos
+      var sumNs2 = 0;
+      var sumWeightedSinc = 0, sumWeightedAsinc = 0, sumWeightedAut = 0, sumWeightedTotal = 0;
+      for (var n = 0; n < rowData.length; n++) {
+        var rd2 = rowData[n];
+        sumNs2            += rd2.ns;
+        sumWeightedSinc   += rd2.hs   * rd2.ns;
+        sumWeightedAsinc  += rd2.has  * rd2.ns;
+        sumWeightedAut    += rd2.haut * rd2.ns;
+        sumWeightedTotal  += rd2.weekly * rd2.ns;
+      }
+      var avgNs2       = rows.length > 0 ? sumNs2 / rows.length : 18;
+      var avgWkSinc    = avgNs2 > 0 ? sumWeightedSinc  / sumNs2 * avgNs2 / avgNs2 : 0;
+      var avgWkAsinc   = avgNs2 > 0 ? sumWeightedAsinc / sumNs2 * avgNs2 / avgNs2 : 0;
+      var avgWkAut     = avgNs2 > 0 ? sumWeightedAut   / sumNs2 * avgNs2 / avgNs2 : 0;
+      var avgWkTotal   = sumNs2 > 0 ? sumWeightedTotal / sumNs2 : 0;
+
+      // Semaforos dimensionales
+      function setSemaforo(id, level) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.className = 'semaforo ' + level;
+        el.innerHTML = semaforoEmoji(level);
+      }
+      setSemaforo('modoB-semTotal', getAggregateLevel(avgWkTotal, profile));
+      setSemaforo('modoB-semSinc',  getWeeklyLevel(avgWkSinc,  profile));
+      setSemaforo('modoB-semAsinc', getWeeklyLevel(avgWkAsinc, profile));
+      setSemaforo('modoB-semAut',   getWeeklyLevel(avgWkAut,   profile));
+
+      // Alertas por AC
+      var alertList = document.getElementById('modoB-alertList');
+      if (alertList) {
+        var alertHtml = '';
+        for (var a = 0; a < rowData.length; a++) {
+          var rd3 = rowData[a];
+          var lvl3 = getWeeklyLevel(rd3.weekly, profile);
+          if (lvl3 !== 'verde') {
+            var alertColor = lvl3 === 'amarillo' ? 'text-yellow-700' : 'text-red-700';
+            alertHtml += '<li class="' + alertColor + '">' +
+              (rd3.name || ('AC ' + (a+1))) + ': ' + rd3.weekly.toFixed(1) + ' hrs/sem &mdash; carga ' + (lvl3 === 'amarillo' ? 'en alerta' : 'excesiva') +
+              '</li>';
+          }
+        }
+        if (alertHtml === '') {
+          alertHtml = '<li class="text-green-700">Sin alertas. Todas las ACs est&aacute;n dentro del rango recomendado.</li>';
+        }
+        alertList.innerHTML = alertHtml;
+      }
+
+      // Barras semanales por AC
+      var barsContainer = document.getElementById('weeklyBarsB');
+      if (barsContainer) {
+        var barsHtml = '';
+        if (rowData.length === 0) {
+          barsHtml = '<p class="text-sm text-gray-400 text-center py-4">Sin actividades que mostrar.</p>';
+        } else {
+          var maxWeekly = 0;
+          for (var b = 0; b < rowData.length; b++) {
+            if (rowData[b].weekly > maxWeekly) maxWeekly = rowData[b].weekly;
+          }
+          var maxBar = Math.max(maxWeekly, 12) * 1.15;
+          for (var c = 0; c < rowData.length; c++) {
+            var rd4 = rowData[c];
+            var lvl4 = getWeeklyLevel(rd4.weekly, profile);
+            var barColor = lvl4 === 'verde' ? '#4ADE80' : (lvl4 === 'amarillo' ? '#FACC15' : '#F87171');
+            var pct = maxBar > 0 ? (rd4.weekly / maxBar) * 100 : 0;
+            var label = (rd4.name || ('AC ' + (c+1)));
+            if (label.length > 22) label = label.substring(0, 20) + '..';
+            barsHtml += '<div class="flex items-center gap-3 mb-1">' +
+              '<span class="text-xs text-gray-500 w-28 text-right truncate" title="' + rd4.name + '">' + label + '</span>' +
+              '<div class="flex-1 bg-gray-200 rounded-sm h-5 overflow-hidden">' +
+              '<div class="weekly-bar" style="width:' + pct.toFixed(1) + '%; background:' + barColor + ';"></div></div>' +
+              '<span class="text-xs font-semibold w-12 text-right">' + rd4.weekly.toFixed(1) + 'h</span>' +
+              '</div>';
+          }
+        }
+        barsContainer.innerHTML = barsHtml;
+      }
+    }
+
+    // ================================
+    // Modo B — renderBReport (etapa B4)
+    // ================================
+    function renderBReport() {
+      var profile    = SCTState.modoB.profile    || 'pregrado';
+      var programName= SCTState.modoB.programName|| '';
+      var semester   = SCTState.modoB.semester   || '';
+
+      var tbody = document.getElementById('modoB-acTableBody');
+      if (!tbody) return;
+      var rows = tbody.querySelectorAll('tr[data-id]');
+
+      var sumHS = 0, sumHAs = 0, sumHAut = 0, sumSCT = 0, sumHT = 0;
+      var sumWeightedTotal = 0, sumNs = 0;
+      var rowData = [];
+
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var hs  = parseFloat(row.querySelector('.ac-hs').value)  || 0;
+        var has = parseFloat(row.querySelector('.ac-has').value) || 0;
+        var haut= parseFloat(row.querySelector('.ac-haut').value)|| 0;
+        var ns  = parseInt(row.querySelector('.ac-ns').value)    || 1;
+        var name = row.querySelector('.ac-name') ? row.querySelector('.ac-name').value : ('AC ' + (i+1));
+        var modality = row.querySelector('.ac-modality') ? row.querySelector('.ac-modality').value : 'virtual';
+
+        var calc = SCTEngine.calculateFromWeekly(hs, has, haut, ns);
+        sumHS   += hs  * ns;
+        sumHAs  += has * ns;
+        sumHAut += haut* ns;
+        sumSCT  += calc.sct;
+        sumHT   += calc.htTotal;
+        sumWeightedTotal += calc.weekly * ns;
+        sumNs   += ns;
+        rowData.push({ name: name, modality: modality, hs: hs, has: has, haut: haut, ns: ns, sct: calc.sct, ht: calc.htTotal, weekly: calc.weekly });
+      }
+
+      var avgWeekly = sumNs > 0 ? sumWeightedTotal / sumNs : 0;
+      var profileLabels = { pregrado: 'Pregrado', postgrado: 'Postgrado', continua: 'Educaci\u00f3n Continua' };
+
+      // Fecha
+      var dateEl = document.getElementById('bPrintDate');
+      if (dateEl) dateEl.textContent = 'Generado: ' + new Date().toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      // Datos del semestre
+      var elProg  = document.getElementById('bPrintProgram');
+      var elSem   = document.getElementById('bPrintSemester');
+      var elProf  = document.getElementById('bPrintProfile');
+      if (elProg)  elProg.textContent  = programName || '\u2014';
+      if (elSem)   elSem.textContent   = semester    || '\u2014';
+      if (elProf)  elProf.textContent  = profileLabels[profile] || '\u2014';
+
+      // Totales destacados
+      var elTotalSCT = document.getElementById('bPrintTotalSCT');
+      var elTotalHT  = document.getElementById('bPrintTotalHT');
+      var elHP       = document.getElementById('bPrintHP');
+      var elHA       = document.getElementById('bPrintHA');
+      if (elTotalSCT) elTotalSCT.textContent = sumSCT;
+      if (elTotalHT)  elTotalHT.textContent  = sumHT.toFixed(0) + ' hrs totales \u2022 ' + rows.length + ' ACs';
+      if (elHP)       elHP.textContent = sumHS.toFixed(0)  + ' hrs';
+      if (elHA)       elHA.textContent = (sumHAs + sumHAut).toFixed(0) + ' hrs';
+
+      // Tabla resumen (#bReportTableBody)
+      var rptTbody = document.getElementById('bReportTableBody');
+      if (rptTbody) {
+        var html = '';
+        for (var j = 0; j < rowData.length; j++) {
+          var rd = rowData[j];
+          html += '<tr class="border-b border-gray-100">' +
+            '<td class="px-3 py-2 text-sm">' + (rd.name || '&mdash;') + '</td>' +
+            '<td class="text-center px-2 py-2 text-xs text-gray-500">' + rd.modality + '</td>' +
+            '<td class="text-center px-2 py-2 text-xs">' + (rd.hs  * rd.ns).toFixed(0) + '</td>' +
+            '<td class="text-center px-2 py-2 text-xs">' + (rd.has * rd.ns).toFixed(0) + '</td>' +
+            '<td class="text-center px-2 py-2 text-xs">' + (rd.haut* rd.ns).toFixed(0) + '</td>' +
+            '<td class="text-center px-2 py-2 text-xs">' + rd.ns + '</td>' +
+            '<td class="text-center px-2 py-2 font-bold text-umce-azul">' + rd.sct + '</td>' +
+            '<td class="text-center px-2 py-2 text-xs">' + rd.ht.toFixed(0) + '</td>' +
+            '</tr>';
+        }
+        if (html === '') html = '<tr><td colspan="8" class="text-center py-4 text-gray-400 text-sm">Sin actividades registradas.</td></tr>';
+        rptTbody.innerHTML = html;
+      }
+
+      // Footer de totales
+      var elRptHS   = document.getElementById('bRptTotalHS');
+      var elRptHAs  = document.getElementById('bRptTotalHAs');
+      var elRptHAut = document.getElementById('bRptTotalHAut');
+      var elRptSCT  = document.getElementById('bRptTotalSCT');
+      var elRptHT   = document.getElementById('bRptTotalHT');
+      if (elRptHS)   elRptHS.textContent   = sumHS.toFixed(0);
+      if (elRptHAs)  elRptHAs.textContent  = sumHAs.toFixed(0);
+      if (elRptHAut) elRptHAut.textContent = sumHAut.toFixed(0);
+      if (elRptSCT)  elRptSCT.textContent  = sumSCT;
+      if (elRptHT)   elRptHT.textContent   = sumHT.toFixed(0);
+
+      // Semaforo global
+      var aggLevel = getAggregateLevel(avgWeekly, profile);
+      var rptSemEl    = document.getElementById('bRptSemaforo');
+      var rptTitleEl  = document.getElementById('bRptSemaforoTitle');
+      var rptDescEl   = document.getElementById('bRptSemaforoDesc');
+      var rptWeeklyEl = document.getElementById('bRptWeeklyLoad');
+
+      if (rptSemEl) {
+        rptSemEl.className = 'semaforo ' + aggLevel;
+        rptSemEl.innerHTML = semaforoEmoji(aggLevel);
+      }
+      var aggTitles = { verde: 'Carga semestral adecuada', amarillo: 'Carga semestral en zona de alerta', rojo: 'Carga semestral excesiva' };
+      if (rptTitleEl) rptTitleEl.textContent = aggTitles[aggLevel] || '--';
+      if (rptWeeklyEl) rptWeeklyEl.textContent = avgWeekly.toFixed(1);
+    }
+
+    // ================================
+    // Modo B — importFromModoA
+    // ================================
+    function importFromModoA() {
+      var hs   = SCTState.modoA.hs   || 0;
+      var has  = SCTState.modoA.has  || 0;
+      var haut = SCTState.modoA.haut || 0;
+      var ns   = SCTState.modoA.ns   || 18;
+      if (hs <= 0 && has <= 0 && haut <= 0) {
+        var hint = document.getElementById('modoB-importHint');
+        if (hint) hint.textContent = 'No hay datos en Modo A. Calcula primero una AC en Modo A.';
+        return;
+      }
+      var formato = SCTState.modoB.formato || 'semestral';
+      var modality = 'virtual';
+      if (formato === 'cuech') modality = 'cuech';
+      else if (hs > 0 && has === 0 && haut === 0) modality = 'virtual';
+      else if (hs > 0 && (has > 0 || haut > 0)) modality = 'semipresencial';
+
+      var acData = {
+        name: SCTState.modoA.courseName || 'AC importada',
+        modality: modality,
+        hs: hs, has: has, haut: haut, ns: ns
+      };
+      addACRow(acData);
+
+      var hint = document.getElementById('modoB-importHint');
+      if (hint) hint.textContent = 'Importado \u2713';
+      var btn = document.getElementById('modoB-importFromA');
+      if (btn) btn.disabled = true;
+    }
+
+    // ================================
+    // Modo B — goToStepB
+    // ================================
+    function goToStepB(n) {
+      // Leer datos de B1 al avanzar desde B1
+      if (n === 2) {
+        SCTState.modoB.programName = getVal('bProgramName');
+        SCTState.modoB.semester    = getVal('bSemester');
+        var profileRadio = document.querySelector('input[name="bProfile"]:checked');
+        if (profileRadio) SCTState.modoB.profile = profileRadio.value;
+        var formatoRadio = document.querySelector('input[name="bFormato"]:checked');
+        if (formatoRadio) SCTState.modoB.formato = formatoRadio.value;
+        // Actualizar calcs de todas las filas existentes con nuevo perfil
+        var existingRows = document.getElementById('modoB-acTableBody');
+        if (existingRows) {
+          var rs = existingRows.querySelectorAll('tr[data-id]');
+          for (var r = 0; r < rs.length; r++) updateRowCalc(rs[r]);
+          updateACTotals();
+        }
+      }
+      if (n === 3) renderBResults();
+      if (n === 4) { renderBResults(); renderBReport(); }
+
+      // Ocultar todos los steps B
+      for (var i = 1; i <= 4; i++) {
+        var stepEl = document.getElementById('stepB' + i);
+        if (stepEl) {
+          stepEl.classList.remove('active');
+          stepEl.classList.add('hidden');
+        }
+      }
+      // Mostrar el step seleccionado
+      var target = document.getElementById('stepB' + n);
+      if (target) {
+        target.classList.remove('hidden');
+        target.classList.add('active');
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      // Actualizar dots y lines
+      for (var d = 1; d <= 4; d++) {
+        var dot = document.getElementById('dotB' + d);
+        if (!dot) continue;
+        dot.classList.remove('active', 'completed');
+        if (d < n) { dot.classList.add('completed'); dot.innerHTML = '&#10003;'; }
+        else if (d === n) { dot.classList.add('active'); dot.textContent = d; }
+        else { dot.textContent = d; }
+      }
+      for (var l = 1; l <= 3; l++) {
+        var line = document.getElementById('lineB' + l);
+        if (line) line.classList.toggle('filled', l < n);
+      }
+    }
+
+    // ================================
+    // Modo B — switchMode actualizado
+    // ================================
+    function switchMode(newMode) {
+      if (newMode === 'modoC') return; // fase 5.7-C pendiente
+      SCTState.mode = newMode;
+
+      // Actualizar visual de las radio cards del selector de modo
+      var cards = document.querySelectorAll('#modeCards .radio-card');
+      cards.forEach(function(c) {
+        var dataMode = c.getAttribute('data-mode');
+        if (dataMode === newMode) c.classList.add('selected');
+        else c.classList.remove('selected');
+      });
+
+      // Mostrar/ocultar containers y steps
+      if (newMode === 'modoA') {
+        // Mostrar step1 de Modo A
+        for (var i = 1; i <= 4; i++) {
+          var stepEl = document.getElementById('step' + i);
+          if (stepEl) {
+            stepEl.classList.remove('active');
+            // solo el step actual de Modo A queda visible
+          }
+        }
+        var step1 = document.getElementById('step' + (window._currentStepA || 1));
+        if (!step1) step1 = document.getElementById('step1');
+        if (step1) step1.classList.add('active');
+
+        // Ocultar wizard Modo B
+        for (var j = 1; j <= 4; j++) {
+          var sb = document.getElementById('stepB' + j);
+          if (sb) { sb.classList.remove('active'); sb.classList.add('hidden'); }
+        }
+        var progB = document.getElementById('modoB-progress');
+        if (progB) progB.classList.add('hidden');
+
+      } else if (newMode === 'modoB') {
+        // Ocultar wizard Modo A (steps 1-4)
+        for (var ai = 1; ai <= 4; ai++) {
+          var stepA = document.getElementById('step' + ai);
+          if (stepA) stepA.classList.remove('active');
+        }
+
+        // Mostrar barra de progreso Modo B
+        var progBar = document.getElementById('modoB-progress');
+        if (progBar) progBar.classList.remove('hidden');
+
+        // Mostrar stepB1 si no hay ninguno activo
+        var anyBActive = false;
+        for (var bi = 1; bi <= 4; bi++) {
+          var sbCheck = document.getElementById('stepB' + bi);
+          if (sbCheck && sbCheck.classList.contains('active')) { anyBActive = true; break; }
+        }
+        if (!anyBActive) goToStepB(1);
+      }
+    }
+
+    // ================================
+    // Modo B — initModoB
+    // ================================
+    function initModoB() {
+      // Habilitar radio de Modo B
+      var radioBs = document.querySelectorAll('#modeCards input[value="modoB"]');
+      for (var r = 0; r < radioBs.length; r++) {
+        radioBs[r].disabled = false;
+      }
+      var cardB = document.getElementById('modeCardB');
+      if (cardB) {
+        cardB.classList.remove('opacity-60', 'cursor-not-allowed');
+        cardB.removeAttribute('title');
+        // Actualizar etiqueta "Proximamente" a "Disponible"
+        var statusSpan = cardB.querySelector('span.text-\\[11px\\]');
+        if (statusSpan) {
+          statusSpan.classList.remove('text-gray-500');
+          statusSpan.classList.add('text-green-700');
+          statusSpan.textContent = 'Disponible';
+        }
+        // Colorear circulo B
+        var circleB = cardB.querySelector('span.rounded-full');
+        if (circleB) {
+          circleB.classList.remove('bg-gray-200', 'text-gray-500');
+          circleB.classList.add('bg-blue-100', 'text-blue-700');
+        }
+        // Oscurecer titulo
+        var titleB = cardB.querySelector('span.font-semibold.text-gray-700');
+        if (titleB) {
+          titleB.classList.remove('text-gray-700');
+          titleB.classList.add('text-gray-900');
+        }
+      }
+
+      // Boton agregar AC
+      var addBtn = document.getElementById('modoB-addAC');
+      if (addBtn) {
+        addBtn.addEventListener('click', function() { addACRow(); });
+      }
+
+      // Boton importar desde Modo A
+      var importBtn = document.getElementById('modoB-importFromA');
+      if (importBtn) {
+        importBtn.addEventListener('click', importFromModoA);
+        // Habilitar si Modo A tiene datos
+        var hasModoAData = (SCTState.modoA.hs > 0 || SCTState.modoA.has > 0 || SCTState.modoA.haut > 0);
+        importBtn.disabled = !hasModoAData;
+      }
+
+      // Exportar JSON (placeholder — P8 implementa descarga completa)
+      var exportBtn = document.getElementById('modoB-exportJSON');
+      if (exportBtn) {
+        exportBtn.addEventListener('click', function() {
+          // eslint-disable-next-line no-console
+          window.console.log('SCTState.modoB', JSON.stringify(SCTState.modoB));
+        });
+      }
+
+      // Radios de perfil y formato Modo B
+      var profileRadios = document.querySelectorAll('#bProfileSelector input[type="radio"]');
+      for (var p = 0; p < profileRadios.length; p++) {
+        profileRadios[p].addEventListener('change', (function(radio) {
+          return function() {
+            SCTState.modoB.profile = radio.value;
+            // Actualizar visual de la radio card seleccionada
+            var allCards = document.querySelectorAll('#bProfileSelector .radio-card');
+            for (var pc = 0; pc < allCards.length; pc++) {
+              var r2 = allCards[pc].querySelector('input');
+              if (r2 && r2.checked) allCards[pc].classList.add('selected');
+              else allCards[pc].classList.remove('selected');
+            }
+            var existRows = document.getElementById('modoB-acTableBody');
+            if (existRows) {
+              var rs2 = existRows.querySelectorAll('tr[data-id]');
+              for (var ri = 0; ri < rs2.length; ri++) updateRowCalc(rs2[ri]);
+            }
+            updateACTotals();
+          };
+        })(profileRadios[p]));
+      }
+
+      var formatoRadios = document.querySelectorAll('#bFormatSelector input[type="radio"]');
+      for (var f = 0; f < formatoRadios.length; f++) {
+        formatoRadios[f].addEventListener('change', (function(radio) {
+          return function() {
+            SCTState.modoB.formato = radio.value;
+            var allCards = document.querySelectorAll('#bFormatSelector .radio-card');
+            for (var fc = 0; fc < allCards.length; fc++) {
+              var r3 = allCards[fc].querySelector('input');
+              if (r3 && r3.checked) allCards[fc].classList.add('selected');
+              else allCards[fc].classList.remove('selected');
+            }
+            updateACTotals();
+          };
+        })(formatoRadios[f]));
+      }
+
+      // Boton resetear Modo B
+      window.resetCalcB = function() {
+        SCTState.modoB = {
+          semesterLabel: '',
+          programName: '',
+          semester: '',
+          profile: 'pregrado',
+          formato: 'semestral',
+          acs: []
+        };
+        var bBodyEl = document.getElementById('modoB-acTableBody');
+        if (bBodyEl) bBodyEl.innerHTML = '';
+        updateACTotals();
+        goToStepB(1);
+      };
+    }
+
+    // SCTEngine aliases — expuestos por referencia para uso en Modos B y C (Fase 5.7-D)
+    // Las declaraciones originales (getSemaforoLevel, FORMATOS, ACTIVITY_PRESETS) siguen accesibles.
+    SCTEngine.getSemaforo = getSemaforoLevel;
+    SCTEngine.FORMATOS = FORMATOS;
+    SCTEngine.ACTIVITY_PRESETS = ACTIVITY_PRESETS;
+
+    // Exponer funciones invocadas desde onclick inline de Modo B (IIFE scope → window)
+    window.goToStepB = goToStepB;
+    window.addACRow = addACRow;
+
     // Start
     init();
+    initModoB();
   })();
   </script>
 </body>
