@@ -1056,7 +1056,12 @@ function renderOverview() {
     `${p.codigo ? p.codigo + ' · ' : ''}${prof.nombre} · ${p.duracion} ${p.unidad} · ${p.carga_objetivo} h/sem obj.`;
 
   document.getElementById('ov-sct-total').textContent = programSCT(p);
-  document.getElementById('ov-ac-count').textContent = p.acs.length;
+  const filterVal = document.getElementById('filter-formato').value;
+  const visibleCount = filterVal === 'all' ? p.acs.length : p.acs.filter(a => a.formato === filterVal).length;
+  document.getElementById('ov-ac-count').textContent =
+    (filterVal === 'all' || visibleCount === p.acs.length)
+      ? p.acs.length
+      : `${visibleCount} / ${p.acs.length}`;
 
   const alerts = detectAlerts(p);
   document.getElementById('ov-alerts-count').textContent = alerts.length;
@@ -1112,11 +1117,20 @@ function renderGantt() {
 
   // Gantt rows: una fila por AC
   const acs = p.acs.filter(ac => filter === 'all' || ac.formato === filter);
+  const hiddenCount = p.acs.length - acs.length;
+  const hiddenBanner = hiddenCount > 0
+    ? `<div class="bg-amber-50 border-b border-amber-200 px-4 py-2 text-xs text-amber-900 flex items-center justify-between">
+         <span>⚠ ${hiddenCount} AC oculta${hiddenCount>1?'s':''} por el filtro "${filter}".</span>
+         <button onclick="document.getElementById('filter-formato').value='all'; renderOverview();" class="underline hover:text-amber-700">Mostrar todas</button>
+       </div>`
+    : '';
   if (acs.length === 0) {
-    document.getElementById('gantt-container').innerHTML = header +
+    document.getElementById('gantt-container').innerHTML = header + hiddenBanner +
       `<div class="p-12 text-center text-gray-500">
-        <p class="mb-2">Todavía no hay AC${filter !== 'all' ? ' con este formato' : ''}.</p>
-        <button onclick="openNewAC()" class="text-sm bg-gray-900 text-white px-4 py-2 rounded-lg">+ Crear primera AC</button>
+        <p class="mb-2">${hiddenCount > 0 ? 'Ninguna AC coincide con este filtro.' : 'Todavía no hay AC.'}</p>
+        ${hiddenCount > 0
+          ? `<button onclick="document.getElementById('filter-formato').value='all'; renderOverview();" class="text-sm bg-gray-900 text-white px-4 py-2 rounded-lg">Mostrar todas las AC</button>`
+          : `<button onclick="openNewAC()" class="text-sm bg-gray-900 text-white px-4 py-2 rounded-lg">+ Crear primera AC</button>`}
       </div>`;
     return;
   }
@@ -1147,7 +1161,7 @@ function renderGantt() {
       </div>`;
   }
 
-  document.getElementById('gantt-container').innerHTML = header + rows;
+  document.getElementById('gantt-container').innerHTML = header + hiddenBanner + rows;
 }
 
 function renderLoadChart() {
