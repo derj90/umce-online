@@ -592,7 +592,8 @@ const PROFILES = {
     semanas_por_unidad: 18,
     duracion_default: 8,
     duracion_min: 2, duracion_max: 12,
-    modalidad_default: { sync: 30, async: 30, auto: 40 }
+    modalidad_default: { sync: 30, async: 30, auto: 40 },
+    sync_amarilla: 6, sync_roja: 10
   },
   postgrado: {
     nombre: 'Postgrado',
@@ -601,7 +602,8 @@ const PROFILES = {
     semanas_por_unidad: 16,
     duracion_default: 4,
     duracion_min: 2, duracion_max: 8,
-    modalidad_default: { sync: 20, async: 30, auto: 50 }
+    modalidad_default: { sync: 20, async: 30, auto: 50 },
+    sync_amarilla: 4, sync_roja: 6
   },
   edu_continua: {
     nombre: 'Educación continua',
@@ -610,7 +612,8 @@ const PROFILES = {
     semanas_por_unidad: 1,
     duracion_default: 12,
     duracion_min: 4, duracion_max: 16,
-    modalidad_default: { sync: 20, async: 40, auto: 40 }
+    modalidad_default: { sync: 20, async: 40, auto: 40 },
+    sync_amarilla: 3, sync_roja: 5
   }
 };
 
@@ -798,6 +801,39 @@ function weeklyLoad(prog) {
   return loads;
 }
 
+// Para cada semana w (1..N), suma de horas sincronicas/sem de AC activas
+function weeklySyncLoad(prog) {
+  const n = programWeeks(prog);
+  const loads = new Array(n + 1).fill(0);
+  for (const ac of prog.acs) {
+    const start = ac.semana_inicio;
+    const end = Math.min(start + ac.duracion - 1, n);
+    const hsem = acTotalHsem(ac);
+    const pctSync = (ac.modalidad?.sync ?? PROFILES[prog.perfil].modalidad_default.sync) / 100;
+    const syncHsem = hsem * pctSync;
+    for (let w = start; w <= end; w++) {
+      if (w >= 1 && w <= n) loads[w] += syncHsem;
+    }
+  }
+  return loads;
+}
+
+function syncThresholds(prog) {
+  const prof = PROFILES[prog.perfil];
+  return {
+    amarilla: prog.sync_amarilla ?? prof.sync_amarilla,
+    roja: prog.sync_roja ?? prof.sync_roja
+  };
+}
+
+function classifySync(hsemSync, prog) {
+  const th = syncThresholds(prog);
+  if (hsemSync === 0) return 'empty';
+  if (hsemSync > th.roja) return 'red_sync';
+  if (hsemSync > th.amarilla) return 'yellow_sync';
+  return 'green';
+}
+
 // Banda interpretativa de un tipo
 function bandForType(typeId, profile, hTotales) {
   const bands = BANDS[typeId][profile];
@@ -830,13 +866,19 @@ function classifyLoad(hsem, objetivo) {
 // Detecta alertas semana a semana (promedio móvil 4 sem)
 function detectAlerts(prog) {
   const loads = weeklyLoad(prog);
+  const syncLoads = weeklySyncLoad(prog);
   const n = programWeeks(prog);
   const alerts = [];
   const objetivo = prog.carga_objetivo;
+  const th = syncThresholds(prog);
   for (let w = 1; w <= n; w++) {
     const cls = classifyLoad(loads[w], objetivo);
     if (cls === 'red_over' || cls === 'red_under') {
       alerts.push({ semana: w, tipo: cls, valor: loads[w], objetivo });
+    }
+    const syncCls = classifySync(syncLoads[w], prog);
+    if (syncCls === 'red_sync') {
+      alerts.push({ semana: w, tipo: 'red_sync', valor: syncLoads[w], objetivo: th.roja });
     }
   }
   return alerts;
@@ -1111,12 +1153,17 @@ function renderOverview() {
 
   // Alerts panel
   const alertsHtml = alerts.slice(0, 3).map(a => {
-    const isOver = a.tipo === 'red_over';
+    const styleMap = {
+      'red_over':  { cls: 'alert-red',  label: '▲ Sobrecarga',           unit: 'h/sem', ref: `objetivo ${a.objetivo}` },
+      'red_under': { cls: 'alert-gray', label: '▼ Subcarga',              unit: 'h/sem', ref: `objetivo ${a.objetivo}` },
+      'red_sync':  { cls: 'alert-red',  label: '● Exceso de sincrónicas', unit: 'h/sem sync', ref: `umbral ${a.objetivo}` }
+    };
+    const s = styleMap[a.tipo] || styleMap['red_over'];
     return `
-      <div class="${isOver ? 'alert-red' : 'alert-gray'} border p-3 rounded-lg flex items-center justify-between">
+      <div class="${s.cls} border p-3 rounded-lg flex items-center justify-between">
         <div class="text-sm">
-          <strong>${isOver ? '▲ Sobrecarga' : '▼ Subcarga'} en W${a.semana}:</strong>
-          ${fmt(a.valor)} h/sem (objetivo ${a.objetivo}).
+          <strong>${s.label} en W${a.semana}:</strong>
+          ${fmt(a.valor)} ${s.unit} (${s.ref}).
         </div>
         <button onclick="scrollToWeek(${a.semana})" class="text-xs underline">ver en calendario</button>
       </div>`;
