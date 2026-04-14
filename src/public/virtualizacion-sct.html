@@ -1303,6 +1303,22 @@
         <p>Informe formal del c&aacute;lculo SCT del semestre. Puedes imprimirlo o exportar los datos en formato JSON.</p>
       </div>
 
+      <!-- Widget Sobre Presupuestario — renderizado por renderPresupuestoWidget() en P8 -->
+      <div id="presupuestoWidget" class="my-4 p-4 bg-gray-50 rounded-lg border no-print">
+        <div class="flex items-center justify-between mb-2">
+          <h4 class="text-sm font-semibold text-gray-800">Sobre presupuestario semanal</h4>
+          <span id="presupuestoStatus" class="text-xs font-bold"></span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+          <div id="presupuestoBar" class="h-4 rounded-full transition-all" style="width: 0%"></div>
+        </div>
+        <div class="flex items-center justify-between mt-2 text-xs text-gray-600">
+          <span id="presupuestoUsed">0 h usadas</span>
+          <span id="presupuestoBudget">de 45 h disponibles</span>
+        </div>
+        <p id="presupuestoMsg" class="text-xs text-gray-500 mt-2"></p>
+      </div>
+
       <!-- Informe imprimible -->
       <div class="bg-white border border-gray-200 rounded-xl p-6 space-y-5">
 
@@ -1641,6 +1657,8 @@
     // Inicializacion
     // ================================
     function init() {
+      // Restaurar estado persistido si existe (P8)
+      DataLayer.load();
       bindInputs();
       updatePreview();
       document.getElementById('printDate').textContent = 'Generado: ' + new Date().toLocaleDateString('es-CL', { year:'numeric', month:'long', day:'numeric' });
@@ -2684,6 +2702,12 @@
 
       // Sincronizar estado
       SCTState.modoB.acs = acsState;
+
+      // Actualizar widget sobre presupuestario (P8)
+      renderPresupuestoWidget(profile, avgWeekly);
+
+      // Persistir estado tras cada recalculo (P8)
+      DataLayer.save();
     }
 
     // ================================
@@ -3152,6 +3176,9 @@
     // Modo B — initModoB
     // ================================
     function initModoB() {
+      // Restaurar estado persistido al iniciar Modo B (P8); silent-fail si no hay datos
+      DataLayer.load();
+
       // Habilitar radio de Modo B
       var radioBs = document.querySelectorAll('#modeCards input[value="modoB"]');
       for (var r = 0; r < radioBs.length; r++) {
@@ -3197,14 +3224,17 @@
         importBtn.disabled = !hasModoAData;
       }
 
-      // Exportar JSON (placeholder — P8 implementa descarga completa)
+      // Exportar JSON — descarga archivo con estado completo (P8)
       var exportBtn = document.getElementById('modoB-exportJSON');
       if (exportBtn) {
         exportBtn.addEventListener('click', function() {
-          // eslint-disable-next-line no-console
-          window.console.log('SCTState.modoB', JSON.stringify(SCTState.modoB));
+          var data = DataLayer.exportJSON();
+          DataLayer.downloadFile(JSON.stringify(data, null, 2), 'sct-calc-' + Date.now() + '.json', 'application/json');
         });
       }
+      // NOTA: No existe boton "Importar JSON" en el HTML de stepB4. Para agregarlo,
+      // incluir en el HTML un <input type="file" id="modoB-importFile" accept=".json" class="hidden">
+      // y un <button id="modoB-importJSON">Importar JSON</button>, luego conectarlos aqui.
 
       // Radios de perfil y formato Modo B
       var profileRadios = document.querySelectorAll('#bProfileSelector input[type="radio"]');
@@ -3225,6 +3255,7 @@
               for (var ri = 0; ri < rs2.length; ri++) updateRowCalc(rs2[ri]);
             }
             updateACTotals();
+            DataLayer.save(); // Persistir cambio de perfil (P8)
           };
         })(profileRadios[p]));
       }
@@ -3241,6 +3272,7 @@
               else allCards[fc].classList.remove('selected');
             }
             updateACTotals();
+            DataLayer.save(); // Persistir cambio de formato (P8)
           };
         })(formatoRadios[f]));
       }
@@ -3261,6 +3293,842 @@
         goToStepB(1);
       };
     }
+
+    // ================================
+    // SCTEngine — Ampliacion Modo B / Modo C (Fase 5.7-E)
+    // Las 12 funciones siguientes extienden el motor. NO alteran calculateSCT ni calculateFromWeekly.
+    // ================================
+
+    // Ratios Laurillard (hs/has/haut) por tipo de actividad cognitiva
+    var LAURILLARD_RATIOS = {
+      adquisicion: { hs: 0.30, has: 0.40, haut: 0.30 },
+      practica:    { hs: 0.40, has: 0.30, haut: 0.30 },
+      discusion:   { hs: 0.35, has: 0.45, haut: 0.20 },
+      produccion:  { hs: 0.25, has: 0.25, haut: 0.50 },
+      mixto:       { hs: 0.33, has: 0.34, haut: 0.33 }
+    };
+
+    // Factores de ajuste por perfil (aplicados a hs y haut; has se conserva)
+    var PROFILE_FACTORS = {
+      pregrado:  { hsFactor: 1.00, hautFactor: 1.00, label: 'pregrado'  },
+      postgrado: { hsFactor: 0.80, hautFactor: 1.30, label: 'postgrado' },
+      continua:  { hsFactor: 0.70, hautFactor: 1.20, label: 'continua'  }
+    };
+
+    // Multiplicadores DOK (Depth of Knowledge) para estimacion cognitiva
+    var DOK_MULTIPLIERS = { 1: 1.0, 2: 1.3, 3: 1.6, 4: 2.0 };
+
+    // 1) Estimacion SCT por demanda cognitiva (Wake Forest Workload Estimator)
+    //    500 palabras = 1h lectura; 15 min video = 15 min; 200 palabras escritas = 1h; 1 ejercicio = 15 min.
+    SCTEngine.calculateFromCognitive = function(opts) {
+      var o = opts || {};
+      var readingPages = +o.readingPages || 0;
+      var videoMinutes = +o.videoMinutes || 0;
+      var writingWords = +o.writingWords || 0;
+      var exerciseCount = +o.exerciseCount || 0;
+      var dok = +o.dokLevel || 1;
+      // 1 pagina academica ~= 300 palabras -> pages*300/500 horas
+      var readingHours = (readingPages * 300) / 500;
+      var videoHours = videoMinutes / 60;
+      var writingHours = writingWords / 200;
+      var exerciseHours = (exerciseCount * 15) / 60;
+      var baseHours = readingHours + videoHours + writingHours + exerciseHours;
+      var mult = DOK_MULTIPLIERS[dok] || 1.0;
+      var estimatedHours = baseHours * mult;
+      return {
+        estimatedHours: estimatedHours,
+        sct: Math.ceil(estimatedHours / 27),
+        breakdown: {
+          reading: readingHours,
+          video: videoHours,
+          writing: writingHours,
+          exercises: exerciseHours
+        },
+        dokMultiplier: mult
+      };
+    };
+
+    // 2) Distribuye horas totales entre modalidades (presencial/sinc/asinc/autonomo)
+    SCTEngine.distributeByModalities = function(totalHours, modalities) {
+      var m = modalities || {};
+      var sum = (+m.presencial || 0) + (+m.sincronico || 0) + (+m.asincronico || 0) + (+m.autonomo || 0);
+      if (Math.abs(sum - 1.0) > 0.01) {
+        return { error: 'Los pesos deben sumar 1.0 (+/-0.01). Suma actual: ' + sum.toFixed(3) };
+      }
+      var th = +totalHours || 0;
+      return {
+        presencial:  th * (+m.presencial  || 0),
+        sincronico:  th * (+m.sincronico  || 0),
+        asincronico: th * (+m.asincronico || 0),
+        autonomo:    th * (+m.autonomo    || 0)
+      };
+    };
+
+    // 3) Aplica ratios de Laurillard segun tipo de actividad cognitiva
+    SCTEngine.applyLaurillardRatios = function(weekly, type) {
+      var r = LAURILLARD_RATIOS[type] || LAURILLARD_RATIOS.mixto;
+      var w = +weekly || 0;
+      return { hs: w * r.hs, has: w * r.has, haut: w * r.haut };
+    };
+
+    // 4) Ajusta horas segun perfil: pregrado neutro; postgrado -20% hs +30% haut; continua -30% hs +20% haut
+    SCTEngine.applyProfileAdjustments = function(hours, profile) {
+      var h = hours || {};
+      var f = PROFILE_FACTORS[profile] || PROFILE_FACTORS.pregrado;
+      return {
+        hs:   (+h.hs   || 0) * f.hsFactor,
+        has:  (+h.has  || 0),
+        haut: (+h.haut || 0) * f.hautFactor,
+        factor: f
+      };
+    };
+
+    // 5) Valida que H_aut este en rango 25-40% del total (Doc. N. 004-2020 UMCE)
+    SCTEngine.validateAutonomia = function(hs, has, haut) {
+      var _hs = +hs || 0, _has = +has || 0, _haut = +haut || 0;
+      var total = _hs + _has + _haut;
+      if (total <= 0) {
+        return { valid: false, pct: 0, level: 'low', message: 'Sin horas declaradas, no se puede validar autonomia.' };
+      }
+      var pct = (_haut / total) * 100;
+      if (pct < 25) {
+        return { valid: false, pct: pct, level: 'low',  message: 'Autonomia baja (' + pct.toFixed(0) + '%). Doc. 004-2020 sugiere 25-40%.' };
+      }
+      if (pct > 40) {
+        return { valid: false, pct: pct, level: 'high', message: 'Autonomia alta (' + pct.toFixed(0) + '%). Doc. 004-2020 sugiere 25-40%.' };
+      }
+      return { valid: true, pct: pct, level: 'ok', message: 'Autonomia dentro del rango recomendado (25-40%).' };
+    };
+
+    // 6) Conversion SCT <-> CUECH (1 credito CUECH ~= 0.75 SCT, formato trimestral Univ. Autonoma)
+    SCTEngine.calculateCUECH = function(sct) {
+      var _sct = +sct || 0;
+      var cuech = Math.ceil(_sct / 0.75);
+      return { cuech: cuech, equivalence: _sct + ' SCT \u2248 ' + cuech + ' CUECH' };
+    };
+
+    // 7) Detecta alertas de coherencia pedagogica en un curso
+    SCTEngine.detectCoherenceAlerts = function(course) {
+      var c = course || {};
+      var alerts = [];
+      var hs = +c.hs || 0, has = +c.has || 0, haut = +c.haut || 0;
+      var ns = +c.ns || 0;
+      var ht = (hs + has + haut) * ns;
+      var computedSct = Math.ceil(ht / 27);
+      var declaredSct = +c.sct || 0;
+      var profile = c.profile || 'pregrado';
+      var weekly = hs + has + haut;
+      var total = weekly;
+
+      if (declaredSct && computedSct !== declaredSct) {
+        alerts.push({ severity: 'error', code: 'SCT_MISMATCH',
+          message: 'SCT declarado (' + declaredSct + ') no coincide con horas totales (calculado: ' + computedSct + ').' });
+      }
+      if (profile === 'pregrado' && total > 0 && (haut / total) < 0.20) {
+        alerts.push({ severity: 'warn', code: 'AUTONOMIA_BAJA',
+          message: 'Autonomia muy baja (' + ((haut / total) * 100).toFixed(0) + '%) para nivel pregrado.' });
+      }
+      var thr = SEMAFORO_THRESHOLDS[profile] || SEMAFORO_THRESHOLDS.pregrado;
+      if (weekly > thr.yellow) {
+        alerts.push({ severity: 'warn', code: 'CARGA_EXCEDE',
+          message: 'Carga semanal (' + weekly.toFixed(1) + ' h) excede umbral amarillo (' + thr.yellow + ' h) para ' + profile + '.' });
+      }
+      // "catedra" en este codebase equivale al preset "expositiva"
+      if ((c.activityType === 'expositiva' || c.activityType === 'catedra') && has > 0 && haut > has * 2) {
+        alerts.push({ severity: 'info', code: 'CATEDRA_AUTONOMIA',
+          message: 'Clase expositiva con mucha autonomia (HAut > 2xHAs). Considerar formato seminario o taller.' });
+      }
+      return alerts;
+    };
+
+    // 8) Retorna thresholds weekly/aggregate del perfil dado (default pregrado)
+    SCTEngine.getProfileThresholds = function(profile) {
+      var w = SEMAFORO_THRESHOLDS[profile] || SEMAFORO_THRESHOLDS.pregrado;
+      var a = AGGREGATE_THRESHOLDS[profile] || AGGREGATE_THRESHOLDS.pregrado;
+      return {
+        weekly:    { green: w.green, yellow: w.yellow },
+        aggregate: { green: a.green, yellow: a.yellow }
+      };
+    };
+
+    // 9) Suma totales agregados de un array de Actividades Curriculares (Modo B)
+    SCTEngine.sumAcsTotals = function(acs) {
+      var arr = acs || [];
+      var totalSct = 0, totalHt = 0, totalWeekly = 0, maxWeekly = 0;
+      for (var i = 0; i < arr.length; i++) {
+        var ac = arr[i] || {};
+        var hs = +ac.hs || 0, has = +ac.has || 0, haut = +ac.haut || 0;
+        var ns = +ac.ns || 0;
+        var wk = hs + has + haut;
+        totalSct += (+ac.sct || 0);
+        totalHt += wk * ns;
+        totalWeekly += wk;
+        if (wk > maxWeekly) maxWeekly = wk;
+      }
+      var avgWeekly = arr.length > 0 ? (totalWeekly / arr.length) : 0;
+      return {
+        totalSct: totalSct,
+        totalHt: totalHt,
+        totalWeekly: totalWeekly,
+        avgWeekly: avgWeekly,
+        maxWeekly: maxWeekly,
+        acCount: arr.length
+      };
+    };
+
+    // 10) Presupuesto restante vs. techo del perfil (usa yellow como techo recomendado)
+    SCTEngine.budgetRemaining = function(acsTotals, profile) {
+      var t = acsTotals || {};
+      var agg = AGGREGATE_THRESHOLDS[profile] || AGGREGATE_THRESHOLDS.pregrado;
+      var budget = agg.yellow;
+      var used = +t.totalWeekly || 0;
+      var remaining = budget - used;
+      var pct = budget > 0 ? (used / budget) * 100 : 0;
+      var status = 'ok';
+      if (pct < 80) status = 'under';
+      else if (pct > 100) status = 'over';
+      return { budget: budget, used: used, remaining: remaining, pct: pct, status: status };
+    };
+
+    // 11) Verifica compatibilidad entre dos formatos de curso
+    SCTEngine.formatsCompatible = function(formato1, formato2) {
+      if (!FORMATOS[formato1] || !FORMATOS[formato2]) {
+        return { compatible: false, reason: 'Uno de los formatos no existe en FORMATOS.' };
+      }
+      if (formato1 === formato2) {
+        return { compatible: true, reason: 'Mismo formato, comparacion directa.' };
+      }
+      // cuech y modulo/bloque_breve requieren conversion por diferencia de semanas
+      var needsConversion = (formato1 === 'cuech' || formato2 === 'cuech' ||
+                             formato1 === 'modulo' || formato2 === 'modulo' ||
+                             formato1 === 'bloque_breve' || formato2 === 'bloque_breve');
+      if (needsConversion) {
+        return { compatible: false, reason: 'Formatos distintos (' + formato1 + ' vs ' + formato2 + '): requieren conversion de horas via convertBetweenFormats.' };
+      }
+      return { compatible: true, reason: 'Formatos comparables.' };
+    };
+
+    // 12) Convierte horas totales entre formatos usando las semanas de referencia de FORMATOS
+    SCTEngine.convertBetweenFormats = function(hours, fromFormat, toFormat) {
+      var src = FORMATOS[fromFormat];
+      var dst = FORMATOS[toFormat];
+      if (!src || !dst) {
+        return { error: 'Formato invalido. Validos: ' + Object.keys(FORMATOS).join(', ') };
+      }
+      var _hours = +hours || 0;
+      var weeklyOrigin = src.semanas > 0 ? (_hours / src.semanas) : 0;
+      // La conversion preserva horas totales; weeklyTarget muestra como se reparte en el nuevo calendario
+      var weeklyTarget = dst.semanas > 0 ? (_hours / dst.semanas) : 0;
+      var factor = src.semanas > 0 ? (dst.semanas / src.semanas) : 1;
+      return {
+        hours: _hours,
+        weeklyOrigin: weeklyOrigin,
+        weeklyTarget: weeklyTarget,
+        factor: factor
+      };
+    };
+
+    // ================================
+    // DataLayer — Persistencia y exportacion (Fase P8)
+    // Maneja localStorage, snapshots, exportacion/importacion JSON. ES5 estricto.
+    // ================================
+    var DataLayer = {};
+
+    DataLayer.STORAGE_KEY = 'sct_v3_state';
+    DataLayer.HISTORY_KEY = 'sct_v3_history';
+    DataLayer.MAX_HISTORY = 10;
+
+    // Guarda SCTState completo a localStorage; silent-fail en modo privado o cuota llena
+    DataLayer.save = function() {
+      try {
+        var payload = JSON.stringify(SCTState);
+        localStorage.setItem(DataLayer.STORAGE_KEY, payload);
+      } catch (e) {
+        /* localStorage no disponible — ignorar */
+      }
+    };
+
+    // Carga SCTState desde localStorage y fusiona claves de nivel superior; retorna true si restauro
+    DataLayer.load = function() {
+      try {
+        var raw = localStorage.getItem(DataLayer.STORAGE_KEY);
+        if (!raw) return false;
+        var saved = JSON.parse(raw);
+        if (saved && typeof saved === 'object') {
+          var keys = Object.keys(saved);
+          for (var k = 0; k < keys.length; k++) {
+            SCTState[keys[k]] = saved[keys[k]];
+          }
+          return true;
+        }
+      } catch (e) { /* ignorar */ }
+      return false;
+    };
+
+    // Limpia el storage de estado principal y el historial de snapshots
+    DataLayer.clear = function() {
+      try {
+        localStorage.removeItem(DataLayer.STORAGE_KEY);
+        localStorage.removeItem(DataLayer.HISTORY_KEY);
+      } catch (e) { /* ignorar */ }
+    };
+
+    // Guarda estado actual como snapshot con label; mantiene FIFO maximo MAX_HISTORY entradas
+    DataLayer.saveSnapshot = function(label) {
+      try {
+        var id = 'snap_' + Date.now();
+        var snapshots = DataLayer.listSnapshots();
+        var entry = {
+          id: id,
+          label: label || 'Snapshot',
+          timestamp: new Date().toISOString(),
+          mode: SCTState.mode,
+          state: JSON.parse(JSON.stringify(SCTState))
+        };
+        snapshots.push(entry);
+        if (snapshots.length > DataLayer.MAX_HISTORY) {
+          snapshots = snapshots.slice(snapshots.length - DataLayer.MAX_HISTORY);
+        }
+        localStorage.setItem(DataLayer.HISTORY_KEY, JSON.stringify(snapshots));
+        return id;
+      } catch (e) { /* ignorar */ }
+      return null;
+    };
+
+    // Restaura snapshot por id; retorna true si tuvo exito
+    DataLayer.loadSnapshot = function(id) {
+      try {
+        var snapshots = DataLayer.listSnapshots();
+        for (var i = 0; i < snapshots.length; i++) {
+          if (snapshots[i].id === id && snapshots[i].state) {
+            var s = snapshots[i].state;
+            var keys = Object.keys(s);
+            for (var k = 0; k < keys.length; k++) {
+              SCTState[keys[k]] = s[keys[k]];
+            }
+            return true;
+          }
+        }
+      } catch (e) { /* ignorar */ }
+      return false;
+    };
+
+    // Retorna array de snapshots [{id, label, timestamp, mode}]; vacio si no hay datos
+    DataLayer.listSnapshots = function() {
+      try {
+        var raw = localStorage.getItem(DataLayer.HISTORY_KEY);
+        if (!raw) return [];
+        var arr = JSON.parse(raw);
+        return Array.isArray(arr) ? arr : [];
+      } catch (e) { return []; }
+    };
+
+    // Borra snapshot por id del historial persistido
+    DataLayer.deleteSnapshot = function(id) {
+      try {
+        var snapshots = DataLayer.listSnapshots();
+        var filtered = [];
+        for (var i = 0; i < snapshots.length; i++) {
+          if (snapshots[i].id !== id) filtered.push(snapshots[i]);
+        }
+        localStorage.setItem(DataLayer.HISTORY_KEY, JSON.stringify(filtered));
+      } catch (e) { /* ignorar */ }
+    };
+
+    // Retorna objeto exportable {version, timestamp, state} con copia profunda de SCTState
+    DataLayer.exportJSON = function() {
+      return {
+        version: '3.0',
+        timestamp: new Date().toISOString(),
+        state: JSON.parse(JSON.stringify(SCTState))
+      };
+    };
+
+    // Importa y valida objeto JSON; retorna {ok: bool, error: string}
+    DataLayer.importJSON = function(obj) {
+      try {
+        if (!obj || typeof obj !== 'object') return { ok: false, error: 'Objeto invalido' };
+        if (!obj.state) return { ok: false, error: 'Falta propiedad state' };
+        if (!obj.state.modoA) return { ok: false, error: 'Falta state.modoA' };
+        if (!obj.state.modoB) return { ok: false, error: 'Falta state.modoB' };
+        var keys = Object.keys(obj.state);
+        for (var k = 0; k < keys.length; k++) {
+          SCTState[keys[k]] = obj.state[keys[k]];
+        }
+        return { ok: true, error: '' };
+      } catch (e) {
+        return { ok: false, error: e.message || 'Error al importar' };
+      }
+    };
+
+    // Helper: descarga datos como archivo usando Blob + createObjectURL + anchor tag
+    DataLayer.downloadFile = function(data, filename, mime) {
+      try {
+        var blob = new Blob([data], { type: mime || 'application/octet-stream' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename || 'descarga';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+      } catch (e) { /* ignorar */ }
+    };
+
+    // ================================
+    // Widget Sobre Presupuestario — renderPresupuestoWidget
+    // Renderiza barra de carga semanal vs umbral del perfil en #presupuestoWidget
+    // ================================
+    function renderPresupuestoWidget(profile, totalWeekly) {
+      var widgetEl = document.getElementById('presupuestoWidget');
+      if (!widgetEl) return;
+
+      // Leer thresholds del perfil; fallback a pregrado
+      var t = AGGREGATE_THRESHOLDS[profile] || AGGREGATE_THRESHOLDS.pregrado;
+      var budget = t.yellow;  // techo visible = umbral amarillo (maximo tolerable)
+      var pct = budget > 0 ? (totalWeekly / budget) * 100 : 0;
+      var displayPct = Math.round(pct);
+      var barWidth = Math.min(pct, 100);
+
+      // Determinar color y etiqueta segun porcentaje
+      var barClass, statusText, statusColor;
+      if (pct < 60) {
+        barClass = 'bg-green-500';
+        statusText = 'Bajo (subutilizado)';
+        statusColor = 'text-green-700';
+      } else if (pct < 90) {
+        barClass = 'bg-yellow-500';
+        statusText = 'Optimo';
+        statusColor = 'text-yellow-700';
+      } else if (pct <= 100) {
+        barClass = 'bg-orange-500';
+        statusText = 'En el limite';
+        statusColor = 'text-orange-700';
+      } else {
+        barClass = 'bg-red-500';
+        statusText = 'Excedido';
+        statusColor = 'text-red-700';
+      }
+
+      var barEl     = document.getElementById('presupuestoBar');
+      var statusEl  = document.getElementById('presupuestoStatus');
+      var usedEl    = document.getElementById('presupuestoUsed');
+      var budgetEl  = document.getElementById('presupuestoBudget');
+      var msgEl     = document.getElementById('presupuestoMsg');
+
+      if (barEl) {
+        barEl.className = 'h-4 rounded-full transition-all ' + barClass;
+        barEl.style.width = barWidth + '%';
+      }
+      if (statusEl) {
+        statusEl.textContent = statusText + ' (' + displayPct + '%)';
+        statusEl.className = 'text-xs font-bold ' + statusColor;
+      }
+      if (usedEl) {
+        usedEl.textContent = totalWeekly.toFixed(1) + ' h usadas';
+      }
+      if (budgetEl) {
+        budgetEl.textContent = 'de ' + budget + ' h disponibles';
+      }
+      if (msgEl) {
+        if (pct > 100) {
+          msgEl.textContent = 'La carga semanal supera el umbral maximo del perfil ' + profile + '. Considera reducir actividades.';
+        } else if (pct >= 90) {
+          msgEl.textContent = 'Estas en el limite del perfil ' + profile + '. Margenes muy ajustados.';
+        } else if (pct >= 60) {
+          msgEl.textContent = 'Carga en rango optimo para el perfil ' + profile + '.';
+        } else {
+          msgEl.textContent = 'Carga por debajo del rango recomendado para el perfil ' + profile + '. Puedes agregar mas actividades.';
+        }
+      }
+    }
+
+    // ================================
+    // ReportGenerator — namespace unificado de reportes SCT (Fase P10)
+    // Genera, renderiza y exporta reportes para Modo A, B y C sin modificar SCTEngine ni SCTState.
+    // ================================
+    var ReportGenerator = {};
+
+    // Constantes de modo
+    ReportGenerator.MODES = { MODO_A: 'modoA', MODO_B: 'modoB', MODO_C: 'modoC' };
+
+    // Devuelve semaforo normalizado { level:'green'|'yellow'|'red', threshold:{green,yellow} }
+    function _rg_getSemaforoNorm(weekly, profile, isAggregate) {
+      var thresholds = isAggregate
+        ? (AGGREGATE_THRESHOLDS[profile] || AGGREGATE_THRESHOLDS.pregrado)
+        : (SEMAFORO_THRESHOLDS[profile]  || SEMAFORO_THRESHOLDS.pregrado);
+      var level = weekly <= thresholds.green ? 'green' : (weekly <= thresholds.yellow ? 'yellow' : 'red');
+      return { level: level, threshold: { green: thresholds.green, yellow: thresholds.yellow } };
+    }
+
+    // Construye objeto budget a partir de totalSct, perfil y formato
+    function _rg_buildBudget(totalSct, profile, formato) {
+      var budgetMap = {
+        pregrado:  { semestral: 30, modulo: 10, bloque_breve: 6, cuech: 6 },
+        postgrado: { semestral: 30, modulo: 12, bloque_breve: 8, cuech: 6 },
+        continua:  { semestral: 20, modulo: 8,  bloque_breve: 5, cuech: 6 }
+      };
+      var pb     = budgetMap[profile] || budgetMap.pregrado;
+      var budget = pb[formato] || pb.semestral;
+      var pct    = budget > 0 ? Math.round((totalSct / budget) * 100) : 0;
+      var status = totalSct < budget ? 'under' : (totalSct === budget ? 'ok' : 'over');
+      return { budget: budget, used: totalSct, remaining: budget - totalSct, pct: pct, status: status };
+    }
+
+    // Construye base del report con campos comunes
+    function _rg_baseReport(mode, data) {
+      return {
+        mode: mode,
+        timestamp: new Date().toISOString(),
+        context: {
+          programName:  data.programName  || '',
+          semester:     data.semester     || '',
+          profile:      data.profile      || 'pregrado',
+          formato:      data.formato      || 'semestral',
+          activityType: data.activityType || ''
+        },
+        computed:       {},
+        semaforos:      {},
+        budget:         {},
+        alerts:         [],
+        formatoDisplay: { ugci: { hp: 0, ha: 0 }, extendido: { hSinc: 0, hAsinc: 0, hAut: 0 } }
+      };
+    }
+
+    // Calcula report completo de Modo A a partir de data (forma: SCTState.modoA + campos comunes)
+    ReportGenerator.generateModoA = function(data) {
+      if (!data) return null;
+      var profile  = data.profile  || SCTState.profile  || 'pregrado';
+      var formato  = data.formato  || SCTState.formato  || 'semestral';
+      var hs       = data.hs   || 0;
+      var has      = data.has  || 0;
+      var haut     = data.haut || 0;
+      var ns       = data.ns   || 1;
+      var sctDecl  = data.sctDeclarados || 0;
+      var calc     = SCTEngine.calculateFromWeekly(hs, has, haut, ns);
+      var weekly   = calc.weekly;
+      var htTotal  = calc.htTotal;
+      var sct      = calc.sct;
+      var pctAut   = weekly > 0 ? (haut / weekly) : 0;
+      var coherente = sct === sctDecl;
+      var report = _rg_baseReport('modoA', {
+        programName:  data.programName  || SCTState.programName  || '',
+        semester:     data.semester     || SCTState.semester     || '',
+        profile:      profile,
+        formato:      formato,
+        activityType: data.activityType || SCTState.modoA.activityType || ''
+      });
+      report.computed = {
+        sct: sct, sctDeclarados: sctDecl, coherente: coherente,
+        weekly: weekly, htTotal: htTotal, ns: ns,
+        hs: hs, has: has, haut: haut,
+        pctAutonomia: Math.round(pctAut * 100)
+      };
+      report.semaforos = { weekly: _rg_getSemaforoNorm(weekly, profile, false) };
+      report.budget    = _rg_buildBudget(sct, profile, formato);
+      var alerts = [];
+      if (weekly > 12) {
+        alerts.push({ severity: 'error', code: 'WEEKLY_OVERLOAD',
+          message: 'Carga semanal (' + weekly.toFixed(1) + ' hrs) supera el m\u00e1ximo cr\u00edtico de 12 hrs.' });
+      } else if (weekly > 10) {
+        alerts.push({ severity: 'warn', code: 'WEEKLY_HIGH',
+          message: 'Carga semanal (' + weekly.toFixed(1) + ' hrs) en zona de alerta (10-12 hrs). Revisar sostenibilidad.' });
+      }
+      if (pctAut < 0.25) {
+        alerts.push({ severity: 'warn', code: 'AUT_LOW',
+          message: 'Trabajo aut\u00f3nomo (' + Math.round(pctAut * 100) + '%) inferior al 25% recomendado (Doc. N\u00b0 004-2020).' });
+      } else if (pctAut > 0.40) {
+        alerts.push({ severity: 'info', code: 'AUT_HIGH',
+          message: 'Trabajo aut\u00f3nomo (' + Math.round(pctAut * 100) + '%) supera el 40% orientador.' });
+      }
+      if (sctDecl > 0 && !coherente) {
+        alerts.push({ severity: 'warn', code: 'SCT_MISMATCH',
+          message: 'SCT calculado (' + sct + ') difiere del declarado (' + sctDecl + ').' });
+      }
+      if (typeof SCTEngine.detectCoherenceAlerts === 'function') {
+        var extra = SCTEngine.detectCoherenceAlerts(report.computed, profile, formato);
+        if (extra && extra.length) {
+          for (var ai = 0; ai < extra.length; ai++) { alerts.push(extra[ai]); }
+        }
+      }
+      report.alerts = alerts;
+      report.formatoDisplay = {
+        ugci:      { hp: calc.hp,    ha: calc.ha },
+        extendido: { hSinc: calc.hSinc, hAsinc: calc.hAsinc, hAut: calc.hAut }
+      };
+      return report;
+    };
+
+    // Calcula report completo de Modo B a partir de data.acs (array de objetos AC)
+    ReportGenerator.generateModoB = function(data) {
+      if (!data) return null;
+      var profile = data.profile || 'pregrado';
+      var formato = data.formato || 'semestral';
+      var acs     = data.acs    || [];
+      var report  = _rg_baseReport('modoB', {
+        programName: data.programName || '',
+        semester:    data.semester    || '',
+        profile:     profile,
+        formato:     formato,
+        activityType: ''
+      });
+      var totals;
+      if (typeof SCTEngine.sumAcsTotals === 'function') {
+        totals = SCTEngine.sumAcsTotals(acs);
+      } else {
+        totals = { acCount: acs.length, totalSct: 0, totalHt: 0, totalWeekly: 0, avgWeekly: 0, maxWeekly: 0 };
+        for (var bi = 0; bi < acs.length; bi++) {
+          var ac     = acs[bi];
+          var acCalc = SCTEngine.calculateFromWeekly(ac.hs || 0, ac.has || 0, ac.haut || 0, ac.ns || 1);
+          totals.totalSct    += acCalc.sct;
+          totals.totalHt     += acCalc.htTotal;
+          totals.totalWeekly += acCalc.weekly;
+          if (acCalc.weekly > totals.maxWeekly) { totals.maxWeekly = acCalc.weekly; }
+        }
+        totals.avgWeekly = acs.length > 0 ? totals.totalWeekly / acs.length : 0;
+      }
+      var pctAut = totals.totalHt > 0
+        ? (function() {
+            var sumHAut = 0;
+            for (var ci = 0; ci < acs.length; ci++) { sumHAut += (acs[ci].haut || 0) * (acs[ci].ns || 1); }
+            return sumHAut / totals.totalHt;
+          }())
+        : 0;
+      report.computed = {
+        acCount: totals.acCount, totalSct: totals.totalSct, totalHt: totals.totalHt,
+        totalWeekly: totals.totalWeekly, avgWeekly: totals.avgWeekly, maxWeekly: totals.maxWeekly,
+        acs: acs, pctAutonomia: Math.round(pctAut * 100)
+      };
+      report.semaforos = {
+        weekly:    _rg_getSemaforoNorm(totals.maxWeekly, profile, false),
+        aggregate: _rg_getSemaforoNorm(totals.avgWeekly, profile, true)
+      };
+      if (typeof SCTEngine.budgetRemaining === 'function') {
+        report.budget = SCTEngine.budgetRemaining(totals.totalSct, profile, formato);
+      } else {
+        report.budget = _rg_buildBudget(totals.totalSct, profile, formato);
+      }
+      var balerts = [];
+      if (totals.avgWeekly > 12) {
+        balerts.push({ severity: 'error', code: 'AGG_OVERLOAD',
+          message: 'Carga semanal promedio (' + totals.avgWeekly.toFixed(1) + ' hrs) excede el m\u00e1ximo cr\u00edtico de 12 hrs.' });
+      } else if (totals.avgWeekly > 10) {
+        balerts.push({ severity: 'warn', code: 'AGG_HIGH',
+          message: 'Carga semanal promedio (' + totals.avgWeekly.toFixed(1) + ' hrs) en zona de alerta.' });
+      }
+      if (totals.acCount === 0) {
+        balerts.push({ severity: 'info', code: 'NO_ACS',
+          message: 'No hay actividades curriculares registradas.' });
+      }
+      report.alerts = balerts;
+      return report;
+    };
+
+    // Stub minimo para Modo C — se completa en P11/P12
+    ReportGenerator.generateModoC = function(data) {
+      if (!data) return null;
+      return _rg_baseReport('modoC', {
+        programName:  data.programName || '',
+        semester:     data.semester    || '',
+        profile:      data.profile     || 'pregrado',
+        formato:      data.formato     || 'semestral',
+        activityType: ''
+      });
+    };
+
+    // Dispatcher — llama a generateModoA/B/C segun mode y retorna el shape unificado
+    ReportGenerator.generate = function(mode, data) {
+      if (mode === ReportGenerator.MODES.MODO_A) return ReportGenerator.generateModoA(data);
+      if (mode === ReportGenerator.MODES.MODO_B) return ReportGenerator.generateModoB(data);
+      if (mode === ReportGenerator.MODES.MODO_C) return ReportGenerator.generateModoC(data);
+      return null;
+    };
+
+    // Inyecta HTML de resumen (SCT, horas totales, semaforo, perfil, formato) en targetEl
+    ReportGenerator.renderSummary = function(report, targetEl) {
+      if (!report || !targetEl) return;
+      var plabels = { pregrado: 'Pregrado', postgrado: 'Postgrado', continua: 'Educaci\u00f3n Continua' };
+      var flabels = { semestral: 'Semestral', modulo: 'M\u00f3dulo', bloque_breve: 'Bloque breve', cuech: 'CUECH S\u00fabete' };
+      var c        = report.computed;
+      var ctx      = report.context;
+      var sctVal   = (report.mode === 'modoA') ? c.sct     : c.totalSct;
+      var htVal    = (report.mode === 'modoA') ? c.htTotal  : c.totalHt;
+      var wklyVal  = (report.mode === 'modoA') ? c.weekly   : c.avgWeekly;
+      var semLevel = (report.semaforos && report.semaforos.weekly) ? report.semaforos.weekly.level : 'green';
+      var semColors = { green: '#059669', yellow: '#D97706', red: '#DC2626' };
+      var semLabels = { green: 'Adecuado', yellow: 'Alerta', red: 'Sobrecarga' };
+      var semColor  = semColors[semLevel] || semColors.green;
+      var semLabel  = semLabels[semLevel] || '--';
+      targetEl.innerHTML = '<div style="font-family:sans-serif;font-size:14px;line-height:1.6;">'
+        + '<div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;">'
+        + '<div><span style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;">SCT Final</span><br>'
+        + '<strong style="font-size:28px;color:#0033A1;">' + (sctVal || 0) + '</strong></div>'
+        + '<div><span style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;">Horas Totales</span><br>'
+        + '<strong style="font-size:22px;">' + (htVal ? htVal.toFixed(0) : '0') + ' hrs</strong></div>'
+        + '<div><span style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;">Carga Semanal</span><br>'
+        + '<strong style="font-size:22px;color:' + semColor + ';">' + (wklyVal ? wklyVal.toFixed(1) : '0') + ' hrs/sem</strong></div>'
+        + '<div><span style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;">Estado</span><br>'
+        + '<strong style="font-size:16px;color:' + semColor + ';">' + semLabel + '</strong></div>'
+        + '</div>'
+        + '<div style="font-size:12px;color:#374151;">'
+        + '<strong>Programa:</strong> ' + (ctx.programName || '\u2014')
+        + ' &nbsp;|&nbsp; <strong>Semestre:</strong> ' + (ctx.semester || '\u2014')
+        + ' &nbsp;|&nbsp; <strong>Perfil:</strong> ' + (plabels[ctx.profile] || ctx.profile || '\u2014')
+        + ' &nbsp;|&nbsp; <strong>Formato:</strong> ' + (flabels[ctx.formato] || ctx.formato || '\u2014')
+        + '</div></div>';
+    };
+
+    // Renderiza lista de alertas coloreadas segun severity; oculta targetEl si no hay alertas
+    ReportGenerator.renderAlerts = function(alerts, targetEl) {
+      if (!targetEl) return;
+      if (!alerts || alerts.length === 0) { targetEl.style.display = 'none'; return; }
+      targetEl.style.display = '';
+      var html = '<ul style="list-style:none;margin:0;padding:0;">';
+      for (var i = 0; i < alerts.length; i++) {
+        var a    = alerts[i];
+        var bg   = a.severity === 'error' ? '#FEF2F2' : (a.severity === 'warn' ? '#FFFBEB' : '#EFF6FF');
+        var brd  = a.severity === 'error' ? '#FECACA' : (a.severity === 'warn' ? '#FDE68A' : '#BFDBFE');
+        var icon = a.severity === 'error' ? '&#10007;' : (a.severity === 'warn' ? '&#9651;' : '&#8505;');
+        var col  = a.severity === 'error' ? '#DC2626' : (a.severity === 'warn' ? '#D97706' : '#1D4ED8');
+        html += '<li style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;margin-bottom:6px;'
+          + 'background:' + bg + ';border:1px solid ' + brd + ';border-radius:6px;font-size:13px;">'
+          + '<span style="color:' + col + ';font-weight:700;flex-shrink:0;">' + icon + '</span>'
+          + '<span>' + a.message + '</span></li>';
+      }
+      html += '</ul>';
+      targetEl.innerHTML = html;
+    };
+
+    // Renderiza barra de progreso con porcentaje y estado del presupuesto SCT
+    ReportGenerator.renderBudget = function(budget, targetEl) {
+      if (!targetEl) return;
+      if (!budget) { targetEl.innerHTML = ''; return; }
+      var pct   = Math.min(budget.pct, 100);
+      var color = budget.status === 'under' ? '#9CA3AF' : (budget.status === 'ok' ? '#059669' : '#DC2626');
+      var label = budget.status === 'under' ? 'Bajo el presupuesto' : (budget.status === 'ok' ? 'Dentro del presupuesto' : 'Excede el presupuesto');
+      targetEl.innerHTML = '<div style="font-size:12px;color:#374151;margin-bottom:4px;">'
+        + '<strong>' + budget.used + ' SCT</strong> usados de <strong>' + budget.budget + ' SCT</strong> disponibles'
+        + ' \u2014 ' + label
+        + '</div>'
+        + '<div style="background:#E5E7EB;border-radius:4px;height:14px;overflow:hidden;">'
+        + '<div style="width:' + pct + '%;background:' + color + ';height:100%;transition:width .3s;"></div>'
+        + '</div>'
+        + '<div style="font-size:11px;color:#6B7280;margin-top:2px;text-align:right;">'
+        + budget.pct + '% del presupuesto &nbsp;|&nbsp; Restante: ' + budget.remaining + ' SCT'
+        + '</div>';
+    };
+
+    // Actualiza el Anexo Metodologico delegando a updateAnexoMetodologico (compatibilidad garantizada)
+    ReportGenerator.renderMethodologicalAnnex = function(data, targetEl) {
+      if (typeof updateAnexoMetodologico === 'function') { updateAnexoMetodologico(); }
+      if (!targetEl || !data) return;
+      var ctx       = (data.context) ? data.context : data;
+      var flabels   = { semestral: 'Semestral', modulo: 'M\u00f3dulo', bloque_breve: 'Bloque breve', cuech: 'CUECH S\u00fabete' };
+      var plabels   = { pregrado: 'Pregrado', postgrado: 'Postgrado', continua: 'Educaci\u00f3n Continua' };
+      var alabels   = { expositiva: 'Expositiva', taller: 'Taller', seminario: 'Seminario', proyecto: 'Proyecto', mixto: 'Mixto' };
+      targetEl.innerHTML = '<span style="font-size:12px;color:#374151;">'
+        + 'Formato: <strong>' + (flabels[ctx.formato]      || ctx.formato      || '\u2014') + '</strong>'
+        + ' &nbsp;|&nbsp; Perfil: <strong>' + (plabels[ctx.profile]    || ctx.profile    || '\u2014') + '</strong>'
+        + ' &nbsp;|&nbsp; Tipo de actividad: <strong>' + (alabels[ctx.activityType] || ctx.activityType || '\u2014') + '</strong>'
+        + '</span>';
+    };
+
+    // Retorna string HTML standalone con estilos inline listo para imprimir o descargar
+    ReportGenerator.exportHTML = function(report) {
+      if (!report) return '';
+      var c   = report.computed;
+      var ctx = report.context;
+      var plabels    = { pregrado: 'Pregrado', postgrado: 'Postgrado', continua: 'Educaci\u00f3n Continua' };
+      var flabels    = { semestral: 'Semestral', modulo: 'M\u00f3dulo', bloque_breve: 'Bloque breve', cuech: 'CUECH S\u00fabete' };
+      var acolors    = { error: '#DC2626', warn: '#D97706', info: '#1D4ED8' };
+      var sctFinal   = (report.mode === 'modoA') ? c.sct     : c.totalSct;
+      var htFinal    = (report.mode === 'modoA') ? c.htTotal  : c.totalHt;
+      var wkFinal    = (report.mode === 'modoA') ? c.weekly   : c.avgWeekly;
+      var alertsHtml = '';
+      if (report.alerts && report.alerts.length) {
+        alertsHtml += '<ul style="list-style:none;padding:0;margin:0;">';
+        for (var aei = 0; aei < report.alerts.length; aei++) {
+          var ae = report.alerts[aei];
+          alertsHtml += '<li style="color:' + (acolors[ae.severity] || '#374151') + ';margin-bottom:4px;">'
+            + '[' + ae.severity.toUpperCase() + '] ' + ae.message + '</li>';
+        }
+        alertsHtml += '</ul>';
+      } else { alertsHtml = '<em style="color:#6B7280;">Sin alertas.</em>'; }
+      var budgetLine = report.budget
+        ? ('<p><strong>Presupuesto:</strong> ' + report.budget.used + ' / ' + report.budget.budget
+           + ' SCT (' + report.budget.pct + '%) &mdash; ' + report.budget.status + '</p>')
+        : '';
+      return '<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Reporte SCT-Chile</title>'
+        + '<style>body{font-family:Arial,sans-serif;font-size:14px;color:#111;margin:32px;}'
+        + 'h1{color:#0033A1;font-size:20px;}h2{font-size:15px;color:#374151;border-bottom:1px solid #e5e7eb;padding-bottom:4px;}'
+        + 'table{border-collapse:collapse;width:100%;margin-bottom:16px;}'
+        + 'th,td{border:1px solid #d1d5db;padding:6px 10px;text-align:left;font-size:13px;}'
+        + 'th{background:#f3f4f6;}@media print{body{margin:16px;}}'
+        + '</style></head><body>'
+        + '<h1>Reporte SCT-Chile &mdash; Modo ' + report.mode + '</h1>'
+        + '<p style="font-size:11px;color:#6B7280;">Generado: ' + report.timestamp + '</p>'
+        + '<h2>Contexto</h2>'
+        + '<table><tr><th>Programa</th><td>' + (ctx.programName || '\u2014') + '</td>'
+        + '<th>Semestre</th><td>' + (ctx.semester || '\u2014') + '</td></tr>'
+        + '<tr><th>Perfil</th><td>' + (plabels[ctx.profile] || ctx.profile || '\u2014') + '</td>'
+        + '<th>Formato</th><td>' + (flabels[ctx.formato] || ctx.formato || '\u2014') + '</td></tr></table>'
+        + '<h2>Resultado</h2>'
+        + '<table><tr><th>SCT Final</th><td><strong>' + (sctFinal || 0) + '</strong></td>'
+        + '<th>Horas Totales</th><td>' + (htFinal ? htFinal.toFixed(0) : '0') + ' hrs</td></tr>'
+        + '<tr><th>Carga Semanal Prom.</th><td>' + (wkFinal ? wkFinal.toFixed(1) : '0') + ' hrs/sem</td>'
+        + '<th>% Trabajo Aut\u00f3nomo</th><td>' + (c.pctAutonomia || 0) + '%</td></tr></table>'
+        + '<h2>Presupuesto</h2>' + budgetLine
+        + '<h2>Alertas</h2>' + alertsHtml
+        + '</body></html>';
+    };
+
+    // Retorna el objeto report serializable (JSON.stringify-ready)
+    ReportGenerator.exportJSON = function(report) {
+      if (!report) return null;
+      return report;
+    };
+
+    // Retorna el report en formato Markdown con encabezados ##, tablas y listas
+    ReportGenerator.exportMarkdown = function(report) {
+      if (!report) return '';
+      var c   = report.computed;
+      var ctx = report.context;
+      var plabels = { pregrado: 'Pregrado', postgrado: 'Postgrado', continua: 'Educaci\u00f3n Continua' };
+      var flabels = { semestral: 'Semestral', modulo: 'M\u00f3dulo', bloque_breve: 'Bloque breve', cuech: 'CUECH S\u00fabete' };
+      var sctFinal = (report.mode === 'modoA') ? c.sct    : c.totalSct;
+      var htFinal  = (report.mode === 'modoA') ? c.htTotal : c.totalHt;
+      var wkFinal  = (report.mode === 'modoA') ? c.weekly  : c.avgWeekly;
+      var md = '# Reporte SCT-Chile \u2014 ' + report.mode + '\n\n'
+        + '_Generado: ' + report.timestamp + '_\n\n'
+        + '## Contexto\n\n| Campo | Valor |\n|---|---|\n'
+        + '| Programa | ' + (ctx.programName || '\u2014') + ' |\n'
+        + '| Semestre | ' + (ctx.semester    || '\u2014') + ' |\n'
+        + '| Perfil | '   + (plabels[ctx.profile] || ctx.profile || '\u2014') + ' |\n'
+        + '| Formato | '  + (flabels[ctx.formato] || ctx.formato  || '\u2014') + ' |\n\n'
+        + '## Resultado\n\n| Indicador | Valor |\n|---|---|\n'
+        + '| SCT Final | **' + (sctFinal || 0) + '** |\n'
+        + '| Horas Totales | ' + (htFinal ? htFinal.toFixed(0) : '0') + ' hrs |\n'
+        + '| Carga Semanal Prom. | ' + (wkFinal ? wkFinal.toFixed(1) : '0') + ' hrs/sem |\n'
+        + '| % Trabajo Aut\u00f3nomo | ' + (c.pctAutonomia || 0) + '% |\n\n';
+      if (report.budget) {
+        md += '## Presupuesto\n\n'
+          + '- Usado: **' + report.budget.used + ' SCT** de ' + report.budget.budget + ' SCT disponibles\n'
+          + '- Porcentaje: ' + report.budget.pct + '%\n'
+          + '- Restante: ' + report.budget.remaining + ' SCT\n'
+          + '- Estado: ' + report.budget.status + '\n\n';
+      }
+      if (report.alerts && report.alerts.length) {
+        md += '## Alertas\n\n';
+        for (var ami = 0; ami < report.alerts.length; ami++) {
+          var am = report.alerts[ami];
+          md += '- **[' + am.severity.toUpperCase() + ']** ' + am.message + '\n';
+        }
+        md += '\n';
+      } else { md += '## Alertas\n\n_Sin alertas._\n\n'; }
+      return md;
+    };
+    // Fin ReportGenerator ================================
 
     // SCTEngine aliases — expuestos por referencia para uso en Modos B y C (Fase 5.7-D)
     // Las declaraciones originales (getSemaforoLevel, FORMATOS, ACTIVITY_PRESETS) siguen accesibles.
