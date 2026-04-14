@@ -135,7 +135,7 @@
     </div>
 
     <div class="bg-blue-50 border-l-4 border-umce-azul rounded-r-lg p-4">
-      <p class="text-xs text-gray-700 leading-relaxed"><strong class="text-umce-azul">Qu&eacute; valida el planificador al cierre:</strong> presencia de los tres pilares en el dise&ntilde;o (actividades EC, ED y EE) m&aacute;s tres dimensiones operativas &mdash; evaluaci&oacute;n formativa presente, contenido pasivo acotado (&le;60% de la carga) y balance sincr&oacute;nico/asincr&oacute;nico adaptado al perfil del estudiante.</p>
+      <p class="text-xs text-gray-700 leading-relaxed"><strong class="text-umce-azul">Qu&eacute; valida el planificador al cierre:</strong> presencia de los tres pilares en el dise&ntilde;o (actividades EC, ED y EE) m&aacute;s tres dimensiones operativas &mdash; evaluaci&oacute;n formativa presente, contenido pasivo acotado (&le;60% de la carga) y coherencia de la carga sincr&oacute;nica con lo declarado en el PAC (o, si no se declara, con la heur&iacute;stica del perfil del estudiante).</p>
     </div>
   </section>
 
@@ -232,6 +232,15 @@
               <input type="radio" name="unit" value="cuech">
               <div><div class="text-sm font-semibold">CUECH S&uacute;bete</div><div class="text-xs text-gray-400">Movilidad virtual, 2 SCT</div></div>
             </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">% de sincron&iacute;a declarado en el PAC <span class="text-xs font-normal text-gray-400">(opcional)</span></label>
+          <p class="text-xs text-gray-400 mb-2">Si tu PAC ya fij&oacute; qu&eacute; porcentaje de la carga del m&oacute;dulo ser&aacute; sincr&oacute;nica, ingr&eacute;salo ac&aacute;. El planificador contrastar&aacute; tu dise&ntilde;o contra ese valor (tolerancia &plusmn;10 puntos). Si lo dejas en blanco, se valida con la heur&iacute;stica por perfil.</p>
+          <div class="flex items-center gap-2 max-w-xs">
+            <input type="number" id="syncTarget" min="0" max="100" step="1" placeholder="ej: 25" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+            <span class="text-sm text-gray-500 font-semibold">%</span>
           </div>
         </div>
 
@@ -415,7 +424,7 @@
           <li><strong>&#10003; Reflexi&oacute;n (EE):</strong> vincular experiencia previa con nuevo aprendizaje es especialmente cr&iacute;tico en carreras de formaci&oacute;n docente y en postgrado con profesionales.</li>
           <li><strong>&#10003; Evaluaci&oacute;n formativa:</strong> sin retroalimentaci&oacute;n durante el proceso, el estudiante no sabe si va bien hasta el examen final. La evaluaci&oacute;n formativa corrige la trayectoria mientras a&uacute;n hay tiempo.</li>
           <li><strong>&#10003; Contenido pasivo &le;60%:</strong> umbral del modelo. Si se supera, el curso es funcionalmente un repositorio de materiales, no un entorno de aprendizaje activo.</li>
-          <li><strong>&#10003; Balance s&iacute;ncrono/as&iacute;ncrono:</strong> adaptado al perfil. En pregrado se requiere mayor acompa&ntilde;amiento en tiempo real; en postgrado y educaci&oacute;n continua, la autonom&iacute;a es parte del modelo.</li>
+          <li><strong>&#10003; Carga sincr&oacute;nica coherente con el PAC:</strong> si declaraste el % de sincron&iacute;a del PAC en el Paso 1, el planificador contrasta tu dise&ntilde;o contra ese valor (tolerancia &plusmn;10 puntos). Esto resuelve en detalle lo que el Momento 1 (Calculadora SCT) ya decidi&oacute; a nivel programa. Si no se declara, se aplica una heur&iacute;stica por perfil (pregrado: &ge;15% sincr&oacute;nico; postgrado: &le;50%; ed. continua: &le;30%).</li>
         </ul>
         <p class="mt-2">El resultado de esta validaci&oacute;n es el <strong>insumo para elaborar el PIAC</strong> (Plan Instruccional del Aprendizaje en el Curso), que se trabaja en el Momento 3 del flujo institucional. El dise&ntilde;ador instruccional de la UDFV acompa&ntilde;a ese proceso junto al acad&eacute;mico.</p>
       </div>
@@ -599,6 +608,7 @@
     function bindInputs() {
       document.getElementById('sctCredits').addEventListener('input', updateStats);
       document.getElementById('weeks').addEventListener('input', updateStats);
+      document.getElementById('syncTarget').addEventListener('input', updateStats);
       document.querySelectorAll('#profileSelector .radio-card').forEach(card => {
         card.addEventListener('click', () => { document.querySelectorAll('#profileSelector .radio-card').forEach(c => c.classList.remove('selected')); card.classList.add('selected'); updateStats(); });
       });
@@ -617,7 +627,11 @@
       const sct = parseInt(document.getElementById('sctCredits').value) || 1, weeks = parseInt(document.getElementById('weeks').value) || 1;
       const profile = document.querySelector('input[name="profile"]:checked')?.value || 'pregrado';
       const totalHours = sct * DATA.config.horasPorCredito;
-      return { sct, weeks, profile, totalHours, weeklyHours: totalHours / weeks };
+      const rawSyncTarget = document.getElementById('syncTarget')?.value;
+      const syncTarget = rawSyncTarget !== '' && rawSyncTarget != null && !isNaN(parseFloat(rawSyncTarget))
+        ? Math.min(100, Math.max(0, parseFloat(rawSyncTarget)))
+        : null;
+      return { sct, weeks, profile, totalHours, weeklyHours: totalHours / weeks, syncTarget };
     }
     function updateStats() {
       if (!DATA) return;
@@ -777,15 +791,32 @@
       const contentPct = totalMin > 0 ? (cats['IN'] || 0) / totalMin : 0;
       const syncMin = addedActivities.filter(a => ['EC3','EC4','EC5'].includes(a.actId)).reduce((s,a) => s + a.subtotalMin, 0);
       const syncPct = totalMin > 0 ? syncMin / totalMin : 0;
-      const syncOk = c.profile === 'postgrado' ? syncPct <= 0.5 : c.profile === 'continua' ? syncPct <= 0.30 : syncPct >= 0.15;
       const profileLabels = { pregrado: 'Pregrado', postgrado: 'Postgrado', continua: 'Ed. Continua' };
+      const syncDesignedPct = Math.round(syncPct * 100);
+      let syncOk, syncLabel, syncDesc;
+      if (c.syncTarget !== null) {
+        const diff = Math.abs(syncDesignedPct - c.syncTarget);
+        syncOk = diff <= 10;
+        syncLabel = `Carga sincr\u00f3nica coherente con el PAC (dise\u00f1ado ${syncDesignedPct}%, declarado ${c.syncTarget}%)`;
+        syncDesc = syncOk
+          ? `Dentro de la tolerancia de \u00b110 puntos respecto a lo declarado en el PAC.`
+          : `Diferencia de ${diff} puntos respecto al PAC. Revisa si el dise\u00f1o respeta el presupuesto sincr\u00f3nico acordado o si corresponde ajustar el PAC.`;
+      } else {
+        syncOk = c.profile === 'postgrado' ? syncPct <= 0.5 : c.profile === 'continua' ? syncPct <= 0.30 : syncPct >= 0.15;
+        syncLabel = `Balance s\u00edncrono/as\u00edncrono para ${profileLabels[c.profile]} (heur\u00edstica por perfil)`;
+        syncDesc = c.profile === 'postgrado'
+          ? 'Profesionales adultos: m\u00e1s autonom\u00eda, menos sincr\u00f3nico (\u2264 50%).'
+          : c.profile === 'continua'
+          ? 'Educaci\u00f3n continua: ritmo propio, sincron\u00eda acotada (\u2264 30%).'
+          : 'Estudiantes j\u00f3venes: necesitan acompa\u00f1amiento sincr\u00f3nico (\u2265 15%). Para mayor precisi\u00f3n, declara el % del PAC en el Paso 1.';
+      }
       const checks = [
         { ok: hasInteraction, label: 'Hay actividades de interacci\u00f3n (foros, sincr\u00f3nicas, tutor\u00edas)', desc: 'El modelo UMCE requiere interacci\u00f3n entre estudiantes y con docentes.' },
         { ok: hasCollab, label: 'Hay actividades de colaboraci\u00f3n (wikis, proyectos grupales, co-evaluaci\u00f3n)', desc: 'La construcci\u00f3n conjunta de conocimiento es pilar del modelo.' },
         { ok: hasReflection, label: 'Hay actividades de reflexi\u00f3n (diarios, portafolios, ensayos reflexivos)', desc: 'Vincular experiencia previa con nuevo aprendizaje.' },
         { ok: hasFormative, label: 'Hay evaluaci\u00f3n formativa (quizzes, H5P, escenarios)', desc: 'Evaluar para aprender, no solo para calificar.' },
         { ok: contentPct <= 0.6, label: `Contenido pasivo \u2264 60% (actual: ${Math.round(contentPct*100)}%)`, desc: 'El modelo est\u00e1 centrado en la actividad del estudiante, no en consumir contenido.' },
-        { ok: syncOk, label: `Balance s\u00edncrono/as\u00edncrono para ${profileLabels[c.profile]}`, desc: c.profile === 'postgrado' ? 'Profesionales adultos: m\u00e1s autonom\u00eda, menos sincr\u00f3nico.' : 'Estudiantes j\u00f3venes: necesitan acompa\u00f1amiento sincr\u00f3nico.' },
+        { ok: syncOk, label: syncLabel, desc: syncDesc },
       ];
       document.getElementById('checklist').innerHTML = checks.map(ch => {
         const noData = addedActivities.length === 0;
@@ -817,6 +848,7 @@
       document.getElementById('moduleName').value = '';
       document.getElementById('sctCredits').value = 3;
       document.getElementById('weeks').value = 18;
+      document.getElementById('syncTarget').value = '';
       document.querySelectorAll('#profileSelector .radio-card').forEach((c,i) => { c.classList.toggle('selected', i===0); c.querySelector('input').checked = i===0; });
       document.querySelectorAll('#unitSelector .radio-card').forEach((c,i) => { c.classList.toggle('selected', i===0); c.querySelector('input').checked = i===0; });
       document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
