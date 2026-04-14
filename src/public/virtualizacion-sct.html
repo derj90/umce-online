@@ -596,7 +596,7 @@ const PROFILES = {
     duracion_default: 8,
     duracion_min: 2, duracion_max: 12,
     modalidad_default: { sync: 30, async: 30, auto: 40 },
-    sync_amarilla: 6, sync_roja: 10
+    sync_amarilla: 9, sync_roja: 13
   },
   postgrado: {
     nombre: 'Postgrado',
@@ -606,7 +606,7 @@ const PROFILES = {
     duracion_default: 4,
     duracion_min: 2, duracion_max: 8,
     modalidad_default: { sync: 20, async: 30, auto: 50 },
-    sync_amarilla: 4, sync_roja: 6
+    sync_amarilla: 8, sync_roja: 11
   },
   edu_continua: {
     nombre: 'Educación continua',
@@ -616,7 +616,7 @@ const PROFILES = {
     duracion_default: 12,
     duracion_min: 4, duracion_max: 16,
     modalidad_default: { sync: 20, async: 40, auto: 40 },
-    sync_amarilla: 3, sync_roja: 5
+    sync_amarilla: 6, sync_roja: 8
   }
 };
 
@@ -773,6 +773,17 @@ function acTotalHsem(ac) {
   return TYPES.reduce((s, t) => s + (ac.comp[t.id] || 0), 0);
 }
 
+function acModalidadHoras(ac, prog) {
+  const hTot = acTotalHoras(ac);
+  const def = PROFILES[prog.perfil].modalidad_default;
+  const mod = ac.modalidad || def;
+  return {
+    sync: Math.round(hTot * (mod.sync ?? def.sync) / 100),
+    async: Math.round(hTot * (mod.async ?? def.async) / 100),
+    auto: Math.round(hTot * (mod.auto ?? def.auto) / 100)
+  };
+}
+
 // SCT del AC = ceil(horas_totales / 27)
 function acSCT(ac) {
   if (ac.formato === 'cuech') return CUECH.sct;
@@ -866,22 +877,18 @@ function classifyLoad(hsem, objetivo) {
   return 'green';
 }
 
-// Detecta alertas semana a semana (promedio móvil 4 sem)
+// Detecta alertas: exceso de horas sincronicas semanales
 function detectAlerts(prog) {
-  const loads = weeklyLoad(prog);
   const syncLoads = weeklySyncLoad(prog);
   const n = programWeeks(prog);
   const alerts = [];
-  const objetivo = prog.carga_objetivo;
   const th = syncThresholds(prog);
   for (let w = 1; w <= n; w++) {
-    const cls = classifyLoad(loads[w], objetivo);
-    if (cls === 'red_over' || cls === 'red_under') {
-      alerts.push({ semana: w, tipo: cls, valor: loads[w], objetivo });
-    }
     const syncCls = classifySync(syncLoads[w], prog);
     if (syncCls === 'red_sync') {
       alerts.push({ semana: w, tipo: 'red_sync', valor: syncLoads[w], objetivo: th.roja });
+    } else if (syncCls === 'yellow_sync') {
+      alerts.push({ semana: w, tipo: 'yellow_sync', valor: syncLoads[w], objetivo: th.amarilla });
     }
   }
   return alerts;
@@ -1183,16 +1190,15 @@ function renderOverview() {
   // Alerts panel
   const alertsHtml = alerts.slice(0, 3).map(a => {
     const styleMap = {
-      'red_over':  { cls: 'alert-red',  label: '▲ Sobrecarga',           unit: 'h/sem', ref: `objetivo ${a.objetivo}` },
-      'red_under': { cls: 'alert-gray', label: '▼ Subcarga',              unit: 'h/sem', ref: `objetivo ${a.objetivo}` },
-      'red_sync':  { cls: 'alert-red',  label: '● Exceso de sincrónicas', unit: 'h/sem sync', ref: `umbral ${a.objetivo}` }
+      'red_sync':    { cls: 'alert-red',    label: '● Exceso de horas sincrónicas', ref: `umbral ${a.objetivo} h/sem` },
+      'yellow_sync': { cls: 'alert-yellow', label: '◐ Acercándose al tope sincrónico', ref: `tope ${a.objetivo} h/sem` }
     };
-    const s = styleMap[a.tipo] || styleMap['red_over'];
+    const s = styleMap[a.tipo];
     return `
       <div class="${s.cls} border p-3 rounded-lg flex items-center justify-between">
         <div class="text-sm">
           <strong>${s.label} en S${a.semana}:</strong>
-          ${fmt(a.valor)} ${s.unit} (${s.ref}).
+          ${fmt(a.valor)} h/sem en vivo (${s.ref}).
         </div>
         <button onclick="scrollToWeek(${a.semana})" class="text-xs underline">ver en calendario</button>
       </div>`;
@@ -1258,17 +1264,25 @@ function renderGantt() {
   for (const ac of acs) {
     const sct = acSCT(ac);
     const hsem = acTotalHsem(ac);
+    const mh = acModalidadHoras(ac, p);
     const left = (ac.semana_inicio - 1) * weekPx;
     const width = ac.duracion * weekPx;
     const isSel = currentAC && currentAC.id === ac.id;
     rows += `
       <div class="flex border-b hover:bg-gray-50 group" style="min-width:${labelPx + n*weekPx}px">
-        <div class="flex items-center gap-2 px-3 py-2 border-r" style="width:${labelPx}px">
-          <span class="text-xs text-gray-400">${ac.estado === 'borrador' ? '○' : '●'}</span>
-          <span class="text-sm font-medium truncate flex-1" title="${escapeHtml(ac.nombre)}">${escapeHtml(ac.nombre)}</span>
+        <div class="flex items-start gap-2 px-3 py-2 border-r" style="width:${labelPx}px">
+          <span class="text-xs text-gray-400 mt-0.5">${ac.estado === 'borrador' ? '○' : '●'}</span>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium truncate" title="${escapeHtml(ac.nombre)}">${escapeHtml(ac.nombre)}</div>
+            <div class="text-[10px] text-gray-600 mt-0.5 flex gap-1.5 whitespace-nowrap" title="Sincrónicas · Asincrónicas · Autónomas">
+              <span class="text-blue-700">HS ${mh.sync}h</span>
+              <span class="text-amber-700">HAs ${mh.async}h</span>
+              <span class="text-emerald-700">HAut ${mh.auto}h</span>
+            </div>
+          </div>
         </div>
-        <div class="relative flex-1" style="height:36px">
-          <div class="ac-bar fmt-${ac.formato} absolute top-1 rounded border-2 ${isSel?'selected':''} ${ac.estado==='borrador'?'border-dashed':''}"
+        <div class="relative flex-1" style="height:52px">
+          <div class="ac-bar fmt-${ac.formato} absolute top-3 rounded border-2 ${isSel?'selected':''} ${ac.estado==='borrador'?'border-dashed':''}"
                style="left:${left}px; width:${width-2}px; height:28px"
                data-ac-id="${ac.id}">
             <div class="px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis pointer-events-none" style="line-height:26px">
@@ -1286,48 +1300,59 @@ function renderGantt() {
 function renderLoadChart() {
   const p = currentProgram;
   const n = programWeeks(p);
-  const loads = weeklyLoad(p);
+  const loadsTotal = weeklyLoad(p);
+  const loadsSync = weeklySyncLoad(p);
+  const th = syncThresholds(p);
   const weekPx = 18;
   const labelPx = 220;
-  const maxH = Math.max(p.carga_objetivo * 1.8, ...loads.slice(1));
+  const maxH = Math.max(th.roja * 1.5, ...loadsSync.slice(1), ...loadsTotal.slice(1));
   const chartH = 120;
 
-  const objetivoY = chartH - (p.carga_objetivo / maxH) * chartH;
-  const amarillaOverY = chartH - (p.carga_objetivo * (1 + THRESHOLDS.sobrecarga_amarilla) / maxH) * chartH;
-  const rojaOverY = chartH - (p.carga_objetivo * (1 + THRESHOLDS.sobrecarga_roja) / maxH) * chartH;
+  const amarillaY = chartH - (th.amarilla / maxH) * chartH;
+  const rojaY = chartH - (th.roja / maxH) * chartH;
 
   let bars = '';
   for (let w = 1; w <= n; w++) {
-    const h = loads[w];
-    const barH = maxH > 0 ? (h / maxH) * chartH : 0;
-    const cls = classifyLoad(h, p.carga_objetivo);
+    const hSync = loadsSync[w];
+    const hTotal = loadsTotal[w];
+    const barSyncH = maxH > 0 ? (hSync / maxH) * chartH : 0;
+    const barTotalH = maxH > 0 ? (hTotal / maxH) * chartH : 0;
+    const cls = classifySync(hSync, p);
     const colorMap = {
       'green': 'bg-green-500',
-      'yellow_over': 'bg-yellow-500',
-      'yellow_under': 'bg-gray-400',
-      'red_over': 'bg-red-500',
-      'red_under': 'bg-gray-300',
+      'yellow_sync': 'bg-yellow-500',
+      'red_sync': 'bg-red-500',
       'empty': 'bg-gray-100'
     };
-    bars += `<div class="load-bar relative ${colorMap[cls]} cursor-help" style="width:${weekPx-2}px; height:${barH}px; margin-right:2px"
-                  title="S${w}: ${fmt(h)} h/sem"></div>`;
+    // Barra contenedora: total h/sem en gris claro, sincrónicas encima con color
+    bars += `<div class="relative cursor-help" style="width:${weekPx-2}px; margin-right:2px"
+                  title="S${w}: ${fmt(hSync)} h/sem sincrónicas · ${fmt(hTotal)} h/sem totales">
+               <div class="absolute bottom-0 left-0 right-0 bg-gray-200" style="height:${barTotalH}px"></div>
+               <div class="absolute bottom-0 left-0 right-0 ${colorMap[cls]}" style="height:${barSyncH}px"></div>
+             </div>`;
   }
 
   const chartHtml = `
     <div style="margin-left:${labelPx}px; min-width:${n*weekPx}px">
       <div class="relative" style="height:${chartH}px">
         <!-- Zona roja arriba -->
-        <div class="absolute left-0 right-0 bg-red-100 opacity-40" style="top:0; height:${rojaOverY}px"></div>
+        <div class="absolute left-0 right-0 bg-red-100 opacity-40" style="top:0; height:${rojaY}px"></div>
         <!-- Zona amarilla -->
-        <div class="absolute left-0 right-0 bg-yellow-100 opacity-40" style="top:${rojaOverY}px; height:${amarillaOverY - rojaOverY}px"></div>
-        <!-- Línea objetivo -->
-        <div class="absolute left-0 right-0 border-t-2 border-dashed border-gray-700" style="top:${objetivoY}px"></div>
-        <div class="absolute right-0 text-[10px] text-gray-700 bg-white px-1" style="top:${objetivoY-8}px">obj ${p.carga_objetivo}</div>
+        <div class="absolute left-0 right-0 bg-yellow-100 opacity-40" style="top:${rojaY}px; height:${amarillaY - rojaY}px"></div>
+        <!-- Linea roja -->
+        <div class="absolute left-0 right-0 border-t-2 border-dashed border-red-500" style="top:${rojaY}px"></div>
+        <div class="absolute right-0 text-[10px] text-red-600 bg-white px-1" style="top:${rojaY-8}px">tope sync ${th.roja}</div>
         <!-- Barras -->
         <div class="absolute bottom-0 left-0 flex items-end" style="height:${chartH}px">${bars}</div>
       </div>
       <div class="flex mt-1">
         ${Array.from({length:n}, (_,i) => `<div class="text-[9px] text-center text-gray-500" style="width:${weekPx-2}px; margin-right:2px">${(i+1)%4===1?'S'+(i+1):''}</div>`).join('')}
+      </div>
+      <div class="flex items-center gap-3 mt-2 text-[10px] text-gray-600">
+        <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 bg-gray-200"></span> total h/sem (referencia)</span>
+        <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 bg-green-500"></span> sincrónicas OK</span>
+        <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 bg-yellow-500"></span> cerca del tope</span>
+        <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 bg-red-500"></span> exceso</span>
       </div>
     </div>`;
 
@@ -1376,8 +1401,7 @@ function onGanttMouseMove(e) {
     if (ns + dragState.ac.duracion - 1 > n) ns = n - dragState.ac.duracion + 1;
     dragState.ac.semana_inicio = ns;
   }
-  renderGantt();
-  renderLoadChart();
+  renderOverview(); // recalcula alertas + gantt + load chart en vivo
 }
 
 function onGanttMouseUp() {
@@ -1576,38 +1600,37 @@ function renderImpacto(draft) {
   // Simula: suma de cargas existentes (excluyendo el AC actual si existía) + draft
   const simAcs = p.acs.filter(a => !currentAC || a.id !== currentAC.id).concat([draft]);
   const simProg = { ...p, acs: simAcs };
-  const loads = weeklyLoad(simProg);
+  const syncLoads = weeklySyncLoad(simProg);
   const n = programWeeks(p);
+  const th = syncThresholds(p);
 
-  let maxLoad = 0, maxWeek = 0;
+  let maxSync = 0, maxWeek = 0;
   const w0 = draft.semana_inicio;
   const w1 = Math.min(w0 + draft.duracion - 1, n);
   for (let w = w0; w <= w1; w++) {
-    if (loads[w] > maxLoad) { maxLoad = loads[w]; maxWeek = w; }
+    if (syncLoads[w] > maxSync) { maxSync = syncLoads[w]; maxWeek = w; }
   }
-  const cls = classifyLoad(maxLoad, p.carga_objetivo);
+  const cls = classifySync(maxSync, simProg);
   const clsLabel = {
     'green': 'zona verde',
-    'yellow_over': 'zona amarilla (sobrecarga leve)',
-    'yellow_under': 'zona amarilla (subcarga leve)',
-    'red_over': 'zona roja (sobrecarga)',
-    'red_under': 'zona roja (subcarga)',
+    'yellow_sync': 'acercándose al tope sincrónico',
+    'red_sync': 'exceso de horas sincrónicas',
     'empty': 'semana vacía'
   }[cls];
   const bgCls = {
     'green': 'bg-green-50 border-green-200 text-green-900',
-    'yellow_over': 'bg-yellow-50 border-yellow-200 text-yellow-900',
-    'yellow_under': 'bg-yellow-50 border-yellow-200 text-yellow-900',
-    'red_over': 'bg-red-50 border-red-200 text-red-900',
-    'red_under': 'bg-gray-50 border-gray-200 text-gray-700',
+    'yellow_sync': 'bg-yellow-50 border-yellow-200 text-yellow-900',
+    'red_sync': 'bg-red-50 border-red-200 text-red-900',
     'empty': 'bg-gray-50 border-gray-200 text-gray-700'
   }[cls];
+  const mh = acModalidadHoras(draft, p);
+  const hsemSyncDraft = mh.sync / Math.max(1, draft.duracion);
 
   document.getElementById('ac-impacto').className = `text-sm p-3 rounded-lg border ${bgCls}`;
   document.getElementById('ac-impacto').innerHTML = `
-    <strong>Impacto:</strong> esta AC aporta ${fmt(hsem)} h/sem en S${w0}–S${w1}.
-    Pico proyectado: S${maxWeek} con ${fmt(maxLoad)} h/sem → <strong>${clsLabel}</strong>
-    (objetivo ${p.carga_objetivo} h/sem).`;
+    <strong>Impacto:</strong> esta AC aporta ${fmt(hsem)} h/sem totales (${fmt(hsemSyncDraft)} h/sem sincrónicas) en S${w0}–S${w1}.
+    Pico sincrónico proyectado: S${maxWeek} con ${fmt(maxSync)} h/sem → <strong>${clsLabel}</strong>
+    (tope ${th.roja} h/sem, alerta ${th.amarilla}).`;
 }
 
 function renderRecomendacion(draft) {
