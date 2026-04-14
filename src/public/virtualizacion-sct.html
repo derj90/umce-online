@@ -1269,6 +1269,8 @@ function renderGantt() {
     const sct = acSCT(ac);
     const hsem = acTotalHsem(ac);
     const mh = acModalidadHoras(ac, p);
+    const dur = Math.max(1, ac.duracion);
+    const mhSem = { sync: mh.sync/dur, async: mh.async/dur, auto: mh.auto/dur };
     const left = (ac.semana_inicio - 1) * weekPx;
     const width = ac.duracion * weekPx;
     const isSel = currentAC && currentAC.id === ac.id;
@@ -1278,10 +1280,11 @@ function renderGantt() {
           <span class="text-xs text-gray-400 mt-0.5">${ac.estado === 'borrador' ? '○' : '●'}</span>
           <div class="flex-1 min-w-0">
             <div class="text-sm font-medium truncate" title="${escapeHtml(ac.nombre)}">${escapeHtml(ac.nombre)}</div>
-            <div class="text-[10px] text-gray-600 mt-0.5 flex gap-1.5 whitespace-nowrap" title="Sincrónicas · Asincrónicas · Autónomas">
-              <span class="text-blue-700">HS ${mh.sync}h</span>
-              <span class="text-amber-700">HAs ${mh.async}h</span>
-              <span class="text-emerald-700">HAut ${mh.auto}h</span>
+            <div class="text-[10px] text-gray-600 mt-0.5 flex gap-1.5 whitespace-nowrap" title="Horas por semana (total AC: HS ${mh.sync}h · HAs ${mh.async}h · HAut ${mh.auto}h)">
+              <span class="text-blue-700">HS ${fmt(mhSem.sync)}</span>
+              <span class="text-amber-700">HAs ${fmt(mhSem.async)}</span>
+              <span class="text-emerald-700">HAut ${fmt(mhSem.auto)}</span>
+              <span class="text-gray-400">h/sem</span>
             </div>
           </div>
         </div>
