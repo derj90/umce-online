@@ -52,6 +52,24 @@ Quality Matters sigue siendo valioso como punto de comparacion: donde OSCQR y QM
 
 ---
 
+## 3b. OLC Course Review Scorecard 2025: actualizacion reciente
+
+En marzo de 2025, el Online Learning Consortium (OLC) publico una nueva **Tarjeta de Puntuacion para la Revision de Cursos** que reemplaza oficialmente tanto a OSCQR como a QCTIP (Quality Course Teaching and Instructional Practice) como instrumento de evaluacion a nivel de curso de OLC. Esta disponible en español, de acceso libre.
+
+El nuevo instrumento tiene **50 objetivos** organizados en tres secciones:
+
+| Seccion | Objetivos | Que evalua |
+|---------|-----------|------------|
+| Diseno Esencial | 20 | Componentes fundamentales: objetivos, materiales, accesibilidad, organizacion |
+| Diseno Avanzado | 15 | Mejoras de excelencia: aprendizaje adaptativo, DUA, IA generativa, metacognicion |
+| Entrega del Curso | 15 | Como el docente facilita el curso: retroalimentacion, presencia, adaptabilidad |
+
+**Diferencia clave con OSCQR v4.0:** El nuevo scorecard incorpora la dimension de **entrega docente** (como se facilita el curso, no solo como se disena). OSCQR evaluaba solo el diseno del curso. Esto es relevante para la UMCE porque nuestro Marco Evaluativo (D4: Competencias docentes) ya abordaba parcialmente este espacio.
+
+**Inclusion en este proceso:** Los 50 objetivos del OLC 2025 fueron cruzados con nuestra propuesta de indicadores. El resultado: 80% ya estaba cubierto; las 10 brechas identificadas (principalmente en presencia docente activa y aprendizaje adaptativo) fueron incorporadas como indicadores adicionales (QA-65 a QA-71). Esto permite afirmar que el instrumento UMCE cubre la totalidad del marco OLC 2025 mas los aportes propios de la universidad.
+
+---
+
 ## 4. Marco Evaluativo Sepulveda: el sello distintivo UMCE
 
 El Marco Evaluativo de Cursos Virtuales UMCE fue desarrollado por Paloma Sepulveda Parrini (2024) en el contexto del Proyecto de Fortalecimiento Institucional UMC20992. Su punto de partida fue un analisis comparado de 25 modelos internacionales de calidad en educacion virtual (Marciniak y Gairin, 2017), del cual se identificaron los temas que la literatura considera fundamentales. Pero el marco no se limita a adaptar estandares internacionales: **su construccion responde a los intereses y compromisos del modelo educativo de la UMCE**, traduciendo politicas institucionales concretas en indicadores verificables para los cursos virtuales.
@@ -117,21 +135,24 @@ Los tres marcos utilizan sistemas diferentes para senalar la importancia relativ
 
 ## Tabla comparativa
 
-| Caracteristica | OSCQR (SUNY) | Quality Matters | Sepulveda (UMCE) |
-|----------------|-------------|-----------------|-------------------|
-| Estandares / indicadores | 50 | 42 | 77 |
-| Categorias / dimensiones | 6 | 8 | 6 (19 subdimensiones) |
-| Licencia | CC BY 4.0 (libre) | Propietaria | Institucional UMCE |
-| Enfoque | Mejora continua | Certificacion externa | Mejora continua |
-| Perspectiva de genero | No | No | Si (D5) |
-| Corresponsabilidad social | No | No | Si (D6) |
-| Sesion sincronica | No | No | Si (D3.4) |
-| Pilotaje en UMCE | No | No | Si (2024, 5 cursos) |
+| Caracteristica | OSCQR v4.0 (SUNY) | OLC 2025 | Quality Matters | Sepulveda (UMCE) |
+|----------------|-------------------|----------|-----------------|-------------------|
+| Estandares / indicadores | 50 | 50 | 42 | 77 |
+| Categorias / dimensiones | 6 | 3 | 8 | 6 (19 subdimensiones) |
+| Licencia | CC BY 4.0 | Libre (CC BY-NC-SA) | Propietaria | Institucional UMCE |
+| Enfoque | Mejora continua | Mejora + certificacion | Certificacion externa | Mejora continua |
+| Evalua entrega docente | No | Si (15 objetivos) | No | Si (D4, 7 indicadores) |
+| Perspectiva de genero | No | No | No | Si (D5) |
+| Corresponsabilidad social | No | No | No | Si (D6) |
+| Sesion sincronica | No | No | No | Si (D3.4) |
+| IA generativa | No | Si (1 objetivo) | No | Si (D6.1.2) |
+| Pilotaje en UMCE | No | No | No | Si (2024, 5 cursos) |
 
 ---
 
 ## Referencias
 
 1. **OSCQR v4.0** — State University of New York / Online Learning Consortium (2021). *OSCQR Course Design Review.* Licencia CC BY 4.0.
-2. **Quality Matters HE Rubric, 6th Edition** — Quality Matters (2020). *Specific Review Standards from the QM Higher Education Rubric.* Todos los derechos reservados.
-3. **Marco Evaluativo de Cursos Virtuales UMCE** — Sepulveda Parrini, P. (2024). Proyecto UMC20992, Universidad Metropolitana de Ciencias de la Educacion.
+2. **OLC Course Review Scorecard** — Online Learning Consortium (2025). *Tarjeta de Puntuacion para la Revision de Cursos.* Disponible en español, acceso libre.
+3. **Quality Matters HE Rubric, 6th Edition** — Quality Matters (2020). *Specific Review Standards from the QM Higher Education Rubric.* Todos los derechos reservados.
+4. **Marco Evaluativo de Cursos Virtuales UMCE** — Sepulveda Parrini, P. (2024). Proyecto UMC20992, Universidad Metropolitana de Ciencias de la Educacion.
