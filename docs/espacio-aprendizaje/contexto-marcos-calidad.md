@@ -104,16 +104,28 @@ El resultado son **77 indicadores** organizados en **6 dimensiones y 19 subdimen
 
 ---
 
-## 5. Por que cruzar cuatro marcos
+## 5. Orientaciones CNA para modalidad virtual: el marco regulatorio chileno
 
-El cruce de las cuatro fuentes no es una suma (50 + 50 + 42 + 77 = 219 indicadores independientes). Es un analisis que busca:
+Las **Orientaciones para la Acreditacion de Instituciones que Imparten Programas en Modalidad Virtual y Combinada** (CNA Chile, documento de trabajo) establecen los criterios que la Comision Nacional de Acreditacion utiliza para evaluar universidades con oferta virtual. Este documento es la referencia regulatoria mas importante para la UMCE.
 
-- **Convergencias:** Cuando tres o cuatro marcos coinciden en un criterio, existe consenso internacional robusto. Esto fortalece el argumento ante acreditadoras como CNA. En nuestro cruce, 10 de 18 temas tienen consenso de 4/4 fuentes.
+Las orientaciones se organizan en tres dimensiones — Gestion Institucional, Docencia de Pregrado y Docencia de Posgrado — con criterios especificos para modalidad virtual en cada una. De los 38 criterios identificados, **19 operan a nivel de curso** (y por tanto pueden ser cubiertos por nuestro instrumento QA) y **19 son de nivel institucional** (gobernanza, presupuesto, infraestructura TI, reglamentos).
+
+**Hallazgo clave:** El instrumento QA que estamos construyendo es en si mismo evidencia del criterio CNA I.5.d — "mecanismos formales y sistematicos de evaluacion y monitoreo de procesos y resultados asociados a la modalidad virtual". Si se aplica con regularidad documentada, constituye uno de los activos acreditadores mas poderosos de la UMCE.
+
+El cruce con CNA revelo 4 gaps especificos que fueron incorporados como indicadores adicionales (QA-72 a QA-75): verificacion de identidad en evaluaciones, enlace al reglamento institucional de virtualidad, soporte socio-afectivo integral, y protocolo de contingencia tecnica.
+
+---
+
+## 6. Por que cruzar cinco fuentes
+
+El cruce de las cinco fuentes no es una suma (50 + 50 + 42 + 77 + 22 = 241 indicadores independientes). Es un analisis que busca:
+
+- **Convergencias:** Cuando cuatro o cinco fuentes coinciden en un criterio, existe consenso robusto tanto internacional como regulatorio. En nuestro cruce, 8 de 18 temas tienen consenso de 5/5 fuentes.
 - **Complementariedades:** Donde solo una o dos fuentes cubren un tema (por ejemplo, genero en D5 o sesion sincronica en D3.4), se trata de un aporte que responde a necesidades locales especificas.
-- **Vacios:** Si ningun marco cubre un aspecto relevante para la UMCE, es una oportunidad para proponer nuevos indicadores.
-- **Actualizacion:** El cruce con OLC 2025 (publicado en marzo 2025) asegura que el instrumento UMCE esta alineado con el marco internacional mas reciente disponible, no solo con versiones de 2020-2021.
+- **Trazabilidad CNA:** Cada indicador que traza a un criterio CNA tiene respaldo regulatorio directo para efectos de acreditacion. Esto convierte la validacion por Mesa 1 en un ejercicio con impacto institucional real.
+- **Actualizacion:** El cruce con OLC 2025 (publicado en marzo 2025) asegura alineacion con el marco internacional mas reciente.
 
-El objetivo final es un **set unico de 71 indicadores propuestos, validados por Mesa 1**, con trazabilidad a cuatro marcos internacionales para efectos de acreditacion y pertinencia local para la mejora efectiva de los cursos.
+El objetivo final es un **set de 75 indicadores propuestos, validados por Mesa 1**, con trazabilidad a cinco fuentes (3 internacionales + 1 institucional UMCE + 1 regulatoria CNA) para efectos de acreditacion y pertinencia local.
 
 ---
 
@@ -136,18 +148,19 @@ Los cuatro marcos utilizan sistemas diferentes para senalar la importancia relat
 
 ## Tabla comparativa
 
-| Caracteristica | OSCQR v4.0 (SUNY) | OLC 2025 | Quality Matters | Sepulveda (UMCE) |
-|----------------|-------------------|----------|-----------------|-------------------|
-| Estandares / indicadores | 50 | 50 | 42 | 77 |
-| Categorias / dimensiones | 6 | 3 | 8 | 6 (19 subdimensiones) |
-| Licencia | CC BY 4.0 | Libre (CC BY-NC-SA) | Propietaria | Institucional UMCE |
-| Enfoque | Mejora continua | Mejora + certificacion | Certificacion externa | Mejora continua |
-| Evalua entrega docente | No | Si (15 objetivos) | No | Si (D4, 7 indicadores) |
-| Perspectiva de genero | No | No | No | Si (D5) |
-| Corresponsabilidad social | No | No | No | Si (D6) |
-| Sesion sincronica | No | No | No | Si (D3.4) |
-| IA generativa | No | Si (1 objetivo) | No | Si (D6.1.2) |
-| Pilotaje en UMCE | No | No | No | Si (2024, 5 cursos) |
+| Caracteristica | OSCQR v4.0 | OLC 2025 | Quality Matters | Sepulveda UMCE | CNA Chile |
+|----------------|-----------|----------|-----------------|----------------|-----------|
+| Estandares / indicadores | 50 | 50 | 42 | 77 | 22 (nivel curso) |
+| Categorias / dimensiones | 6 | 3 | 8 | 6 (19 subdim.) | 3 (GI, Pregrado, Postgrado) |
+| Licencia | CC BY 4.0 | CC BY-NC-SA | Propietaria | Institucional | Regulatoria (publica) |
+| Enfoque | Mejora continua | Mejora + certificacion | Certificacion | Mejora continua | Acreditacion institucional |
+| Evalua entrega docente | No | Si (15 obj.) | No | Si (D4) | Si (II.3) |
+| Perspectiva de genero | No | No | No | Si (D5) | No |
+| Corresponsabilidad social | No | No | No | Si (D6) | Parcial (carga en I.5.e) |
+| Sesion sincronica | No | No | No | Si (D3.4) | No |
+| IA generativa | No | Si (A-4) | No | Si (D6.1.2) | No |
+| Verificacion identidad | No | No | No | No | Si (II.2.c) |
+| Soporte socio-afectivo | No | No | No | Parcial (D5.2.1) | Si (I.1.c, II.4.b) |
 
 ---
 
@@ -157,3 +170,4 @@ Los cuatro marcos utilizan sistemas diferentes para senalar la importancia relat
 2. **OLC Course Review Scorecard** — Online Learning Consortium (2025). *Tarjeta de Puntuacion para la Revision de Cursos.* Disponible en español, acceso libre.
 3. **Quality Matters HE Rubric, 6th Edition** — Quality Matters (2020). *Specific Review Standards from the QM Higher Education Rubric.* Todos los derechos reservados.
 4. **Marco Evaluativo de Cursos Virtuales UMCE** — Sepulveda Parrini, P. (2024). Proyecto UMC20992, Universidad Metropolitana de Ciencias de la Educacion.
+5. **Orientaciones CNA para modalidad virtual** — Comision Nacional de Acreditacion (s/f). *Orientaciones para la Acreditacion de Instituciones que Imparten Programas en Modalidad Virtual y Combinada — Universidades.* Documento de trabajo.

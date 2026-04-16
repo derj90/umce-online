@@ -1,6 +1,6 @@
-# Insumo: Indicadores de Calidad — Cuatro Fuentes Extraidas
+# Insumo: Indicadores de Calidad — Cinco Fuentes Extraidas
 
-*Generado: 16-Abr-2026 — Actualizado: 16-Abr-2026 (seccion Sepulveda regenerada desde JSON canonico + OLC 2025 incorporado)*
+*Generado: 16-Abr-2026 — Actualizado: 16-Abr-2026 (Sepulveda desde JSON + OLC 2025 + CNA Chile incorporados)*
 *Proposito: insumo para el analisis de la Fase A del plan QA*
 
 ---
@@ -385,20 +385,61 @@
 
 ## Resumen comparativo de estructura
 
-| | OSCQR v4.0 (SUNY) | OLC 2025 | Quality Matters | Sepulveda (UMCE) |
-|---|---|---|---|---|
-| **Indicadores/estandares** | 50 | 50 | 42 | 77 |
-| **Categorias/dimensiones** | 6 | 3 (Esencial, Avanzado, Entrega) | 8 | 6 (19 subdimensiones) |
-| **Escala** | Sufficiently Present / Revision / NA | 0-2 (Desarrollo, Logrado, Ejemplar) | Puntos 1-3 | Likert 0-4 |
-| **Licencia** | CC BY 4.0 (libre) | CC BY-NC-SA (libre) | Propietaria (no libre) | Institucional UMCE |
-| **Entrega docente** | No | Si (15 objetivos) | No | Si (D4, 7 indicadores) |
-| **Perspectiva de genero** | No | Parcial (A-7 diversidad) | No | Si (D5, 11 indicadores) |
-| **Corresponsabilidad/cuidados** | No | Parcial (E-19 carga) | No | Si (D6, 8 indicadores) |
-| **Sesion sincrona** | No | No | No | Si (D3.4, 4 indicadores) |
-| **IA generativa** | No | Si (A-4) | No | Si (D6.1.2) |
-| **Accesibilidad** | Si (cat 3, std 15, 34-37) | Si (E-7, A-10, A-11) | Si (cat 8) | Si (D2, 17 indicadores) |
+| | OSCQR v4.0 | OLC 2025 | Quality Matters | Sepulveda UMCE | CNA Chile |
+|---|---|---|---|---|---|
+| **Indicadores** | 50 | 50 | 42 | 77 | 22 (nivel curso) |
+| **Categorias** | 6 | 3 | 8 | 6 (19 subdim.) | 3 (GI, Pregrado, Postgrado) |
+| **Escala** | Present / Revision | 0-2 | Puntos 1-3 | Likert 0-4 | Criterio / Orientacion |
+| **Licencia** | CC BY 4.0 | CC BY-NC-SA | Propietaria | Institucional | Regulatoria (publica) |
+| **Entrega docente** | No | Si (15 obj.) | No | Si (D4) | Si (II.3) |
+| **Genero** | No | No | No | Si (D5) | No |
+| **Corresponsabilidad** | No | Parcial | No | Si (D6) | Parcial (I.5.e) |
+| **Sesion sincrona** | No | No | No | Si (D3.4) | No |
+| **Verificacion identidad** | No | No | No | No | Si (II.2.c) |
+| **Soporte socio-afectivo** | No | No | No | Parcial | Si (I.1.c, II.4.b) |
+| **Accesibilidad** | Si | Si | Si | Si (D2) | Si (II.1.d) |
 
-**Total: 219 indicadores/estandares de 4 fuentes (50 + 50 + 42 + 77)**
+**Total: 241 indicadores/estandares de 5 fuentes (50 + 50 + 42 + 77 + 22)**
+
+---
+
+## 5. CNA Chile — 22 criterios de nivel curso, 3 dimensiones
+
+**Fuente:** Orientaciones para la Acreditacion de Instituciones que Imparten Programas en Modalidad Virtual y Combinada — Universidades. CNA Chile, documento de trabajo.
+**Archivo:** `docs/fuentes/cna/ORIENTACIONES PARA UNIVERSIDADES-2.pdf`
+**Nota:** El documento CNA tiene 38 criterios totales; 19 son de nivel institucional (gobernanza, presupuesto, RRHH) y 22 operan a nivel de curso. Aqui se listan solo los 22 de nivel curso.
+
+### I. Gestion Institucional (criterios con impacto en curso)
+
+| Codigo | Criterio | Orientacion para modalidad virtual |
+|--------|----------|-----------------------------------|
+| I.1.a | Estructura y organizacion | Estructura que entrega soporte pedagogico a procesos de ensenanza en entorno virtual |
+| I.1.b | Estructura y organizacion | Estructura que administra procesos docentes: diseno instruccional, produccion de recursos, control de calidad |
+| I.1.c | Estructura y organizacion | Estructura que entrega soporte socio-afectivo en entorno virtual |
+| I.1.d | Estructura y organizacion | Estructura que administra soporte tecnico y mantenimiento de medios |
+| I.3.b | Personal | Politicas de capacitacion para atender requerimientos metodologicos y tecnologicos |
+| I.4.a | Recursos materiales | Infraestructura tecnologica que garantiza calidad, continuidad y eficiencia |
+| I.4.c | Recursos materiales | Mecanismos para disponibilidad continua de servicios informaticos y conectividad |
+| I.5.c | Diagnostico y seguimiento | Mecanismos formales de evaluacion y monitoreo con indicadores cuantitativos y cualitativos |
+| I.5.e | Diagnostico y seguimiento | Reglamentacion de derechos y deberes para estudiantes virtuales (carga, calificaciones, admision) |
+| I.5.f | Diagnostico y seguimiento | Normativa sobre probidad, acceso, apoyo tutorial, requerimientos tecnicos, competencias digitales |
+
+### II. Docencia de Pregrado
+
+| Codigo | Criterio | Orientacion para modalidad virtual |
+|--------|----------|-----------------------------------|
+| II.1.d | Diseno y provision | Politicas para calidad de carreras virtuales: diseno instruccional, accesibilidad, acceso multi-dispositivo |
+| II.1.e | Diseno y provision | Mecanismos para asegurar logro de conocimientos, competencias y habilidades del perfil de egreso |
+| II.2.a | Proceso de ensenanza | Modelo instruccional claro y conocido para diseno de entorno virtual de aprendizaje |
+| II.2.b | Proceso de ensenanza | Entorno virtual que responda a requerimientos del modelo instruccional |
+| II.2.c | Proceso de ensenanza | Mecanismos para evaluacion segura: verificacion de identidad y control de plagio |
+| II.3.a | Dotacion docente | Estructura docente que responde a necesidades de ensenanza, apoyo y retroalimentacion virtual |
+| II.3.c | Dotacion docente | Perfeccionamiento en construccion, dictacion, tutorizacion y coordinacion virtual |
+| II.4.a | Estudiantes | Mecanismos de induccion y acogida vinculados a herramientas de modalidad virtual |
+| II.4.b | Estudiantes | Estrategias de apoyo tecnico, academico y socio-afectivo |
+| II.4.d | Estudiantes | Plataforma informatica adecuada para servicio continuo |
+| II.4.e | Estudiantes | Mecanismos de monitoreo y seguimiento de participacion y aprendizaje |
+| II.5 | Investigacion | Incentivo a investigacion en retencion, materiales digitales, innovacion evaluativa, actividades centradas en el estudiante |
 
 ---
 
