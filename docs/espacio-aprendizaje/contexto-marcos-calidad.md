@@ -70,9 +70,9 @@ El nuevo instrumento tiene **50 objetivos** organizados en tres secciones:
 
 ---
 
-## 4. Marco Evaluativo Sepulveda: el sello distintivo UMCE
+## 4. Marco Evaluativo UDFV: el sello distintivo UMCE
 
-El Marco Evaluativo de Cursos Virtuales UMCE fue desarrollado por Paloma Sepulveda Parrini (2024) en el contexto del Proyecto de Fortalecimiento Institucional UMC20992. Su punto de partida fue un analisis comparado de 25 modelos internacionales de calidad en educacion virtual (Marciniak y Gairin, 2017), del cual se identificaron los temas que la literatura considera fundamentales. Pero el marco no se limita a adaptar estandares internacionales: **su construccion responde a los intereses y compromisos del modelo educativo de la UMCE**, traduciendo politicas institucionales concretas en indicadores verificables para los cursos virtuales.
+El Marco Evaluativo de Cursos Virtuales UMCE fue desarrollado por la **Unidad de Desarrollo y Formacion Virtual (UDFV)** a traves de Paloma Sepulveda Parrini (2024), en el contexto del Proyecto de Fortalecimiento Institucional UMC21992. Su punto de partida fue un analisis comparado de 25 modelos internacionales de calidad en educacion virtual (Marciniak y Gairin, 2017), del cual se identificaron los temas que la literatura considera fundamentales. Pero el marco no se limita a adaptar estandares internacionales: **su construccion responde a los intereses y compromisos del modelo educativo de la UMCE**, traduciendo politicas institucionales concretas en indicadores verificables para los cursos virtuales.
 
 Las dimensiones D1 a D4 recogen lo que la literatura internacional ya consensua (plataforma, accesibilidad, coherencia didactica, competencias docentes). Las dimensiones D5 y D6, en cambio, son el resultado de cruzar esa base internacional con documentos institucionales propios de la UMCE:
 
@@ -133,7 +133,7 @@ El objetivo final es un **set de 75 indicadores propuestos, validados por Mesa 1
 
 Los cuatro marcos utilizan sistemas diferentes para senalar la importancia relativa de cada estandar o indicador:
 
-| | OSCQR | OLC 2025 | Quality Matters | Sepulveda (UMCE) |
+| | OSCQR | OLC 2025 | Quality Matters | UDFV-UMCE |
 |---|---|---|---|---|
 | **Sistema** | Marcador binario RSI (si/no) | Dos niveles: Esencial / Avanzado + Entrega | Puntaje 3 / 2 / 1 | Jerarquia alta / media / baja |
 | **Nivel alto** | RSI: Si (22 de 50) | Esencial (20 de 50) | 3 pts — esencial (22 de 42) | Alta (20 de 77) |
@@ -148,7 +148,7 @@ Los cuatro marcos utilizan sistemas diferentes para senalar la importancia relat
 
 ## Tabla comparativa
 
-| Caracteristica | OSCQR v4.0 | OLC 2025 | Quality Matters | Sepulveda UMCE | CNA Chile |
+| Caracteristica | OSCQR v4.0 | OLC 2025 | Quality Matters | UDFV-UMCE | CNA Chile |
 |----------------|-----------|----------|-----------------|----------------|-----------|
 | Estandares / indicadores | 50 | 50 | 42 | 77 | 22 (nivel curso) |
 | Categorias / dimensiones | 6 | 3 | 8 | 6 (19 subdim.) | 3 (GI, Pregrado, Postgrado) |
@@ -169,5 +169,5 @@ Los cuatro marcos utilizan sistemas diferentes para senalar la importancia relat
 1. **OSCQR v4.0** — State University of New York / Online Learning Consortium (2021). *OSCQR Course Design Review.* Licencia CC BY 4.0.
 2. **OLC Course Review Scorecard** — Online Learning Consortium (2025). *Tarjeta de Puntuacion para la Revision de Cursos.* Disponible en español, acceso libre.
 3. **Quality Matters HE Rubric, 6th Edition** — Quality Matters (2020). *Specific Review Standards from the QM Higher Education Rubric.* Todos los derechos reservados.
-4. **Marco Evaluativo de Cursos Virtuales UMCE** — Sepulveda Parrini, P. (2024). Proyecto UMC20992, Universidad Metropolitana de Ciencias de la Educacion.
+4. **Marco Evaluativo de Cursos Virtuales UMCE** — Sepulveda Parrini, P. (2024). Proyecto UMC21992, Universidad Metropolitana de Ciencias de la Educacion.
 5. **Orientaciones CNA para modalidad virtual** — Comision Nacional de Acreditacion (s/f). *Orientaciones para la Acreditacion de Instituciones que Imparten Programas en Modalidad Virtual y Combinada — Universidades.* Documento de trabajo.

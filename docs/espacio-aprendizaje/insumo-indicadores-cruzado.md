@@ -265,9 +265,9 @@
 
 ---
 
-## 4. Sepulveda Parrini (2024) — 77 indicadores, 6 dimensiones, 19 subdimensiones
+## 4. UDFV-UMCE / Sepulveda Parrini (2024) — 77 indicadores, 6 dimensiones, 19 subdimensiones
 
-**Fuente:** Marco Evaluativo de Cursos Virtuales UMCE. Proyecto UMC20992.
+**Fuente:** Marco Evaluativo de Cursos Virtuales UMCE. Proyecto UMC21992.
 **Archivo JSON:** `src/public/data/rubrica-indicadores.json` (version post-pilotaje, fuente canonica)
 **Escala:** 0 = No evaluable / 1 = No existe nunca / 2 = Algunas veces / 3 = Mayoria de las veces / 4 = Siempre
 **Jerarquia:** alta (3) / media (2) / baja (1) / observacion (sin puntaje)
@@ -385,7 +385,7 @@
 
 ## Resumen comparativo de estructura
 
-| | OSCQR v4.0 | OLC 2025 | Quality Matters | Sepulveda UMCE | CNA Chile |
+| | OSCQR v4.0 | OLC 2025 | Quality Matters | UDFV-UMCE | CNA Chile |
 |---|---|---|---|---|---|
 | **Indicadores** | 50 | 50 | 42 | 77 | 22 (nivel curso) |
 | **Categorias** | 6 | 3 | 8 | 6 (19 subdim.) | 3 (GI, Pregrado, Postgrado) |
