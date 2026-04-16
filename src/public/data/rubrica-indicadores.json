@@ -179,7 +179,7 @@
       "d": 1,
       "sd": 1,
       "n": 4,
-      "texto": "Los enlaces multimedia e interactivos se repoducen correctamente.",
+      "texto": "Los enlaces multimedia e interactivos se reproducen correctamente.",
       "jerarquia": "alta",
       "que_evaluar": "Página curso",
       "cuando_evaluar": "Pre dictación"
@@ -309,7 +309,7 @@
       "d": 1,
       "sd": 4,
       "n": 5,
-      "texto": "La imágenes y diagramas están alineados a la izquierda.",
+      "texto": "Las imágenes y diagramas están alineados a la izquierda.",
       "jerarquia": "media",
       "que_evaluar": "Recursos educativos",
       "cuando_evaluar": "Durante dictación"
@@ -359,7 +359,7 @@
       "d": 2,
       "sd": 1,
       "n": 4,
-      "texto": "Las instrucciones y botones para aciones están adecuados para ser utillizados en teclado de voz, Braille o sistemas tecnológicos compensatorios.",
+      "texto": "Las instrucciones y botones para acciones están adecuados para ser utilizados en teclado de voz, Braille o sistemas tecnológicos compensatorios.",
       "jerarquia": "baja",
       "que_evaluar": "Página curso",
       "cuando_evaluar": "Pre dictación"
@@ -399,7 +399,7 @@
       "d": 2,
       "sd": 2,
       "n": 4,
-      "texto": "Existen diversos de medios y formatos (texto, audios, videos) en la entrega de la retroalimentación a través de la plataforma.",
+      "texto": "Existen diversos medios y formatos (texto, audios, videos) en la entrega de la retroalimentación a través de la plataforma.",
       "jerarquia": "observación",
       "que_evaluar": "Núcleos",
       "cuando_evaluar": "Post dictación"
@@ -439,7 +439,7 @@
       "d": 2,
       "sd": 3,
       "n": 3,
-      "texto": "Se utiliza las licencias libres Creative Commons (cc) en los recursos o contenidos utilizados y producidos.",
+      "texto": "Se utilizan las licencias libres Creative Commons (cc) en los recursos o contenidos utilizados y producidos.",
       "jerarquia": "media",
       "que_evaluar": "Recursos educativos",
       "cuando_evaluar": "Durante dictación"
@@ -449,7 +449,7 @@
       "d": 2,
       "sd": 3,
       "n": 4,
-      "texto": "Las herramientas digitales complementarias al aprendizaje sugeridos priorizan el libre acceso y código abierto.",
+      "texto": "Las herramientas digitales complementarias al aprendizaje sugeridas priorizan el libre acceso y código abierto.",
       "jerarquia": "baja",
       "que_evaluar": "Recursos educativos",
       "cuando_evaluar": "Durante dictación"
@@ -599,7 +599,7 @@
       "d": 3,
       "sd": 3,
       "n": 3,
-      "texto": "Existe fechas para la realización de tutorías individuales y/o grupales.",
+      "texto": "Existen fechas para la realización de tutorías individuales y/o grupales.",
       "jerarquia": "baja",
       "que_evaluar": "Página curso",
       "cuando_evaluar": "Post dictación"
@@ -769,7 +769,7 @@
       "d": 5,
       "sd": 1,
       "n": 5,
-      "texto": "Las imágenes y textos que se refieren a los pueblos originarios evitan su connotación folcklórica (no con un fin decorativo, no reducido a símbolos, sin explicaciones de contexto, etc.)",
+      "texto": "Las imágenes y textos que se refieren a los pueblos originarios evitan su connotación folclórica (no con un fin decorativo, no reducido a símbolos, sin explicaciones de contexto, etc.)",
       "jerarquia": "media",
       "que_evaluar": "Recursos educativos",
       "cuando_evaluar": "Durante dictación"
@@ -839,7 +839,7 @@
       "d": 6,
       "sd": 1,
       "n": 1,
-      "texto": "Existen protocolos sobre normas académicas (probidad, plagio, copia, suplantación, colaboración no autorizada, representación no autorizasa derechos de autoría, comerciar productos academicos, etc.).",
+      "texto": "Existen protocolos sobre normas académicas (probidad, plagio, copia, suplantación, colaboración no autorizada, representación no autorizada, derechos de autoría, comercialización de productos académicos, etc.).",
       "jerarquia": "alta",
       "que_evaluar": "Página curso",
       "cuando_evaluar": "Pre dictación"
@@ -899,7 +899,7 @@
       "d": 6,
       "sd": 3,
       "n": 2,
-      "texto": "Existen espacios o actividades destinadas a la sensibilización, formación o aciones para formentar la corresponsabildad de los cuidados.",
+      "texto": "Existen espacios o actividades destinados a la sensibilización, formación o acciones para fomentar la corresponsabilidad de los cuidados.",
       "jerarquia": "baja",
       "que_evaluar": "Página curso",
       "cuando_evaluar": "Pre dictación"
