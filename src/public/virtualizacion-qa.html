@@ -9,6 +9,10 @@
   <link rel="stylesheet" href="/shared/tailwind.min.css">
   <link rel="stylesheet" href="/shared/shared.css">
   <style>
+    /* ── Grid 5 fases QA ── */
+    @media (min-width: 1024px) {
+      #qaFasesGrid { grid-template-columns: repeat(5, 1fr) !important; }
+    }
     /* ── Layout principal ── */
     .qa-layout {
       display: grid;
@@ -286,7 +290,7 @@
           </div>
           <h1 class="font-heading text-3xl md:text-4xl font-extrabold mb-3 leading-tight">Sistema QA &mdash; Evaluaci&oacute;n<br class="hidden sm:block"> de Cursos Virtuales</h1>
           <p class="text-white/70 text-base max-w-xl">Eval&uacute;a la calidad de un curso ya implementado en Moodle. 77 indicadores en 6 dimensiones &mdash; el sistema analiza y recomienda; el equipo instruccional decide. <strong class="text-white/90">No crea ni modifica nada en Moodle.</strong></p>
-          <p class="text-white/60 text-sm max-w-xl mt-2">El QA no es una revisi&oacute;n de &uacute;nica vez: opera en <strong class="text-white/80">tres fases</strong>. Antes de implementar el curso en Moodle (QA Preventivo), despu&eacute;s de construirlo pero antes de abrirlo a estudiantes (QA de Implementaci&oacute;n), y durante la operaci&oacute;n activa del semestre (QA de Operaci&oacute;n). Este ciclo de tres momentos garantiza calidad continua y genera retroalimentaci&oacute;n para mejorar el dise&ntilde;o del siguiente per&iacute;odo.</p>
+          <p class="text-white/60 text-sm max-w-xl mt-2">El QA no es una revisi&oacute;n de &uacute;nica vez: opera en <strong class="text-white/80">cinco fases</strong> que completan el ciclo ADDIE. QA Preventivo (antes de Moodle), Recepci&oacute;n del Docente (el acad&eacute;mico firma conformidad), QA de Implementaci&oacute;n (verificaci&oacute;n t&eacute;cnica autom&aacute;tica), Seguimiento (monitoreo durante el semestre) y QA Posterior (cierre con evaluaci&oacute;n del proceso). Este ciclo garantiza calidad continua, genera trazabilidad para la CNA y retroalimenta el dise&ntilde;o del siguiente per&iacute;odo.</p>
           <div class="flex flex-wrap gap-3 mt-4">
             <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-white/70 bg-white/10 rounded-lg px-3 py-1.5">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -328,7 +332,7 @@
   <section class="bg-white border-b border-gray-100 py-8">
     <div class="max-w-7xl mx-auto px-6">
       <p class="text-xs font-bold uppercase tracking-widest mb-5" style="color: #0033A1;">&iquest;C&oacute;mo funciona el sistema QA?</p>
-      <div class="grid sm:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" style="--qa-cols: 5;" id="qaFasesGrid">
 
         <!-- Fase 1: QA Preventivo -->
         <div class="rounded-xl border border-gray-200 bg-gray-50 p-5">
@@ -339,34 +343,60 @@
               <p class="text-xs text-gray-400">Antes de implementar en Moodle</p>
             </div>
           </div>
-          <p class="text-sm text-gray-600 leading-relaxed mb-3">Corre autom&aacute;ticamente cuando el Diseñador Instruccional (DI) completa el Planificador Curricular. El sistema verifica 6 condiciones directamente desde el plan: si el contenido pasivo supera el 60&nbsp;%, si hay al menos una actividad colaborativa, si la carga semanal es coherente con los cr&eacute;ditos SCT declarados, y si existe balance entre modalidades s&iacute;ncrona y as&iacute;ncrona.</p>
-          <p class="text-xs text-gray-500 italic">Si el sem&aacute;foro es rojo, el bot&oacute;n de exportar el plan queda bloqueado hasta corregir las brechas cr&iacute;ticas.</p>
+          <p class="text-sm text-gray-600 leading-relaxed mb-3">Corre autom&aacute;ticamente cuando el DI completa el Planificador Curricular. Verifica 6 condiciones desde el plan: contenido pasivo &lt;60&nbsp;%, actividad colaborativa presente, carga semanal coherente con SCT, y balance s&iacute;ncrono/as&iacute;ncrono.</p>
+          <p class="text-xs text-gray-500 italic">Sem&aacute;foro rojo bloquea exportar el plan hasta corregir brechas cr&iacute;ticas.</p>
         </div>
 
-        <!-- Fase 2: QA de Implementación -->
+        <!-- Fase 2: QA de Recepción del Docente -->
         <div class="rounded-xl border border-gray-200 bg-gray-50 p-5">
           <div class="flex items-center gap-2 mb-3">
-            <span class="w-7 h-7 rounded-full bg-amber-100 text-amber-700 text-xs font-extrabold flex items-center justify-center flex-shrink-0">2</span>
+            <span class="w-7 h-7 rounded-full bg-purple-100 text-purple-700 text-xs font-extrabold flex items-center justify-center flex-shrink-0">2</span>
             <div>
-              <p class="font-semibold text-sm text-gray-900">QA de Implementaci&oacute;n</p>
-              <p class="text-xs text-gray-400">Curso construido, antes de abrir a estudiantes</p>
+              <p class="font-semibold text-sm text-gray-900">QA de Recepci&oacute;n</p>
+              <p class="text-xs text-gray-400">El docente revisa antes de abrir</p>
             </div>
           </div>
-          <p class="text-sm text-gray-600 leading-relaxed mb-3">El sistema consulta la API de Moodle y ejecuta 10 verificaciones de calidad de configuraci&oacute;n: que las tareas tengan fecha de entrega, que los foros tengan instrucciones de m&aacute;s de 100 caracteres, que el libro de calificaciones est&eacute; visible, que los videos de YouTube tengan subt&iacute;tulos activados (par&aacute;metro <code class="text-xs bg-gray-100 px-1 rounded">cc_load_policy=1</code>), y que las tareas evaluadas tengan r&uacute;brica o criterios de calificaci&oacute;n. Tambi&eacute;n detecta discrepancias entre lo planificado en el PIAC y lo que existe en Moodle.</p>
-          <p class="text-xs text-gray-500 italic">52 de los 77 indicadores pueden verificarse autom&aacute;ticamente v&iacute;a API. Los 25 restantes requieren revisi&oacute;n humana.</p>
+          <p class="text-sm text-gray-600 leading-relaxed mb-3">El docente que dictar&aacute; el curso revisa el aula virtual y verifica que todos los elementos coincidan con lo acordado en el PIAC. Completa un formulario de conformidad con sus observaciones. Sin esta firma, el curso no se abre a estudiantes.</p>
+          <p class="text-xs text-gray-500 italic">Genera trazabilidad entre la intenci&oacute;n de dise&ntilde;o y la ejecuci&oacute;n real &mdash; evidencia clave para CNA.</p>
         </div>
 
-        <!-- Fase 3: QA de Operación -->
+        <!-- Fase 3: QA de Implementación -->
         <div class="rounded-xl border border-gray-200 bg-gray-50 p-5">
           <div class="flex items-center gap-2 mb-3">
-            <span class="w-7 h-7 rounded-full bg-green-100 text-green-700 text-xs font-extrabold flex items-center justify-center flex-shrink-0">3</span>
+            <span class="w-7 h-7 rounded-full bg-amber-100 text-amber-700 text-xs font-extrabold flex items-center justify-center flex-shrink-0">3</span>
             <div>
-              <p class="font-semibold text-sm text-gray-900">QA de Operaci&oacute;n</p>
+              <p class="font-semibold text-sm text-gray-900">QA de Implementaci&oacute;n</p>
+              <p class="text-xs text-gray-400">Verificaci&oacute;n t&eacute;cnica autom&aacute;tica</p>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 leading-relaxed mb-3">El sistema consulta la API de Moodle y ejecuta 10 verificaciones: fechas de entrega, instrucciones &gt;100 caracteres, gradebook visible, subt&iacute;tulos en videos, r&uacute;bricas en tareas evaluadas, y discrepancias PIAC vs Moodle.</p>
+          <p class="text-xs text-gray-500 italic">52 de 77 indicadores verificables v&iacute;a API. Los 25 restantes requieren revisi&oacute;n humana.</p>
+        </div>
+
+        <!-- Fase 4: Seguimiento -->
+        <div class="rounded-xl border border-gray-200 bg-gray-50 p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 rounded-full bg-green-100 text-green-700 text-xs font-extrabold flex items-center justify-center flex-shrink-0">4</span>
+            <div>
+              <p class="font-semibold text-sm text-gray-900">Seguimiento</p>
               <p class="text-xs text-gray-400">Durante el semestre activo</p>
             </div>
           </div>
-          <p class="text-sm text-gray-600 leading-relaxed mb-3">Mientras el curso est&aacute; en marcha, el sistema monitorea indicadores en tiempo real: tasa de completion por actividad (alerta si cae bajo el 30&nbsp;%), distribuci&oacute;n de calificaciones (alerta si m&aacute;s del 40&nbsp;% reprueba), tiempo de retroalimentaci&oacute;n del docente (alerta si supera 7 d&iacute;as h&aacute;biles) y participaci&oacute;n en foros. Estos datos alimentan el panel de Alertas y se complementan con los hallazgos del Auditor Acad&eacute;mico autom&aacute;tico.</p>
-          <p class="text-xs text-gray-500 italic">Al cierre del semestre, el sistema genera un informe de retroalimentaci&oacute;n que orienta el redise&ntilde;o para el per&iacute;odo siguiente.</p>
+          <p class="text-sm text-gray-600 leading-relaxed mb-3">Monitoreo continuo de indicadores: tasa de completaci&oacute;n (alerta &lt;30&nbsp;%), distribuci&oacute;n de calificaciones (alerta &gt;40&nbsp;% reprobaci&oacute;n), retroalimentaci&oacute;n docente (&lt;7 d&iacute;as) y participaci&oacute;n en foros. Se complementa con el Auditor Acad&eacute;mico nocturno.</p>
+          <p class="text-xs text-gray-500 italic">Seg&uacute;n la SNA, esta fase corresponde a seguimiento y acompa&ntilde;amiento &mdash; no a QA en sentido estricto.</p>
+        </div>
+
+        <!-- Fase 5: QA Posterior a Ejecución -->
+        <div class="rounded-xl border border-gray-200 bg-gray-50 p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 rounded-full bg-teal-100 text-teal-700 text-xs font-extrabold flex items-center justify-center flex-shrink-0">5</span>
+            <div>
+              <p class="font-semibold text-sm text-gray-900">QA Posterior</p>
+              <p class="text-xs text-gray-400">Al cierre del semestre</p>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 leading-relaxed mb-3">Reuni&oacute;n de cierre con el docente o encuesta de satisfacci&oacute;n estructurada. Recoge percepci&oacute;n sobre carga, coherencia, logros y mejoras. Es la fase E de ADDIE (Evaluaci&oacute;n) y cierra el ciclo de mejora continua que retroalimenta el siguiente per&iacute;odo.</p>
+          <p class="text-xs text-gray-500 italic">Evidencia principal de mejora continua que solicita la CNA para acreditaci&oacute;n de programas online.</p>
         </div>
 
       </div>
@@ -376,7 +406,7 @@
         <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #4F46E5;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
         <div>
           <p class="text-sm font-semibold text-indigo-900 mb-1">Conexi&oacute;n con el Auditor Acad&eacute;mico</p>
-          <p class="text-sm text-indigo-800 leading-relaxed">El QA de Operaci&oacute;n se alimenta de un Auditor Acad&eacute;mico autom&aacute;tico que se ejecuta cada noche y verifica 18 reglas acad&eacute;micas (PA.01 a PA.18), entre ellas: docente sin acceso m&aacute;s de 14 d&iacute;as (PA.02), sin evaluaci&oacute;n sumativa en semana 5 (PA.01), estudiantes sin retroalimentaci&oacute;n en semana 7 (PA.14), y gradebook oculto (PA.06). Cada hallazgo se clasifica por severidad y se escala a la dimensi&oacute;n QA correspondiente, alimentando el panel de Alertas de este sistema.</p>
+          <p class="text-sm text-indigo-800 leading-relaxed">La fase de Seguimiento se alimenta de un Auditor Acad&eacute;mico autom&aacute;tico que se ejecuta cada noche y verifica 18 reglas acad&eacute;micas (PA.01 a PA.18), entre ellas: docente sin acceso m&aacute;s de 14 d&iacute;as (PA.02), sin evaluaci&oacute;n sumativa en semana 5 (PA.01), estudiantes sin retroalimentaci&oacute;n en semana 7 (PA.14), y gradebook oculto (PA.06). Cada hallazgo se clasifica por severidad y se escala a la dimensi&oacute;n QA correspondiente, alimentando el panel de Alertas de este sistema.</p>
         </div>
       </div>
 
@@ -702,7 +732,7 @@
                 <h4 class="font-heading font-bold text-sm text-gray-900">Competencias para la Docencia Virtual</h4>
                 <span class="text-xs text-gray-400 ml-auto">7 indicadores &bull; 2 subdimensiones</span>
               </div>
-              <p class="text-sm text-gray-600 leading-relaxed">Eval&uacute;a la presencia y el desempe&ntilde;o del docente en el aula virtual: frecuencia de acceso al curso, tiempo de respuesta a consultas de los estudiantes, calidad y oportunidad de la retroalimentaci&oacute;n en tareas, y documentaci&oacute;n de las sesiones s&iacute;ncronas mediante grabaciones accesibles. El QA de Operaci&oacute;n monitorea si el docente accede al curso con regularidad &mdash;la ausencia por m&aacute;s de 14 d&iacute;as genera una alerta cr&iacute;tica&mdash; y si la retroalimentaci&oacute;n de tareas se entrega antes de los 7 d&iacute;as h&aacute;biles. La presencia docente activa no solo tiene un efecto motivacional demostrado en la retenci&oacute;n estudiantil; en el contexto de la UMCE, donde muchos estudiantes trabajan y tienen responsabilidades familiares, saber que el docente est&aacute; presente reduce significativamente la sensaci&oacute;n de abandono en los momentos de dificultad.</p>
+              <p class="text-sm text-gray-600 leading-relaxed">Eval&uacute;a la presencia y el desempe&ntilde;o del docente en el aula virtual: frecuencia de acceso al curso, tiempo de respuesta a consultas de los estudiantes, calidad y oportunidad de la retroalimentaci&oacute;n en tareas, y documentaci&oacute;n de las sesiones s&iacute;ncronas mediante grabaciones accesibles. La fase de Seguimiento monitorea si el docente accede al curso con regularidad &mdash;la ausencia por m&aacute;s de 14 d&iacute;as genera una alerta cr&iacute;tica&mdash; y si la retroalimentaci&oacute;n de tareas se entrega antes de los 7 d&iacute;as h&aacute;biles. La presencia docente activa no solo tiene un efecto motivacional demostrado en la retenci&oacute;n estudiantil; en el contexto de la UMCE, donde muchos estudiantes trabajan y tienen responsabilidades familiares, saber que el docente est&aacute; presente reduce significativamente la sensaci&oacute;n de abandono en los momentos de dificultad.</p>
               <p class="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100">Adaptada de los est&aacute;ndares de presencia e interacci&oacute;n docente del est&aacute;ndar OSCQR (SUNY) al contexto institucional UMCE &mdash; Sep&uacute;lveda Parrini, P. (2024)</p>
             </div>
 
@@ -927,10 +957,12 @@
       </details>
 
       <details class="fundamentacion-panel">
-        <summary>¿Por qué tres fases de QA y no solo una evaluación al final?</summary>
+        <summary>&iquest;Por qu&eacute; cinco fases de QA y no solo una evaluaci&oacute;n al final?</summary>
         <div class="fundamentacion-content">
-          <p>El enfoque de QA en tres fases (Preventivo → Implementación → Operación) responde a la evidencia de que corregir errores de diseño instruccional cuesta exponencialmente más a medida que avanza el ciclo. Un error detectado en el plan (M3) se corrige en minutos; el mismo error detectado cuando el curso está activo con 30 estudiantes matriculados implica notificaciones, ajustes de fechas, posibles quejas y riesgo académico real. La analogía en ingeniería de software es el principio "shift-left testing": entre más temprano se detecta el defecto, menor es el costo de corregirlo. En el contexto educativo, este principio se traduce en un ciclo de retroalimentación que conecta el cierre de un semestre (M5) directamente con el diseño del siguiente (M1), evitando que los mismos errores se repitan sistemáticamente.</p>
-          <p class="fundamentacion-refs">Referencias: Principio shift-left en aseguramiento de calidad; Modelo de retroalimentación continua UDFV-UMCE 2026</p>
+          <p>El sistema QA opera en cinco fases que corresponden al ciclo ADDIE completo (An&aacute;lisis, Dise&ntilde;o, Desarrollo, Implementaci&oacute;n, Evaluaci&oacute;n). Corregir errores de dise&ntilde;o instruccional cuesta exponencialmente m&aacute;s a medida que avanza el ciclo &mdash; un error en el plan se corrige en minutos; el mismo error con 30 estudiantes activos implica notificaciones, ajustes de fechas y riesgo acad&eacute;mico real.</p>
+          <p>Las cinco fases cubren momentos distintos: el <strong>QA Preventivo</strong> verifica el dise&ntilde;o antes de construir; la <strong>Recepci&oacute;n del Docente</strong> asegura que el acad&eacute;mico valida lo construido antes de abrir (genera trazabilidad dise&ntilde;o &harr; ejecuci&oacute;n); el <strong>QA de Implementaci&oacute;n</strong> verifica la configuraci&oacute;n t&eacute;cnica en Moodle; el <strong>Seguimiento</strong> monitorea indicadores durante el semestre (seg&uacute;n la SNA, esta fase corresponde a seguimiento y acompa&ntilde;amiento, no a QA en sentido estricto); y el <strong>QA Posterior</strong> cierra el ciclo con la evaluaci&oacute;n del proceso &mdash; la &ldquo;E&rdquo; de ADDIE que la CNA exige como evidencia de mejora continua en programas online.</p>
+          <p>Este dise&ntilde;o responde al principio &ldquo;shift-left testing&rdquo; de ingenier&iacute;a de software y conecta el cierre de un semestre (M5) con el redise&ntilde;o del siguiente (M1), evitando que los mismos errores se repitan sistem&aacute;ticamente.</p>
+          <p class="fundamentacion-refs">Referencias: Principio shift-left en aseguramiento de calidad; Modelo ADDIE (Branch, 2009); Criterios SNA para seguimiento de programas; Modelo de retroalimentaci&oacute;n continua UDFV-UMCE 2026</p>
         </div>
       </details>
 

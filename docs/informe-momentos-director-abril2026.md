@@ -98,12 +98,13 @@ Estas se multiplican por **NS** (número de semanas) y se comparan contra el ran
    **Descripción:** Dashboard con los resultados del pilotaje 2024 (5 cursos de postgrado y prosecución). Incluye radar de 6 dimensiones, tabla comparativa por curso, hallazgos clave y — desde hoy — la sección **"Los 77 indicadores, uno por uno"** con acordeón por dimensión, subdimensiones nombradas, jerarquía (alta/media/baja) y momento de evaluación para cada indicador. El instrumento es autoría de **Paloma Sepúlveda Parrini (2024)** en el marco del Proyecto de Fortalecimiento Institucional UMC20992.
 2. **Sistema QA** (aplicación a cursos nuevos)
    **URL:** https://umce.online/virtualizacion/qa
-   **Descripción:** Aplica los mismos 77 indicadores a un curso nuevo y genera un informe con áreas de mejora priorizadas. Fundamentación (OSCQR, Sepúlveda, pilotaje, Mesa 1) visible al usuario.
+   **Descripción:** Opera en **cinco fases** que completan el ciclo ADDIE: (1) QA Preventivo — verifica el diseño antes de construir en Moodle; (2) QA de Recepción del Docente — el académico revisa el aula y firma conformidad antes de abrir; (3) QA de Implementación — verificación técnica automática vía API Moodle; (4) Seguimiento — monitoreo continuo durante el semestre (según SNA, corresponde a seguimiento, no a QA); (5) QA Posterior — reunión de cierre o encuesta de satisfacción que cierra la "E" de ADDIE. Fundamentación (OSCQR, Sepúlveda, pilotaje, Mesa 1) visible al usuario.
+   **Actualización 15-Abr-2026:** La estructura de cinco fases fue validada en reunión con Marisol Hernández (DIPOS), quien aportó las fases de Recepción y Posterior, y la distinción SNA entre seguimiento y QA.
 **Producto comprometido Mesa 1:** sí (Rúbrica QA).
 
 ### Momento 5 — Monitorear y retroalimentar
 **Herramienta:** **en diseño.**
-**Descripción:** Panel de indicadores institucionales que cruce datos reales de participación, carga y rendimiento con lo planificado en M1–M3, para retroalimentar el siguiente ciclo. Pendiente de definición técnica y de integración con las cinco plataformas Moodle UMCE. Producto comprometido Mesa 1 (tablero de indicadores) con horizonte mayo 2026.
+**Descripción:** Panel de indicadores institucionales que cruce datos reales de participación, carga y rendimiento con lo planificado en M1–M3, para retroalimentar el siguiente ciclo. La fase de Seguimiento (4) del Sistema QA ya cubre parte de esta función con el Auditor Académico nocturno y los indicadores en tiempo real. El tablero institucional agregará la vista consolidada multi-programa. Producto comprometido Mesa 1 (tablero de indicadores) con horizonte mayo 2026.
 
 ---
 

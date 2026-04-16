@@ -11,16 +11,24 @@ M1 (SCT/horas)
      ↓
 M2 (PIAC Word)  ──→  [PIAC Parser — Fase 2]
      ↓
-M3 (Planificador)  ──→  QA PREVENTIVO  ←── 77 indicadores D1-D6
+M3 (Planificador)  ──→  [1] QA PREVENTIVO  ←── 77 indicadores D1-D6
      ↓
-M4 (Moodle)  ──→  QA DE IMPLEMENTACION  ←── Matching Engine (Fase 2)
+M4 (Moodle)  ──→  [2] QA DE RECEPCION  ←── Docente firma conformidad
+             ──→  [3] QA DE IMPLEMENTACION  ←── Matching Engine (Fase 2)
      ↓
-M5 (Operacion)  ──→  QA DE OPERACION  ←── Auditor PA.xx + cache Fase 4/5
+M5 (Operacion)  ──→  [4] SEGUIMIENTO  ←── Auditor PA.xx + cache Fase 4/5
+     ↓
+CIERRE  ──→  [5] QA POSTERIOR  ←── Reunion docente / encuesta satisfaccion
      ↓
 RETROALIMENTACION  ──→  informe DI/coordinador  ──→  M1 siguiente semestre
 ```
 
-El sistema QA no es un modulo separado que se activa al final. Es la capa analitica que se ejecuta en tres momentos del flujo y cierra el ciclo al final.
+El sistema QA opera en **cinco fases** que completan el ciclo ADDIE. No es un modulo separado que se activa al final; es la capa analitica que se ejecuta en cinco momentos del flujo y cierra el ciclo al terminar el semestre.
+
+**Cambio 15-Abr-2026 (reunion Marisol Hernandez, DIPOS):**
+- La antigua "Fase 3: QA de Operacion" se renombro a "Fase 4: Seguimiento" — segun la SNA, corresponde a seguimiento y acompanamiento, no a QA en sentido estricto.
+- Se agrego "Fase 2: QA de Recepcion del Docente" — el academico revisa el curso antes de abrir y firma conformidad.
+- Se agrego "Fase 5: QA Posterior a Ejecucion" — la "E" de ADDIE que cierra el ciclo de mejora continua (evidencia CNA).
 
 ---
 
@@ -215,7 +223,53 @@ La integracion en el planificador es en el Paso 3 (semaforo), que ya existe en l
 
 ---
 
-## 2. QA de Implementacion (M4)
+## 2. QA de Recepcion del Docente (entre M4 construccion y apertura)
+
+### Principio
+
+Antes de abrir el curso a estudiantes, el docente que lo dictara revisa el aula virtual y verifica que todos los elementos coincidan con lo acordado en el PIAC. Este paso genera trazabilidad entre la intencion de diseno y la ejecucion real — evidencia clave para CNA.
+
+### Proceso
+
+1. El DI notifica al docente que el curso esta construido en Moodle
+2. El docente accede con perfil de estudiante y revisa: estructura, recursos, instrucciones, fechas, rubricas
+3. Completa un formulario de conformidad (checklist + observaciones libres)
+4. Si tiene observaciones, las registra y el DI las resuelve antes de abrir
+5. Si no tiene observaciones, firma y el curso se habilita
+
+### Schema conceptual
+
+```sql
+CREATE TABLE portal.qa_recepcion (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  piac_link_id UUID REFERENCES portal.piac_links(id),
+  docente_email TEXT NOT NULL,
+  fecha_revision TIMESTAMPTZ DEFAULT NOW(),
+  conformidad BOOLEAN NOT NULL,
+  observaciones TEXT,
+  firma_tipo TEXT CHECK (firma_tipo IN ('digital', 'registro_sistema')) DEFAULT 'registro_sistema',
+  firmado_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+### Endpoint especificado
+
+```
+POST /api/qa/:linkId/recepcion
+Body: { docente_email, conformidad, observaciones }
+Response: { id, firmado_at, puede_abrir: conformidad }
+```
+
+### Conexion con el flujo
+
+- Si `conformidad = false`, el boton de abrir curso queda bloqueado hasta resolver observaciones
+- Las observaciones se registran como discrepancias tipo `recepcion` en la tabla existente `portal.discrepancies`
+- El formulario es reutilizable: si un curso cambia de docente, el nuevo docente firma su propia recepcion
+
+---
+
+## 3. QA de Implementacion (M4)
 
 ### Principio
 
@@ -450,7 +504,9 @@ async function runQAImplementacion(linkId) {
 
 ---
 
-## 3. QA de Operacion (M5)
+## 4. Seguimiento (M5)
+
+> **Nota 15-Abr-2026:** Segun la SNA, esta fase corresponde a seguimiento y acompanamiento, no a QA en sentido estricto. Se renombro de "QA de Operacion" a "Seguimiento" por recomendacion de Marisol Hernandez (DIPOS).
 
 ### Principio
 
@@ -586,7 +642,54 @@ const PA_TO_DIMENSION = {
 
 ---
 
-## 4. Retroalimentacion M5→M1 (cierre del ciclo)
+## 5. QA Posterior a Ejecucion (cierre del semestre)
+
+### Principio
+
+Esta fase corresponde a la "E" de ADDIE (Evaluacion). Al cierre del semestre, se recoge la percepcion del docente y de los estudiantes sobre el proceso formativo. Es la evidencia principal de mejora continua que solicita la CNA para acreditacion de programas online.
+
+### Instrumentos
+
+1. **Reunion de cierre con el docente**: el DI se reune con el docente para revisar como fue la implementacion, que funciono, que no, y que ajustar para el siguiente periodo
+2. **Encuesta de satisfaccion estudiantil**: instrumento estructurado que recoge percepcion sobre carga, coherencia, presencia docente, y calidad de recursos
+
+### Schema conceptual
+
+```sql
+CREATE TABLE portal.qa_posterior (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  piac_link_id UUID REFERENCES portal.piac_links(id),
+  tipo_instrumento TEXT CHECK (tipo_instrumento IN ('reunion', 'encuesta')) NOT NULL,
+  fecha_aplicacion TIMESTAMPTZ NOT NULL,
+  participantes_count INTEGER,
+  satisfaccion_general SMALLINT CHECK (satisfaccion_general BETWEEN 1 AND 5),
+  carga_percibida TEXT CHECK (carga_percibida IN ('baja', 'adecuada', 'alta', 'muy_alta')),
+  logros_percibidos TEXT,
+  mejoras_sugeridas TEXT,
+  datos_json JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+### Endpoint especificado
+
+```
+POST /api/qa/:linkId/posterior
+Body: { tipo_instrumento, fecha_aplicacion, satisfaccion_general, carga_percibida, logros_percibidos, mejoras_sugeridas, datos_json }
+
+GET /api/qa/:linkId/posterior
+Response: array de evaluaciones posteriores para este curso
+```
+
+### Conexion con el ciclo
+
+- Los datos de QA Posterior alimentan directamente la Retroalimentacion M5→M1
+- Si `carga_percibida = 'muy_alta'`, se genera una alerta para revisar la Calculadora SCT del siguiente periodo
+- Si `satisfaccion_general < 3`, se marca el curso para revision de diseno obligatoria
+
+---
+
+## 6. Retroalimentacion M5→M1 (cierre del ciclo)
 
 ### Principio
 
@@ -744,7 +847,7 @@ LOGROS A MANTENER:
 
 ---
 
-## 5. Dashboard QA Unificado
+## 7. Dashboard QA Unificado
 
 ### Estructura de vistas y datos por nivel
 
@@ -1017,7 +1120,7 @@ WHERE pl.status = 'active';
 
 ---
 
-## 6. Schema SQL completo para QA System
+## 8. Schema SQL completo para QA System
 
 ```sql
 -- =============================================================================
@@ -1186,7 +1289,7 @@ GRANT ALL ON portal.qa_preventivo, portal.qa_implementation_results,
 
 ---
 
-## 7. Endpoints completos del QA System
+## 9. Endpoints completos del QA System
 
 ```
 POST /api/qa/preventivo
@@ -1240,7 +1343,7 @@ GET  /api/qa/widget/:platform/:courseId
 
 ---
 
-## 8. Integracion del cron del QA con el cron de Fase 4
+## 10. Integracion del cron del QA con el cron de Fase 4
 
 El cron existente en `server.js` (setInterval 6h) corre `refreshAllActiveLinks()`. Se extiende para incluir el snapshot de operacion QA:
 
@@ -1299,7 +1402,7 @@ Lo entregado aqui es un diseno de sistema completo, no una especificacion abstra
 
 **Archivos relevantes del proyecto:**
 - `/Users/coordinacion/Documents/umce-online/src/schema-piac.sql` — base sobre la que se extiende el schema QA
-- `/Users/coordinacion/Documents/umce-online/src/schema-fase4.sql` — tablas cache que alimentan QA operacion
+- `/Users/coordinacion/Documents/umce-online/src/schema-fase4.sql` — tablas cache que alimentan fase de Seguimiento
 - `/Users/coordinacion/Documents/umce-online/src/public/virtualizacion-qa.html` — pagina QA existente (herramienta standalone)
 - `/Users/coordinacion/Documents/umce-online/src/public/virtualizacion-planificador.html` — punto de integracion del QA preventivo
-- `/Users/coordinacion/Documents/34_CONSOLIDACION_MOODLE_UMCE/auditor-academico/REDISENO_PEDAGOGICO_REGLAS.md` — fuente de las 20 reglas PA.xx que se conectan al QA de operacion
+- `/Users/coordinacion/Documents/34_CONSOLIDACION_MOODLE_UMCE/auditor-academico/REDISENO_PEDAGOGICO_REGLAS.md` — fuente de las 20 reglas PA.xx que se conectan a la fase de Seguimiento

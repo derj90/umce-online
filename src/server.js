@@ -2426,7 +2426,7 @@ HERRAMIENTAS DISPONIBLES
 
 - Calculadora SCT (/virtualizacion/sct): distribuye horas de trabajo por crédito y actividad.
 - Planificador (/virtualizacion/planificador): estructura el PAC semana a semana.
-- Sistema QA (/virtualizacion/qa): evaluación automática con 77 indicadores en 6 dimensiones.
+- Sistema QA (/virtualizacion/qa): aseguramiento de calidad en 5 fases (Preventivo, Recepción docente, Implementación, Seguimiento, QA Posterior) con 77 indicadores en 6 dimensiones.
 - Rúbrica QA (/virtualizacion/rubrica): instrumento de evaluación de calidad aplicable por el docente o DI.
 - Fundamentos (/virtualizacion/fundamentos): base teórica del modelo pedagógico UMCE.
 

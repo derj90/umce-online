@@ -417,7 +417,7 @@
         <div class="explain-title">Paso 4 &mdash; Resultado y validaci&oacute;n pedag&oacute;gica</div>
         <p>Este es el resultado del dise&ntilde;o. El planificador verifica dos dimensiones simult&aacute;neamente: la <strong>coherencia cuantitativa</strong> (si las horas dise&ntilde;adas corresponden a los cr&eacute;ditos SCT) y la <strong>coherencia pedag&oacute;gica</strong> (si el dise&ntilde;o cumple con el modelo virtual UMCE).</p>
         <p class="mt-2">El <strong>gr&aacute;fico de distribuci&oacute;n</strong> revela la arquitectura real del curso. Un curso que destina el 80% del tiempo a contenido (IN) no est&aacute; alineado con el aprendizaje activo: el estudiante consume pero no produce, no interact&uacute;a, no reflexiona. El modelo UMCE recomienda que el contenido pasivo no supere el 40&ndash;50% de la carga total.</p>
-        <p class="mt-2">Las <strong>6 verificaciones del modelo virtual UMCE</strong> eval&uacute;an:</p>
+        <p class="mt-2">Las <strong>7 verificaciones del modelo virtual UMCE</strong> eval&uacute;an:</p>
         <ul class="mt-1 space-y-1 text-sm text-gray-600 list-none pl-0">
           <li><strong>&#10003; Interacci&oacute;n (EC):</strong> sin al menos una actividad donde haya intercambio real entre personas, el aprendizaje virtual pierde su principal ventaja sobre el contenido grabado.</li>
           <li><strong>&#10003; Colaboraci&oacute;n (ED):</strong> la construcci&oacute;n conjunta de conocimiento es el segundo pilar del modelo. No basta con trabajo individual en paralelo: debe haber interdependencia real entre estudiantes.</li>
@@ -425,6 +425,7 @@
           <li><strong>&#10003; Evaluaci&oacute;n formativa:</strong> sin retroalimentaci&oacute;n durante el proceso, el estudiante no sabe si va bien hasta el examen final. La evaluaci&oacute;n formativa corrige la trayectoria mientras a&uacute;n hay tiempo.</li>
           <li><strong>&#10003; Contenido pasivo &le;60%:</strong> umbral del modelo. Si se supera, el curso es funcionalmente un repositorio de materiales, no un entorno de aprendizaje activo.</li>
           <li><strong>&#10003; Carga sincr&oacute;nica coherente con el PAC:</strong> si declaraste el % de sincron&iacute;a del PAC en el Paso 1, el planificador contrasta tu dise&ntilde;o contra ese valor (tolerancia &plusmn;10 puntos). Esto resuelve en detalle lo que el Momento 1 (Calculadora SCT) ya decidi&oacute; a nivel programa. Si no se declara, se aplica una heur&iacute;stica por perfil (pregrado: &ge;15% sincr&oacute;nico; postgrado: &le;50%; ed. continua: &le;30%).</li>
+          <li><strong>&#10003; Evaluaciones distribuidas (certeza instruccional):</strong> si asignaste semanas a las evaluaciones sumativas, el planificador verifica que no se concentren en semanas consecutivas. El principio de <em>certeza instruccional</em> establece que el estudiante debe saber de antemano cu&aacute;ntas evaluaciones tendr&aacute; y en qu&eacute; semanas, con separaci&oacute;n suficiente para prepararse adecuadamente. En programas modulares con cursos paralelos, las evaluaciones pesadas deben alternarse para evitar sobrecarga.</li>
         </ul>
         <p class="mt-2">El resultado de esta validaci&oacute;n es el <strong>insumo para elaborar el PIAC</strong> (Plan Instruccional del Aprendizaje en el Curso), que se trabaja en el Momento 3 del flujo institucional. El dise&ntilde;ador instruccional de la UDFV acompa&ntilde;a ese proceso junto al acad&eacute;mico.</p>
       </div>
@@ -526,6 +527,11 @@
           <input type="number" id="modalTime" min="1" max="600" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm">
           <p class="text-xs text-gray-400 mt-1" id="modalTimeRef"></p>
         </div>
+        <div id="modalWeeksRow" class="hidden">
+          <label class="block text-sm font-semibold text-gray-700 mb-1">&iquest;En qu&eacute; semana(s) se eval&uacute;a?</label>
+          <div id="modalWeekChips" class="flex flex-wrap gap-1.5"></div>
+          <p class="text-xs text-gray-400 mt-1">Selecciona las semanas donde cae esta evaluaci&oacute;n. Esto permite verificar que no se concentren todas las evaluaciones en las mismas semanas.</p>
+        </div>
         <div class="bg-blue-50 rounded-lg p-3 text-center">
           <span class="text-xs text-gray-500">Tiempo total para el estudiante:</span>
           <span class="font-heading font-bold text-lg text-umce-azul ml-2" id="modalSubtotal">0 min</span>
@@ -552,7 +558,7 @@
         <a href="/virtualizacion/qa" class="bg-white rounded-xl border border-yellow-100 p-4 hover:border-yellow-300 transition-colors group">
           <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm text-white mb-3" style="background: #D97706;">5</div>
           <p class="font-semibold text-sm text-gray-800 mb-1 group-hover:text-umce-azul">Evaluaci&oacute;n QA (M5)</p>
-          <p class="text-xs text-gray-500">Antes de liberar el curso, el Sistema QA eval&uacute;a su calidad con <strong>77 indicadores</strong> distribuidos en 6 dimensiones (Interacci&oacute;n, Accesibilidad, Coherencia did&aacute;ctica, Docencia virtual, Evaluaci&oacute;n, Gesti&oacute;n). Las 6 verificaciones que viste en el Paso 4 del planificador son el QA preventivo: anticipan los problemas antes de construir el curso en Moodle. El QA de implementaci&oacute;n valida el resultado real sobre la plataforma.</p>
+          <p class="text-xs text-gray-500">Antes de liberar el curso, el Sistema QA eval&uacute;a su calidad con <strong>77 indicadores</strong> distribuidos en 6 dimensiones (Interacci&oacute;n, Accesibilidad, Coherencia did&aacute;ctica, Docencia virtual, Evaluaci&oacute;n, Gesti&oacute;n). Las 7 verificaciones que viste en el Paso 4 del planificador son el QA preventivo: anticipan los problemas antes de construir el curso en Moodle. El QA de implementaci&oacute;n valida el resultado real sobre la plataforma.</p>
           <p class="text-xs font-semibold mt-2" style="color: #D97706;">Ir al Sistema QA &rarr;</p>
         </a>
         <div class="bg-white rounded-xl border border-blue-50 p-4">
@@ -690,6 +696,27 @@
       document.getElementById('modalTimeRef').textContent = `Referencia: ${act.tiempoMin}-${act.tiempoMax} min (${act.fuente})`;
       document.getElementById('modalUnit').textContent = `Ejemplo: si hay 16 semanas de clases, pon 16.`;
       updateModalSubtotal();
+      // Show week chips for summative evaluation activities (EV4, EV5, EV6)
+      const isSummative = ['EV4','EV5','EV6'].includes(act.id);
+      const weeksRow = document.getElementById('modalWeeksRow');
+      const chipsEl = document.getElementById('modalWeekChips');
+      if (isSummative) {
+        const c = getConfig();
+        weeksRow.classList.remove('hidden');
+        chipsEl.innerHTML = '';
+        for (let w = 1; w <= c.weeks; w++) {
+          const chip = document.createElement('button');
+          chip.type = 'button';
+          chip.className = 'week-chip px-2.5 py-1 text-xs rounded-full border border-gray-200 text-gray-500 hover:border-blue-400 hover:text-blue-600 transition-colors';
+          chip.textContent = 'S' + w;
+          chip.dataset.week = w;
+          chip.onclick = function() { this.classList.toggle('bg-blue-100'); this.classList.toggle('border-blue-400'); this.classList.toggle('text-blue-700'); this.classList.toggle('text-gray-500'); this.classList.toggle('border-gray-200'); };
+          chipsEl.appendChild(chip);
+        }
+      } else {
+        weeksRow.classList.add('hidden');
+        chipsEl.innerHTML = '';
+      }
       document.getElementById('activityModal').classList.add('open');
     };
     function updateModalSubtotal() {
@@ -700,7 +727,8 @@
     window.confirmAdd = function() {
       if (!pendingActivity) return;
       const qty = parseInt(document.getElementById('modalQty').value) || 1, time = parseInt(document.getElementById('modalTime').value) || 0;
-      addedActivities.push({ id: pendingActivity.id + '_' + Date.now(), actId: pendingActivity.id, cat: pendingActivity.cat, nombre: pendingActivity.nombre, qty, time, subtotalMin: qty * time });
+      const selectedWeeks = Array.from(document.querySelectorAll('#modalWeekChips .week-chip.bg-blue-100')).map(el => parseInt(el.dataset.week));
+      addedActivities.push({ id: pendingActivity.id + '_' + Date.now(), actId: pendingActivity.id, cat: pendingActivity.cat, nombre: pendingActivity.nombre, qty, time, subtotalMin: qty * time, evalWeeks: selectedWeeks.length > 0 ? selectedWeeks : null });
       closeModal(); renderAdded(); updateRibbon();
     };
     window._removeActivity = function(id) { addedActivities = addedActivities.filter(a => a.id !== id); renderAdded(); updateRibbon(); };
@@ -810,6 +838,21 @@
           ? 'Educaci\u00f3n continua: ritmo propio, sincron\u00eda acotada (\u2264 30%).'
           : 'Estudiantes j\u00f3venes: necesitan acompa\u00f1amiento sincr\u00f3nico (\u2265 15%). Para mayor precisi\u00f3n, declara el % del PAC en el Paso 1.';
       }
+      // Check 7: Evaluaciones distribuidas (certeza instruccional)
+      const allEvalWeeks = addedActivities.filter(a => a.evalWeeks && a.evalWeeks.length > 0).flatMap(a => a.evalWeeks).sort((a,b) => a - b);
+      const uniqueEvalWeeks = [...new Set(allEvalWeeks)];
+      const hasEvalWeekData = allEvalWeeks.length > 0;
+      const hasClustering = uniqueEvalWeeks.some((w, i) => i > 0 && (w - uniqueEvalWeeks[i-1]) <= 1);
+      const evalWeekLabel = hasEvalWeekData
+        ? `Evaluaciones distribuidas (semanas: ${uniqueEvalWeeks.map(w => 'S'+w).join(', ')})`
+        : 'Distribuci\u00f3n de evaluaciones (sin semanas asignadas a\u00fan)';
+      const evalWeekOk = hasEvalWeekData ? !hasClustering : true;
+      const evalWeekDesc = !hasEvalWeekData
+        ? 'Asigna semanas a las evaluaciones sumativas para verificar que no se concentren.'
+        : hasClustering
+        ? 'Hay evaluaciones en semanas consecutivas. La certeza instruccional recomienda al menos 2 semanas de separaci\u00f3n entre evaluaciones pesadas.'
+        : 'Las evaluaciones est\u00e1n distribuidas con separaci\u00f3n adecuada.';
+
       const checks = [
         { ok: hasInteraction, label: 'Hay actividades de interacci\u00f3n (foros, sincr\u00f3nicas, tutor\u00edas)', desc: 'El modelo UMCE requiere interacci\u00f3n entre estudiantes y con docentes.' },
         { ok: hasCollab, label: 'Hay actividades de colaboraci\u00f3n (wikis, proyectos grupales, co-evaluaci\u00f3n)', desc: 'La construcci\u00f3n conjunta de conocimiento es pilar del modelo.' },
@@ -817,6 +860,7 @@
         { ok: hasFormative, label: 'Hay evaluaci\u00f3n formativa (quizzes, H5P, escenarios)', desc: 'Evaluar para aprender, no solo para calificar.' },
         { ok: contentPct <= 0.6, label: `Contenido pasivo \u2264 60% (actual: ${Math.round(contentPct*100)}%)`, desc: 'El modelo est\u00e1 centrado en la actividad del estudiante, no en consumir contenido.' },
         { ok: syncOk, label: syncLabel, desc: syncDesc },
+        { ok: evalWeekOk, label: evalWeekLabel, desc: evalWeekDesc },
       ];
       document.getElementById('checklist').innerHTML = checks.map(ch => {
         const noData = addedActivities.length === 0;
@@ -831,13 +875,18 @@
       if (addedActivities.length === 0) { section.style.display = 'none'; return; }
       section.style.display = '';
       const weeklyHrs = totalMin / 60 / c.weeks, maxBar = Math.max(weeklyHrs, 12) * 1.1;
+      // Collect evaluation weeks for highlighting
+      const evalWeekSet = new Set(addedActivities.filter(a => a.evalWeeks).flatMap(a => a.evalWeeks));
       let rows = '';
       for (let w = 1; w <= Math.min(c.weeks, 20); w++) {
         const pct = (weeklyHrs / maxBar) * 100;
-        const color = weeklyHrs <= 10 ? '#4ADE80' : (weeklyHrs <= 12 ? '#FACC15' : '#F87171');
-        rows += `<div class="flex items-center gap-3"><span class="text-xs text-gray-400 w-8 text-right">S${w}</span><div class="flex-1 bg-gray-200 rounded-sm h-5 overflow-hidden"><div class="weekly-bar" style="width:${pct}%; background:${color};"></div></div><span class="text-xs font-semibold w-12 text-right">${weeklyHrs.toFixed(1)}h</span></div>`;
+        const isEvalWeek = evalWeekSet.has(w);
+        const color = isEvalWeek ? '#F59E0B' : (weeklyHrs <= 10 ? '#4ADE80' : (weeklyHrs <= 12 ? '#FACC15' : '#F87171'));
+        const evalBadge = isEvalWeek ? '<span class="text-xs ml-1" title="Semana con evaluaci\u00f3n sumativa">\u2691</span>' : '';
+        rows += `<div class="flex items-center gap-3"><span class="text-xs ${isEvalWeek ? 'text-amber-600 font-bold' : 'text-gray-400'} w-8 text-right">S${w}</span><div class="flex-1 bg-gray-200 rounded-sm h-5 overflow-hidden"><div class="weekly-bar" style="width:${pct}%; background:${color};"></div></div><span class="text-xs font-semibold w-12 text-right">${weeklyHrs.toFixed(1)}h${evalBadge}</span></div>`;
       }
       if (c.weeks > 20) rows += `<div class="text-xs text-gray-400 text-center pt-1">... ${c.weeks} semanas total</div>`;
+      if (evalWeekSet.size > 0) rows += `<div class="text-xs text-amber-600 mt-2"><span class="font-bold">\u2691</span> = semana con evaluaci\u00f3n sumativa asignada</div>`;
       document.getElementById('weeklyBars').innerHTML = rows;
     }
 
