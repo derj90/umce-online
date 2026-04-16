@@ -6449,6 +6449,113 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// === Mesa 1 — Validación Indicadores QA ===
+
+// POST /api/validacion-mesa1/evaluador — Registra o actualiza perfil del evaluador
+app.post('/api/validacion-mesa1/evaluador', authMiddleware, async (req, res) => {
+  try {
+    const { programa, programa_otro, rol } = req.body;
+    if (!programa) return res.status(400).json({ error: 'El campo programa es requerido' });
+    if (!rol) return res.status(400).json({ error: 'El campo rol es requerido' });
+    await portalUpsert('mesa1_evaluadores', {
+      email: req.userEmail, nombre: req.userName,
+      programa, programa_otro: programa === 'otro' ? (programa_otro || null) : null,
+      rol, updated_at: new Date().toISOString()
+    });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Mesa1 evaluador upsert:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/validacion-mesa1/respuesta — Guarda respuesta para un indicador
+app.post('/api/validacion-mesa1/respuesta', authMiddleware, async (req, res) => {
+  try {
+    const { indicador_id, pertinencia, claridad, sugerencia } = req.body;
+    if (!indicador_id) return res.status(400).json({ error: 'indicador_id es requerido' });
+    if (!/^QA-\d{2}$/.test(indicador_id)) return res.status(400).json({ error: 'Formato inválido. Usar QA-01 a QA-75' });
+    if (pertinencia != null && (pertinencia < 1 || pertinencia > 5)) return res.status(400).json({ error: 'pertinencia: 1-5' });
+    if (claridad != null && (claridad < 1 || claridad > 5)) return res.status(400).json({ error: 'claridad: 1-5' });
+    const evaluadores = await portalQuery('mesa1_evaluadores', `email=eq.${encodeURIComponent(req.userEmail)}&limit=1`);
+    if (!evaluadores.length) return res.status(400).json({ error: 'Registra tu perfil primero' });
+    if (evaluadores[0].confirmado_at) return res.status(403).json({ error: 'Envío ya confirmado' });
+    await portalUpsert('mesa1_respuestas', {
+      evaluador_email: req.userEmail, indicador_id,
+      pertinencia: pertinencia != null ? parseInt(pertinencia) : null,
+      claridad: claridad != null ? parseInt(claridad) : null,
+      sugerencia: sugerencia != null ? String(sugerencia).substring(0, 1000) : null,
+      updated_at: new Date().toISOString()
+    });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Mesa1 respuesta upsert:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/validacion-mesa1/estado — Progreso del evaluador actual
+app.get('/api/validacion-mesa1/estado', authMiddleware, async (req, res) => {
+  try {
+    const [evaluadores, respuestas] = await Promise.all([
+      portalQuery('mesa1_evaluadores', `email=eq.${encodeURIComponent(req.userEmail)}&limit=1`),
+      portalQuery('mesa1_respuestas', `evaluador_email=eq.${encodeURIComponent(req.userEmail)}&order=indicador_id.asc`)
+    ]);
+    const evaluador = evaluadores.length ? evaluadores[0] : null;
+    res.json({
+      evaluador, respuestas,
+      total_respondidos: respuestas.length,
+      total_completos: respuestas.filter(r => r.pertinencia != null && r.claridad != null).length,
+      confirmado: evaluador ? evaluador.confirmado_at != null : false
+    });
+  } catch (err) {
+    console.error('Mesa1 estado:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/validacion-mesa1/confirmar — Cierra la participación
+app.post('/api/validacion-mesa1/confirmar', authMiddleware, async (req, res) => {
+  try {
+    const evaluadores = await portalQuery('mesa1_evaluadores', `email=eq.${encodeURIComponent(req.userEmail)}&limit=1`);
+    if (!evaluadores.length) return res.status(400).json({ error: 'Registra tu perfil primero' });
+    if (evaluadores[0].confirmado_at) return res.status(409).json({ error: 'Ya confirmado' });
+    await portalMutate('mesa1_evaluadores', 'PATCH',
+      { confirmado_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+      `email=eq.${encodeURIComponent(req.userEmail)}`);
+    res.json({ ok: true, confirmado_at: new Date().toISOString() });
+  } catch (err) {
+    console.error('Mesa1 confirmar:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/validacion-mesa1/resultados — Resultados agregados (solo admin)
+app.get('/api/validacion-mesa1/resultados', adminMiddleware, async (req, res) => {
+  try {
+    const [agregados, sugerencias, progreso] = await Promise.all([
+      portalQuery('v_mesa1_resultados', 'order=indicador_id.asc'),
+      portalQuery('mesa1_respuestas', `sugerencia=not.is.null&sugerencia=neq.&select=indicador_id,sugerencia,evaluador_email,updated_at&order=indicador_id.asc`),
+      portalQuery('v_mesa1_progreso', 'order=confirmado_at.nullsfirst,email.asc')
+    ]);
+    const emailsConfirmados = new Set(progreso.filter(p => p.confirmado_at).map(p => p.email));
+    const sugFiltradas = sugerencias.filter(s => emailsConfirmados.has(s.evaluador_email));
+    const sugPorInd = {};
+    for (const s of sugFiltradas) {
+      if (!sugPorInd[s.indicador_id]) sugPorInd[s.indicador_id] = [];
+      sugPorInd[s.indicador_id].push({ texto: s.sugerencia, evaluador: s.evaluador_email });
+    }
+    res.json({
+      resumen: { total_evaluadores: progreso.length, confirmados: progreso.filter(p => p.confirmado_at).length },
+      indicadores: agregados.map(ind => ({ ...ind, sugerencias: sugPorInd[ind.indicador_id] || [] })),
+      progreso_evaluadores: progreso
+    });
+  } catch (err) {
+    console.error('Mesa1 resultados:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // === Page Routes ===
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 // --- Hidden pages (archived in src/pages-archive/, restore when ready) ---
@@ -6459,6 +6566,7 @@ app.get('/virtualizacion/planificador', (req, res) => res.sendFile(path.join(__d
 app.get('/virtualizacion/fundamentos', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-fundamentos.html')));
 app.get('/virtualizacion/rubrica', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-rubrica.html')));
 app.get('/virtualizacion/qa', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-qa.html')));
+app.get('/virtualizacion/qa/validar', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-qa-validar.html')));
 app.get('/virtualizacion/sct', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-sct.html')));
 app.get('/virtualizacion/asistente', (req, res) => res.sendFile(path.join(__dirname, 'public', 'virtualizacion-asistente.html')));
 // app.get('/sct', ...);

@@ -1,0 +1,1095 @@
+{
+  "meta": {
+    "titulo": "Indicadores QA Propuestos — UMCE 2026",
+    "version": "1.0",
+    "fecha": "2026-04-16",
+    "total_indicadores": 75,
+    "total_areas": 18,
+    "fuentes_cruzadas": 5,
+    "indicadores_analizados": 241,
+    "descripcion": "75 indicadores propuestos para el sistema QA de cursos virtuales UMCE, resultado del cruce de 5 marcos: OSCQR v4.0, OLC 2025, Quality Matters, UDFV-UMCE y CNA Chile."
+  },
+  "escala_validacion": {
+    "pertinencia": {
+      "1": "Nada pertinente para cursos virtuales UMCE",
+      "2": "Poco pertinente",
+      "3": "Moderadamente pertinente",
+      "4": "Bastante pertinente",
+      "5": "Muy pertinente"
+    },
+    "claridad": {
+      "1": "Muy poco clara, ambigua",
+      "2": "Poco clara",
+      "3": "Moderadamente clara",
+      "4": "Bastante clara",
+      "5": "Muy clara, sin ambigüedad"
+    }
+  },
+  "areas": [
+    {
+      "id": "T01",
+      "nombre": "Bienvenida, orientación e información del curso",
+      "descripcion": "Cómo el curso recibe y orienta al estudiante desde el primer contacto.",
+      "total_indicadores": 4
+    },
+    {
+      "id": "T02",
+      "nombre": "Objetivos y resultados de aprendizaje",
+      "descripcion": "Coherencia entre objetivos declarados, actividades y evaluaciones.",
+      "total_indicadores": 3
+    },
+    {
+      "id": "T03",
+      "nombre": "Políticas institucionales y normas académicas",
+      "descripcion": "Reglamentos, integridad académica, IA educativa y normativa de virtualidad.",
+      "total_indicadores": 3
+    },
+    {
+      "id": "T04",
+      "nombre": "Requisitos tecnológicos y competencias digitales",
+      "descripcion": "Lo que el estudiante necesita saber y tener antes de comenzar.",
+      "total_indicadores": 3
+    },
+    {
+      "id": "T05",
+      "nombre": "Navegación, diseño y estructura visual",
+      "descripcion": "Claridad, consistencia y legibilidad del entorno del curso.",
+      "total_indicadores": 4
+    },
+    {
+      "id": "T06",
+      "nombre": "Funcionalidad técnica de la plataforma",
+      "descripcion": "Que los elementos técnicos del LMS funcionen correctamente.",
+      "total_indicadores": 4
+    },
+    {
+      "id": "T07",
+      "nombre": "Contenidos y materiales instruccionales",
+      "descripcion": "Calidad, actualización y alineación de los materiales con los objetivos.",
+      "total_indicadores": 3
+    },
+    {
+      "id": "T08",
+      "nombre": "Recursos educativos abiertos (REA) y licencias",
+      "descripcion": "Uso de REA, autoría visible y licencias libres.",
+      "total_indicadores": 3
+    },
+    {
+      "id": "T09",
+      "nombre": "Actividades de aprendizaje e interacción",
+      "descripcion": "Oportunidades de aprendizaje activo, colaboración y participación.",
+      "total_indicadores": 5
+    },
+    {
+      "id": "T10",
+      "nombre": "Evaluación, retroalimentación y calificaciones",
+      "descripcion": "Instrumentos, rúbricas, retroalimentación oportuna y verificación de identidad.",
+      "total_indicadores": 6
+    },
+    {
+      "id": "T11",
+      "nombre": "Presencia docente e interacción instructor-estudiante",
+      "descripcion": "Comunicación, anuncios, tutorías y presencia activa del docente.",
+      "total_indicadores": 5
+    },
+    {
+      "id": "T12",
+      "nombre": "Soporte al estudiante y servicios institucionales",
+      "descripcion": "Apoyo técnico, académico, socio-afectivo y derivación institucional.",
+      "total_indicadores": 4
+    },
+    {
+      "id": "T13",
+      "nombre": "Accesibilidad multimodal y DUA",
+      "descripcion": "Subtítulos, lengua de señas, diseño universal y acceso multi-dispositivo.",
+      "total_indicadores": 4
+    },
+    {
+      "id": "T14",
+      "nombre": "Privacidad y uso de datos",
+      "descripcion": "Transparencia, consentimiento y protección de datos personales.",
+      "total_indicadores": 2
+    },
+    {
+      "id": "T15",
+      "nombre": "Sesión sincrónica",
+      "descripcion": "Enlace, grabaciones, materiales y asistencia en sesiones en vivo.",
+      "total_indicadores": 4
+    },
+    {
+      "id": "T16",
+      "nombre": "Competencias docentes para la virtualidad",
+      "descripcion": "Dominio de herramientas, estrategias pedagógicas y adaptabilidad del docente.",
+      "total_indicadores": 7
+    },
+    {
+      "id": "T17",
+      "nombre": "Perspectiva de género, equidad y trato no discriminatorio",
+      "descripcion": "Lenguaje inclusivo, representación diversa, pueblos originarios.",
+      "total_indicadores": 4
+    },
+    {
+      "id": "T18",
+      "nombre": "Bienestar, cuidados digitales y corresponsabilidad",
+      "descripcion": "Protocolos de denuncia, pausas, convivencia digital, desconexión y corresponsabilidad.",
+      "total_indicadores": 7
+    }
+  ],
+  "indicadores": [
+    {
+      "id": "QA-01",
+      "area": "T01",
+      "texto": "El curso incluye una sección de bienvenida o inicio que presenta el propósito, la estructura general y las instrucciones para comenzar.",
+      "fuentes_raw": "OSCQR-1,2 + QM-1.1,1.2 + D1.3.1",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-02",
+      "area": "T01",
+      "texto": "El programa de estudio (syllabus) del curso está disponible, es comprensible y especifica las expectativas académicas.",
+      "fuentes_raw": "OSCQR-3,4 + QM-1.4 + D1.3.1",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-03",
+      "area": "T01",
+      "texto": "El cronograma o ruta de aprendizaje es visible, autocomprensible y facilita la planificación autónoma del estudiantado (calendario, hitos, tiempos de dedicación).",
+      "fuentes_raw": "OSCQR-2 + QM-1.2 + D3.3.1,D3.3.2",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-04",
+      "area": "T01",
+      "texto": "El curso informa explícitamente la modalidad (virtual, híbrida) y los prerequisitos de conocimiento disciplinar requeridos.",
+      "fuentes_raw": "OSCQR-7 + QM-1.7",
+      "marcos": [
+        "OSCQR",
+        "QM"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-05",
+      "area": "T02",
+      "texto": "Los objetivos o resultados de aprendizaje del curso son visibles, están escritos desde la perspectiva del estudiante y son comprensibles.",
+      "fuentes_raw": "OSCQR-9 + QM-2.1,2.3 + D3.1.1",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-06",
+      "area": "T02",
+      "texto": "Cada módulo o núcleo temático presenta objetivos de aprendizaje medibles, consistentes con los objetivos generales del curso.",
+      "fuentes_raw": "QM-2.2",
+      "marcos": [
+        "QM"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-07",
+      "area": "T02",
+      "texto": "Se explicita la relación entre los objetivos de aprendizaje, las actividades y las evaluaciones del curso.",
+      "fuentes_raw": "OSCQR-9 + QM-2.4",
+      "marcos": [
+        "OSCQR",
+        "QM"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-08",
+      "area": "T03",
+      "texto": "El curso incluye o enlaza las políticas institucionales relevantes (probidad académica, plagio, suplantación, derechos de autoría, colaboración no autorizada).",
+      "fuentes_raw": "OSCQR-5 + QM-1.4 + D6.1.1",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-09",
+      "area": "T03",
+      "texto": "El curso presenta protocolos explícitos sobre el uso educativo correcto de la inteligencia artificial.",
+      "fuentes_raw": "D6.1.2",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-10",
+      "area": "T04",
+      "texto": "Los requisitos técnicos mínimos para participar en el curso están claramente indicados (dispositivos, conectividad, software).",
+      "fuentes_raw": "OSCQR-8 + QM-1.5,1.6 [GAP: Sepúlveda no cubre esta dimensión]",
+      "marcos": [
+        "OSCQR",
+        "QM"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-11",
+      "area": "T04",
+      "texto": "Las herramientas tecnológicas utilizadas en el curso están fácilmente accesibles y son coherentes con los objetivos de aprendizaje; las herramientas no utilizadas han sido eliminadas del entorno.",
+      "fuentes_raw": "OSCQR-11,12,13 + QM-6.1,6.3 [GAP: Sepúlveda no cubre esta dimensión]",
+      "marcos": [
+        "OSCQR",
+        "QM"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-12",
+      "area": "T05",
+      "texto": "La navegación del curso es simple, intuitiva y sigue una estructura lógica y consistente con jerarquía visible (índice, encabezados, secciones).",
+      "fuentes_raw": "OSCQR-16 + QM-8.1 + D1.2.1,D1.2.2,D1.2.3",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-13",
+      "area": "T05",
+      "texto": "El diseño visual facilita la lectura: contraste adecuado entre texto y fondo, fuente sans-serif de tamaño mínimo 12 pt, uso de negrita para énfasis y espacios en blanco suficientes.",
+      "fuentes_raw": "OSCQR-17,18,21,22,23 + QM-8.2 + D1.4.1,D1.4.2,D1.4.3,D1.4.4",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-14",
+      "area": "T05",
+      "texto": "Los encabezados están destacados y corresponden a jerarquías estructurales; los hipervínculos son descriptivos y comprensibles fuera de contexto.",
+      "fuentes_raw": "OSCQR-21,37 + D1.4.6",
+      "marcos": [
+        "OSCQR",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-15",
+      "area": "T05",
+      "texto": "Las instrucciones son unívocas, autocomprensibles y están redactadas sin errores ortográficos ni gramaticales.",
+      "fuentes_raw": "OSCQR-19,20 + D3.1.2",
+      "marcos": [
+        "OSCQR",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-16",
+      "area": "T06",
+      "texto": "Los botones, menús y pestañas de la plataforma funcionan correctamente; los pop-ups y pestañas del curso se cargan sin errores.",
+      "fuentes_raw": "D1.1.1,D1.1.5",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "A",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-17",
+      "area": "T06",
+      "texto": "Los enlaces multimedia e interactivos del curso se reproducen correctamente y las imágenes se visualizan en buena calidad.",
+      "fuentes_raw": "D1.1.2,D1.1.4",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "A",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-18",
+      "area": "T06",
+      "texto": "El acceso a la plataforma (autenticación usuario/contraseña) es expedito y sin interrupciones.",
+      "fuentes_raw": "D1.1.3",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "A",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-19",
+      "area": "T07",
+      "texto": "Los materiales instruccionales contribuyen al logro de los objetivos de aprendizaje declarados y reflejan teorías y prácticas actualizadas de la disciplina.",
+      "fuentes_raw": "OSCQR-29 + QM-4.1,4.4",
+      "marcos": [
+        "OSCQR",
+        "QM"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-20",
+      "area": "T07",
+      "texto": "Se utiliza variedad de materiales y recursos educativos; existe equilibrio apropiado entre textos, imágenes y recursos multimedia.",
+      "fuentes_raw": "QM-4.5 + D3.1.3",
+      "marcos": [
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-21",
+      "area": "T07",
+      "texto": "Se explicita la relación entre los materiales instruccionales y las actividades de aprendizaje que deben realizarse.",
+      "fuentes_raw": "QM-4.2",
+      "marcos": [
+        "QM"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-22",
+      "area": "T08",
+      "texto": "Las autorías de textos, imágenes y videos están claramente enunciadas y visibles en todos los recursos del curso.",
+      "fuentes_raw": "OSCQR-33 + QM-4.3 + D2.3.2",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-23",
+      "area": "T08",
+      "texto": "Se privilegia el uso de Recursos Educativos Abiertos (REA), evitando el uso de recursos anónimos o sin referencia; se explicita el estado de copyright o licencia de los materiales.",
+      "fuentes_raw": "OSCQR-32 + QM-4.3 + D2.3.1,D2.3.3",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-24",
+      "area": "T08",
+      "texto": "Las herramientas digitales complementarias sugeridas priorizan el acceso libre y/o código abierto.",
+      "fuentes_raw": "D2.3.4",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "baja",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-25",
+      "area": "T09",
+      "texto": "Las actividades de aprendizaje promueven el logro de los objetivos declarados y fomentan el aprendizaje activo mediante estrategias didácticas variadas.",
+      "fuentes_raw": "QM-5.1,5.2 + QM-6.2 + D2.2.5",
+      "marcos": [
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "C",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-26",
+      "area": "T09",
+      "texto": "El curso ofrece actividades de orden superior (resolución de problemas, aplicaciones del mundo real) y oportunidades para que el estudiantado comparta recursos y perspectivas diversas.",
+      "fuentes_raw": "OSCQR-30,31,43",
+      "marcos": [
+        "OSCQR"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "C",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-27",
+      "area": "T09",
+      "texto": "El curso promueve la interacción entre estudiantes y la construcción colaborativa de conocimiento, incluyendo espacios de comunicación asincrónica.",
+      "fuentes_raw": "OSCQR-41,42 + QM-5.2 + D3.2.4",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "C",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-28",
+      "area": "T09",
+      "texto": "El curso contempla una actividad de presentación o introducción mutua entre los participantes.",
+      "fuentes_raw": "OSCQR-40 + QM-1.9",
+      "marcos": [
+        "OSCQR",
+        "QM"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "C",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-29",
+      "area": "T10",
+      "texto": "Las evaluaciones miden el logro de los objetivos de aprendizaje declarados, son variadas, secuenciadas y adecuadas al nivel del curso.",
+      "fuentes_raw": "OSCQR-45 + QM-3.1,3.4 + D3.2.1",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-30",
+      "area": "T10",
+      "texto": "La política de calificaciones y las consecuencias de entregas tardías están claramente establecidas desde el inicio del curso.",
+      "fuentes_raw": "OSCQR-44 + QM-3.2",
+      "marcos": [
+        "OSCQR",
+        "QM"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-31",
+      "area": "T10",
+      "texto": "Cada actividad evaluada cuenta con criterios explícitos (rúbrica, pauta u otros) que permiten al estudiantado conocer los estándares de desempeño esperados.",
+      "fuentes_raw": "OSCQR-46 + QM-3.3 + D3.2.1",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-32",
+      "area": "T10",
+      "texto": "La retroalimentación entregada a cada estudiante es personalizada, enfatiza fortalezas y áreas de mejora, y el curso ofrece oportunidades de autoevaluación.",
+      "fuentes_raw": "OSCQR-47 + QM-3.5 + D3.2.2,D3.2.3,D3.3.4",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "C",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-33",
+      "area": "T11",
+      "texto": "El curso explicita el plan de interacción del docente con los estudiantes: canales de comunicación, tiempos de respuesta y tipo de presencia esperada.",
+      "fuentes_raw": "OSCQR-38,39 + QM-1.3,5.3 + D6.2.3",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "C",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-34",
+      "area": "T11",
+      "texto": "El docente se presenta de manera profesional y accesible dentro del entorno del curso.",
+      "fuentes_raw": "OSCQR-40 + QM-1.8",
+      "marcos": [
+        "OSCQR",
+        "QM"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "C",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-35",
+      "area": "T11",
+      "texto": "Están establecidas las fechas para tutorías individuales y/o grupales, y los requisitos de interacción entre estudiantes están claramente indicados.",
+      "fuentes_raw": "QM-5.4 + D3.3.3",
+      "marcos": [
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "C",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-36",
+      "area": "T12",
+      "texto": "El curso enlaza o describe el soporte técnico disponible y ofrece guías u orientaciones sobre el uso de la plataforma.",
+      "fuentes_raw": "OSCQR-6 + QM-7.1 + D1.3.3",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-37",
+      "area": "T12",
+      "texto": "El curso presenta acceso a los servicios de apoyo académico institucionales (biblioteca, Ucampus, tutorías, etc.).",
+      "fuentes_raw": "QM-7.3,7.4 + D1.2.4",
+      "marcos": [
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-38",
+      "area": "T12",
+      "texto": "En la plataforma están visibles los datos de contacto de las personas de referencia que entregan soporte técnico y/o de uso de plataformas.",
+      "fuentes_raw": "OSCQR-10 + QM-7.1 + D1.3.2",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-39",
+      "area": "T13",
+      "texto": "Los textos, documentos y páginas del curso son accesibles: legibles por tecnología asistiva, con texto alternativo en imágenes no decorativas y sin dependencia exclusiva del color para transmitir información.",
+      "fuentes_raw": "OSCQR-34,35,36 + QM-8.3,8.4 + D2.1.3,D2.1.4",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-40",
+      "area": "T13",
+      "texto": "Los videos del curso cuentan con subtítulos en castellano; en el caso de contenidos críticos, se provee interpretación en lengua de signos o audiodescripción.",
+      "fuentes_raw": "OSCQR-35 + QM-8.4 + D2.1.1,D2.1.2",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-41",
+      "area": "T13",
+      "texto": "Se utilizan múltiples formatos para presentar los contenidos (texto, audio, visual, audiovisual) en coherencia con los principios del Diseño Universal de Aprendizaje.",
+      "fuentes_raw": "OSCQR-29 + QM-8.5 + D2.2.1",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-42",
+      "area": "T13",
+      "texto": "Las actividades de evaluación contemplan variedad de formatos (ensayo, portafolio, presentación, trabajo grupal/individual) que permiten diversas formas de demostrar aprendizaje.",
+      "fuentes_raw": "QM-3.4 + D2.2.2,D2.2.3",
+      "marcos": [
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-43",
+      "area": "T14",
+      "texto": "El curso incluye o enlaza políticas de privacidad de las herramientas tecnológicas utilizadas, e informa al estudiantado sobre cómo proteger sus datos personales.",
+      "fuentes_raw": "OSCQR-14 + QM-6.4 + D2.4.1,D2.4.2",
+      "marcos": [
+        "OSCQR",
+        "QM",
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-44",
+      "area": "T14",
+      "texto": "Existen políticas de consentimiento explícitas para el uso de información personal (imágenes, grabaciones) y sobre el manejo de datos sensibles (menores de edad, información de establecimientos educacionales).",
+      "fuentes_raw": "D2.4.3,D2.4.4",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-45",
+      "area": "T15",
+      "texto": "El enlace para la sesión sincrónica está disponible y accesible en la plataforma.",
+      "fuentes_raw": "D3.4.1",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "A",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-46",
+      "area": "T15",
+      "texto": "Las grabaciones de las sesiones sincrónicas están disponibles en la plataforma al día siguiente de realizada la sesión.",
+      "fuentes_raw": "D3.1.4",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "A",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-47",
+      "area": "T15",
+      "texto": "Los materiales de trabajo previo (PPT, videos, textos) están disponibles en la plataforma con al menos una semana de antelación a la sesión sincrónica; los materiales trabajados durante la sesión se publican al día siguiente.",
+      "fuentes_raw": "D3.4.3,D3.4.4",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "baja",
+      "automatizabilidad": "A",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-48",
+      "area": "T15",
+      "texto": "Existe un espacio en la plataforma para que el estudiantado marque asistencia de forma autónoma.",
+      "fuentes_raw": "D3.4.2",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "baja",
+      "automatizabilidad": "A",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-49",
+      "area": "T16",
+      "texto": "El profesorado demuestra dominio autónomo de la plataforma LMS (subir archivos, crear recursos, gestionar actividades) durante el desarrollo del curso.",
+      "fuentes_raw": "D4.1.1",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "C",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-50",
+      "area": "T16",
+      "texto": "El profesorado demuestra dominio autónomo de las funciones de la herramienta de videoconferencia (grabación, compartir pantalla, salas grupales, etc.).",
+      "fuentes_raw": "D4.1.2",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "C",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-51",
+      "area": "T16",
+      "texto": "Al inicio de cada sesión sincrónica, el profesorado comunica los objetivos y la estructura de la sesión.",
+      "fuentes_raw": "D4.2.2",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "C",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-52",
+      "area": "T16",
+      "texto": "El profesorado utiliza estrategias didácticas variadas durante la sesión sincrónica y realiza actividades que promueven la participación activa del estudiantado.",
+      "fuentes_raw": "D4.2.1,D4.2.3",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "C",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-53",
+      "area": "T16",
+      "texto": "El profesorado promueve la toma de decisiones conjunta entre docente y estudiantado y utiliza herramientas tecnológicas complementarias (Menti, Kahoot, etc.) de forma autónoma cuando corresponde.",
+      "fuentes_raw": "D4.1.3,D4.2.4",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "C",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-54",
+      "area": "T17",
+      "texto": "En las sesiones sincrónicas se utiliza el nombre sentido o elegido y los pronombres declarados por cada estudiante, sin presunciones sobre identidad de género u orientación sexual.",
+      "fuentes_raw": "D5.1.1,D5.1.2",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "C",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-55",
+      "area": "T17",
+      "texto": "El lenguaje escrito en la plataforma y en los contenidos es no sexista, inclusivo y no discriminatorio (evita el masculino genérico, emplea lenguaje no binario cuando corresponde).",
+      "fuentes_raw": "D5.1.3",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "C",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-56",
+      "area": "T17",
+      "texto": "Las imágenes y materiales del curso son no sexistas, inclusivos y no discriminatorios: evitan estereotipos por sexo, raza, origen, clase social o condición.",
+      "fuentes_raw": "D5.1.4",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "C",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-57",
+      "area": "T17",
+      "texto": "Las imágenes y textos referidos a pueblos originarios evitan una connotación folclórica o decorativa, y proveen contexto y explicaciones adecuadas.",
+      "fuentes_raw": "D5.1.5",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "C",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-58",
+      "area": "T18",
+      "texto": "En la plataforma está visible la información de contacto de las personas de referencia en caso de situaciones de acoso, violencia o discriminación (ej. Oficina de Género).",
+      "fuentes_raw": "D5.2.1",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "C",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-59",
+      "area": "T18",
+      "texto": "El curso incluye información sobre protocolos de denuncia para casos de ciberviolencias y estrategias de autodefensa digital.",
+      "fuentes_raw": "D5.2.5,D5.2.6",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "C",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-60",
+      "area": "T18",
+      "texto": "Los recursos educativos y las sesiones sincrónicas incluyen avisos previos cuando contienen material sensible.",
+      "fuentes_raw": "D5.2.2",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "C",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-61",
+      "area": "T18",
+      "texto": "Cada sesión sincrónica incorpora una pausa de duración adecuada (≥5 min si dura <2 h; ≥15 min si dura ≥2 h).",
+      "fuentes_raw": "D5.2.3",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "C",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-62",
+      "area": "T18",
+      "texto": "Existen protocolos sobre convivencia digital académica (puntualidad, identificación, uso de cámaras, canales de comunicación alternativos y tiempos de respuesta).",
+      "fuentes_raw": "D6.2.1,D6.2.2,D6.2.3",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "C",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-63",
+      "area": "T18",
+      "texto": "El curso contempla una política de desconexión digital y criterios de conciliación para el estudiantado.",
+      "fuentes_raw": "D6.3.1,D6.3.3",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "baja",
+      "automatizabilidad": "C",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-64",
+      "area": "T18",
+      "texto": "Existen espacios o actividades orientadas a la corresponsabilidad de los cuidados y la reducción de brechas digitales que dificultan el aprendizaje.",
+      "fuentes_raw": "D6.3.2,D6.3.3",
+      "marcos": [
+        "UDFV-UMCE"
+      ],
+      "jerarquia": "baja",
+      "automatizabilidad": "C",
+      "aporte_umce": true
+    },
+    {
+      "id": "QA-65",
+      "area": "T11",
+      "texto": "El/la docente publica anuncios regulares y relevantes en el sitio del curso, mantiene presencia activa en foros y actividades asincrónicas, y contribuye significativamente a las discusiones.",
+      "fuentes_raw": "OLC2025-D3,D4 [GAP cubierto]",
+      "marcos": [
+        "OLC2025"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-66",
+      "area": "T10",
+      "texto": "El/la docente proporciona retroalimentación y califica las evaluaciones dentro de plazos razonables, comunicados previamente a los estudiantes.",
+      "fuentes_raw": "OLC2025-D6 [GAP cubierto]",
+      "marcos": [
+        "OLC2025"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "A",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-67",
+      "area": "T16",
+      "texto": "El/la docente identifica y acompaña proactivamente a los estudiantes que muestran dificultades o riesgo de abandono en el curso.",
+      "fuentes_raw": "OLC2025-D7 [GAP cubierto]",
+      "marcos": [
+        "OLC2025"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "C",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-68",
+      "area": "T16",
+      "texto": "El/la docente ajusta contenidos, actividades y fechas en respuesta a las necesidades emergentes del estudiantado, y proporciona síntesis de cierre al finalizar cada módulo o unidad.",
+      "fuentes_raw": "OLC2025-D11,D13 [GAP cubierto]",
+      "marcos": [
+        "OLC2025"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "C",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-69",
+      "area": "T04",
+      "texto": "El curso incluye un diagnóstico de preparación tecnológica previo al inicio (lista de comprobación de requisitos técnicos y/o cuestionario de preparación en línea).",
+      "fuentes_raw": "OLC2025-A2 [GAP cubierto]",
+      "marcos": [
+        "OLC2025"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-70",
+      "area": "T09",
+      "texto": "El curso incorpora, cuando la plataforma lo permite, estrategias de aprendizaje adaptativo que personalicen la experiencia según el desempeño del estudiante (actividades condicionales, rutas alternativas).",
+      "fuentes_raw": "OLC2025-A9 [GAP cubierto]",
+      "marcos": [
+        "OLC2025"
+      ],
+      "jerarquia": "baja",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-71",
+      "area": "T11",
+      "texto": "El/la docente utiliza un lenguaje de apoyo y empático en toda retroalimentación y comunicación, e incorpora ejemplos o experiencias personales que humanicen el contenido del curso.",
+      "fuentes_raw": "OLC2025-D8,D15 [GAP cubierto]",
+      "marcos": [
+        "OLC2025"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "C",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-72",
+      "area": "T10",
+      "texto": "El curso dispone de mecanismos para verificar la identidad de los estudiantes durante las evaluaciones y para prevenir el plagio (control de originalidad, supervisión en línea u otros).",
+      "fuentes_raw": "CNA-II.2.c [GAP cubierto]",
+      "marcos": [
+        "CNA"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-73",
+      "area": "T03",
+      "texto": "El curso incluye un enlace visible al reglamento institucional de la modalidad virtual, que establece derechos y deberes de los estudiantes, normativa de evaluación, carga académica y condiciones de la modalidad.",
+      "fuentes_raw": "CNA-I.5.e,I.5.f [GAP cubierto]",
+      "marcos": [
+        "CNA"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-74",
+      "area": "T12",
+      "texto": "El curso proporciona información y acceso a servicios de apoyo integral al estudiante: soporte técnico, orientación académica, apoyo socio-afectivo y derivación a servicios institucionales (bienestar, salud mental, asuntos estudiantiles).",
+      "fuentes_raw": "CNA-I.1.c,II.4.b [GAP cubierto]",
+      "marcos": [
+        "CNA"
+      ],
+      "jerarquia": "alta",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    },
+    {
+      "id": "QA-75",
+      "area": "T06",
+      "texto": "El curso informa un protocolo de contingencia técnica: qué hacer ante caídas de plataforma, pérdida de conectividad o problemas de acceso durante actividades evaluativas.",
+      "fuentes_raw": "CNA-I.4.a,I.4.c [GAP cubierto]",
+      "marcos": [
+        "CNA"
+      ],
+      "jerarquia": "media",
+      "automatizabilidad": "B",
+      "aporte_umce": false
+    }
+  ]
+}

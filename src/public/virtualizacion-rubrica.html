@@ -264,16 +264,38 @@
         <span class="text-white/90">R&uacute;brica QA</span>
       </nav>
 
+      <!-- Process progress bar -->
+      <div class="fade-up mb-8">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-medium">
+          <span class="inline-flex items-center gap-1 bg-white/20 text-white/90 rounded-full px-3 py-1.5">
+            <span class="text-green-300">&#10003;</span> 1. Piloto 2024
+          </span>
+          <span class="text-white/30">&rarr;</span>
+          <span class="inline-flex items-center gap-1 bg-white/20 text-white/90 rounded-full px-3 py-1.5">
+            <span class="text-green-300">&#10003;</span> 2. Cruce de marcos
+          </span>
+          <span class="text-white/30">&rarr;</span>
+          <span class="inline-flex items-center gap-1 bg-white font-bold rounded-full px-3 py-1.5" style="color: #0033A1;">
+            &#9679; 3. Validaci&oacute;n Mesa 1
+          </span>
+          <span class="text-white/30">&rarr;</span>
+          <span class="inline-flex items-center gap-1 bg-white/10 text-white/50 rounded-full px-3 py-1.5">
+            4. Set definitivo
+          </span>
+          <span class="text-white/30">&rarr;</span>
+          <span class="inline-flex items-center gap-1 bg-white/10 text-white/50 rounded-full px-3 py-1.5">
+            5. Implementaci&oacute;n
+          </span>
+        </div>
+      </div>
+
       <div class="stagger">
         <p class="fade-up text-xs font-semibold uppercase tracking-widest text-white/50 mb-3">Referencia &mdash; Resultados hist&oacute;ricos 2024 &mdash; Proyecto UMC21992</p>
         <h1 class="fade-up font-heading text-4xl md:text-5xl font-extrabold mb-4 leading-tight">
           R&uacute;brica QA &mdash; Dashboard<br class="hidden sm:block"> de Evaluaciones
         </h1>
         <p class="fade-up text-white/80 text-lg max-w-2xl mb-3">
-          Resultados de los 5 cursos ya evaluados con el Marco Evaluativo UDFV-UMCE (77 indicadores, 6 dimensiones). <strong class="text-white">Esta p&aacute;gina muestra datos hist&oacute;ricos</strong>, no eval&uacute;a cursos nuevos.
-        </p>
-        <p class="fade-up text-white/60 text-sm max-w-2xl">
-          Postgrado y prosecuci&oacute;n (noviembre&ndash;diciembre 2024) &mdash; Sep&uacute;lveda Parrini, P. (2024). Para evaluar un curso nuevo, usa el <a href="/virtualizacion/qa" class="underline hover:text-white">Sistema QA</a>.
+          En noviembre y diciembre de 2024, la UDFV aplic&oacute; un instrumento de 77 indicadores en 5 cursos de postgrado UMCE. Los resultados aqu&iacute; presentados son datos reales &mdash; no una demostraci&oacute;n. <strong class="text-white">Este piloto fue el primer paso de un proceso m&aacute;s largo:</strong> los 77 indicadores del piloto fueron cruzados con 4 marcos internacionales adicionales, produciendo 75 indicadores propuestos que Mesa 1 validar&aacute; para construir el instrumento definitivo.
         </p>
       </div>
 
@@ -281,19 +303,19 @@
       <div class="fade-up mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl">
         <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 text-center">
           <div class="text-2xl font-extrabold font-heading">77</div>
-          <div class="text-white/60 text-xs mt-0.5">indicadores</div>
-        </div>
-        <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 text-center">
-          <div class="text-2xl font-extrabold font-heading">6</div>
-          <div class="text-white/60 text-xs mt-0.5">dimensiones</div>
+          <div class="text-white/60 text-xs mt-0.5">indicadores del piloto</div>
         </div>
         <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 text-center">
           <div class="text-2xl font-extrabold font-heading">5</div>
           <div class="text-white/60 text-xs mt-0.5">cursos evaluados</div>
         </div>
         <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 text-center">
-          <div class="text-2xl font-extrabold font-heading">19</div>
-          <div class="text-white/60 text-xs mt-0.5">subdimensiones</div>
+          <div class="text-2xl font-extrabold font-heading">5</div>
+          <div class="text-white/60 text-xs mt-0.5">marcos cruzados</div>
+        </div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 text-center">
+          <div class="text-2xl font-extrabold font-heading">74%</div>
+          <div class="text-white/60 text-xs mt-0.5">criterios CNA cubiertos</div>
         </div>
       </div>
     </div>
@@ -302,6 +324,16 @@
   <!-- Audio Narrator Player -->
   <div class="max-w-6xl mx-auto px-6 pt-6">
     <div id="audio-narrator" data-src="/audio/rubrica-qa.mp3"></div>
+  </div>
+
+  <!-- CNA Context Card -->
+  <div class="max-w-4xl mx-auto px-6 pt-8 pb-2">
+    <div class="fade-up bg-blue-50 border-l-4 border-blue-600 rounded-r-xl p-5">
+      <p class="text-xs font-bold uppercase tracking-widest text-blue-700 mb-2">Relevancia para la acreditaci&oacute;n</p>
+      <p class="text-sm text-gray-700 leading-relaxed">
+        <strong>&iquest;Por qu&eacute; importa esto para la acreditaci&oacute;n?</strong> La CNA exige a los programas virtuales demostrar mecanismos de aseguramiento de calidad verificables. El an&aacute;lisis cruzado muestra que el <strong class="text-blue-700">74% de los criterios CNA de nivel de curso</strong> tienen correspondencia directa con indicadores medibles. Un sistema QA operativo no es solo buena pr&aacute;ctica pedag&oacute;gica: es evidencia concreta para procesos de acreditaci&oacute;n.
+      </p>
+    </div>
   </div>
 
   <!-- ================================================
@@ -390,7 +422,7 @@
     <div class="max-w-4xl mx-auto px-6">
       <div class="fade-up text-center mb-10">
         <p class="text-sm font-semibold uppercase tracking-widest mb-2" style="color: var(--palette-primary);">Hallazgos</p>
-        <h2 class="font-heading text-3xl font-bold mb-2">Conclusiones Principales</h2>
+        <h2 class="font-heading text-3xl font-bold mb-2">Lo que el piloto nos dice sobre los pr&oacute;ximos pasos</h2>
         <p class="text-gray-500 text-sm max-w-xl mx-auto">Patrones identificados en las 5 actividades curriculares evaluadas.</p>
       </div>
       <div class="stagger space-y-4">
@@ -462,8 +494,28 @@
           <p class="text-sm text-gray-600">Pilotaje en 5 actividades curriculares + revisi&oacute;n con informantes clave de la UDFV y &aacute;reas acad&eacute;micas UMCE (nov&ndash;dic 2024).</p>
         </div>
         <div class="method-item">
-          <p class="font-semibold text-sm mb-1" style="color: var(--palette-primary);">Bases te&oacute;ricas (4 marcos cruzados)</p>
-          <p class="text-sm text-gray-600">OSCQR v4.0 (SUNY, CC BY 4.0) &bull; OLC Course Review Scorecard (2025, libre) &bull; Quality Matters HE 6th Ed (referencia) &bull; Pol&iacute;tica de G&eacute;nero UMCE (2023) &bull; Protocolos UDFV (2024).</p>
+          <p class="font-semibold text-sm mb-1" style="color: var(--palette-primary);">Bases te&oacute;ricas (5 marcos cruzados)</p>
+          <p class="text-sm text-gray-600">OSCQR v4.0 (SUNY, CC BY 4.0) &bull; OLC Course Review Scorecard (2025, libre) &bull; Quality Matters HE 6th Ed (referencia) &bull; UDFV-UMCE (2024) &bull; CNA Chile.</p>
+        </div>
+      </div>
+
+      <!-- Mini flow diagram: cruce de marcos -->
+      <div class="fade-up mb-8 bg-blue-50 border border-blue-100 rounded-xl p-4">
+        <p class="text-xs font-bold uppercase tracking-widest text-blue-700 mb-3">Proceso de construcci&oacute;n del instrumento</p>
+        <div class="flex flex-wrap items-center gap-2 text-xs font-medium text-gray-700">
+          <span class="bg-white border border-blue-200 rounded-lg px-3 py-1.5">OSCQR v4.0</span>
+          <span class="text-blue-400">&rarr;</span>
+          <span class="bg-white border border-blue-200 rounded-lg px-3 py-1.5">OLC 2025</span>
+          <span class="text-blue-400">&rarr;</span>
+          <span class="bg-white border border-blue-200 rounded-lg px-3 py-1.5">Quality Matters</span>
+          <span class="text-blue-400">&rarr;</span>
+          <span class="bg-white border border-blue-200 rounded-lg px-3 py-1.5">UDFV-UMCE</span>
+          <span class="text-blue-400">&rarr;</span>
+          <span class="bg-white border border-blue-200 rounded-lg px-3 py-1.5">CNA Chile</span>
+          <span class="text-blue-400">&rarr;</span>
+          <span class="bg-blue-600 text-white rounded-lg px-3 py-1.5 font-semibold">241 indicadores analizados</span>
+          <span class="text-blue-400">&rarr;</span>
+          <span class="bg-blue-700 text-white rounded-lg px-3 py-1.5 font-semibold">75 propuestos para validaci&oacute;n</span>
         </div>
       </div>
 
@@ -527,34 +579,26 @@
     </div>
   </section>
 
-  <!-- Qué sigue -->
-  <section class="py-12 bg-gray-50">
+  <!-- CTAs -->
+  <section class="py-14 bg-gray-50">
     <div class="max-w-3xl mx-auto px-6">
-      <p class="text-xs font-bold uppercase tracking-widest mb-5" style="color: #0033A1;">Herramientas relacionadas</p>
-      <div class="grid sm:grid-cols-3 gap-4">
-        <a href="/virtualizacion/qa" class="bg-white rounded-xl border border-yellow-100 p-4 hover:border-yellow-300 transition-colors group">
-          <div class="w-8 h-8 rounded-xl flex items-center justify-center mb-3" style="background: #FEF3C7;">
-            <svg class="w-4 h-4" style="color: #D97706;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <p class="text-xs font-bold uppercase tracking-widest mb-6" style="color: #0033A1;">Pr&oacute;ximos pasos</p>
+      <div class="flex flex-col sm:flex-row gap-4">
+        <!-- Primary CTA -->
+        <a href="/virtualizacion/qa/validar" class="flex-1 bg-blue-700 hover:bg-blue-800 text-white rounded-xl p-6 transition-colors group flex flex-col justify-between">
+          <div>
+            <p class="font-bold text-lg mb-2 leading-tight">Participar en la validaci&oacute;n de indicadores</p>
+            <p class="text-blue-200 text-sm">Mesa 1 est&aacute; validando los 75 indicadores propuestos. Tu opini&oacute;n como docente o dise&ntilde;ador instruccional es parte del proceso.</p>
           </div>
-          <p class="font-semibold text-sm text-gray-800 mb-1 group-hover:text-umce-azul">Sistema QA</p>
-          <p class="text-xs text-gray-500">Eval&uacute;a un curso nuevo con los mismos 77 indicadores. Genera un informe con &aacute;reas de mejora y prioridades de acci&oacute;n.</p>
-          <p class="text-xs font-semibold mt-2" style="color: #D97706;">Ir al Sistema QA &rarr;</p>
+          <p class="mt-4 font-semibold text-white group-hover:underline">&rarr; Ir a validar indicadores</p>
         </a>
-        <a href="/virtualizacion/fundamentos" class="bg-white rounded-xl border border-gray-100 p-4 hover:border-gray-300 transition-colors group">
-          <div class="w-8 h-8 rounded-xl flex items-center justify-center mb-3" style="background: #F3F4F6;">
-            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        <!-- Secondary CTA -->
+        <a href="/virtualizacion/qa" class="flex-1 bg-white border-2 border-blue-700 text-blue-700 hover:bg-blue-50 rounded-xl p-6 transition-colors group flex flex-col justify-between">
+          <div>
+            <p class="font-bold text-lg mb-2 leading-tight">Entender el sistema QA completo</p>
+            <p class="text-gray-500 text-sm">El piloto es evidencia hist&oacute;rica. El Sistema QA es la herramienta activa para evaluar cursos nuevos y hacer seguimiento.</p>
           </div>
-          <p class="font-semibold text-sm text-gray-800 mb-1 group-hover:text-umce-azul">Fundamentos Pedag&oacute;gicos</p>
-          <p class="text-xs text-gray-500">Marco pedag&oacute;gico y normativo detr&aacute;s del instrumento. Explica por qu&eacute; se eval&uacute;an estas 6 dimensiones y no otras.</p>
-          <p class="text-xs font-semibold mt-2 text-gray-400">Ver Fundamentos &rarr;</p>
-        </a>
-        <a href="/virtualizacion" class="bg-white rounded-xl border border-gray-100 p-4 hover:border-gray-300 transition-colors group">
-          <div class="w-8 h-8 rounded-xl flex items-center justify-center mb-3" style="background: #EFF3FB;">
-            <svg class="w-4 h-4 text-umce-azul" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-          </div>
-          <p class="font-semibold text-sm text-gray-800 mb-1 group-hover:text-umce-azul">Ver el flujo completo</p>
-          <p class="text-xs text-gray-500">Revisa los 5 momentos del proceso de virtualizaci&oacute;n UMCE y todas las herramientas disponibles.</p>
-          <p class="text-xs font-semibold mt-2 text-gray-400">Ir a Virtualizaci&oacute;n &rarr;</p>
+          <p class="mt-4 font-semibold text-blue-700 group-hover:underline">&rarr; Ver el Sistema QA</p>
         </a>
       </div>
     </div>
