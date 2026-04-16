@@ -470,10 +470,10 @@
           Desde el primer semestre de 2026, la Mesa 1 &mdash; Modelo Instruccional, Calidad y Aprendizaje &mdash; se propuso construir los instrumentos que la universidad necesita para que sus cursos virtuales sean coherentes, verificables y mejorables.
         </p>
         <p class="text-gray-600 leading-relaxed mb-4">
-          Uno de esos instrumentos es la r&uacute;brica QA: un conjunto de indicadores que permite evaluar la calidad de un curso virtual antes, durante y despu&eacute;s de su implementaci&oacute;n. Para construirla, cruzamos cinco marcos de referencia &mdash; OSCQR v4.0, OLC Course Review 2025, Quality Matters, el Marco Evaluativo UDFV-UMCE (Sep&uacute;lveda, 2024) y las orientaciones CNA Chile &mdash; y propusimos 75 indicadores organizados en 18 &aacute;reas tem&aacute;ticas.
+          Uno de esos instrumentos es la r&uacute;brica de Calidad (QA): un conjunto de indicadores que permite evaluar la calidad de un curso virtual antes, durante y despu&eacute;s de su implementaci&oacute;n. Para construirla, cruzamos cinco marcos de referencia &mdash; OSCQR v4.0 (Open SUNY Course Quality Review), OLC Course Review 2025 (Online Learning Consortium), Quality Matters, el Marco Evaluativo UDFV-UMCE (Sep&uacute;lveda, 2024) y las orientaciones CNA Chile (Comisi&oacute;n Nacional de Acreditaci&oacute;n) &mdash; y, a partir de 241 indicadores analizados en esas cinco fuentes, propusimos 75 indicadores organizados en 18 &aacute;reas tem&aacute;ticas.
         </p>
         <p class="text-gray-600 leading-relaxed">
-          Esos 75 indicadores est&aacute;n fundamentados, pero a&uacute;n no han sido validados por personas que conocen la realidad de la docencia en la UMCE. Eso es exactamente lo que te pedimos.
+          Esos 75 indicadores est&aacute;n fundamentados, pero a&uacute;n no han sido validados por personas que conocen la realidad de la docencia en la UMCE. Eso es exactamente lo que te pedimos. Los resultados de esta validaci&oacute;n definir&aacute;n el set definitivo de indicadores, que constituir&aacute; evidencia directa para los procesos de acreditaci&oacute;n CNA de la UMCE.
         </p>
       </div>
 
@@ -494,6 +494,9 @@
           </div>
         </div>
         <p class="text-sm text-gray-500 mt-3 pt-3 border-t border-blue-100">
+          <strong class="text-gray-700">Sobre las etiquetas de cada indicador:</strong> Algunos indicadores llevan la marca <em>&laquo;Aporte UMCE&raquo;</em> &mdash; son contribuciones originales de la universidad sin equivalente en marcos internacionales (perspectiva de g&eacute;nero, corresponsabilidad, sesi&oacute;n sincr&oacute;nica). La etiqueta de jerarqu&iacute;a (<strong>alta</strong>, <strong>media</strong>, <strong>baja</strong>) indica la prioridad preliminar asignada por el equipo de investigaci&oacute;n.
+        </p>
+        <p class="text-sm text-gray-500 mt-2">
           <strong class="text-gray-700">Puedes completar el instrumento en una o varias sesiones.</strong> Cada respuesta se guarda autom&aacute;ticamente.
         </p>
       </div>
@@ -717,7 +720,7 @@
     let respuestas = {}; // { "QA-01": { pertinencia: N, claridad: M, sugerencia: "..." } }
     let confirmed = false;
     let currentArea = 0;
-    const TOTAL = 75;
+    let TOTAL = 75; // se sobreescribe con indicadores.length al cargar datos
 
     // ── DOM refs ────────────────────────────────────────────────────────────
     const mainPage          = document.getElementById('main-page');
@@ -1012,16 +1015,9 @@
         card.classList.toggle('answered-partial', !!partial);
       }
 
-      // Show save feedback
+      // Persist — BUG 1 fix: feedback shown only after server confirms
       const fbId = 'save-' + (type === 'pertinencia' ? 'p' : 'c') + '-' + indId;
-      const fb = document.getElementById(fbId);
-      if (fb) {
-        fb.classList.add('visible');
-        setTimeout(function() { fb.classList.remove('visible'); }, 2000);
-      }
-
-      // Persist
-      saveRespuesta(indId);
+      saveRespuesta(indId, fbId);
       renderProgress();
       renderSidebar();
       // Update area header counter
@@ -1063,7 +1059,8 @@
     };
 
     // ── API: save single respuesta ──────────────────────────────────────────
-    function saveRespuesta(indId) {
+    // fbId (optional): element id of the save-feedback span to show after server confirms
+    function saveRespuesta(indId, fbId) {
       const r = respuestas[indId];
       if (!r) return;
       fetch('/api/validacion-mesa1/respuesta', {
@@ -1075,8 +1072,29 @@
           claridad: r.claridad || null,
           sugerencia: r.sugerencia || null
         })
+      }).then(function(resp) {
+        // BUG 1 fix: show feedback only after server confirms
+        if (!fbId) return;
+        const fb = document.getElementById(fbId);
+        if (!fb) return;
+        if (resp.ok) {
+          fb.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>Guardado';
+          fb.style.color = '#065F46';
+        } else {
+          fb.innerHTML = '&#9888; Error';
+          fb.style.color = '#B91C1C';
+        }
+        fb.classList.add('visible');
+        setTimeout(function() { fb.classList.remove('visible'); }, 2500);
       }).catch(function(err) {
         console.warn('Error guardando respuesta:', err);
+        if (!fbId) return;
+        const fb = document.getElementById(fbId);
+        if (!fb) return;
+        fb.innerHTML = '&#9888; Error';
+        fb.style.color = '#B91C1C';
+        fb.classList.add('visible');
+        setTimeout(function() { fb.classList.remove('visible'); }, 2500);
       });
     }
 
@@ -1140,11 +1158,19 @@
     async function loadData() {
       try {
         const resp = await fetch('/data/qa-propuestos.json');
+        if (!resp.ok) throw new Error('Error cargando datos');
         const data = await resp.json();
         areas      = data.areas || [];
         indicadores = data.indicadores || [];
+        TOTAL = indicadores.length; // BUG 2 fix: derivar de datos reales
       } catch(e) {
         console.error('Error cargando indicadores:', e);
+        // BUG 3 fix: mostrar error visible al usuario
+        const errDiv = document.createElement('div');
+        errDiv.id = 'load-error';
+        errDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#FEF2F2;border-bottom:2px solid #FCA5A5;padding:1rem 1.5rem;text-align:center;font-size:0.9375rem;font-weight:600;color:#991B1B;';
+        errDiv.textContent = 'No se pudieron cargar los indicadores. Recarga la p\u00e1gina.';
+        document.body.insertBefore(errDiv, document.body.firstChild);
       }
     }
 
