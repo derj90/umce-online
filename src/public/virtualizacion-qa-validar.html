@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Validaci&oacute;n de Indicadores QA &mdash; UMCE.online</title>
+  <meta name="description" content="Instrumento de validaci&oacute;n de 75 indicadores QA para cursos virtuales UMCE. Mesa 1 de Virtualizaci&oacute;n.">
+  <meta name="author" content="Unidad de Desarrollo y Formaci&oacute;n Virtual &mdash; UMCE">
+  <link rel="stylesheet" href="/shared/tailwind.min.css">
+  <link rel="stylesheet" href="/shared/shared.css">
+  <style>
+    /* ── Layout principal ── */
+    .val-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 80px);
+      align-items: start;
+    }
+    @media (max-width: 768px) {
+      .val-layout { grid-template-columns: 1fr; }
+      .val-sidebar { display: none; }
+    }
+
+    /* ── Sidebar ── */
+    .val-sidebar {
+      background: #fff;
+      border-right: 1px solid #E5E7EB;
+      padding: 1.25rem 0 2rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-area-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      margin: 0.0625rem 0.5rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #4B5563;
+      font-size: 0.8125rem;
+      border-left: 4px solid transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .sidebar-area-item:hover { background: #F9FAFB; color: #111827; }
+    .sidebar-area-item.active {
+      background: #EFF3FB;
+      color: var(--palette-primary);
+      font-weight: 700;
+      border-left-color: var(--palette-primary);
+    }
+    .sidebar-area-item.completed {
+      color: #065F46;
+    }
+    .area-pill {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 0.15rem 0.45rem;
+      border-radius: 9999px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .area-pill.none    { background: #F3F4F6; color: #9CA3AF; }
+    .area-pill.partial { background: #FEF3C7; color: #92400E; }
+    .area-pill.done    { background: #D1FAE5; color: #065F46; }
+
+    /* ── Sticky progress bar ── */
+    .sticky-progress {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: #fff;
+      border-bottom: 1px solid #E5E7EB;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .sticky-progress-bar {
+      flex: 1;
+      height: 0.5rem;
+      background: #F3F4F6;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .sticky-progress-fill {
+      height: 100%;
+      border-radius: 9999px;
+      background: var(--palette-primary);
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ── Area panels ── */
+    .area-panel { display: none; }
+    .area-panel.active { display: block; animation: fadeSlide 0.2s ease; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Indicator card ── */
+    .ind-card {
+      background: #fff;
+      border: 1.5px solid #E5E7EB;
+      border-radius: 0.75rem;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s;
+    }
+    .ind-card.answered {
+      border-color: #A7F3D0;
+    }
+    .ind-card.answered-partial {
+      border-color: #FDE68A;
+    }
+
+    /* ── Likert buttons ── */
+    .likert-group {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .likert-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      border: 2px solid #E5E7EB;
+      font-weight: 700;
+      font-size: 1.125rem;
+      cursor: pointer;
+      background: #fff;
+      color: #374151;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .likert-btn:hover { border-color: #9CA3AF; background: #F9FAFB; }
+    .likert-btn.selected-p {
+      background: var(--palette-primary);
+      border-color: var(--palette-primary);
+      color: #fff;
+      transform: scale(1.08);
+    }
+    .likert-btn.selected-c {
+      background: #065F46;
+      border-color: #065F46;
+      color: #fff;
+      transform: scale(1.08);
+    }
+    .likert-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.6875rem;
+      color: #9CA3AF;
+      margin-top: 0.25rem;
+      padding: 0 0.125rem;
+    }
+
+    /* ── Save feedback ── */
+    .save-feedback {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #065F46;
+      opacity: 0;
+      transition: opacity 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .save-feedback.visible { opacity: 1; }
+
+    /* ── Suggestion toggle ── */
+    .suggestion-toggle {
+      font-size: 0.8125rem;
+      color: var(--palette-primary);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      font-weight: 600;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .suggestion-toggle:hover { text-decoration: underline; }
+    .suggestion-area {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .suggestion-area.open { display: block; }
+    .suggestion-area textarea {
+      width: 100%;
+      border: 1.5px solid #E5E7EB;
+      border-radius: 0.5rem;
+      padding: 0.625rem 0.875rem;
+      font-size: 0.875rem;
+      resize: vertical;
+      min-height: 80px;
+      font-family: inherit;
+      color: #374151;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .suggestion-area textarea:focus { border-color: var(--palette-primary); }
+
+    /* ── Source marcos pills ── */
+    .marco-pill {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      border: 1px solid;
+    }
+    .marco-OSCQR     { background: #EDE9FE; color: #5B21B6; border-color: #C4B5FD; }
+    .marco-QM        { background: #DBEAFE; color: #1E40AF; border-color: #93C5FD; }
+    .marco-OLC2025   { background: #FEF3C7; color: #92400E; border-color: #FDE68A; }
+    .marco-UDFV-UMCE { background: #D1FAE5; color: #065F46; border-color: #6EE7B7; }
+    .marco-CNA       { background: #FCE7F3; color: #9D174D; border-color: #F9A8D4; }
+
+    /* ── Jerarquia badge ── */
+    .jerarquia-alta  { background: #FEE2E2; color: #991B1B; }
+    .jerarquia-media { background: #FEF3C7; color: #92400E; }
+    .jerarquia-baja  { background: #F3F4F6; color: #6B7280; }
+
+    /* ── Area header ── */
+    .area-header-bar {
+      background: linear-gradient(135deg, #EFF3FB 0%, #F8FAFC 100%);
+      border: 1px solid #BFDBFE;
+      border-radius: 0.875rem;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── Nav buttons ── */
+    .btn-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9375rem;
+      font-weight: 700;
+      padding: 0.625rem 1.25rem;
+      border-radius: 0.625rem;
+      border: 2px solid #E5E7EB;
+      background: #fff;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .btn-nav:hover { border-color: var(--palette-primary); color: var(--palette-primary); background: #EFF3FB; }
+    .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+    .btn-primary-full {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9375rem;
+      font-weight: 700;
+      padding: 0.75rem 1.75rem;
+      border-radius: 0.625rem;
+      background: var(--palette-primary);
+      color: #fff;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .btn-primary-full:hover { background: #002280; transform: translateY(-1px); box-shadow: 0 8px 20px -6px rgba(0,51,161,0.35); }
+    .btn-primary-full:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ── Modal overlay ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-box {
+      background: #fff;
+      border-radius: 1rem;
+      max-width: 520px;
+      width: 100%;
+      padding: 2rem;
+      box-shadow: 0 20px 60px -10px rgba(0,0,0,0.3);
+    }
+
+    /* ── Thank you state ── */
+    #thankyou-state { display: none; }
+
+    /* ── Login prompt ── */
+    #login-prompt { display: none; }
+
+    /* ── Read-only overlay ── */
+    .readonly-overlay {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb a { transition: color 0.2s; }
+
+    /* ── Process steps ── */
+    .process-step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+    }
+    .process-step.active { color: #fff; }
+    .process-step.done   { color: rgba(255,255,255,0.75); }
+    .process-step.future { color: rgba(255,255,255,0.4); }
+    .step-num {
+      width: 1.625rem;
+      height: 1.625rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .step-num.active  { background: #fff; color: var(--palette-primary); }
+    .step-num.done    { background: rgba(255,255,255,0.3); color: #fff; }
+    .step-num.future  { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); }
+
+    /* ── Confirm button pulsing ── */
+    @keyframes pulse-border {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0,51,161,0.4); }
+      50%       { box-shadow: 0 0 0 8px rgba(0,51,161,0); }
+    }
+    .btn-confirm-pulse { animation: pulse-border 2s infinite; }
+
+    /* ── Hero gradient (same as other virtualizacion pages) ── */
+    .hero-gradient {
+      background: linear-gradient(135deg, var(--palette-dark) 0%, var(--palette-primary) 60%, #1a56db 100%);
+    }
+
+    /* ── Sidebar overall progress ── */
+    .sidebar-progress-wrap {
+      margin-top: auto;
+      padding: 1rem 1rem 0.5rem;
+      border-top: 1px solid #F3F4F6;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased">
+  <div id="nav-placeholder"></div>
+
+  <!-- ================================================
+       LOGIN PROMPT (shown if not authenticated)
+  ================================================ -->
+  <div id="login-prompt" class="min-h-screen flex items-center justify-center p-6">
+    <div class="text-center max-w-md">
+      <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+      </div>
+      <h2 class="text-xl font-bold text-gray-900 mb-2">Acceso restringido</h2>
+      <p class="text-gray-500 text-sm mb-6">Este instrumento requiere autenticaci&oacute;n con tu cuenta institucional UMCE.</p>
+      <a href="/auth/google" class="btn-primary-full justify-center">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#fff"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#fff" opacity=".9"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fff" opacity=".8"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#fff" opacity=".7"/>
+        </svg>
+        Ingresar con cuenta @umce.cl
+      </a>
+    </div>
+  </div>
+
+  <!-- ================================================
+       MAIN PAGE (shown when authenticated)
+  ================================================ -->
+  <div id="main-page" style="display:none;">
+
+    <!-- HERO -->
+    <section class="hero-gradient pt-32 pb-10 text-white relative overflow-hidden">
+      <div class="max-w-7xl mx-auto px-6 relative z-10">
+        <nav class="text-sm mb-6 flex items-center gap-1" style="-webkit-user-select:text; user-select:text;">
+          <a href="/" class="text-white/60 hover:text-white transition-colors">Inicio</a>
+          <span class="text-white/30 mx-1">/</span>
+          <a href="/virtualizacion" class="text-white/60 hover:text-white transition-colors">Virtualizaci&oacute;n</a>
+          <span class="text-white/30 mx-1">/</span>
+          <a href="/virtualizacion/qa" class="text-white/60 hover:text-white transition-colors">Sistema QA</a>
+          <span class="text-white/30 mx-1">/</span>
+          <span class="text-white/90">Validaci&oacute;n Mesa 1</span>
+        </nav>
+
+        <!-- Process steps banner -->
+        <div class="flex flex-wrap items-center gap-3 mb-6">
+          <div class="process-step done">
+            <span class="step-num done">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+            </span>
+            <span>Piloto 2024</span>
+          </div>
+          <svg class="w-4 h-4 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          <div class="process-step done">
+            <span class="step-num done">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+            </span>
+            <span>Cruce de marcos</span>
+          </div>
+          <svg class="w-4 h-4 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          <div class="process-step active">
+            <span class="step-num active">3</span>
+            <span>Validaci&oacute;n Mesa 1</span>
+          </div>
+          <svg class="w-4 h-4 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          <div class="process-step future">
+            <span class="step-num future">4</span>
+            <span>Set definitivo</span>
+          </div>
+          <svg class="w-4 h-4 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          <div class="process-step future">
+            <span class="step-num future">5</span>
+            <span>Sistema operativo</span>
+          </div>
+        </div>
+
+        <h1 class="font-heading text-3xl md:text-4xl font-extrabold mb-3 leading-tight">
+          Instrumento de Validaci&oacute;n<br class="hidden sm:block"> de Indicadores QA
+        </h1>
+        <p class="text-white/70 text-base max-w-2xl">
+          <strong class="text-white/90">75 indicadores propuestos</strong> &middot; <strong class="text-white/90">18 &aacute;reas tem&aacute;ticas</strong> &middot; <strong class="text-white/90">5 marcos cruzados</strong>
+        </p>
+      </div>
+    </section>
+
+    <!-- STICKY PROGRESS BAR -->
+    <div class="sticky-progress" id="sticky-progress" style="display:none;">
+      <span class="text-sm font-semibold text-gray-700 flex-shrink-0" id="progress-label">0 / 75 indicadores evaluados</span>
+      <div class="sticky-progress-bar">
+        <div class="sticky-progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <span class="text-sm font-semibold flex-shrink-0" id="progress-pct" style="color: var(--palette-primary);">0%</span>
+    </div>
+
+    <!-- ================================================
+         NARRATIVE SECTION (shown before instrument)
+    ================================================ -->
+    <div id="narrative-section" class="max-w-4xl mx-auto px-6 py-16">
+
+      <div class="mb-10">
+        <p class="text-xs font-bold uppercase tracking-widest mb-4" style="color: var(--palette-primary);">Contexto</p>
+        <h2 class="font-heading text-2xl font-extrabold text-gray-900 mb-4">
+          La UMCE est&aacute; construyendo un est&aacute;ndar propio de calidad para cursos virtuales
+        </h2>
+        <p class="text-gray-600 leading-relaxed mb-4">
+          Desde el primer semestre de 2026, la Mesa 1 &mdash; Modelo Instruccional, Calidad y Aprendizaje &mdash; se propuso construir los instrumentos que la universidad necesita para que sus cursos virtuales sean coherentes, verificables y mejorables.
+        </p>
+        <p class="text-gray-600 leading-relaxed mb-4">
+          Uno de esos instrumentos es la r&uacute;brica QA: un conjunto de indicadores que permite evaluar la calidad de un curso virtual antes, durante y despu&eacute;s de su implementaci&oacute;n. Para construirla, cruzamos cinco marcos de referencia &mdash; OSCQR v4.0, OLC Course Review 2025, Quality Matters, el Marco Evaluativo UDFV-UMCE (Sep&uacute;lveda, 2024) y las orientaciones CNA Chile &mdash; y propusimos 75 indicadores organizados en 18 &aacute;reas tem&aacute;ticas.
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+          Esos 75 indicadores est&aacute;n fundamentados, pero a&uacute;n no han sido validados por personas que conocen la realidad de la docencia en la UMCE. Eso es exactamente lo que te pedimos.
+        </p>
+      </div>
+
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+        <p class="text-xs font-bold uppercase tracking-widest text-blue-700 mb-3">C&oacute;mo completar el instrumento</p>
+        <div class="space-y-2 text-sm text-gray-700">
+          <div class="flex gap-2">
+            <span class="font-bold text-blue-700 flex-shrink-0">Pertinencia (1&nbsp;a&nbsp;5):</span>
+            <span>&iquest;Qu&eacute; tan pertinente es este indicador para evaluar cursos virtuales en la UMCE?</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="font-bold text-green-700 flex-shrink-0">Claridad (1&nbsp;a&nbsp;5):</span>
+            <span>&iquest;La redacci&oacute;n es clara y comprensible?</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="font-bold text-gray-600 flex-shrink-0">Sugerencia:</span>
+            <span>Opcionalmente, puedes proponer c&oacute;mo modificar la redacci&oacute;n del indicador.</span>
+          </div>
+        </div>
+        <p class="text-sm text-gray-500 mt-3 pt-3 border-t border-blue-100">
+          <strong class="text-gray-700">Puedes completar el instrumento en una o varias sesiones.</strong> Cada respuesta se guarda autom&aacute;ticamente.
+        </p>
+      </div>
+
+      <!-- Stats summary -->
+      <div class="grid grid-cols-3 gap-4 mb-10">
+        <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+          <div class="text-3xl font-extrabold mb-1" style="color: var(--palette-primary);">75</div>
+          <div class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Indicadores</div>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+          <div class="text-3xl font-extrabold mb-1" style="color: var(--palette-primary);">18</div>
+          <div class="text-xs text-gray-500 font-semibold uppercase tracking-wide">&Aacute;reas tem&aacute;ticas</div>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+          <div class="text-3xl font-extrabold mb-1" style="color: var(--palette-primary);">5</div>
+          <div class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Marcos de referencia</div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <button id="start-btn" class="btn-primary-full text-base px-10 py-4">
+          Comenzar la evaluaci&oacute;n
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ================================================
+         INSTRUMENT (shown after registration)
+    ================================================ -->
+    <div id="instrument-section" style="display:none;">
+      <div class="val-layout" id="instrument-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="val-sidebar" id="val-sidebar">
+          <div class="px-4 pb-3 border-b border-gray-100 mb-2">
+            <div id="sidebar-evaluator-name" class="font-bold text-sm text-gray-800 truncate"></div>
+            <div id="sidebar-evaluator-prog" class="text-xs text-gray-400 truncate mt-0.5"></div>
+          </div>
+          <div class="flex-1 overflow-y-auto" id="sidebar-areas-list">
+            <!-- Rendered by JS -->
+          </div>
+          <div class="sidebar-progress-wrap">
+            <div class="flex justify-between text-xs text-gray-500 mb-1.5">
+              <span>Progreso total</span>
+              <span id="sidebar-progress-txt">0 / 75</span>
+            </div>
+            <div class="sticky-progress-bar" style="height:0.375rem;">
+              <div class="sticky-progress-fill" id="sidebar-progress-fill" style="width:0%; background: #059669;"></div>
+            </div>
+            <div id="confirm-wrap" style="display:none;" class="mt-3">
+              <button id="confirm-btn" class="btn-primary-full w-full justify-center btn-confirm-pulse" style="background: #059669;">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Confirmar env&iacute;o
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="bg-gray-50 min-h-screen" id="val-main">
+          <div class="p-6" id="areas-container">
+            <!-- Area panels rendered by JS -->
+          </div>
+        </main>
+
+      </div>
+    </div>
+
+    <!-- ================================================
+         THANK YOU STATE
+    ================================================ -->
+    <div id="thankyou-state" class="max-w-3xl mx-auto px-6 py-20 text-center">
+      <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
+        <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <h2 class="font-heading text-3xl font-extrabold text-gray-900 mb-3">&#161;Gracias por tu participaci&oacute;n!</h2>
+      <p class="text-gray-500 text-base mb-6 max-w-xl mx-auto">Tu validaci&oacute;n ha sido registrada. El equipo de la UDFV consolidar&aacute; los resultados y los utilizar&aacute; para ajustar el set definitivo de indicadores QA.</p>
+      <div id="thankyou-stats" class="grid grid-cols-3 gap-4 max-w-md mx-auto mb-8">
+        <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+          <div class="text-2xl font-extrabold text-green-600" id="ty-total">75</div>
+          <div class="text-xs text-gray-500">Indicadores evaluados</div>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+          <div class="text-2xl font-extrabold" style="color:var(--palette-primary);" id="ty-avg-p">—</div>
+          <div class="text-xs text-gray-500">Promedio pertinencia</div>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+          <div class="text-2xl font-extrabold text-green-700" id="ty-avg-c">—</div>
+          <div class="text-xs text-gray-500">Promedio claridad</div>
+        </div>
+      </div>
+      <a href="/virtualizacion" class="btn-primary-full inline-flex justify-center">
+        Volver a Virtualizaci&oacute;n
+      </a>
+    </div>
+
+  </div><!-- /#main-page -->
+
+  <!-- ================================================
+       MODAL: EVALUATOR REGISTRATION
+  ================================================ -->
+  <div id="modal-registro" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <h2 class="font-heading text-xl font-extrabold text-gray-900 mb-1">Antes de comenzar</h2>
+      <p class="text-sm text-gray-500 mb-5">Completa tu perfil para registrar tu participaci&oacute;n en la validaci&oacute;n.</p>
+      <form id="form-registro" novalidate>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Nombre</label>
+            <input type="text" id="reg-nombre" readonly
+              class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-gray-50 text-gray-500 cursor-not-allowed">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Correo institucional</label>
+            <input type="text" id="reg-email" readonly
+              class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-gray-50 text-gray-500 cursor-not-allowed">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Programa o unidad acad&eacute;mica <span class="text-red-500">*</span></label>
+            <select id="reg-programa" required
+              class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent">
+              <option value="">Selecciona un programa</option>
+              <option>Educaci&oacute;n Parvularia</option>
+              <option>Educaci&oacute;n B&aacute;sica</option>
+              <option>Educaci&oacute;n B&aacute;sica con Menci&oacute;n</option>
+              <option>Educaci&oacute;n Especial</option>
+              <option>Educaci&oacute;n F&iacute;sica</option>
+              <option>Artes Visuales</option>
+              <option>M&uacute;sica</option>
+              <option>Biolog&iacute;a y Ciencias Naturales</option>
+              <option>F&iacute;sica</option>
+              <option>Qu&iacute;mica</option>
+              <option>Matem&aacute;tica</option>
+              <option>Historia y Ciencias Sociales</option>
+              <option>Lenguaje y Comunicaci&oacute;n</option>
+              <option>Ingl&eacute;s</option>
+              <option>Psicopedagog&iacute;a</option>
+              <option>Prosecuci&oacute;n en Educaci&oacute;n B&aacute;sica</option>
+              <option>Educaci&oacute;n a Distancia (UDFV)</option>
+              <option>Vicerrector&iacute;a Acad&eacute;mica</option>
+              <option>Otra unidad / Directivo/a</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Rol en la instituci&oacute;n <span class="text-red-500">*</span></label>
+            <select id="reg-rol" required
+              class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent">
+              <option value="">Selecciona tu rol</option>
+              <option>Acad&eacute;mico/a</option>
+              <option>Dise&ntilde;ador/a instruccional</option>
+              <option>Jefe/a de carrera</option>
+              <option>Directivo/a</option>
+              <option>Otro</option>
+            </select>
+          </div>
+        </div>
+        <div id="reg-error" class="hidden mt-3 text-sm text-red-600 font-semibold"></div>
+        <div class="flex gap-3 mt-6">
+          <button type="submit" id="reg-submit" class="btn-primary-full flex-1 justify-center">
+            Comenzar validaci&oacute;n
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================================================
+       MODAL: CONFIRMATION
+  ================================================ -->
+  <div id="modal-confirm" class="modal-overlay" style="display:none;">
+    <div class="modal-box text-center">
+      <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <h2 class="font-heading text-xl font-extrabold text-gray-900 mb-2">Confirmar participaci&oacute;n</h2>
+      <p class="text-sm text-gray-500 mb-5">Has evaluado los 75 indicadores. Al confirmar, tu validaci&oacute;n quedar&aacute; registrada oficialmente.</p>
+      <div class="grid grid-cols-3 gap-3 mb-6">
+        <div class="bg-gray-50 rounded-lg p-3">
+          <div class="text-xl font-extrabold text-green-600" id="conf-total">75</div>
+          <div class="text-xs text-gray-400">Evaluados</div>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-3">
+          <div class="text-xl font-extrabold" style="color:var(--palette-primary);" id="conf-avg-p">—</div>
+          <div class="text-xs text-gray-400">Prom. pertinencia</div>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-3">
+          <div class="text-xl font-extrabold text-green-700" id="conf-avg-c">—</div>
+          <div class="text-xs text-gray-400">Prom. claridad</div>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <button id="conf-cancel" class="btn-nav flex-1 justify-center">Revisar respuestas</button>
+        <button id="conf-submit" class="btn-primary-full flex-1 justify-center" style="background:#059669;">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Confirmar mi participaci&oacute;n
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/shared/shared.js"></script>
+  <script>
+  (function() {
+    'use strict';
+
+    // ── State ──────────────────────────────────────────────────────────────
+    let currentUser = null;
+    let evaluador = null;
+    let indicadores = [];
+    let areas = [];
+    let respuestas = {}; // { "QA-01": { pertinencia: N, claridad: M, sugerencia: "..." } }
+    let confirmed = false;
+    let currentArea = 0;
+    const TOTAL = 75;
+
+    // ── DOM refs ────────────────────────────────────────────────────────────
+    const mainPage          = document.getElementById('main-page');
+    const loginPrompt       = document.getElementById('login-prompt');
+    const narrativeSection  = document.getElementById('narrative-section');
+    const instrumentSection = document.getElementById('instrument-section');
+    const thankyouState     = document.getElementById('thankyou-state');
+    const startBtn          = document.getElementById('start-btn');
+    const stickyProgress    = document.getElementById('sticky-progress');
+    const progressLabel     = document.getElementById('progress-label');
+    const progressFill      = document.getElementById('progress-fill');
+    const progressPct       = document.getElementById('progress-pct');
+    const sidebarAreasList  = document.getElementById('sidebar-areas-list');
+    const sidebarEvalName   = document.getElementById('sidebar-evaluator-name');
+    const sidebarEvalProg   = document.getElementById('sidebar-evaluator-prog');
+    const sidebarProgressTxt= document.getElementById('sidebar-progress-txt');
+    const sidebarProgressFill=document.getElementById('sidebar-progress-fill');
+    const confirmWrap       = document.getElementById('confirm-wrap');
+    const confirmBtn        = document.getElementById('confirm-btn');
+    const areasContainer    = document.getElementById('areas-container');
+    const modalRegistro     = document.getElementById('modal-registro');
+    const formRegistro      = document.getElementById('form-registro');
+    const modalConfirm      = document.getElementById('modal-confirm');
+
+    // ── Marco badge helper ──────────────────────────────────────────────────
+    function marcoBadge(marco) {
+      return '<span class="marco-pill marco-' + marco + '">' + escH(marco) + '</span>';
+    }
+
+    function escH(str) {
+      return String(str)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;');
+    }
+
+    // ── Area colors ─────────────────────────────────────────────────────────
+    const AREA_COLORS = [
+      '#0033A1','#1a56db','#7C3AED','#059669','#D97706','#DC2626',
+      '#0891B2','#7C3AED','#065F46','#B45309','#1E40AF','#9D174D',
+      '#0E7490','#374151','#15803D','#9333EA','#B91C1C','#1D4ED8'
+    ];
+
+    // ── Count answered for an area ──────────────────────────────────────────
+    function countAreaAnswered(areaId) {
+      const inds = indicadores.filter(i => i.area === areaId);
+      return inds.filter(i => {
+        const r = respuestas[i.id];
+        return r && r.pertinencia && r.claridad;
+      }).length;
+    }
+
+    function countTotalAnswered() {
+      return indicadores.filter(i => {
+        const r = respuestas[i.id];
+        return r && r.pertinencia && r.claridad;
+      }).length;
+    }
+
+    // ── Render sidebar ──────────────────────────────────────────────────────
+    function renderSidebar() {
+      sidebarAreasList.innerHTML = '';
+      areas.forEach(function(area, idx) {
+        const total = indicadores.filter(i => i.area === area.id).length;
+        const done  = countAreaAnswered(area.id);
+        const isActive = idx === currentArea;
+
+        const pillClass = done === 0 ? 'none' : done < total ? 'partial' : 'done';
+        const itemClass = ['sidebar-area-item',
+          isActive ? 'active' : '',
+          done === total ? 'completed' : ''
+        ].filter(Boolean).join(' ');
+
+        const el = document.createElement('button');
+        el.type = 'button';
+        el.className = itemClass;
+        el.dataset.areaIdx = idx;
+        el.innerHTML =
+          '<span class="truncate leading-tight">' + escH(area.nombre) + '</span>' +
+          '<span class="area-pill ' + pillClass + '">' + done + '/' + total + '</span>';
+        el.addEventListener('click', function() {
+          navigateToArea(idx);
+        });
+        sidebarAreasList.appendChild(el);
+      });
+    }
+
+    // ── Render overall progress ─────────────────────────────────────────────
+    function renderProgress() {
+      const done = countTotalAnswered();
+      const pct  = Math.round((done / TOTAL) * 100);
+
+      progressLabel.textContent  = done + ' / ' + TOTAL + ' indicadores evaluados';
+      progressFill.style.width   = pct + '%';
+      progressPct.textContent    = pct + '%';
+      sidebarProgressTxt.textContent = done + ' / ' + TOTAL;
+      sidebarProgressFill.style.width = pct + '%';
+
+      if (done >= TOTAL && !confirmed) {
+        confirmWrap.style.display = 'block';
+      } else {
+        confirmWrap.style.display = 'none';
+      }
+    }
+
+    // ── Navigate to area ────────────────────────────────────────────────────
+    function navigateToArea(idx) {
+      // hide all panels
+      document.querySelectorAll('.area-panel').forEach(function(p) {
+        p.classList.remove('active');
+      });
+      // show target
+      const panel = document.getElementById('area-panel-' + idx);
+      if (panel) panel.classList.add('active');
+      currentArea = idx;
+      renderSidebar();
+      // scroll main to top
+      const valMain = document.getElementById('val-main');
+      if (valMain) valMain.scrollTo({top: 0, behavior: 'smooth'});
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    // ── Build indicator card HTML ───────────────────────────────────────────
+    function buildIndicatorCard(ind, areaIdx, indIdx) {
+      const r = respuestas[ind.id] || {};
+      const answered = r.pertinencia && r.claridad;
+      const partial  = (r.pertinencia || r.claridad) && !answered;
+      let cardClass = 'ind-card';
+      if (answered) cardClass += ' answered';
+      else if (partial) cardClass += ' answered-partial';
+
+      const marcoPills = (ind.marcos || []).map(marcoBadge).join(' ');
+      const jerarquiaClass = 'jerarquia-' + (ind.jerarquia || 'media');
+      const aporteUmce = ind.aporte_umce
+        ? '<span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">Aporte UMCE</span>'
+        : '';
+
+      const pButtons = [1,2,3,4,5].map(function(n) {
+        const sel = r.pertinencia === n ? ' selected-p' : '';
+        return '<button type="button" class="likert-btn' + sel + '" ' +
+          'data-ind="' + escH(ind.id) + '" data-type="pertinencia" data-val="' + n + '" ' +
+          'aria-label="Pertinencia ' + n + '">' + n + '</button>';
+      }).join('');
+
+      const cButtons = [1,2,3,4,5].map(function(n) {
+        const sel = r.claridad === n ? ' selected-c' : '';
+        return '<button type="button" class="likert-btn' + sel + '" ' +
+          'data-ind="' + escH(ind.id) + '" data-type="claridad" data-val="' + n + '" ' +
+          'aria-label="Claridad ' + n + '">' + n + '</button>';
+      }).join('');
+
+      const suggVal = escH(r.sugerencia || '');
+      const suggOpen = r.sugerencia ? ' open' : '';
+
+      return '<div class="' + cardClass + '" id="card-' + escH(ind.id) + '">' +
+        // Header row
+        '<div class="flex items-center gap-2 flex-wrap mb-2">' +
+          '<span class="text-xs font-extrabold px-2 py-1 rounded-lg text-white" style="background:var(--palette-primary);">' + escH(ind.id) + '</span>' +
+          '<span class="text-xs font-semibold px-2 py-0.5 rounded-full border ' + jerarquiaClass + '">' + escH(ind.jerarquia || 'media') + '</span>' +
+          aporteUmce +
+          '<span class="ml-auto">' + marcoPills + '</span>' +
+        '</div>' +
+        // Indicator text
+        '<p class="text-sm text-gray-800 leading-relaxed mb-4" style="-webkit-user-select:text;user-select:text;">' + escH(ind.texto) + '</p>' +
+        // Pertinencia
+        '<div class="mb-4">' +
+          '<div class="flex items-center gap-2 mb-2">' +
+            '<span class="text-xs font-bold uppercase tracking-widest" style="color:var(--palette-primary);">Pertinencia</span>' +
+            '<span class="save-feedback" id="save-p-' + escH(ind.id) + '">' +
+              '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>' +
+              'Guardado' +
+            '</span>' +
+          '</div>' +
+          '<div class="likert-group">' + pButtons + '</div>' +
+          '<div class="likert-labels" style="width:280px;max-width:100%;">' +
+            '<span>Nada pertinente</span><span>Muy pertinente</span>' +
+          '</div>' +
+        '</div>' +
+        // Claridad
+        '<div class="mb-4">' +
+          '<div class="flex items-center gap-2 mb-2">' +
+            '<span class="text-xs font-bold uppercase tracking-widest text-green-700">Claridad</span>' +
+            '<span class="save-feedback" id="save-c-' + escH(ind.id) + '">' +
+              '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>' +
+              'Guardado' +
+            '</span>' +
+          '</div>' +
+          '<div class="likert-group">' + cButtons + '</div>' +
+          '<div class="likert-labels" style="width:280px;max-width:100%;">' +
+            '<span>Muy poco clara</span><span>Muy clara</span>' +
+          '</div>' +
+        '</div>' +
+        // Suggestion
+        '<div>' +
+          '<button type="button" class="suggestion-toggle" ' +
+            'data-ind="' + escH(ind.id) + '" ' +
+            'onclick="toggleSuggestion(\'' + escH(ind.id) + '\')">' +
+            '+ Proponer modificaci&oacute;n a la redacci&oacute;n' +
+          '</button>' +
+          '<div class="suggestion-area' + suggOpen + '" id="sugg-' + escH(ind.id) + '">' +
+            '<textarea placeholder="Escribe tu sugerencia de redacci&oacute;n..." ' +
+              'data-ind="' + escH(ind.id) + '" ' +
+              'onblur="saveSuggestion(\'' + escH(ind.id) + '\', this.value)">' + suggVal + '</textarea>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    // ── Render all area panels ──────────────────────────────────────────────
+    function renderAllAreas() {
+      areasContainer.innerHTML = '';
+      areas.forEach(function(area, areaIdx) {
+        const areaInds = indicadores.filter(i => i.area === area.id);
+        const color = AREA_COLORS[areaIdx % AREA_COLORS.length];
+        const done  = countAreaAnswered(area.id);
+        const total = areaInds.length;
+        const isActive = areaIdx === currentArea;
+
+        const panel = document.createElement('div');
+        panel.className = 'area-panel' + (isActive ? ' active' : '');
+        panel.id = 'area-panel-' + areaIdx;
+
+        let cardsHtml = areaInds.map(function(ind, indIdx) {
+          return buildIndicatorCard(ind, areaIdx, indIdx);
+        }).join('');
+
+        const isFirst = areaIdx === 0;
+        const isLast  = areaIdx === areas.length - 1;
+
+        panel.innerHTML =
+          '<div class="area-header-bar">' +
+            '<div class="flex items-start justify-between gap-3 flex-wrap">' +
+              '<div>' +
+                '<p class="text-xs font-bold uppercase tracking-widest mb-1" style="color:' + color + ';">' + escH(area.id) + '</p>' +
+                '<h2 class="font-heading font-extrabold text-lg text-gray-900 mb-1">' + escH(area.nombre) + '</h2>' +
+                '<p class="text-sm text-gray-500">' + escH(area.descripcion) + '</p>' +
+              '</div>' +
+              '<div class="text-right flex-shrink-0">' +
+                '<div class="text-2xl font-extrabold" style="color:' + color + ';">' + done + '/' + total + '</div>' +
+                '<div class="text-xs text-gray-400">respondidos</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          cardsHtml +
+          // Navigation
+          '<div class="flex justify-between items-center pt-4 pb-8">' +
+            '<button type="button" class="btn-nav" onclick="navigateToAreaGlobal(' + (areaIdx - 1) + ')" ' +
+              (isFirst ? 'disabled' : '') + '>' +
+              '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>' +
+              '&Aacute;rea anterior' +
+            '</button>' +
+            '<span class="text-sm text-gray-400">' + (areaIdx + 1) + ' de ' + areas.length + '</span>' +
+            '<button type="button" class="btn-nav" onclick="navigateToAreaGlobal(' + (areaIdx + 1) + ')" ' +
+              (isLast ? 'disabled' : '') + '>' +
+              'Siguiente &aacute;rea' +
+              '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>' +
+            '</button>' +
+          '</div>';
+
+        areasContainer.appendChild(panel);
+      });
+
+      // Attach likert button events
+      areasContainer.addEventListener('click', function(e) {
+        const btn = e.target.closest('.likert-btn');
+        if (!btn) return;
+        const indId = btn.dataset.ind;
+        const type  = btn.dataset.type;
+        const val   = parseInt(btn.dataset.val, 10);
+        handleLikert(indId, type, val);
+      });
+    }
+
+    // ── Handle likert click ─────────────────────────────────────────────────
+    function handleLikert(indId, type, val) {
+      if (!respuestas[indId]) respuestas[indId] = {};
+      respuestas[indId][type] = val;
+
+      // Update button visuals in the card
+      const card = document.getElementById('card-' + indId);
+      if (card) {
+        const btns = card.querySelectorAll('.likert-btn[data-ind="' + indId + '"][data-type="' + type + '"]');
+        const selClass = type === 'pertinencia' ? 'selected-p' : 'selected-c';
+        btns.forEach(function(b) {
+          b.classList.toggle(selClass, parseInt(b.dataset.val, 10) === val);
+        });
+        // Update card border
+        const answered = respuestas[indId].pertinencia && respuestas[indId].claridad;
+        const partial  = (respuestas[indId].pertinencia || respuestas[indId].claridad) && !answered;
+        card.classList.toggle('answered', !!answered);
+        card.classList.toggle('answered-partial', !!partial);
+      }
+
+      // Show save feedback
+      const fbId = 'save-' + (type === 'pertinencia' ? 'p' : 'c') + '-' + indId;
+      const fb = document.getElementById(fbId);
+      if (fb) {
+        fb.classList.add('visible');
+        setTimeout(function() { fb.classList.remove('visible'); }, 2000);
+      }
+
+      // Persist
+      saveRespuesta(indId);
+      renderProgress();
+      renderSidebar();
+      // Update area header counter
+      updateAreaHeader();
+    }
+
+    // ── Update area header done counter ────────────────────────────────────
+    function updateAreaHeader() {
+      const area = areas[currentArea];
+      if (!area) return;
+      const total = indicadores.filter(i => i.area === area.id).length;
+      const done  = countAreaAnswered(area.id);
+      const panel = document.getElementById('area-panel-' + currentArea);
+      if (panel) {
+        const countEl = panel.querySelector('.area-header-bar .text-2xl');
+        if (countEl) countEl.textContent = done + '/' + total;
+      }
+    }
+
+    // ── Toggle suggestion textarea ──────────────────────────────────────────
+    window.toggleSuggestion = function(indId) {
+      const sa = document.getElementById('sugg-' + indId);
+      if (sa) sa.classList.toggle('open');
+    };
+
+    // ── Save suggestion ─────────────────────────────────────────────────────
+    window.saveSuggestion = function(indId, val) {
+      if (!respuestas[indId]) respuestas[indId] = {};
+      respuestas[indId].sugerencia = val.trim();
+      if (respuestas[indId].pertinencia || respuestas[indId].claridad) {
+        saveRespuesta(indId);
+      }
+    };
+
+    // ── Global navigate (called from inline onclick) ────────────────────────
+    window.navigateToAreaGlobal = function(idx) {
+      if (idx < 0 || idx >= areas.length) return;
+      navigateToArea(idx);
+    };
+
+    // ── API: save single respuesta ──────────────────────────────────────────
+    function saveRespuesta(indId) {
+      const r = respuestas[indId];
+      if (!r) return;
+      fetch('/api/validacion-mesa1/respuesta', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          indicador_id: indId,
+          pertinencia: r.pertinencia || null,
+          claridad: r.claridad || null,
+          sugerencia: r.sugerencia || null
+        })
+      }).catch(function(err) {
+        console.warn('Error guardando respuesta:', err);
+      });
+    }
+
+    // ── Compute averages ────────────────────────────────────────────────────
+    function computeAverages() {
+      let sumP = 0, sumC = 0, countP = 0, countC = 0;
+      indicadores.forEach(function(ind) {
+        const r = respuestas[ind.id];
+        if (r) {
+          if (r.pertinencia) { sumP += r.pertinencia; countP++; }
+          if (r.claridad)    { sumC += r.claridad;    countC++; }
+        }
+      });
+      return {
+        avgP: countP > 0 ? (sumP / countP).toFixed(2) : '—',
+        avgC: countC > 0 ? (sumC / countC).toFixed(2) : '—'
+      };
+    }
+
+    // ── Show confirmation modal ─────────────────────────────────────────────
+    function showConfirmModal() {
+      const avgs = computeAverages();
+      document.getElementById('conf-avg-p').textContent = avgs.avgP;
+      document.getElementById('conf-avg-c').textContent = avgs.avgC;
+      document.getElementById('conf-total').textContent = countTotalAnswered();
+      modalConfirm.style.display = 'flex';
+    }
+
+    // ── Show thank you ──────────────────────────────────────────────────────
+    function showThankyou() {
+      const avgs = computeAverages();
+      document.getElementById('ty-total').textContent = countTotalAnswered();
+      document.getElementById('ty-avg-p').textContent = avgs.avgP;
+      document.getElementById('ty-avg-c').textContent = avgs.avgC;
+
+      instrumentSection.style.display = 'none';
+      narrativeSection.style.display  = 'none';
+      thankyouState.style.display     = 'block';
+      stickyProgress.style.display    = 'none';
+      confirmed = true;
+    }
+
+    // ── Show instrument ─────────────────────────────────────────────────────
+    function showInstrument() {
+      narrativeSection.style.display  = 'none';
+      instrumentSection.style.display = 'block';
+      stickyProgress.style.display    = 'flex';
+
+      // Set evaluator info in sidebar
+      if (evaluador) {
+        sidebarEvalName.textContent = evaluador.nombre || '';
+        sidebarEvalProg.textContent = evaluador.programa || evaluador.rol || '';
+      }
+
+      renderAllAreas();
+      renderSidebar();
+      renderProgress();
+    }
+
+    // ── Load data and state ─────────────────────────────────────────────────
+    async function loadData() {
+      try {
+        const resp = await fetch('/data/qa-propuestos.json');
+        const data = await resp.json();
+        areas      = data.areas || [];
+        indicadores = data.indicadores || [];
+      } catch(e) {
+        console.error('Error cargando indicadores:', e);
+      }
+    }
+
+    async function loadState() {
+      try {
+        const resp = await fetch('/api/validacion-mesa1/estado');
+        if (!resp.ok) return null;
+        return await resp.json();
+      } catch(e) {
+        return null;
+      }
+    }
+
+    // ── Registration form submit ────────────────────────────────────────────
+    formRegistro.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const programa = document.getElementById('reg-programa').value.trim();
+      const rol      = document.getElementById('reg-rol').value.trim();
+      const errEl    = document.getElementById('reg-error');
+
+      if (!programa) {
+        errEl.textContent = 'Por favor selecciona tu programa o unidad acad\u00e9mica.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      if (!rol) {
+        errEl.textContent = 'Por favor selecciona tu rol.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      errEl.classList.add('hidden');
+
+      const submitBtn = document.getElementById('reg-submit');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Registrando...';
+
+      try {
+        const resp = await fetch('/api/validacion-mesa1/evaluador', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            nombre:   currentUser.name || currentUser.email,
+            email:    currentUser.email,
+            programa: programa,
+            rol:      rol
+          })
+        });
+        const body = await resp.json();
+        if (!resp.ok) throw new Error(body.error || 'Error al registrar');
+
+        evaluador = { nombre: currentUser.name || currentUser.email, email: currentUser.email, programa, rol };
+        modalRegistro.style.display = 'none';
+        showInstrument();
+      } catch(err) {
+        errEl.textContent = err.message || 'Error al registrar. Intenta de nuevo.';
+        errEl.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Comenzar validaci\u00f3n';
+      }
+    });
+
+    // ── Start button ────────────────────────────────────────────────────────
+    startBtn.addEventListener('click', async function() {
+      // Check if already registered
+      const state = await loadState();
+      if (state && state.evaluador) {
+        evaluador = state.evaluador;
+        // Restore saved responses
+        if (state.respuestas) {
+          respuestas = {};
+          (state.respuestas || []).forEach(function(r) {
+            respuestas[r.indicador_id] = {
+              pertinencia: r.pertinencia,
+              claridad:    r.claridad,
+              sugerencia:  r.sugerencia || ''
+            };
+          });
+        }
+        if (state.confirmado) {
+          showThankyou();
+          return;
+        }
+        showInstrument();
+      } else {
+        // Show registration modal
+        if (currentUser) {
+          document.getElementById('reg-nombre').value = currentUser.name || currentUser.email || '';
+          document.getElementById('reg-email').value  = currentUser.email || '';
+        }
+        modalRegistro.style.display = 'flex';
+      }
+    });
+
+    // ── Confirm button ──────────────────────────────────────────────────────
+    confirmBtn.addEventListener('click', showConfirmModal);
+
+    document.getElementById('conf-cancel').addEventListener('click', function() {
+      modalConfirm.style.display = 'none';
+    });
+
+    document.getElementById('conf-submit').addEventListener('click', async function() {
+      const btn = document.getElementById('conf-submit');
+      btn.disabled = true;
+      btn.textContent = 'Confirmando...';
+      try {
+        await fetch('/api/validacion-mesa1/confirmar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ confirmado: true })
+        });
+      } catch(e) {
+        console.warn('Error confirmando:', e);
+      }
+      modalConfirm.style.display = 'none';
+      showThankyou();
+    });
+
+    // ── Init ─────────────────────────────────────────────────────────────────
+    async function init() {
+      await loadData();
+
+      // Check auth
+      let user = null;
+      try {
+        const r = await fetch('/auth/me');
+        if (r.ok) {
+          user = await r.json();
+        }
+      } catch(e) {}
+
+      if (!user || !user.email) {
+        loginPrompt.style.display = 'flex';
+        return;
+      }
+
+      currentUser = user;
+      mainPage.style.display = 'block';
+
+      // Check if already confirmed / has saved state
+      const state = await loadState();
+      if (state && state.confirmado) {
+        evaluador = state.evaluador;
+        if (state.respuestas) {
+          respuestas = {};
+          (state.respuestas || []).forEach(function(r) {
+            respuestas[r.indicador_id] = {
+              pertinencia: r.pertinencia,
+              claridad:    r.claridad,
+              sugerencia:  r.sugerencia || ''
+            };
+          });
+        }
+        // Show narrative but with a banner
+        narrativeSection.style.display = 'block';
+        const banner = document.createElement('div');
+        banner.className = 'mb-8 bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3';
+        banner.innerHTML =
+          '<svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' +
+          '<p class="text-sm text-green-800"><strong>Tu participaci\u00f3n ya fue confirmada.</strong> Puedes revisar tus respuestas usando el bot\u00f3n de abajo.</p>';
+        narrativeSection.insertBefore(banner, narrativeSection.firstChild);
+        startBtn.textContent = 'Revisar mis respuestas';
+        return;
+      }
+
+      if (state && state.evaluador && state.respuestas && state.respuestas.length > 0) {
+        // Has partial progress — will restore on start click
+        const done = state.respuestas.filter(function(r) {
+          return r.pertinencia && r.claridad;
+        }).length;
+        if (done > 0) {
+          startBtn.textContent = 'Continuar evaluaci\u00f3n (' + done + '/75)';
+        }
+      }
+    }
+
+    init();
+
+  })();
+  </script>
+</body>
+</html>
