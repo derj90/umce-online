@@ -1,6 +1,6 @@
-# Insumo: Indicadores de Calidad — Tres Fuentes Extraidas
+# Insumo: Indicadores de Calidad — Cuatro Fuentes Extraidas
 
-*Generado: 16-Abr-2026 — Corregido: 16-Abr-2026 (seccion Sepulveda regenerada desde JSON canonico)*
+*Generado: 16-Abr-2026 — Actualizado: 16-Abr-2026 (seccion Sepulveda regenerada desde JSON canonico + OLC 2025 incorporado)*
 *Proposito: insumo para el analisis de la Fase A del plan QA*
 
 ---
@@ -190,7 +190,82 @@
 
 ---
 
-## 3. Sepulveda Parrini (2024) — 77 indicadores, 6 dimensiones, 19 subdimensiones
+## 3. OLC Course Review Scorecard (2025) — 50 objetivos, 3 secciones
+
+**Fuente:** OLC Course Review Scorecard / Tarjeta de Puntuacion para la Revision de Cursos (2025)
+**Publicado:** Online Learning Consortium, marzo 2025. Reemplaza OSCQR + QCTIP como instrumento oficial OLC.
+**Licencia:** Libre, CC BY-NC-SA. Disponible en espanol.
+**Archivo:** `docs/fuentes/estandares-calidad/OLC-Course-Review-Scorecard-2025-ES.pdf`
+**Escala:** 0 = En desarrollo / 1 = Logrado / 2 = Ejemplar
+
+### Diseno Esencial (20 objetivos)
+
+| # | Objetivo | Nivel |
+|---|----------|-------|
+| E-1 | Los objetivos y/o resultados del aprendizaje son especificos, mensurables y estan claramente definidos. | Esencial |
+| E-2 | El curso enumera todos los materiales de aprendizaje necesarios, incluidas las herramientas tecnologicas. | Esencial |
+| E-3 | El curso proporciona horas de oficina, preferencias de comunicacion y tiempos de respuesta. | Esencial |
+| E-4 | El curso proporciona recursos de soporte tecnico y ayuda para problemas tecnicos comunes. | Esencial |
+| E-5 | El curso incluye guias o tutoriales paso a paso para todas las tecnologias necesarias. | Esencial |
+| E-6 | El curso define las politicas de calificacion, las expectativas de integridad academica y las politicas sobre retrasos. | Esencial |
+| E-7 | El curso proporciona una declaracion de accesibilidad y los pasos para solicitar adaptaciones. | Esencial |
+| E-8 | El curso incluye informacion sobre los servicios de apoyo al estudiante y otros servicios. | Esencial |
+| E-9 | El curso incluye un calendario con las fechas de entrega de todas las tareas y actividades. | Esencial |
+| E-10 | El curso incluye un debate introductorio y directrices para la interaccion de los estudiantes. | Esencial |
+| E-11 | La navegacion y el diseno del sitio del curso son claros y coherentes. | Esencial |
+| E-12 | Los videos y otros contenidos multimedia son de calidad y duracion adecuadas. | Esencial |
+| E-13 | El contenido del curso esta actualizado, es relevante y esta vinculado a objetivos de aprendizaje especificos. | Esencial |
+| E-14 | El sitio del curso proporciona un libro de calificaciones organizado que incluye todas las evaluaciones. | Esencial |
+| E-15 | El curso incorpora evaluaciones formativas de baja exigencia para un compromiso frecuente. | Esencial |
+| E-16 | El curso proporciona un enfoque de andamiaje para las evaluaciones sumativas. | Esencial |
+| E-17 | Todos los modulos, tareas y actividades incluyen instrucciones claras y detalladas. | Esencial |
+| E-18 | El curso incluye rubricas para todas las tareas y evaluaciones. | Esencial |
+| E-19 | La carga de trabajo del curso es equilibrada y apropiada para la disciplina y el nivel del curso. | Esencial |
+| E-20 | Los materiales del curso no contienen enlaces rotos, errores ortograficos ni informacion incorrecta. | Esencial |
+
+### Diseno Avanzado (15 objetivos)
+
+| # | Objetivo | Nivel |
+|---|----------|-------|
+| A-1 | Los objetivos y/o resultados de aprendizaje del curso utilizan un lenguaje centrado en el alumno. | Avanzado |
+| A-2 | El curso incluye una lista de comprobacion tecnologica previa al curso y un cuestionario de preparacion en linea. | Avanzado |
+| A-3 | El curso incluye un modulo de orientacion, un video o una guia para navegar por el curso. | Avanzado |
+| A-4 | El curso incluye directrices explicitas para el uso de la IA generativa. | Avanzado |
+| A-5 | El curso utiliza exclusivamente materiales de bajo coste o gratuitos. | Avanzado |
+| A-6 | El curso ofrece multiples vias para que los alumnos alcancen los objetivos de aprendizaje. | Avanzado |
+| A-7 | El contenido incluye ejemplos que representan a una amplia gama de alumnos. | Avanzado |
+| A-8 | El curso incluye un foro en linea para los puntos mas confusos o las preguntas sobre el curso. | Avanzado |
+| A-9 | El curso incorpora estrategias de aprendizaje adaptativo para personalizar el aprendizaje. | Avanzado |
+| A-10 | Los materiales de texto cumplen las normas de accesibilidad y diseno universal. | Avanzado |
+| A-11 | Los videos y otros contenidos multimedia cumplen las normas de accesibilidad. | Avanzado |
+| A-12 | El curso incluye formas para que los alumnos contribuyan de manera significativa al contenido del curso. | Avanzado |
+| A-13 | El curso incluye modelos de entregables para las evaluaciones sumativas. | Avanzado |
+| A-14 | El curso incluye evaluaciones con aplicaciones practicas de palabras reales. | Avanzado |
+| A-15 | El curso apoya la metacognicion del alumno mediante actividades periodicas de autorreflexion. | Avanzado |
+
+### Entrega del Curso (15 objetivos)
+
+| # | Objetivo | Nivel |
+|---|----------|-------|
+| D-1 | El instructor ofrece una introduccion personal al curso. | Entrega |
+| D-2 | El instructor publica modulos y contenidos en el sitio del curso de manera oportuna. | Entrega |
+| D-3 | El instructor publica anuncios regulares y relevantes en el sitio del curso. | Entrega |
+| D-4 | El instructor contribuye significativamente a las actividades y discusiones en linea. | Entrega |
+| D-5 | El instructor proporciona retroalimentacion especifica y dirigida sobre las tareas. | Entrega |
+| D-6 | El instructor proporciona retroalimentacion y califica las evaluaciones de manera oportuna. | Entrega |
+| D-7 | El profesor se compromete activamente con los alumnos que muestran dificultades en el curso. | Entrega |
+| D-8 | El instructor utiliza un lenguaje de apoyo en todos los comentarios y comunicaciones. | Entrega |
+| D-9 | El instructor anima o incentiva a los alumnos a participar en las horas de oficina. | Entrega |
+| D-10 | El instructor responde a las comunicaciones y consultas de los estudiantes de manera oportuna. | Entrega |
+| D-11 | El instructor proporciona resumenes al final del modulo basados en las contribuciones de los alumnos. | Entrega |
+| D-12 | El instructor fomenta la participacion de alumno a alumno en las actividades en linea. | Entrega |
+| D-13 | El instructor ajusta el contenido, las tareas y las fechas en respuesta a las necesidades del alumno. | Entrega |
+| D-14 | El instructor solicita la opinion de los alumnos sobre el curso en varios momentos del curso. | Entrega |
+| D-15 | El instructor incorpora ejemplos personales para complementar el contenido del curso. | Entrega |
+
+---
+
+## 4. Sepulveda Parrini (2024) — 77 indicadores, 6 dimensiones, 19 subdimensiones
 
 **Fuente:** Marco Evaluativo de Cursos Virtuales UMCE. Proyecto UMC20992.
 **Archivo JSON:** `src/public/data/rubrica-indicadores.json` (version post-pilotaje, fuente canonica)
@@ -310,18 +385,21 @@
 
 ## Resumen comparativo de estructura
 
-| | Sepulveda (UMCE) | OSCQR (SUNY) | Quality Matters |
-|---|---|---|---|
-| **Indicadores/estandares** | 77 | 50 | 42 |
-| **Categorias/dimensiones** | 6 (19 subdimensiones) | 6 | 8 |
-| **Escala** | Likert 0-4 | Sufficiently Present / Minor-Moderate-Major Revision / NA | Puntos 1-3 |
-| **Licencia** | Institucional UMCE | CC BY 4.0 (libre) | Propietaria (no libre) |
-| **Perspectiva de genero** | Si (D5, 11 indicadores) | No | No |
-| **Corresponsabilidad/cuidados** | Si (D6, 8 indicadores) | No | No |
-| **Sesion sincrona** | Si (D3.4, 4 indicadores) | No | No |
-| **Competencias docentes** | Si (D4, 7 indicadores) | Parcial (std 40, 50) | Parcial (5.3) |
-| **Accesibilidad** | Si (D2, 17 indicadores) | Si (cat 3, std 15, 34-37) | Si (cat 8) |
+| | OSCQR v4.0 (SUNY) | OLC 2025 | Quality Matters | Sepulveda (UMCE) |
+|---|---|---|---|---|
+| **Indicadores/estandares** | 50 | 50 | 42 | 77 |
+| **Categorias/dimensiones** | 6 | 3 (Esencial, Avanzado, Entrega) | 8 | 6 (19 subdimensiones) |
+| **Escala** | Sufficiently Present / Revision / NA | 0-2 (Desarrollo, Logrado, Ejemplar) | Puntos 1-3 | Likert 0-4 |
+| **Licencia** | CC BY 4.0 (libre) | CC BY-NC-SA (libre) | Propietaria (no libre) | Institucional UMCE |
+| **Entrega docente** | No | Si (15 objetivos) | No | Si (D4, 7 indicadores) |
+| **Perspectiva de genero** | No | Parcial (A-7 diversidad) | No | Si (D5, 11 indicadores) |
+| **Corresponsabilidad/cuidados** | No | Parcial (E-19 carga) | No | Si (D6, 8 indicadores) |
+| **Sesion sincrona** | No | No | No | Si (D3.4, 4 indicadores) |
+| **IA generativa** | No | Si (A-4) | No | Si (D6.1.2) |
+| **Accesibilidad** | Si (cat 3, std 15, 34-37) | Si (E-7, A-10, A-11) | Si (cat 8) | Si (D2, 17 indicadores) |
+
+**Total: 219 indicadores/estandares de 4 fuentes (50 + 50 + 42 + 77)**
 
 ---
 
-*Este documento es un insumo de extraccion. El analisis cruzado, la clasificacion por automatizabilidad y el mapping a fases QA se realizan en un documento separado.*
+*Este documento es un insumo de extraccion. El analisis cruzado, la clasificacion por automatizabilidad y el mapping a fases QA se realizan en el xlsx indicadores-cruce-tematico.xlsx.*

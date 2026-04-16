@@ -104,30 +104,31 @@ El resultado son **77 indicadores** organizados en **6 dimensiones y 19 subdimen
 
 ---
 
-## 5. Por que cruzar tres marcos
+## 5. Por que cruzar cuatro marcos
 
-El cruce de las tres fuentes no es una suma (50 + 42 + 77 = 169 indicadores independientes). Es un analisis que busca:
+El cruce de las cuatro fuentes no es una suma (50 + 50 + 42 + 77 = 219 indicadores independientes). Es un analisis que busca:
 
-- **Convergencias:** Cuando dos o tres marcos coinciden en un criterio, existe consenso internacional. Esto fortalece el argumento ante acreditadoras como CNA.
-- **Complementariedades:** Donde solo una fuente cubre un tema (por ejemplo, genero en D5 o sesion sincronica en D3.4), se trata de un aporte que responde a necesidades locales especificas.
+- **Convergencias:** Cuando tres o cuatro marcos coinciden en un criterio, existe consenso internacional robusto. Esto fortalece el argumento ante acreditadoras como CNA. En nuestro cruce, 10 de 18 temas tienen consenso de 4/4 fuentes.
+- **Complementariedades:** Donde solo una o dos fuentes cubren un tema (por ejemplo, genero en D5 o sesion sincronica en D3.4), se trata de un aporte que responde a necesidades locales especificas.
 - **Vacios:** Si ningun marco cubre un aspecto relevante para la UMCE, es una oportunidad para proponer nuevos indicadores.
+- **Actualizacion:** El cruce con OLC 2025 (publicado en marzo 2025) asegura que el instrumento UMCE esta alineado con el marco internacional mas reciente disponible, no solo con versiones de 2020-2021.
 
-El objetivo final es un **set unico de indicadores validados por Mesa 1**, con trazabilidad internacional para efectos de acreditacion y pertinencia local para la mejora efectiva de los cursos.
+El objetivo final es un **set unico de 71 indicadores propuestos, validados por Mesa 1**, con trazabilidad a cuatro marcos internacionales para efectos de acreditacion y pertinencia local para la mejora efectiva de los cursos.
 
 ---
 
 ## Como prioriza cada marco sus indicadores
 
-Los tres marcos utilizan sistemas diferentes para senalar la importancia relativa de cada estandar o indicador:
+Los cuatro marcos utilizan sistemas diferentes para senalar la importancia relativa de cada estandar o indicador:
 
-| | OSCQR | Quality Matters | Sepulveda (UMCE) |
-|---|---|---|---|
-| **Sistema** | Marcador binario RSI (si/no) | Puntaje 3 / 2 / 1 | Jerarquia alta / media / baja |
-| **Nivel alto** | RSI: Si (22 de 50) | 3 pts — esencial (22 de 42) | Alta (20 de 77) |
-| **Nivel medio** | — | 2 pts — muy importante | Media (37 de 77) |
-| **Nivel bajo** | RSI: No (28 de 50) | 1 pt — importante | Baja (20 de 77) |
-| **Origen del criterio** | Regulacion federal EE.UU. (Title IV): los estandares RSI garantizan interaccion regular y sustantiva entre docente y estudiantes | Consenso de paneles de pares expertos de QM, refinado a lo largo de seis ediciones de la rubrica (metodologia propietaria) | Juicio experto de la investigadora, basado en la revision de 25 modelos internacionales (Marciniak y Gairin, 2017) y refinado tras el pilotaje con 5 cursos |
-| **Que implica** | RSI: Si no es "mas importante" que RSI: No — indica que el estandar aborda directamente la interaccion docente-estudiante | Un curso debe cumplir TODOS los estandares de 3 pts para obtener certificacion QM | La jerarquia orienta la priorizacion pero no es eliminatoria |
+| | OSCQR | OLC 2025 | Quality Matters | Sepulveda (UMCE) |
+|---|---|---|---|---|
+| **Sistema** | Marcador binario RSI (si/no) | Dos niveles: Esencial / Avanzado + Entrega | Puntaje 3 / 2 / 1 | Jerarquia alta / media / baja |
+| **Nivel alto** | RSI: Si (22 de 50) | Esencial (20 de 50) | 3 pts — esencial (22 de 42) | Alta (20 de 77) |
+| **Nivel medio** | — | Avanzado (15 de 50) | 2 pts — muy importante | Media (37 de 77) |
+| **Nivel bajo** | RSI: No (28 de 50) | Entrega (15 de 50) | 1 pt — importante | Baja (20 de 77) |
+| **Origen del criterio** | Regulacion federal EE.UU. (Title IV): los estandares RSI garantizan interaccion regular y sustantiva entre docente y estudiantes | Decision del equipo OLC: "Esencial" = un buen curso; "Esencial + Avanzado" = un curso excelente; "Entrega" = solo evaluable una vez impartido el curso | Consenso de paneles de pares expertos de QM, refinado a lo largo de seis ediciones de la rubrica (metodologia propietaria) | Juicio experto de la investigadora, basado en la revision de 25 modelos internacionales (Marciniak y Gairin, 2017) y refinado tras el pilotaje con 5 cursos |
+| **Que implica** | RSI: Si no es "mas importante" que RSI: No — indica que el estandar aborda directamente la interaccion docente-estudiante | Esencial no es "mas importante" que Avanzado — indica que puede evaluarse antes de ofrecer el curso. Avanzado y Entrega se evaluan durante o despues | Un curso debe cumplir TODOS los estandares de 3 pts para obtener certificacion QM | La jerarquia orienta la priorizacion pero no es eliminatoria |
 
 **Nota para Mesa 1:** La jerarquia del Marco Sepulveda (alta/media/baja) fue asignada por la investigadora con base en la revision bibliografica y el pilotaje, pero los criterios especificos de asignacion no estan documentados de forma explicita. Parte del proposito de este ejercicio de validacion es precisamente que Mesa 1 confirme, ajuste o fundamente estas jerarquias con criterio institucional.
 

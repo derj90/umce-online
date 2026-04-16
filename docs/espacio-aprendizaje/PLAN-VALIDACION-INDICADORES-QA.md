@@ -24,31 +24,35 @@
 
 4. **Insumo indicadores cruzado** — docs/espacio-aprendizaje/insumo-indicadores-cruzado.md
    - OSCQR 50 estandares extraidos del PDF (6 categorias, RSI marcado)
+   - OLC 2025 50 objetivos extraidos del PDF en espanol (3 secciones: Esencial, Avanzado, Entrega)
    - Quality Matters 42 estandares extraidos del PDF (8 categorias, 22 esenciales marcados)
    - Sepulveda 77 indicadores del JSON (6 dimensiones, 19 subdimensiones)
-   - Tabla resumen comparativa
+   - Tabla resumen comparativa 4 fuentes
 
 ### Lo que falta hacer (plan aprobado por David)
 
 **El backend QA NO EXISTE.** 0 endpoints, 0 tablas SQL. Antes de implementar:
 
-#### Entregable 1: Documento de contexto
-**Archivo por crear:** `docs/espacio-aprendizaje/contexto-marcos-calidad.md`
+#### Entregable 1: Documento de contexto — COMPLETADO
+**Archivo:** `docs/espacio-aprendizaje/contexto-marcos-calidad.md`
 
 Explica a Mesa 1 (no tecnico):
 - Que es OSCQR, por que se eligio (open source, CC BY 4.0)
+- Que es OLC 2025, por que se incorporo (reemplaza OSCQR como instrumento oficial OLC, agrega entrega docente)
 - Que es Quality Matters, por que es referencia pero no se adopto (propietario)
 - Que es el Marco Evaluativo Sepulveda, como se construyo, pilotaje 2024
-- Aporte original UMCE: D5 genero, D6 corresponsabilidad, D3.4 sesion sincrona
-- Por que cruzarlos: trazabilidad internacional + pertinencia local
+- Sello distintivo UMCE: D5 genero, D6 corresponsabilidad, D3.4 sesion sincrona (desde politicas institucionales)
+- Como prioriza cada marco (RSI vs Esencial/Avanzado vs 3pts vs alta/media/baja)
+- Por que cruzar cuatro marcos: trazabilidad internacional + pertinencia local
 
-#### Entregable 2: Tabla agrupada por dimensiones tematicas
-**Archivo por crear:** `docs/espacio-aprendizaje/indicadores-agrupados-por-tema.md`
+#### Entregable 2: Cruce tematico y propuesta consolidada — COMPLETADO
+**Archivo:** `docs/espacio-aprendizaje/indicadores-cruce-tematico.xlsx`
 
-Reorganizar los ~170 indicadores en grupos tematicos comunes (no por fuente):
-- Donde hay consenso (2+ fuentes)
-- Donde hay gaps
-- Nota preliminar de automatizabilidad (A/B/C)
+4 hojas:
+- Cruce Tematico: 219 indicadores de 4 fuentes en 18 temas, todos en espanol
+- Propuesta Consolidada: 71 indicadores candidatos (QA-01 a QA-71) con fuentes trazables
+- Resumen por Tema: consenso X/4 fuentes por tema
+- Leyenda: codigos, colores, criterios
 
 #### Entregable 3: Instrumento de validacion
 **Archivo por crear:** `docs/instrumentos/instrumento-validacion-indicadores-qa.md`
@@ -63,7 +67,7 @@ Despues de firme el .md, decidir si se implementa como pagina en umce.online (au
 
 ### Secuencia
 
-1. Contexto (.md) → 2. Tabla agrupada (.md) → 3. Instrumento (.md) → 4. Formulario (web o forms) → 5. Circulacion Mesa 1 → 6. Analisis resultados → 7. Set definitivo → 8. Especificacion tecnica fases QA → 9. Schema SQL → 10. Implementacion endpoints
+1. ~~Contexto (.md)~~ HECHO → 2. ~~Cruce tematico (.xlsx)~~ HECHO → 3. Instrumento (.md) → 4. Formulario (web o forms) → 5. Circulacion Mesa 1 → 6. Analisis resultados → 7. Set definitivo → 8. Especificacion tecnica fases QA → 9. Schema SQL → 10. Implementacion endpoints
 
 ### Decisiones ya tomadas
 
