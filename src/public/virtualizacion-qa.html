@@ -396,7 +396,7 @@
               <p class="text-xs text-gray-400">Durante el semestre activo</p>
             </div>
           </div>
-          <p class="text-sm text-gray-600 leading-relaxed mb-3">Monitoreo continuo de indicadores: tasa de completaci&oacute;n (alerta &lt;30&nbsp;%), distribuci&oacute;n de calificaciones (alerta &gt;40&nbsp;% reprobaci&oacute;n), retroalimentaci&oacute;n docente (&lt;7 d&iacute;as) y participaci&oacute;n en foros. Se complementa con el Auditor Acad&eacute;mico nocturno.</p>
+          <p class="text-sm text-gray-600 leading-relaxed mb-3">Monitoreo continuo de indicadores: tasa de completaci&oacute;n (alerta &lt;30&nbsp;%), distribuci&oacute;n de calificaciones (alerta &gt;40&nbsp;% reprobaci&oacute;n), retroalimentaci&oacute;n docente (&lt;7 d&iacute;as) y participaci&oacute;n en foros. En el futuro, se complementar&aacute; con verificaciones autom&aacute;ticas nocturnas.</p>
           <p class="text-xs text-gray-500 italic">Seg&uacute;n las orientaciones CNA, esta fase corresponde a seguimiento y acompa&ntilde;amiento &mdash; no a QA en sentido estricto.</p>
         </div>
 
@@ -413,15 +413,6 @@
           <p class="text-xs text-gray-500 italic">Evidencia principal de mejora continua que solicita la CNA para acreditaci&oacute;n de programas online.</p>
         </div>
 
-      </div>
-
-      <!-- Auditor Académico connection -->
-      <div class="mt-5 rounded-xl border border-indigo-100 bg-indigo-50 p-4 flex gap-3 items-start">
-        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #4F46E5;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-        <div>
-          <p class="text-sm font-semibold text-indigo-900 mb-1">Conexi&oacute;n con el Auditor Acad&eacute;mico</p>
-          <p class="text-sm text-indigo-800 leading-relaxed">La fase de Seguimiento se alimentar&aacute; de un Auditor Acad&eacute;mico autom&aacute;tico que se ejecutar&aacute; cada noche (en implementaci&oacute;n) y verificar&aacute; 18 reglas acad&eacute;micas (Protocolo Acad&eacute;mico PA.01 a PA.18), entre ellas: docente sin acceso m&aacute;s de 14 d&iacute;as (PA.02), sin evaluaci&oacute;n sumativa en semana 5 (PA.01), estudiantes sin retroalimentaci&oacute;n en semana 7 (PA.14), y gradebook oculto (PA.06). Cada hallazgo se clasificar&aacute; por severidad y se escalar&aacute; a la dimensi&oacute;n QA correspondiente, alimentando el panel de Alertas de este sistema.</p>
-        </div>
       </div>
 
       <!-- CNA connection paragraph -->
@@ -848,7 +839,7 @@
         <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div>
             <h2 class="font-heading text-2xl font-extrabold text-gray-900">Alertas del Sistema</h2>
-            <p class="text-sm text-gray-500 mt-0.5">Condiciones detectadas autom&aacute;ticamente que requieren atenci&oacute;n del equipo de dise&ntilde;o instruccional. Las alertas cr&iacute;ticas provendr&aacute;n del Auditor Acad&eacute;mico nocturno (18 reglas de Protocolo Acad&eacute;mico); las advertencias e informativas, de la verificaci&oacute;n de los 75 indicadores propuestos de forma autom&aacute;tica desde Moodle.</p>
+            <p class="text-sm text-gray-500 mt-0.5">Condiciones detectadas autom&aacute;ticamente que requieren atenci&oacute;n. Las alertas se generan a partir de la verificaci&oacute;n de los 75 indicadores propuestos, evaluados de forma autom&aacute;tica desde Moodle.</p>
           </div>
           <div class="flex gap-2 text-xs flex-wrap">
             <span class="alert-badge critica">1 cr&iacute;tica</span>
@@ -1001,13 +992,6 @@
         </div>
       </details>
 
-      <details class="fundamentacion-panel">
-        <summary>¿Qué son las reglas PA.xx del Auditor Académico?</summary>
-        <div class="fundamentacion-content">
-          <p>El Auditor Académico es un proceso automatizado que se ejecuta cada noche en el servidor y revisa 18 reglas académicas (PA.01 a PA.18) sobre todos los cursos activos en las 5 plataformas Moodle de la UMCE. Cada regla tiene una condición específica: PA.01 detecta cursos sin ninguna evaluación sumativa pasada la semana 5; PA.02 detecta docentes sin acceso al aula virtual por más de 14 días; PA.06 detecta libros de calificaciones ocultos; PA.14 detecta estudiantes que han entregado tareas y no han recibido retroalimentación después de la semana 7. Estas reglas generan hallazgos con severidad (crítica, advertencia, informativa) que se escalan a la dimensión QA correspondiente y aparecen en el panel de Alertas. El Auditor reemplaza la revisión manual que antes hacía el coordinador, liberando tiempo para el trabajo pedagógico que requiere juicio humano.</p>
-          <p class="fundamentacion-refs">Referencias: Reglas PA.xx Auditor Académico UDFV (en producción desde abril 2026); UMC21992</p>
-        </div>
-      </details>
 
     </div>
   </section>
