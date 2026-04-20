@@ -4,396 +4,74 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plan Formativo VcM — Vinculación con el Medio UMCE</title>
-  <meta name="description" content="Plan Formativo en Vinculación con el Medio de la Universidad Metropolitana de Ciencias de la Educación. Cursos para formar comunidad universitaria comprometida con sus territorios.">
+  <meta name="description" content="Plan Formativo en Vinculación con el Medio de la Universidad Metropolitana de Ciencias de la Educación. Cursos para formar a la comunidad universitaria en el diálogo con sus territorios.">
 
-  <!-- Fonts -->
+  <!-- Fonts: Plus Jakarta Sans (display) + Inter (body) — coherente con UMCE.online -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'system-ui', 'sans-serif']
+          },
+          colors: {
+            // VcM brand — violeta extraído de SCORMs trabajo Polanco/Sergio
+            brand: {
+              50:  '#F5F0FB',
+              100: '#E8DDF3',
+              200: '#D2BBE7',
+              300: '#B28BD4',
+              400: '#8C5BBD',
+              500: '#602890',   // base
+              600: '#4e2078',
+              700: '#3d185e',
+              800: '#2d1246',
+              900: '#1d0b2d'
+            },
+            // Azul institucional UMCE (para acentos estructurales)
+            umce: '#001D5C'
+          }
+        }
+      }
+    }
+  </script>
 
-  <!-- p5.js -->
+  <!-- p5.js para flow field del hero -->
   <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
 
   <style>
-    :root {
-      /* Paleta VcM extraída de SCORMs (trabajo visual previo equipo VcM) */
-      --vcm-violet:     #602890;   /* violeta principal — bandas identitarias */
-      --vcm-violet-dk:  #4a1e70;   /* violeta oscuro — profundidad */
-      --vcm-violet-lt:  #8a4cb3;   /* violeta claro — hover */
-      --vcm-magenta:    #902088;   /* magenta — destacados */
-      --vcm-blue:       #0030A0;   /* azul UMCE institucional */
-      --vcm-blue-dk:    #001f6e;
-      --vcm-cool:       #B8C0D8;   /* gris-azulado */
-      --vcm-cool-lt:    #e8ebf5;   /* fondo suave */
-      --vcm-ink:        #1a1330;   /* tinta oscura — texto principal */
-      --vcm-bg:         #fafaff;   /* fondo de sección */
-    }
-
-    * { box-sizing: border-box; }
-
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background: #ffffff;
-      color: var(--vcm-ink);
-      margin: 0;
       -webkit-font-smoothing: antialiased;
     }
-
     h1, h2, h3, h4, h5, h6 {
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.015em;
     }
 
-    /* ============ Nav ============ */
-    #nav-bar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 50;
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(96,40,144,0.10);
-      height: 64px;
-      transition: box-shadow 0.2s;
-    }
-    #nav-bar.scrolled {
-      box-shadow: 0 2px 16px -8px rgba(96,40,144,0.18);
-    }
-    .nav-link {
-      font-size: 0.875rem;
-      color: #4a3d5e;
-      font-family: 'Inter', sans-serif;
-      font-weight: 500;
-      text-decoration: none;
-      padding: 8px 14px;
-      border-radius: 8px;
-      transition: all 0.18s;
-    }
-    .nav-link:hover {
-      background: var(--vcm-cool-lt);
-      color: var(--vcm-violet);
-    }
-    .nav-logo-mark {
-      width: 36px; height: 36px;
-      border-radius: 9px;
-      background: linear-gradient(135deg, var(--vcm-violet) 0%, var(--vcm-magenta) 60%, var(--vcm-blue) 100%);
-      display: flex; align-items: center; justify-content: center;
-      color: white;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 800;
-      font-size: 0.92rem;
-      letter-spacing: -0.02em;
-    }
-
-    /* ============ Hero ============ */
-    #hero {
-      position: relative;
-      min-height: 92vh;
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-      background: linear-gradient(160deg, #1a0d2e 0%, var(--vcm-violet-dk) 45%, var(--vcm-blue-dk) 100%);
-    }
-    #p5-hero-canvas {
+    /* Flow field canvas container */
+    #hero-canvas {
       position: absolute;
       inset: 0;
-      z-index: 1;
+      z-index: 0;
     }
-    #p5-hero-canvas canvas {
+    #hero-canvas canvas {
       display: block;
       width: 100% !important;
       height: 100% !important;
     }
-    .hero-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      background:
-        radial-gradient(ellipse at 15% 50%, rgba(16,8,30,0.55) 0%, rgba(16,8,30,0.15) 55%, transparent 80%),
-        linear-gradient(to right, rgba(16,8,30,0.35) 0%, transparent 55%);
-      pointer-events: none;
-    }
-    .hero-content {
-      position: relative;
-      z-index: 3;
-    }
-    .hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.10);
-      border: 1px solid rgba(255,255,255,0.22);
-      color: white;
-      font-size: 0.78rem;
-      font-weight: 500;
-      font-family: 'Inter', sans-serif;
-      backdrop-filter: blur(6px);
-    }
-    .hero-tag .dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #c8a5e0;
-      box-shadow: 0 0 8px #c8a5e0;
-    }
 
-    /* ============ Buttons ============ */
-    .btn-primary {
-      display: inline-flex; align-items: center; gap: 10px;
-      padding: 13px 24px;
-      border-radius: 10px;
-      background: white;
-      color: var(--vcm-violet);
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 700;
-      font-size: 0.95rem;
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-      box-shadow: 0 4px 14px -4px rgba(96,40,144,0.35);
-    }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 22px -6px rgba(96,40,144,0.45);
-    }
-    .btn-ghost {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 13px 22px;
-      border-radius: 10px;
-      background: transparent;
-      color: white;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 600;
-      font-size: 0.9rem;
-      border: 1.5px solid rgba(255,255,255,0.32);
-      cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-    }
-    .btn-ghost:hover {
-      background: rgba(255,255,255,0.10);
-      border-color: rgba(255,255,255,0.50);
-    }
-
-    /* ============ Section tags ============ */
-    .section-tag {
-      display: inline-block;
-      padding: 5px 11px;
-      border-radius: 6px;
-      background: var(--vcm-cool-lt);
-      color: var(--vcm-violet);
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 600;
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 14px;
-    }
-    .accent-line {
-      width: 48px;
-      height: 3px;
-      border-radius: 2px;
-      background: linear-gradient(90deg, var(--vcm-violet), var(--vcm-magenta));
-      margin: 14px 0 18px;
-    }
-
-    /* ============ Principles (¿Por qué este plan?) ============ */
-    .principle-card {
-      padding: 28px 26px;
-      border-radius: 14px;
-      background: white;
-      border: 1px solid #eceaf2;
-      transition: all 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
-    .principle-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 64px; height: 3px;
-      background: linear-gradient(90deg, var(--vcm-violet), var(--vcm-magenta));
-      transform: translateX(-66px);
-      transition: transform 0.28s;
-    }
-    .principle-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 30px -12px rgba(96,40,144,0.18);
-    }
-    .principle-card:hover::before {
-      transform: translateX(0);
-    }
-    .principle-icon {
-      width: 46px; height: 46px;
-      border-radius: 12px;
-      background: var(--vcm-cool-lt);
-      color: var(--vcm-violet);
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 16px;
-    }
-
-    /* ============ Course cards ============ */
-    .course-card {
-      display: flex;
-      flex-direction: column;
-      border-radius: 16px;
-      background: white;
-      border: 1px solid #eceaf2;
-      overflow: hidden;
-      transition: all 0.22s;
-      position: relative;
-    }
-    .course-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 18px 40px -16px rgba(96,40,144,0.22);
-      border-color: transparent;
-    }
-    .course-cover {
-      height: 160px;
-      position: relative;
-      overflow: hidden;
-    }
-    .course-cover-1 {
-      background:
-        radial-gradient(circle at 70% 30%, rgba(255,255,255,0.20), transparent 50%),
-        linear-gradient(135deg, var(--vcm-violet) 0%, var(--vcm-violet-dk) 100%);
-    }
-    .course-cover-2 {
-      background:
-        radial-gradient(circle at 30% 70%, rgba(255,255,255,0.18), transparent 50%),
-        linear-gradient(135deg, var(--vcm-magenta) 0%, var(--vcm-violet) 100%);
-    }
-    .course-cover-3 {
-      background:
-        radial-gradient(circle at 60% 40%, rgba(255,255,255,0.18), transparent 50%),
-        linear-gradient(135deg, var(--vcm-blue) 0%, var(--vcm-violet-dk) 100%);
-    }
-    .course-cover-4 {
-      background:
-        radial-gradient(circle at 40% 60%, rgba(255,255,255,0.20), transparent 50%),
-        linear-gradient(135deg, var(--vcm-violet-dk) 0%, var(--vcm-blue) 100%);
-    }
-    .course-cover::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        repeating-linear-gradient(115deg, transparent 0 44px, rgba(255,255,255,0.06) 44px 48px);
-      pointer-events: none;
-    }
-    .course-number {
-      position: absolute;
-      top: 16px; left: 18px;
-      width: 36px; height: 36px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.22);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.30);
-      display: flex; align-items: center; justify-content: center;
-      color: white;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 800;
-      font-size: 0.95rem;
-    }
-    .course-status {
-      position: absolute;
-      top: 16px; right: 16px;
-      padding: 5px 10px;
-      border-radius: 999px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      backdrop-filter: blur(8px);
-    }
-    .status-disponible {
-      background: rgba(255,255,255,0.92);
-      color: var(--vcm-violet);
-    }
-    .status-proximamente {
-      background: rgba(26,13,46,0.45);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.25);
-    }
-    .course-body {
-      padding: 22px 22px 24px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
-    .course-audience {
-      font-size: 0.72rem;
-      color: var(--vcm-violet);
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-    .course-title {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 700;
-      font-size: 1.15rem;
-      line-height: 1.28;
-      color: var(--vcm-ink);
-      margin: 0 0 10px;
-    }
-    .course-description {
-      font-size: 0.88rem;
-      color: #5e5472;
-      line-height: 1.55;
-      margin: 0 0 16px;
-      flex: 1;
-    }
-    .course-meta {
-      display: flex;
-      gap: 14px;
-      font-size: 0.78rem;
-      color: #6b5e83;
-      padding-top: 14px;
-      border-top: 1px solid #f0edf6;
-    }
-    .course-meta-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .course-cta {
-      margin-top: 16px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--vcm-violet);
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 600;
-      font-size: 0.87rem;
-      text-decoration: none;
-      transition: gap 0.2s;
-    }
-    .course-card:hover .course-cta {
-      gap: 10px;
-    }
-    .course-card.disabled {
-      opacity: 0.72;
-    }
-    .course-card.disabled:hover {
-      transform: none;
-      box-shadow: 0 4px 12px -6px rgba(96,40,144,0.08);
-    }
-    .course-card.disabled .course-cta {
-      color: #8b7fa3;
-      pointer-events: none;
-    }
-
-    /* ============ Utils ============ */
+    /* Fade-up reveal on scroll */
     .fade-up {
       opacity: 0;
-      transform: translateY(16px);
+      transform: translateY(12px);
       transition: opacity 0.6s ease-out, transform 0.6s ease-out;
     }
     .fade-up.visible {
@@ -401,10 +79,9 @@
       transform: translateY(0);
     }
 
-    /* ============ Responsive ============ */
-    @media (max-width: 768px) {
-      #hero { min-height: 86vh; }
-      .principle-card, .course-body { padding: 22px 20px; }
+    /* Nav scroll shadow */
+    #nav.scrolled {
+      box-shadow: 0 1px 12px -6px rgba(15, 23, 42, 0.12);
     }
 
     /* Loading */
@@ -420,18 +97,31 @@
     }
     #loading.hidden { opacity: 0; pointer-events: none; }
     .loading-mark {
-      width: 64px; height: 64px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, var(--vcm-violet) 0%, var(--vcm-magenta) 60%, var(--vcm-blue) 100%);
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #602890, #001D5C);
       animation: pulse 1.6s ease-in-out infinite;
     }
     @keyframes pulse {
       0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.1); opacity: 0.7; }
+      50% { transform: scale(1.08); opacity: 0.75; }
+    }
+
+    /* Course card cover patterns — solo para variar las 4 portadas */
+    .cover-01 { background: linear-gradient(135deg, #602890 0%, #3d185e 100%); }
+    .cover-02 { background: linear-gradient(135deg, #4e2078 0%, #001D5C 100%); }
+    .cover-03 { background: linear-gradient(135deg, #3d185e 0%, #001144 100%); }
+    .cover-04 { background: linear-gradient(135deg, #2d1246 0%, #001D5C 100%); }
+    .cover-pattern::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(115deg, transparent 0 44px, rgba(255,255,255,0.06) 44px 48px);
+      pointer-events: none;
     }
   </style>
 </head>
-<body>
+<body class="bg-white text-slate-800">
 
   <!-- Loading -->
   <div id="loading">
@@ -441,18 +131,22 @@
   <!-- ============================================================ -->
   <!-- NAV -->
   <!-- ============================================================ -->
-  <nav id="nav-bar">
-    <div class="max-w-6xl mx-auto px-5 h-full flex items-center justify-between">
-      <a href="/vcm-panel" style="text-decoration:none; display:flex; align-items:center; gap:12px;">
-        <div class="nav-logo-mark">VcM</div>
-        <div style="display:flex; flex-direction:column; line-height:1.15;">
-          <span style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:0.98rem; color:var(--vcm-ink);">Plan Formativo VcM</span>
-          <span style="font-family:'Inter',sans-serif; font-size:0.72rem; color:#8a7fa3;">UMCE · Vinculación con el Medio</span>
+  <nav id="nav" class="fixed top-0 inset-x-0 z-50 h-16 bg-white/90 backdrop-blur-md border-b border-slate-200/60 transition-shadow">
+    <div class="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+      <a href="/vcm-panel" class="flex items-center gap-3">
+        <img src="/assets/isologo-azul.png" alt="UMCE" class="h-9 w-auto">
+        <div class="leading-tight">
+          <div class="font-display font-bold text-sm text-slate-900">Plan Formativo VcM</div>
+          <div class="text-xs text-slate-500">Vinculación con el Medio</div>
         </div>
       </a>
-      <div style="display:flex; align-items:center; gap:4px;">
-        <a href="#cursos" class="nav-link">Los cursos</a>
-        <a href="#plan" class="nav-link">El plan</a>
+      <div class="flex items-center gap-1">
+        <a href="#plan" class="hidden sm:inline-block text-sm font-medium text-slate-600 hover:text-brand-600 px-3 py-2 rounded-md transition-colors">El plan</a>
+        <a href="#cursos" class="hidden sm:inline-block text-sm font-medium text-slate-600 hover:text-brand-600 px-3 py-2 rounded-md transition-colors">Los cursos</a>
+        <a href="#cursos" class="ml-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-brand-500 hover:bg-brand-600 text-white text-sm font-display font-semibold transition-colors">
+          Empezar
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
       </div>
     </div>
   </nav>
@@ -460,105 +154,101 @@
   <!-- ============================================================ -->
   <!-- HERO -->
   <!-- ============================================================ -->
-  <section id="hero" style="padding-top: 64px;">
-    <div id="p5-hero-canvas"></div>
-    <div class="hero-overlay"></div>
-    <div style="position:absolute; left:0; right:0; bottom:0; height:140px; background:linear-gradient(to bottom, transparent 0%, #ffffff 100%); z-index:3; pointer-events:none;"></div>
+  <section class="relative min-h-screen flex items-center overflow-hidden" style="background: #140A24;">
+    <div id="hero-canvas"></div>
 
-    <div class="hero-content max-w-6xl mx-auto px-5 w-full py-20">
-      <div style="max-width: 760px;">
+    <!-- Overlay + bottom fade -->
+    <div class="absolute inset-0 z-10 pointer-events-none" style="background: radial-gradient(ellipse at 15% 50%, rgba(10,5,22,0.55) 0%, rgba(10,5,22,0.10) 60%, transparent 85%);"></div>
+    <div class="absolute bottom-0 inset-x-0 h-32 z-10 pointer-events-none" style="background: linear-gradient(to bottom, transparent 0%, #ffffff 100%);"></div>
 
-        <div style="margin-bottom: 22px;">
-          <span class="hero-tag">
-            <span class="dot"></span>
-            Dirección de Vinculación con el Medio · UMCE
-          </span>
+    <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-32">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-white text-xs font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-brand-200" style="box-shadow: 0 0 8px #D2BBE7;"></span>
+          Dirección de Vinculación con el Medio · UMCE
         </div>
 
-        <h1 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(2rem, 4.6vw, 3.3rem); font-weight:800; color:#ffffff; line-height:1.12; margin:0 0 22px; letter-spacing:-0.015em;">
-          <span style="color:#e4c0f5;">Aprendizaje mutuo</span>,
-          <br>
-          <span style="color:#ffffff;">conocimiento situado</span>,
-          <br>
-          <span style="color:#b8dfff;">transformación social</span>.
+        <h1 class="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.08] mb-6">
+          <span class="text-brand-200">Aprendizaje mutuo</span>,<br>
+          conocimiento situado,<br>
+          <span class="text-blue-200">transformación social</span>.
         </h1>
 
-        <p style="font-size:clamp(1.05rem, 2vw, 1.22rem); color:rgba(255,255,255,0.82); line-height:1.55; margin:0 0 36px; max-width:620px; font-family:'Inter',sans-serif;">
+        <p class="text-lg sm:text-xl text-white/75 leading-relaxed mb-10 max-w-2xl">
           Plan formativo de la UMCE en Vinculación con el Medio. Cursos para comprender y practicar una relación bidireccional, pertinente y transformadora entre la universidad y las comunidades.
         </p>
 
-        <div style="display:flex; flex-wrap:wrap; gap:14px; align-items:center;">
-          <a href="#cursos" class="btn-primary">
+        <div class="flex flex-wrap gap-3">
+          <a href="#cursos" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white hover:bg-brand-50 text-brand-700 font-display font-semibold text-base transition-colors shadow-lg shadow-brand-900/30">
             Ver los cursos del plan
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
-          <a href="#plan" class="btn-ghost">
+          <a href="#plan" class="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/30 hover:bg-white/10 text-white font-display font-semibold text-base transition-colors">
             Conocer el plan
           </a>
         </div>
-
       </div>
     </div>
   </section>
 
   <!-- ============================================================ -->
-  <!-- PLAN — ¿Por qué este plan? -->
+  <!-- EL PLAN — 4 principios -->
   <!-- ============================================================ -->
-  <section id="plan" style="padding: 96px 20px 84px; background: #ffffff;">
-    <div class="max-w-6xl mx-auto">
+  <section id="plan" class="py-20 lg:py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-      <div class="fade-up" style="max-width: 720px; margin-bottom: 48px;">
-        <span class="section-tag">El plan</span>
-        <h2 style="font-size:clamp(1.7rem, 3.2vw, 2.4rem); font-weight:800; color:var(--vcm-ink); margin:0 0 12px; line-height:1.18;">
+      <div class="fade-up max-w-3xl mb-14">
+        <span class="inline-block text-xs font-display font-semibold tracking-wider uppercase text-brand-600 mb-3">El plan</span>
+        <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-slate-900 leading-tight mb-4">
           Vinculación con el Medio: una función sustantiva de la universidad pública.
         </h2>
-        <div class="accent-line"></div>
-        <p style="color:#5e5472; font-size:1.02rem; line-height:1.62; margin:0;">
-          Una relación sistemática y bidireccional entre la UMCE y su entorno, orientada al aprendizaje mutuo, al conocimiento situado y a la transformación social. Este plan forma a la comunidad universitaria en sus fundamentos y en su práctica, a partir de cuatro principios que ordenan el quehacer.
+        <div class="w-12 h-1 rounded-full bg-brand-500 mb-5"></div>
+        <p class="text-base sm:text-lg text-slate-600 leading-relaxed">
+          Una relación sistemática y bidireccional entre la UMCE y su entorno, orientada al aprendizaje mutuo, al conocimiento situado y a la transformación social. El plan forma a la comunidad universitaria en sus fundamentos y en su práctica, a partir de cuatro principios orientadores.
         </p>
       </div>
 
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5 fade-up">
+      <div class="fade-up grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
 
-        <div class="principle-card">
-          <div class="principle-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        <article class="group p-6 rounded-2xl bg-white border border-slate-200 hover:border-brand-200 hover:shadow-lg hover:shadow-brand-900/5 transition-all">
+          <div class="w-11 h-11 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mb-5 group-hover:bg-brand-100 transition-colors">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
           </div>
-          <h3 style="font-size:1.08rem; font-weight:700; color:var(--vcm-ink); margin:0 0 8px;">Reciprocidad</h3>
-          <p style="color:#5e5472; font-size:0.93rem; line-height:1.58; margin:0;">
+          <h3 class="font-display font-bold text-lg text-slate-900 mb-2">Reciprocidad</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
             Universidad y actores del entorno aportan, reciben y construyen valor conjuntamente. Se reconoce el saber del otro y se busca aprendizaje mutuo.
           </p>
-        </div>
+        </article>
 
-        <div class="principle-card">
-          <div class="principle-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l-5-5 5-5"/><path d="M17 7l5 5-5 5"/><path d="M22 12H2"/></svg>
+        <article class="group p-6 rounded-2xl bg-white border border-slate-200 hover:border-brand-200 hover:shadow-lg hover:shadow-brand-900/5 transition-all">
+          <div class="w-11 h-11 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mb-5 group-hover:bg-brand-100 transition-colors">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l-5-5 5-5"/><path d="M17 7l5 5-5 5"/><path d="M22 12H2"/></svg>
           </div>
-          <h3 style="font-size:1.08rem; font-weight:700; color:var(--vcm-ink); margin:0 0 8px;">Bidireccionalidad</h3>
-          <p style="color:#5e5472; font-size:0.93rem; line-height:1.58; margin:0;">
-            La relación fluye de ida y vuelta. El entorno transforma a la universidad y la universidad transforma al entorno: genera conocimiento y mejora en ambos.
+          <h3 class="font-display font-bold text-lg text-slate-900 mb-2">Bidireccionalidad</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            La relación fluye de ida y vuelta. El entorno transforma a la universidad y la universidad transforma al entorno, generando conocimiento y mejora en ambos.
           </p>
-        </div>
+        </article>
 
-        <div class="principle-card">
-          <div class="principle-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        <article class="group p-6 rounded-2xl bg-white border border-slate-200 hover:border-brand-200 hover:shadow-lg hover:shadow-brand-900/5 transition-all">
+          <div class="w-11 h-11 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mb-5 group-hover:bg-brand-100 transition-colors">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
           </div>
-          <h3 style="font-size:1.08rem; font-weight:700; color:var(--vcm-ink); margin:0 0 8px;">Pertinencia</h3>
-          <p style="color:#5e5472; font-size:0.93rem; line-height:1.58; margin:0;">
+          <h3 class="font-display font-bold text-lg text-slate-900 mb-2">Pertinencia</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
             Las acciones responden a necesidades reales del entorno y a los propósitos institucionales. No son decorativas ni asistenciales.
           </p>
-        </div>
+        </article>
 
-        <div class="principle-card">
-          <div class="principle-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        <article class="group p-6 rounded-2xl bg-white border border-slate-200 hover:border-brand-200 hover:shadow-lg hover:shadow-brand-900/5 transition-all">
+          <div class="w-11 h-11 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mb-5 group-hover:bg-brand-100 transition-colors">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
           </div>
-          <h3 style="font-size:1.08rem; font-weight:700; color:var(--vcm-ink); margin:0 0 8px;">Impacto</h3>
-          <p style="color:#5e5472; font-size:0.93rem; line-height:1.58; margin:0;">
+          <h3 class="font-display font-bold text-lg text-slate-900 mb-2">Impacto</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
             Todo proceso de VcM demuestra su efecto — formativo, social, cultural o institucional — sobre personas, comunidades y territorios. Evaluable y trazable.
           </p>
-        </div>
+        </article>
 
       </div>
 
@@ -566,108 +256,108 @@
   </section>
 
   <!-- ============================================================ -->
-  <!-- CURSOS -->
+  <!-- LOS CURSOS -->
   <!-- ============================================================ -->
-  <section id="cursos" style="padding: 80px 20px 96px; background: var(--vcm-bg);">
-    <div class="max-w-6xl mx-auto">
+  <section id="cursos" class="py-20 lg:py-24 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-      <div class="fade-up" style="max-width: 680px; margin-bottom: 44px;">
-        <span class="section-tag">Los cursos</span>
-        <h2 style="font-size:clamp(1.7rem, 3.2vw, 2.4rem); font-weight:800; color:var(--vcm-ink); margin:0 0 12px; line-height:1.18;">
+      <div class="fade-up max-w-3xl mb-14">
+        <span class="inline-block text-xs font-display font-semibold tracking-wider uppercase text-brand-600 mb-3">Los cursos</span>
+        <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-slate-900 leading-tight mb-4">
           Cuatro cursos, un mismo plan formativo
         </h2>
-        <div class="accent-line"></div>
-        <p style="color:#5e5472; font-size:1rem; line-height:1.62; margin:0;">
+        <div class="w-12 h-1 rounded-full bg-brand-500 mb-5"></div>
+        <p class="text-base sm:text-lg text-slate-600 leading-relaxed">
           El plan comienza con fundamentos abiertos a toda la comunidad y avanza hacia cursos específicos para el quehacer académico. Puedes tomar los cursos por separado o completar la ruta entera.
         </p>
       </div>
 
-      <div class="grid md:grid-cols-2 gap-5" id="courses-grid">
+      <div class="grid gap-6 md:grid-cols-2 fade-up">
 
-        <!-- Curso 1 -->
-        <div class="course-card disabled" id="card-fundamentos">
-          <div class="course-cover course-cover-1">
-            <div class="course-number">01</div>
-            <div class="course-status status-proximamente">Próximamente</div>
+        <!-- Curso 01 -->
+        <article class="group relative flex flex-col rounded-2xl bg-white border border-slate-200 overflow-hidden opacity-80">
+          <div class="relative h-40 cover-01 cover-pattern">
+            <div class="absolute top-4 left-5 w-9 h-9 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center font-display font-extrabold text-white">01</div>
+            <div class="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-slate-900/40 backdrop-blur-sm border border-white/25 text-white text-[10px] font-semibold uppercase tracking-wider">Próximamente</div>
           </div>
-          <div class="course-body">
-            <div class="course-audience">Toda la comunidad UMCE</div>
-            <h3 class="course-title">Fundamentos para una Universidad Pública Transformadora</h3>
-            <p class="course-description">
+          <div class="p-6 flex flex-col flex-1">
+            <div class="text-[11px] font-display font-semibold uppercase tracking-wider text-brand-600 mb-2">Toda la comunidad UMCE</div>
+            <h3 class="font-display font-bold text-lg text-slate-900 leading-snug mb-3">Fundamentos para una Universidad Pública Transformadora</h3>
+            <p class="text-sm text-slate-600 leading-relaxed mb-4 flex-1">
               Fundamentos conceptuales, principios orientadores y sentido público de la Vinculación con el Medio. El punto de partida del plan.
             </p>
-            <div class="course-meta">
-              <span class="course-meta-item">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                2 horas aprox.
+            <div class="flex items-center gap-4 pt-4 border-t border-slate-100 text-xs text-slate-500">
+              <span class="inline-flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                2 h aprox.
               </span>
-              <span class="course-meta-item">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <span class="inline-flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 Autoformación
               </span>
             </div>
-            <span class="course-cta">
+            <div class="mt-4 text-sm font-display font-semibold text-slate-400">
               Landing en desarrollo
-            </span>
+            </div>
           </div>
-        </div>
+        </article>
 
-        <!-- Curso 2 -->
-        <div class="course-card disabled" id="card-02">
-          <div class="course-cover course-cover-2">
-            <div class="course-number">02</div>
-            <div class="course-status status-proximamente">Próximamente</div>
+        <!-- Curso 02 -->
+        <article class="group relative flex flex-col rounded-2xl bg-white border border-slate-200 overflow-hidden opacity-80">
+          <div class="relative h-40 cover-02 cover-pattern">
+            <div class="absolute top-4 left-5 w-9 h-9 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center font-display font-extrabold text-white">02</div>
+            <div class="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-slate-900/40 backdrop-blur-sm border border-white/25 text-white text-[10px] font-semibold uppercase tracking-wider">Próximamente</div>
           </div>
-          <div class="course-body">
-            <div class="course-audience">Comunidad UMCE</div>
-            <h3 class="course-title">Prácticas de Vinculación: del aula al territorio</h3>
-            <p style="font-size:0.7rem; color:#a090c0; font-weight:500; margin:-6px 0 10px; letter-spacing:0.02em;">Nombre provisional · se valida con VcM</p>
-            <p class="course-description">
+          <div class="p-6 flex flex-col flex-1">
+            <div class="text-[11px] font-display font-semibold uppercase tracking-wider text-brand-600 mb-2">Comunidad UMCE</div>
+            <h3 class="font-display font-bold text-lg text-slate-900 leading-snug mb-1">Prácticas de Vinculación: del aula al territorio</h3>
+            <div class="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-3">Nombre provisional · se valida con VcM</div>
+            <p class="text-sm text-slate-600 leading-relaxed mb-4 flex-1">
               Profundización sobre cómo la Vinculación con el Medio se hace práctica en la docencia, la investigación y las acciones comunitarias.
             </p>
-            <span class="course-cta">
+            <div class="mt-auto text-sm font-display font-semibold text-slate-400">
               En diseño curricular
-            </span>
+            </div>
           </div>
-        </div>
+        </article>
 
-        <!-- Curso 3 -->
-        <div class="course-card disabled" id="card-03">
-          <div class="course-cover course-cover-3">
-            <div class="course-number">03</div>
-            <div class="course-status status-proximamente">Próximamente</div>
+        <!-- Curso 03 -->
+        <article class="group relative flex flex-col rounded-2xl bg-white border border-slate-200 overflow-hidden opacity-80">
+          <div class="relative h-40 cover-03 cover-pattern">
+            <div class="absolute top-4 left-5 w-9 h-9 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center font-display font-extrabold text-white">03</div>
+            <div class="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-slate-900/40 backdrop-blur-sm border border-white/25 text-white text-[10px] font-semibold uppercase tracking-wider">Próximamente</div>
           </div>
-          <div class="course-body">
-            <div class="course-audience">Académicas y académicos</div>
-            <h3 class="course-title">Docencia con el medio: articulación VcM en el aula</h3>
-            <p style="font-size:0.7rem; color:#a090c0; font-weight:500; margin:-6px 0 10px; letter-spacing:0.02em;">Nombre provisional · se valida con VcM</p>
-            <p class="course-description">
+          <div class="p-6 flex flex-col flex-1">
+            <div class="text-[11px] font-display font-semibold uppercase tracking-wider text-brand-600 mb-2">Académicas y académicos</div>
+            <h3 class="font-display font-bold text-lg text-slate-900 leading-snug mb-1">Docencia con el medio: articulación VcM en el aula</h3>
+            <div class="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-3">Nombre provisional · se valida con VcM</div>
+            <p class="text-sm text-slate-600 leading-relaxed mb-4 flex-1">
               Herramientas para que la docencia universitaria articule sus aprendizajes con las necesidades, saberes y espacios del territorio.
             </p>
-            <span class="course-cta">
+            <div class="mt-auto text-sm font-display font-semibold text-slate-400">
               En diseño curricular
-            </span>
+            </div>
           </div>
-        </div>
+        </article>
 
-        <!-- Curso 4 -->
-        <div class="course-card disabled" id="card-04">
-          <div class="course-cover course-cover-4">
-            <div class="course-number">04</div>
-            <div class="course-status status-proximamente">Próximamente</div>
+        <!-- Curso 04 -->
+        <article class="group relative flex flex-col rounded-2xl bg-white border border-slate-200 overflow-hidden opacity-80">
+          <div class="relative h-40 cover-04 cover-pattern">
+            <div class="absolute top-4 left-5 w-9 h-9 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center font-display font-extrabold text-white">04</div>
+            <div class="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-slate-900/40 backdrop-blur-sm border border-white/25 text-white text-[10px] font-semibold uppercase tracking-wider">Próximamente</div>
           </div>
-          <div class="course-body">
-            <div class="course-audience">Académicas y académicos</div>
-            <h3 class="course-title">Investigación pertinente y situada</h3>
-            <p style="font-size:0.7rem; color:#a090c0; font-weight:500; margin:-6px 0 10px; letter-spacing:0.02em;">Nombre provisional · se valida con VcM</p>
-            <p class="course-description">
+          <div class="p-6 flex flex-col flex-1">
+            <div class="text-[11px] font-display font-semibold uppercase tracking-wider text-brand-600 mb-2">Académicas y académicos</div>
+            <h3 class="font-display font-bold text-lg text-slate-900 leading-snug mb-1">Investigación pertinente y situada</h3>
+            <div class="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-3">Nombre provisional · se valida con VcM</div>
+            <p class="text-sm text-slate-600 leading-relaxed mb-4 flex-1">
               Investigación colaborativa con actores estratégicos del territorio, orientada a necesidades reales y con retorno del conocimiento al entorno.
             </p>
-            <span class="course-cta">
+            <div class="mt-auto text-sm font-display font-semibold text-slate-400">
               En diseño curricular
-            </span>
+            </div>
           </div>
-        </div>
+        </article>
 
       </div>
 
@@ -677,52 +367,51 @@
   <!-- ============================================================ -->
   <!-- FOOTER -->
   <!-- ============================================================ -->
-  <footer style="background: #1a0d2e; color: white; padding: 60px 20px 32px;">
-    <div class="max-w-6xl mx-auto">
-      <div class="grid md:grid-cols-3 gap-10" style="margin-bottom:40px;">
+  <footer class="bg-slate-900 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-10 md:grid-cols-3 mb-12">
         <div>
-          <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
-            <div class="nav-logo-mark">VcM</div>
-            <div style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:1rem;">Plan Formativo VcM</div>
+          <div class="flex items-center gap-3 mb-4">
+            <img src="/assets/isologo-blanco.png" alt="UMCE" class="h-9 w-auto">
+            <div class="font-display font-bold text-base">Plan Formativo VcM</div>
           </div>
-          <p style="color:rgba(255,255,255,0.62); font-size:0.88rem; line-height:1.6; margin:0;">
-            Plan formativo institucional de la Universidad Metropolitana de Ciencias de la Educación para la formación en Vinculación con el Medio de toda la comunidad universitaria.
+          <p class="text-sm text-slate-400 leading-relaxed">
+            Plan institucional de la Universidad Metropolitana de Ciencias de la Educación para la formación en Vinculación con el Medio de toda la comunidad universitaria.
           </p>
         </div>
         <div>
-          <div style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:0.88rem; margin-bottom:14px;">Explorar</div>
-          <div style="display:flex; flex-direction:column; gap:10px;">
-            <a href="#cursos" style="color:rgba(255,255,255,0.62); font-size:0.87rem; text-decoration:none;">Los cursos del plan</a>
-            <a href="#plan" style="color:rgba(255,255,255,0.62); font-size:0.87rem; text-decoration:none;">Conocer el plan</a>
+          <div class="font-display font-semibold text-sm mb-4">Explorar</div>
+          <div class="space-y-2.5">
+            <a href="#cursos" class="block text-sm text-slate-400 hover:text-white transition-colors">Los cursos del plan</a>
+            <a href="#plan" class="block text-sm text-slate-400 hover:text-white transition-colors">Conocer el plan</a>
           </div>
         </div>
         <div>
-          <div style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:0.88rem; margin-bottom:14px;">Institucional</div>
-          <div style="display:flex; flex-direction:column; gap:10px;">
-            <a href="https://www.umce.cl" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.62); font-size:0.87rem; text-decoration:none;">UMCE</a>
-            <a href="https://www.umce.cl/vinculacion" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.62); font-size:0.87rem; text-decoration:none;">Vinculación con el Medio UMCE</a>
-            <a href="https://www.umce.cl/universidad/gobierno-central/dir-vinculacion-medio-y-extension/" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.62); font-size:0.87rem; text-decoration:none;">Dirección de VcM y Extensión</a>
-            <a href="https://www.umce.cl/universidad/gobierno-central/dir-docencia/" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.62); font-size:0.87rem; text-decoration:none;">Dirección de Docencia</a>
+          <div class="font-display font-semibold text-sm mb-4">Institucional</div>
+          <div class="space-y-2.5">
+            <a href="https://www.umce.cl" target="_blank" rel="noopener" class="block text-sm text-slate-400 hover:text-white transition-colors">UMCE</a>
+            <a href="https://www.umce.cl/vinculacion" target="_blank" rel="noopener" class="block text-sm text-slate-400 hover:text-white transition-colors">Vinculación con el Medio UMCE</a>
+            <a href="https://www.umce.cl/universidad/gobierno-central/dir-vinculacion-medio-y-extension/" target="_blank" rel="noopener" class="block text-sm text-slate-400 hover:text-white transition-colors">Dirección de VcM y Extensión</a>
+            <a href="https://www.umce.cl/universidad/gobierno-central/dir-docencia/" target="_blank" rel="noopener" class="block text-sm text-slate-400 hover:text-white transition-colors">Dirección de Docencia</a>
           </div>
         </div>
       </div>
-      <div style="padding-top:24px; border-top:1px solid rgba(255,255,255,0.10); display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; color:rgba(255,255,255,0.45); font-size:0.82rem;">
-        <div>© 2026 UMCE · Universidad Metropolitana de Ciencias de la Educación</div>
+      <div class="pt-6 border-t border-slate-800 flex flex-wrap gap-3 justify-between text-xs text-slate-500">
+        <div>© 2026 Universidad Metropolitana de Ciencias de la Educación</div>
         <div>Plan Formativo VcM · desarrollado por UDFV</div>
       </div>
     </div>
   </footer>
 
   <script>
-    // ---- Nav scroll shadow ----
-    const nav = document.getElementById('nav-bar');
+    // Nav shadow on scroll
+    const nav = document.getElementById('nav');
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 12) nav.classList.add('scrolled');
-      else nav.classList.remove('scrolled');
+      nav.classList.toggle('scrolled', window.scrollY > 8);
     });
 
-    // ---- Fade up on scroll ----
-    const io = new IntersectionObserver((entries) => {
+    // Fade-up on scroll
+    const io = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) {
           e.target.classList.add('visible');
@@ -732,129 +421,97 @@
     }, { threshold: 0.12 });
     document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
 
-    // ---- Loading hide ----
+    // Loading hide
     window.addEventListener('load', () => {
       setTimeout(() => document.getElementById('loading').classList.add('hidden'), 300);
     });
 
     // ============================================================
-    // p5.js — FLOW FIELD MARMOLADO VIOLETA + AZUL
-    // Partículas siguen un campo de Perlin noise dejando trazos
-    // finos que se entrelazan como pinceladas de tinta sobre agua.
-    // Dos familias (violeta / azul) que conviven sin fundirse
-    // — metáfora visual del diálogo universidad ↔ territorio.
+    // p5.js — FLOW FIELD marmolado violeta + azul UMCE
+    // Partículas siguen un campo Perlin 3D evolucionando muy lento,
+    // dejando trazos como pinceladas de tinta sobre agua.
     // ============================================================
     const sketch = function(p) {
       let particles = [];
-      const COUNT = 420;
-      // Paletas (variantes desde la base VcM)
+      const COUNT = 380;
       const VIOLETS = [
-        [140, 70, 190],   // violeta medio
-        [170, 90, 210],   // violeta luminoso
-        [110, 50, 165],   // violeta profundo
-        [190, 120, 220]   // lila
+        [140, 70, 190], [170, 90, 210], [110, 50, 165], [190, 120, 220]
       ];
       const BLUES = [
-        [90, 130, 230],   // azul UMCE luminoso
-        [120, 160, 245],  // azul claro
-        [60, 100, 200],   // azul profundo
-        [150, 180, 240]   // azul grisáceo
+        [90, 130, 230], [120, 160, 245], [60, 100, 200], [150, 180, 240]
       ];
-      let zoff = 0;      // tercer eje del noise para evolucionar el campo
-      let seededOnce = false;
+      let zoff = 0;
 
       function makeParticle(fresh = false) {
         const family = p.random() < 0.52 ? 'v' : 'b';
         const palette = family === 'v' ? VIOLETS : BLUES;
-        const col = palette[Math.floor(p.random() * palette.length)];
         return {
           x: fresh ? p.random(p.width) : p.random(-40, p.width + 40),
           y: fresh ? p.random(p.height) : p.random(-40, p.height + 40),
-          vx: 0,
-          vy: 0,
-          col,
+          vx: 0, vy: 0,
+          col: palette[Math.floor(p.random() * palette.length)],
           family,
           life: p.random(180, 520),
           age: 0,
-          weight: p.random(0.6, 1.7),
+          weight: p.random(0.6, 1.6),
           alpha: p.random(8, 22)
         };
       }
 
       p.setup = function() {
-        const container = document.getElementById('p5-hero-canvas');
-        const cnv = p.createCanvas(container.offsetWidth || p.windowWidth, container.offsetHeight || p.windowHeight);
-        cnv.parent('p5-hero-canvas');
+        const el = document.getElementById('hero-canvas');
+        const cnv = p.createCanvas(el.offsetWidth || p.windowWidth, el.offsetHeight || p.windowHeight);
+        cnv.parent('hero-canvas');
         p.colorMode(p.RGB, 255, 255, 255, 255);
         p.noiseDetail(3, 0.55);
-
-        // Fondo base muy oscuro para que pinceladas violetas/azules canten
         p.background(20, 10, 36);
-
         for (let i = 0; i < COUNT; i++) particles.push(makeParticle(true));
-        seededOnce = true;
       };
 
       p.draw = function() {
-        // Capa de "respiración": tinta muy sutil sobre lo pintado,
-        // no borra del todo → acumulación tipo mármol.
         p.noStroke();
         p.fill(20, 10, 36, 4);
         p.rect(0, 0, p.width, p.height);
 
-        // Evolución del campo (muy lenta → sensación hipnótica)
         zoff += 0.0012;
-
-        const scl = 0.0028; // escala espacial del noise
-        const forceScale = 1.6;
+        const scl = 0.0028;
+        const F = 1.6;
 
         for (const pt of particles) {
-          // Dos campos ligeramente desplazados para que violetas y azules
-          // sigan rutas distintas y se entrelacen sin fundirse
           const ox = pt.family === 'v' ? 0 : 2048;
           const angle = p.noise(pt.x * scl + ox, pt.y * scl, zoff) * p.TWO_PI * 2.2;
-          const fx = Math.cos(angle) * forceScale;
-          const fy = Math.sin(angle) * forceScale;
+          pt.vx = pt.vx * 0.86 + Math.cos(angle) * F * 0.14;
+          pt.vy = pt.vy * 0.86 + Math.sin(angle) * F * 0.14;
+          const nx = pt.x + pt.vx, ny = pt.y + pt.vy;
 
-          pt.vx = pt.vx * 0.86 + fx * 0.14;
-          pt.vy = pt.vy * 0.86 + fy * 0.14;
-
-          const nx = pt.x + pt.vx;
-          const ny = pt.y + pt.vy;
-
-          // Pincelada (segmento corto) con alpha bajo → trazos finos
           p.stroke(pt.col[0], pt.col[1], pt.col[2], pt.alpha);
           p.strokeWeight(pt.weight);
           p.line(pt.x, pt.y, nx, ny);
 
-          pt.x = nx;
-          pt.y = ny;
-          pt.age++;
+          pt.x = nx; pt.y = ny; pt.age++;
 
-          // Respawn si agota su vida o sale del lienzo
           if (pt.age > pt.life ||
               pt.x < -60 || pt.x > p.width + 60 ||
               pt.y < -60 || pt.y > p.height + 60) {
-            const fresh = makeParticle(false);
-            Object.assign(pt, fresh);
+            Object.assign(pt, makeParticle(false));
           }
         }
 
-        // Viñeta muy sutil para profundidad en los bordes
-        const vg = p.drawingContext;
-        const grad = vg.createRadialGradient(
+        // Viñeta sutil en bordes
+        const ctx = p.drawingContext;
+        const g = ctx.createRadialGradient(
           p.width * 0.5, p.height * 0.55, p.min(p.width, p.height) * 0.35,
           p.width * 0.5, p.height * 0.55, p.max(p.width, p.height) * 0.75
         );
-        grad.addColorStop(0, 'rgba(20,10,36,0)');
-        grad.addColorStop(1, 'rgba(10,5,22,0.45)');
-        vg.fillStyle = grad;
-        vg.fillRect(0, 0, p.width, p.height);
+        g.addColorStop(0, 'rgba(20,10,36,0)');
+        g.addColorStop(1, 'rgba(10,5,22,0.42)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, p.width, p.height);
       };
 
       p.windowResized = function() {
-        const container = document.getElementById('p5-hero-canvas');
-        p.resizeCanvas(container.offsetWidth || p.windowWidth, container.offsetHeight || p.windowHeight);
+        const el = document.getElementById('hero-canvas');
+        p.resizeCanvas(el.offsetWidth || p.windowWidth, el.offsetHeight || p.windowHeight);
         p.background(20, 10, 36);
       };
     };
