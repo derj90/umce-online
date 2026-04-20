@@ -9,7 +9,7 @@
   "duracion_horas": 2,
   "modalidad": "Autoformación asincrónica · online",
   "estado": "en-produccion",
-  "estado_detalle": "1 de 5 secciones producida (Sección 1 disponible como cápsula). Secciones 2 a 5 en desarrollo.",
+  "estado_detalle": "1 de 5 secciones producida (Sección 1 disponible). Secciones 2 a 5 en desarrollo.",
   "banner_image": "/assets/vcm/banner-01-fundamentos.webp",
   "moodle_course_id": 313,
   "hero": {
@@ -33,7 +33,60 @@
         "estado": "producido"
       },
       "actividad_cierre": "Pregunta de selección múltiple sobre la definición de VcM.",
-      "estado": "disponible"
+      "estado": "disponible",
+      "contenido": {
+        "intro": "La Vinculación con el Medio (VcM) es una función esencial de la educación superior. Implica una relación sistemática y bidireccional entre la universidad y su entorno, orientada al aprendizaje mutuo, la construcción de conocimiento situado y la transformación social.",
+        "bloques": [
+          {
+            "titulo": "¿Por qué importa hablar de Vinculación con el Medio hoy?",
+            "texto": "En un mundo cada vez más interconectado y desafiante, las universidades tienen un rol esencial que va más allá de enseñar e investigar. La Vinculación con el Medio es una función clave que permite a la universidad dialogar con su entorno, aprender de él y contribuir a transformarlo. Junto a la docencia y la investigación, es una función sustantiva que fortalece el quehacer universitario y aporta directamente a la construcción de valor público."
+          },
+          {
+            "titulo": "El enfoque de la CNA",
+            "texto": "La Comisión Nacional de Acreditación (CNA) define la Vinculación con el Medio como una relación **bidireccional**, **pertinente** y **con impacto**, que debe ser planificada, evaluada y mejorada continuamente. No se trata de actividades aisladas, sino de procesos sistemáticos con aseguramiento de la calidad."
+          },
+          {
+            "titulo": "El enfoque del CUECH",
+            "texto": "El Consorcio de Universidades del Estado de Chile (CUECH) enfatiza su **carácter público**, su **compromiso con los territorios** y su **aporte a la democracia**. La VcM permite fortalecer ese compromiso a través de acciones concretas que responden a las necesidades y saberes del entorno."
+          },
+          {
+            "titulo": "La perspectiva de la UMCE: formación y transformación",
+            "texto": "En la UMCE, la Vinculación con el Medio es una estrategia formativa que se integra al currículo. Su objetivo no es solo enseñar, sino formar personas comprometidas, críticas y transformadoras. Esto se expresa, por ejemplo, en asignaturas que articulan contenidos con necesidades reales del entorno, o en prácticas profesionales que fortalecen tanto el aprendizaje como el compromiso social."
+          },
+          {
+            "titulo": "Lo que NO es Vinculación con el Medio",
+            "texto": "A diferencia de la extensión tradicional o la difusión de conocimientos, la Vinculación con el Medio se basa en el **diálogo**, en el **aprendizaje mutuo** y en el **reconocimiento de saberes diversos**. Es una relación que transforma a la universidad… y también a su entorno."
+          },
+          {
+            "titulo": "Una oportunidad pedagógica y estratégica",
+            "texto": "La Vinculación con el Medio es una oportunidad pedagógica y estratégica. Reconocer su valor es clave para avanzar hacia una universidad pública más justa, democrática y comprometida."
+          }
+        ],
+        "recurso_embed": {
+          "tipo": "genially",
+          "url": "https://view.genially.com/69177ed57b27ff6e88ad5313",
+          "titulo": "Cápsula audiovisual: ¿Qué es la Vinculación con el Medio?",
+          "aspect": "16:9"
+        },
+        "quiz": {
+          "titulo": "Actividad de cierre",
+          "instruccion": "Responde para verificar tu comprensión. Puedes reintentarlo si lo necesitas.",
+          "preguntas": [
+            {
+              "enunciado": "¿Cuál de los siguientes elementos define mejor la Vinculación con el Medio?",
+              "opciones": [
+                "Acciones de difusión cultural",
+                "Relación unidireccional con la comunidad",
+                "Voluntariados sin evaluación",
+                "Relación bidireccional, formativa y transformadora con el entorno"
+              ],
+              "correcta": 3,
+              "retroalimentacion_correcta": "Correcto. La VcM es una relación bidireccional que transforma tanto a la universidad como a su entorno, con sentido formativo y evaluable.",
+              "retroalimentacion_incorrecta": "Revisa el contenido: la VcM no se reduce a difusión cultural, extensión unilateral ni voluntariado. Es una relación recíproca, planificada y evaluable."
+            }
+          ]
+        }
+      }
     },
     {
       "numero": 2,

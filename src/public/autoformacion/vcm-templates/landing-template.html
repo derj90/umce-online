@@ -271,28 +271,44 @@
 
       // Secciones
       document.getElementById('secciones-list').innerHTML = data.secciones.map(s => {
-        const estadoLabel = s.estado === 'disponible'
+        const isDisponible = s.estado === 'disponible';
+        const estadoLabel = isDisponible
           ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-50 text-brand-700 text-[11px] font-semibold uppercase tracking-wider"><span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span>Disponible</span>'
           : '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 text-[11px] font-semibold uppercase tracking-wider">En desarrollo</span>';
-        return `
-          <li class="group p-6 rounded-2xl bg-white border border-slate-200 hover:border-brand-200 hover:shadow-md transition-all">
-            <div class="flex items-start gap-5">
-              <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center font-display font-extrabold">${String(s.numero).padStart(2,'0')}</div>
-              <div class="flex-1 min-w-0">
-                <div class="flex flex-wrap items-start justify-between gap-3 mb-2">
-                  <h3 class="font-display font-bold text-lg text-slate-900 leading-snug">${s.titulo}</h3>
-                  ${estadoLabel}
-                </div>
-                <p class="text-sm text-slate-600 leading-relaxed mb-3">${s.objetivo}</p>
-                <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
-                  <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>${s.recurso_principal.tipo}${s.recurso_principal.duracion ? ' · ' + s.recurso_principal.duracion : ''}</span>
-                  <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H1l8-8 8 8h-8v10"/></svg>${s.actividad_cierre}</span>
-                </div>
+        const cta = isDisponible
+          ? `<span class="mt-3 inline-flex items-center gap-1.5 text-sm font-display font-semibold text-brand-600 group-hover:gap-2.5 transition-all">Entrar a la sección <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>`
+          : '';
+        const inner = `
+          <div class="flex items-start gap-5">
+            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center font-display font-extrabold">${String(s.numero).padStart(2,'0')}</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-start justify-between gap-3 mb-2">
+                <h3 class="font-display font-bold text-lg text-slate-900 leading-snug">${s.titulo}</h3>
+                ${estadoLabel}
               </div>
+              <p class="text-sm text-slate-600 leading-relaxed mb-3">${s.objetivo}</p>
+              <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
+                <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>${s.recurso_principal.tipo}${s.recurso_principal.duracion ? ' · ' + s.recurso_principal.duracion : ''}</span>
+                <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H1l8-8 8 8h-8v10"/></svg>${s.actividad_cierre}</span>
+              </div>
+              ${cta}
             </div>
-          </li>
+          </div>
         `;
+        const base = 'group block p-6 rounded-2xl bg-white border border-slate-200 transition-all';
+        return isDisponible
+          ? `<li><a href="/vcm/${data.slug}/seccion/${s.numero}" class="${base} hover:border-brand-300 hover:shadow-lg hover:shadow-brand-900/5 hover:-translate-y-0.5">${inner}</a></li>`
+          : `<li class="${base} opacity-75">${inner}</li>`;
       }).join('');
+
+      // CTA principal "Comenzar el curso" → primera sección disponible
+      const primera = data.secciones.find(s => s.estado === 'disponible');
+      if (primera) {
+        const ctaPrim = document.createElement('div');
+        ctaPrim.className = 'mt-10 flex justify-center';
+        ctaPrim.innerHTML = `<a href="/vcm/${data.slug}/seccion/${primera.numero}" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-500 hover:bg-brand-600 text-white font-display font-semibold text-base transition-colors shadow-lg shadow-brand-900/20">Comenzar por Sección ${primera.numero} <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>`;
+        document.getElementById('secciones-list').after(ctaPrim);
+      }
 
       // Activate fade-ups
       document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
