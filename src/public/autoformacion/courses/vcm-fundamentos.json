@@ -1,0 +1,91 @@
+{
+  "slug": "fundamentos",
+  "plan": "vcm",
+  "orden": 1,
+  "title": "Fundamentos para una Universidad Pública Transformadora",
+  "subtitle": "Vinculación con el Medio · Módulo 1: Fundamentos y sentidos",
+  "audiencia": "Toda la comunidad UMCE",
+  "audiencia_detalle": "Académicas, académicos, estudiantes y funcionariado universitario. No requiere conocimientos previos sobre Vinculación con el Medio.",
+  "duracion_horas": 2,
+  "modalidad": "Autoformación asincrónica · online",
+  "estado": "en-produccion",
+  "estado_detalle": "1 de 5 secciones producida (Sección 1 disponible como cápsula). Secciones 2 a 5 en desarrollo.",
+  "banner_image": "/assets/vcm/banner-01-fundamentos.webp",
+  "moodle_course_id": 313,
+  "hero": {
+    "eyebrow": "Curso 01 · Plan Formativo VcM",
+    "description": "Comprender los fundamentos conceptuales, principios orientadores y sentido público de la Vinculación con el Medio, valorando su rol en la educación superior pública."
+  },
+  "objetivo_general": "Comprender los fundamentos conceptuales, principios orientadores y sentido público de la Vinculación con el Medio (VcM), valorando su rol en la educación superior pública.",
+  "aprendizajes_esperados": [
+    "Reconocer qué es y qué no es Vinculación con el Medio, diferenciando mitos de criterios reales.",
+    "Comprender el enfoque institucional de la UMCE como estrategia formativa y compromiso público.",
+    "Aplicar principios y sentido público de la VcM en su propia práctica, integrando experiencias bidireccionales, pertinentes y evaluables."
+  ],
+  "secciones": [
+    {
+      "numero": 1,
+      "titulo": "¿Qué es la Vinculación con el Medio?",
+      "objetivo": "Introducir las nociones clave de la VcM, su diferencia con otras prácticas (difusión, extensión), sus principios y su valor formativo.",
+      "recurso_principal": {
+        "tipo": "Cápsula audiovisual animada",
+        "duracion": "4 min",
+        "estado": "producido"
+      },
+      "actividad_cierre": "Pregunta de selección múltiple sobre la definición de VcM.",
+      "estado": "disponible"
+    },
+    {
+      "numero": 2,
+      "titulo": "Política institucional de VcM en la UMCE",
+      "objetivo": "Comprender los distintos enfoques institucionales sobre la VcM (CNA, CUECH, UMCE) y su articulación con el proyecto formativo de la UMCE.",
+      "recurso_principal": {
+        "tipo": "Presentación interactiva (5 diapositivas navegables)",
+        "estado": "en-desarrollo"
+      },
+      "actividad_cierre": "Actividad final de verificación de comprensión.",
+      "estado": "en-desarrollo"
+    },
+    {
+      "numero": 3,
+      "titulo": "Principios orientadores",
+      "objetivo": "Comprender y aplicar los cuatro principios clave de la VcM — reciprocidad, bidireccionalidad, pertinencia e impacto — relacionándolos con acciones concretas.",
+      "recurso_principal": {
+        "tipo": "Infografía interactiva",
+        "estado": "en-desarrollo"
+      },
+      "actividad_cierre": "Juego de clasificación (arrastrar y soltar): identificar qué principio orienta cada acción real.",
+      "estado": "en-desarrollo"
+    },
+    {
+      "numero": 4,
+      "titulo": "Sentido público de la VcM",
+      "objetivo": "Reflexionar sobre el valor público de la VcM en universidades estatales — justicia social, equidad territorial y desarrollo educativo — desde la formación inicial y continua.",
+      "recurso_principal": {
+        "tipo": "Presentación interactiva (5 diapositivas) + video de testimonio (2-3 min)",
+        "estado": "en-desarrollo"
+      },
+      "actividad_cierre": "Foro breve reflexivo: ¿cómo se expresa el sentido público de la VcM en tu unidad académica?",
+      "estado": "en-desarrollo"
+    },
+    {
+      "numero": 5,
+      "titulo": "Mitos comunes sobre la Vinculación con el Medio",
+      "objetivo": "Identificar y desmontar los malentendidos frecuentes que dificultan una comprensión profunda y práctica de la VcM.",
+      "recurso_principal": {
+        "tipo": "Microlección interactiva",
+        "estado": "en-desarrollo"
+      },
+      "actividad_cierre": "Quiz interactivo: detectar mitos sobre la VcM.",
+      "estado": "en-desarrollo"
+    }
+  ],
+  "certificacion": {
+    "tipo": "por-definir",
+    "nota": "Condiciones de aprobación y formato del certificado por definir con equipo VcM."
+  },
+  "autoria": {
+    "diseno_instruccional": "Equipo VcM UMCE",
+    "desarrollo_tecnico": "UDFV · Unidad de Desarrollo y Formación Virtual"
+  }
+}
