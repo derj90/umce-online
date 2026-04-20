@@ -29,15 +29,12 @@ app.use((req, res, next) => {
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   // p5.js uses new Function() internally (accessibility/color_namer). Pages
   // que embeben p5 o Tailwind CDN (JIT) necesitan 'unsafe-eval' y el
-  // dominio cdn.tailwindcss.com. Rutas /vcm/:slug/seccion/* embeben Genially.
-  // Resto del sitio mantiene CSP estricta.
+  // dominio cdn.tailwindcss.com. Resto del sitio mantiene CSP estricta.
   const needsEval = req.path === '/vcm-panel' || req.path === '/vcm' || req.path.startsWith('/vcm/') || req.path.startsWith('/sustentabilidad2026');
-  const needsGenially = req.path.startsWith('/vcm/') && req.path.includes('/seccion/');
   const scriptSrc = needsEval
     ? "'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.tailwindcss.com https://plausible.io"
     : "'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://plausible.io";
-  const frameSrc = needsGenially ? "'self' https://view.genially.com https://*.genially.com" : "'self'";
-  res.setHeader('Content-Security-Policy', `default-src 'self'; script-src ${scriptSrc}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' https://plausible.io https://lrs.udfv.cloud; frame-src ${frameSrc}; frame-ancestors 'none';`);
+  res.setHeader('Content-Security-Policy', `default-src 'self'; script-src ${scriptSrc}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' https://plausible.io https://lrs.udfv.cloud; frame-ancestors 'none';`);
   next();
 });
 
@@ -6612,40 +6609,43 @@ app.get('/formacion', (req, res) => res.redirect(301, '/formacion-docente'));
 app.get('/vcm', (req, res) => res.redirect(301, '/vcm-panel'));
 app.get('/vcm-panel', (req, res) => res.sendFile(path.join(__dirname, 'public', 'vcm-panel.html')));
 
-// Landing pre-inscripción por curso — parametrizada desde JSON
+// Landing pre-inscripción por curso — reutiliza el landing-template.html
+// genérico de autoformación (patrón modelo-educativo). El archivo JSON
+// está en autoformacion/courses/vcm-<slug>.json.
 app.get('/vcm/:slug', (req, res) => {
   const slug = req.params.slug;
   if (slug.includes('.') || slug.includes('/')) return res.status(404).send('Not found');
-  const coursePath = path.join(__dirname, 'public', 'autoformacion', 'courses', `vcm-${slug}.json`);
-  if (!fs.existsSync(coursePath)) {
+  const fullSlug = `vcm-${slug}`;
+  const config = loadCourseConfig(fullSlug);
+  if (!config) {
     const notFoundPath = path.join(__dirname, 'public', '404.html');
     if (fs.existsSync(notFoundPath)) return res.status(404).sendFile(notFoundPath);
     return res.status(404).send('Curso VcM no encontrado');
   }
-  const templatePath = path.join(__dirname, 'public', 'autoformacion', 'vcm-templates', 'landing-template.html');
-  if (!fs.existsSync(templatePath)) return res.status(500).send('Template VcM no disponible');
+  const templatePath = path.join(__dirname, 'public', 'autoformacion', 'landing-template.html');
+  if (!fs.existsSync(templatePath)) return res.status(500).send('Template no disponible');
   let html = fs.readFileSync(templatePath, 'utf8');
-  html = html.replace('<!--CURSO_SLUG_INJECT-->', `<script>window.CURSO_SLUG = ${JSON.stringify(slug)};</script>`);
+  // El landing-template no tiene marker; inyectamos el slug antes del
+  // primer <script> para que quede definido antes del fallback que
+  // infiere el slug desde pathParts.
+  const inject = `<script>window.COURSE_SLUG = ${JSON.stringify(fullSlug)};</script>\n`;
+  html = html.replace('</head>', `${inject}</head>`);
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
   res.send(html);
 });
 
-// Sección navegable de un curso — contenido + actividad, parametrizado desde JSON
-app.get('/vcm/:slug/seccion/:num', (req, res) => {
-  const { slug, num } = req.params;
-  if (slug.includes('.') || slug.includes('/') || !/^\d+$/.test(num)) return res.status(404).send('Not found');
-  const coursePath = path.join(__dirname, 'public', 'autoformacion', 'courses', `vcm-${slug}.json`);
-  if (!fs.existsSync(coursePath)) {
-    const notFoundPath = path.join(__dirname, 'public', '404.html');
-    if (fs.existsSync(notFoundPath)) return res.status(404).sendFile(notFoundPath);
-    return res.status(404).send('Curso no encontrado');
-  }
-  const templatePath = path.join(__dirname, 'public', 'autoformacion', 'vcm-templates', 'seccion-template.html');
-  if (!fs.existsSync(templatePath)) return res.status(500).send('Template de sección no disponible');
+// Curso navegable (todo-en-uno) — reutiliza curso-template.html
+app.get('/vcm/:slug/curso', (req, res) => {
+  const slug = req.params.slug;
+  if (slug.includes('.') || slug.includes('/')) return res.status(404).send('Not found');
+  const fullSlug = `vcm-${slug}`;
+  const config = loadCourseConfig(fullSlug);
+  if (!config) return res.status(404).send('Curso no encontrado');
+  const templatePath = path.join(__dirname, 'public', 'autoformacion', 'curso-template.html');
+  if (!fs.existsSync(templatePath)) return res.status(500).send('Template no disponible');
   let html = fs.readFileSync(templatePath, 'utf8');
-  const ctx = { slug, seccion: parseInt(num, 10) };
-  html = html.replace('<!--CURSO_CTX_INJECT-->', `<script>window.CURSO_CTX = ${JSON.stringify(ctx)};</script>`);
+  html = html.replace('<!--COURSE_SLUG_INJECT-->', `<script>window.COURSE_SLUG = ${JSON.stringify(fullSlug)};</script>`);
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
   res.send(html);

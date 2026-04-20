@@ -1,0 +1,232 @@
+{
+  "m1": [
+    {
+      "id": "m1q1",
+      "text": "¿Cuál de los siguientes enunciados define mejor la Vinculación con el Medio?",
+      "options": [
+        { "text": "Acciones de difusión cultural realizadas por la universidad", "correct": false },
+        { "text": "Relación unidireccional en la que la universidad comparte sus conocimientos con la comunidad", "correct": false },
+        { "text": "Voluntariados sin evaluación sistemática con actores externos", "correct": false },
+        { "text": "Relación bidireccional, formativa y transformadora entre universidad y entorno", "correct": true }
+      ]
+    },
+    {
+      "id": "m1q2",
+      "text": "Según la CNA, ¿qué tres criterios debe cumplir la VcM?",
+      "options": [
+        { "text": "Bidireccionalidad, pertinencia e impacto", "correct": true },
+        { "text": "Extensión, difusión y voluntariado", "correct": false },
+        { "text": "Investigación, docencia y administración", "correct": false },
+        { "text": "Visibilidad, reconocimiento y difusión", "correct": false }
+      ]
+    },
+    {
+      "id": "m1q3",
+      "text": "Para el CUECH, ¿cuál es el sentido central de la VcM en las universidades estatales?",
+      "options": [
+        { "text": "Incrementar la cantidad de titulados que trabajan en el sector público", "correct": false },
+        { "text": "Expresar el compromiso público con los territorios y fortalecer la democracia", "correct": true },
+        { "text": "Posicionar a las universidades en rankings nacionales e internacionales", "correct": false },
+        { "text": "Reemplazar la investigación por actividades comunitarias", "correct": false }
+      ]
+    },
+    {
+      "id": "m1q4",
+      "text": "En el enfoque UMCE, la VcM se concibe principalmente como:",
+      "options": [
+        { "text": "Una actividad adicional a la docencia y la investigación", "correct": false },
+        { "text": "Una estrategia formativa integrada al currículo", "correct": true },
+        { "text": "Un área administrativa dedicada a relaciones institucionales", "correct": false },
+        { "text": "Un servicio de extensión dirigido a exalumnos", "correct": false }
+      ]
+    },
+    {
+      "id": "m1q5",
+      "text": "¿Cuál es la diferencia clave entre VcM y extensión tradicional?",
+      "options": [
+        { "text": "La VcM cuesta más recursos que la extensión", "correct": false },
+        { "text": "La VcM solo se realiza en terreno; la extensión en el campus", "correct": false },
+        { "text": "La VcM es bidireccional y basada en diálogo; la extensión tradicional fluye en un solo sentido", "correct": true },
+        { "text": "La VcM solo involucra académicos y la extensión solo estudiantes", "correct": false }
+      ]
+    }
+  ],
+  "m2": [
+    {
+      "id": "m2q1",
+      "text": "Los enfoques CNA, CUECH y UMCE sobre la VcM son:",
+      "options": [
+        { "text": "Mutuamente excluyentes: hay que elegir uno", "correct": false },
+        { "text": "Complementarios: cada uno aporta una dimensión al sentido integral de la VcM", "correct": true },
+        { "text": "Contradictorios: responden a intereses opuestos", "correct": false },
+        { "text": "Iguales en contenido, solo cambian el nombre", "correct": false }
+      ]
+    },
+    {
+      "id": "m2q2",
+      "text": "¿Cuál de los siguientes principios es DESTACADO por la CNA en su enfoque de VcM?",
+      "options": [
+        { "text": "Territorialidad", "correct": false },
+        { "text": "Democracia", "correct": false },
+        { "text": "Impacto evaluable", "correct": true },
+        { "text": "Popularidad", "correct": false }
+      ]
+    },
+    {
+      "id": "m2q3",
+      "text": "Según el CUECH, ¿qué rol juega la universidad estatal frente a su entorno?",
+      "options": [
+        { "text": "Servicio neutral que evita temas políticos y sociales", "correct": false },
+        { "text": "Transformar la sociedad desde el compromiso público, la territorialidad y la democracia", "correct": true },
+        { "text": "Cumplir estrictamente con los indicadores de acreditación", "correct": false },
+        { "text": "Promover la imagen institucional en medios masivos", "correct": false }
+      ]
+    },
+    {
+      "id": "m2q4",
+      "text": "En la UMCE, la VcM se integra al currículo porque:",
+      "options": [
+        { "text": "Es una obligación administrativa impuesta por la Vicerrectoría", "correct": false },
+        { "text": "Permite formar profesionales críticos y comprometidos desde la experiencia territorial", "correct": true },
+        { "text": "Reemplaza las horas de investigación en los programas", "correct": false },
+        { "text": "Es una estrategia de marketing institucional", "correct": false }
+      ]
+    }
+  ],
+  "m3": [
+    {
+      "id": "m3q1",
+      "text": "¿Cuáles son los CUATRO principios orientadores de la Vinculación con el Medio?",
+      "options": [
+        { "text": "Extensión, difusión, vinculación y servicio", "correct": false },
+        { "text": "Reciprocidad, bidireccionalidad, pertinencia e impacto", "correct": true },
+        { "text": "Docencia, investigación, gestión y vinculación", "correct": false },
+        { "text": "Calidad, eficiencia, eficacia y pertinencia", "correct": false }
+      ]
+    },
+    {
+      "id": "m3q2",
+      "text": "La RECIPROCIDAD en la VcM implica que:",
+      "options": [
+        { "text": "La universidad transfiere conocimientos al entorno, que los agradece", "correct": false },
+        { "text": "Ambas partes aportan, reciben y construyen valor conjuntamente, reconociendo el saber del otro", "correct": true },
+        { "text": "La comunidad debe devolver el favor a la universidad con su participación", "correct": false },
+        { "text": "La universidad compensa económicamente a los actores del entorno", "correct": false }
+      ]
+    },
+    {
+      "id": "m3q3",
+      "text": "Una investigación en terreno modifica los contenidos de una asignatura y aporta soluciones a una organización local. Este ejemplo ilustra principalmente el principio de:",
+      "options": [
+        { "text": "Reciprocidad", "correct": false },
+        { "text": "Bidireccionalidad", "correct": true },
+        { "text": "Pertinencia", "correct": false },
+        { "text": "Impacto", "correct": false }
+      ]
+    },
+    {
+      "id": "m3q4",
+      "text": "La PERTINENCIA de la VcM significa que las acciones:",
+      "options": [
+        { "text": "Responden a necesidades reales del entorno y a los propósitos institucionales", "correct": true },
+        { "text": "Son decorativas y aportan visibilidad a la universidad", "correct": false },
+        { "text": "Siguen modas académicas internacionales", "correct": false },
+        { "text": "Se ajustan al presupuesto disponible", "correct": false }
+      ]
+    },
+    {
+      "id": "m3q5",
+      "text": "El IMPACTO como principio de la VcM implica que:",
+      "options": [
+        { "text": "Siempre debe tener cobertura mediática", "correct": false },
+        { "text": "Debe demostrar efecto en personas, comunidades o territorios, siendo evaluable y trazable", "correct": true },
+        { "text": "Debe traducirse en publicaciones académicas indexadas", "correct": false },
+        { "text": "Debe generar ingresos económicos medibles", "correct": false }
+      ]
+    }
+  ],
+  "m4": [
+    {
+      "id": "m4q1",
+      "text": "¿Cuáles son los TRES ejes del sentido público de la VcM?",
+      "options": [
+        { "text": "Justicia social, equidad territorial y formación para la transformación", "correct": true },
+        { "text": "Docencia, investigación y extensión", "correct": false },
+        { "text": "Difusión, visibilidad y reconocimiento", "correct": false },
+        { "text": "Competitividad, innovación y emprendimiento", "correct": false }
+      ]
+    },
+    {
+      "id": "m4q2",
+      "text": "La justicia social en la VcM se expresa principalmente en:",
+      "options": [
+        { "text": "Actividades solidarias de caridad organizadas por la universidad", "correct": false },
+        { "text": "Reconocer saberes de comunidades históricamente excluidas y reducir desigualdades", "correct": true },
+        { "text": "Asegurar que todos los estudiantes cumplan las mismas horas de práctica", "correct": false },
+        { "text": "Ofrecer becas a los mejores estudiantes", "correct": false }
+      ]
+    },
+    {
+      "id": "m4q3",
+      "text": "La equidad territorial en la VcM supone:",
+      "options": [
+        { "text": "Aplicar los mismos proyectos en todos los territorios para garantizar igualdad", "correct": false },
+        { "text": "Reconocer la diversidad territorial y vincularse de forma situada con los contextos locales", "correct": true },
+        { "text": "Concentrar los esfuerzos en zonas urbanas de mayor población", "correct": false },
+        { "text": "Priorizar los territorios donde hay convenios institucionales previos", "correct": false }
+      ]
+    },
+    {
+      "id": "m4q4",
+      "text": "Cuando hablamos de «formación para la transformación», nos referimos a:",
+      "options": [
+        { "text": "Adaptar a los estudiantes a las demandas del mercado laboral", "correct": false },
+        { "text": "Integrar la experiencia territorial al aprendizaje para formar personas críticas y comprometidas con la transformación social", "correct": true },
+        { "text": "Transformar a los estudiantes en profesionales más competitivos que sus pares", "correct": false },
+        { "text": "Formar especialistas técnicos que apliquen soluciones estandarizadas", "correct": false }
+      ]
+    }
+  ],
+  "m5": [
+    {
+      "id": "m5q1",
+      "text": "¿Cuál de los siguientes enunciados refleja un MITO sobre la VcM?",
+      "options": [
+        { "text": "La VcM debe ser planificada y evaluable", "correct": false },
+        { "text": "La VcM articula docencia, investigación y compromiso público", "correct": false },
+        { "text": "Toda actividad externa de la universidad se considera automáticamente VcM", "correct": true },
+        { "text": "La VcM implica diálogo con saberes del territorio", "correct": false }
+      ]
+    },
+    {
+      "id": "m5q2",
+      "text": "Respecto del mito «la VcM es solo difusión», ¿qué es correcto afirmar?",
+      "options": [
+        { "text": "Difundir lo que hace la universidad sí es VcM, siempre que llegue a muchas personas", "correct": false },
+        { "text": "La VcM implica relaciones recíprocas y construcción conjunta de conocimiento, no difusión unilateral", "correct": true },
+        { "text": "La difusión y la VcM son sinónimos en el marco institucional", "correct": false },
+        { "text": "La difusión es parte central de la VcM cuando se hace por medios masivos", "correct": false }
+      ]
+    },
+    {
+      "id": "m5q3",
+      "text": "Respecto de la evaluación de la VcM:",
+      "options": [
+        { "text": "Es opcional porque el valor de la VcM es principalmente cualitativo", "correct": false },
+        { "text": "Debe medirse tanto el impacto en el entorno como el aprendizaje de los estudiantes", "correct": true },
+        { "text": "Solo la universidad debe evaluar; los actores del entorno no participan", "correct": false },
+        { "text": "Se evalúa una vez al año por motivos de acreditación", "correct": false }
+      ]
+    },
+    {
+      "id": "m5q4",
+      "text": "¿Cuál de las siguientes acciones SÍ cumple con los criterios para ser considerada VcM?",
+      "options": [
+        { "text": "Publicar en la web de la universidad un resumen de las actividades del departamento", "correct": false },
+        { "text": "Organizar un evento abierto al público con académicos invitados", "correct": false },
+        { "text": "Diseñar junto a una comunidad educativa un plan lector contextualizado y evaluar sus efectos en aprendizaje y curriculum", "correct": true },
+        { "text": "Enviar estudiantes a hacer una visita guiada a una escuela del sector", "correct": false }
+      ]
+    }
+  ]
+}

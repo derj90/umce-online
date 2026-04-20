@@ -1,144 +1,234 @@
 {
-  "slug": "fundamentos",
-  "plan": "vcm",
-  "orden": 1,
+  "slug": "vcm-fundamentos",
   "title": "Fundamentos para una Universidad Pública Transformadora",
-  "subtitle": "Vinculación con el Medio · Módulo 1: Fundamentos y sentidos",
-  "audiencia": "Toda la comunidad UMCE",
-  "audiencia_detalle": "Académicas, académicos, estudiantes y funcionariado universitario. No requiere conocimientos previos sobre Vinculación con el Medio.",
-  "duracion_horas": 2,
-  "modalidad": "Autoformación asincrónica · online",
-  "estado": "en-produccion",
-  "estado_detalle": "1 de 5 secciones producida (Sección 1 disponible). Secciones 2 a 5 en desarrollo.",
-  "banner_image": "/assets/vcm/banner-01-fundamentos.webp",
-  "moodle_course_id": 313,
-  "hero": {
-    "eyebrow": "Curso 01 · Plan Formativo VcM",
-    "description": "Comprender los fundamentos conceptuales, principios orientadores y sentido público de la Vinculación con el Medio, valorando su rol en la educación superior pública."
+  "subtitle": "Módulo 1 del Plan Formativo en Vinculación con el Medio UMCE",
+  "description": "Comprende los fundamentos conceptuales, los principios orientadores y el sentido público de la Vinculación con el Medio (VcM). Este curso es el punto de partida del Plan Formativo VcM, abierto a toda la comunidad UMCE.",
+  "accent": "violet",
+  "accentColors": {
+    "900": "#1d0b2d",
+    "700": "#3d185e",
+    "600": "#4e2078",
+    "100": "#E8DDF3",
+    "50":  "#F5F0FB",
+    "bg":  "#fafaff"
   },
-  "objetivo_general": "Comprender los fundamentos conceptuales, principios orientadores y sentido público de la Vinculación con el Medio (VcM), valorando su rol en la educación superior pública.",
-  "aprendizajes_esperados": [
-    "Reconocer qué es y qué no es Vinculación con el Medio, diferenciando mitos de criterios reales.",
-    "Comprender el enfoque institucional de la UMCE como estrategia formativa y compromiso público.",
-    "Aplicar principios y sentido público de la VcM en su propia práctica, integrando experiencias bidireccionales, pertinentes y evaluables."
-  ],
-  "secciones": [
+  "duration": "2 horas",
+  "level": "Introductorio",
+  "modality": "Autoformación",
+  "price": "Gratuito",
+  "moodle": {
+    "platform": "evirtual",
+    "courseId": null
+  },
+  "xapi": {
+    "activityBase": "https://umce.online/vcm/fundamentos",
+    "moduleId": "vcm-fundamentos"
+  },
+  "instructor": {
+    "name": "Dirección de Vinculación con el Medio UMCE · UDFV",
+    "role": "Vicerrectoría Académica, UMCE",
+    "avatar": null
+  },
+  "enrollment": {
+    "requireRut": false,
+    "requireInstitution": false,
+    "institutions": []
+  },
+  "passingScore": 60,
+  "questionsPerQuiz": 4,
+  "modules": [
     {
-      "numero": 1,
-      "titulo": "¿Qué es la Vinculación con el Medio?",
-      "objetivo": "Introducir las nociones clave de la VcM, su diferencia con otras prácticas (difusión, extensión), sus principios y su valor formativo.",
-      "recurso_principal": {
-        "tipo": "Cápsula audiovisual animada",
-        "duracion": "4 min",
-        "estado": "producido"
-      },
-      "actividad_cierre": "Pregunta de selección múltiple sobre la definición de VcM.",
-      "estado": "disponible",
-      "contenido": {
-        "intro": "La Vinculación con el Medio (VcM) es una función esencial de la educación superior. Implica una relación sistemática y bidireccional entre la universidad y su entorno, orientada al aprendizaje mutuo, la construcción de conocimiento situado y la transformación social.",
-        "bloques": [
-          {
-            "titulo": "¿Por qué importa hablar de Vinculación con el Medio hoy?",
-            "texto": "En un mundo cada vez más interconectado y desafiante, las universidades tienen un rol esencial que va más allá de enseñar e investigar. La Vinculación con el Medio es una función clave que permite a la universidad dialogar con su entorno, aprender de él y contribuir a transformarlo. Junto a la docencia y la investigación, es una función sustantiva que fortalece el quehacer universitario y aporta directamente a la construcción de valor público."
-          },
-          {
-            "titulo": "El enfoque de la CNA",
-            "texto": "La Comisión Nacional de Acreditación (CNA) define la Vinculación con el Medio como una relación **bidireccional**, **pertinente** y **con impacto**, que debe ser planificada, evaluada y mejorada continuamente. No se trata de actividades aisladas, sino de procesos sistemáticos con aseguramiento de la calidad."
-          },
-          {
-            "titulo": "El enfoque del CUECH",
-            "texto": "El Consorcio de Universidades del Estado de Chile (CUECH) enfatiza su **carácter público**, su **compromiso con los territorios** y su **aporte a la democracia**. La VcM permite fortalecer ese compromiso a través de acciones concretas que responden a las necesidades y saberes del entorno."
-          },
-          {
-            "titulo": "La perspectiva de la UMCE: formación y transformación",
-            "texto": "En la UMCE, la Vinculación con el Medio es una estrategia formativa que se integra al currículo. Su objetivo no es solo enseñar, sino formar personas comprometidas, críticas y transformadoras. Esto se expresa, por ejemplo, en asignaturas que articulan contenidos con necesidades reales del entorno, o en prácticas profesionales que fortalecen tanto el aprendizaje como el compromiso social."
-          },
-          {
-            "titulo": "Lo que NO es Vinculación con el Medio",
-            "texto": "A diferencia de la extensión tradicional o la difusión de conocimientos, la Vinculación con el Medio se basa en el **diálogo**, en el **aprendizaje mutuo** y en el **reconocimiento de saberes diversos**. Es una relación que transforma a la universidad… y también a su entorno."
-          },
-          {
-            "titulo": "Una oportunidad pedagógica y estratégica",
-            "texto": "La Vinculación con el Medio es una oportunidad pedagógica y estratégica. Reconocer su valor es clave para avanzar hacia una universidad pública más justa, democrática y comprometida."
-          }
-        ],
-        "recurso_embed": {
-          "tipo": "genially",
-          "url": "https://view.genially.com/69177ed57b27ff6e88ad5313",
-          "titulo": "Cápsula audiovisual: ¿Qué es la Vinculación con el Medio?",
-          "aspect": "16:9"
+      "id": "m1",
+      "title": "¿Qué es la Vinculación con el Medio?",
+      "fullTitle": "Sección 1: ¿Qué es la Vinculación con el Medio?",
+      "duration": "25 min",
+      "units": 6,
+      "slides": [
+        {
+          "title": "Bienvenida",
+          "type": "info",
+          "html": "<h2>¿Qué es la Vinculación con el Medio?</h2><p>Bienvenido/a a la primera sección del curso <strong>Fundamentos para una Universidad Pública Transformadora</strong>.</p><p>La <strong>Vinculación con el Medio</strong> (VcM) es una función esencial de la educación superior. Implica una relación sistemática y bidireccional entre la universidad y su entorno, orientada al aprendizaje mutuo, a la construcción de conocimiento situado y a la transformación social.</p><p>En esta sección vamos a introducir las nociones clave de la VcM, su diferencia con otras prácticas (difusión, extensión), sus principios y su valor formativo.</p><p><strong>Duración estimada:</strong> 25 min</p>"
         },
-        "quiz": {
-          "titulo": "Actividad de cierre",
-          "instruccion": "Responde para verificar tu comprensión. Puedes reintentarlo si lo necesitas.",
-          "preguntas": [
-            {
-              "enunciado": "¿Cuál de los siguientes elementos define mejor la Vinculación con el Medio?",
-              "opciones": [
-                "Acciones de difusión cultural",
-                "Relación unidireccional con la comunidad",
-                "Voluntariados sin evaluación",
-                "Relación bidireccional, formativa y transformadora con el entorno"
-              ],
-              "correcta": 3,
-              "retroalimentacion_correcta": "Correcto. La VcM es una relación bidireccional que transforma tanto a la universidad como a su entorno, con sentido formativo y evaluable.",
-              "retroalimentacion_incorrecta": "Revisa el contenido: la VcM no se reduce a difusión cultural, extensión unilateral ni voluntariado. Es una relación recíproca, planificada y evaluable."
-            }
-          ]
-        }
-      }
+        {
+          "title": "¿Por qué hablar de VcM hoy?",
+          "type": "info",
+          "html": "<h2>¿Por qué importa hablar de Vinculación con el Medio hoy?</h2><p>En un mundo cada vez más interconectado y desafiante, las universidades tienen un rol esencial que va más allá de enseñar e investigar.</p><p>Hoy más que nunca, necesitamos hablar de Vinculación con el Medio: una función clave que permite a la universidad <strong>dialogar con su entorno, aprender de él y contribuir a transformarlo</strong>.</p><p>Junto a la docencia y la investigación, la VcM es una <strong>función sustantiva</strong> que fortalece el quehacer universitario y aporta directamente a la construcción de valor público.</p><blockquote style=\"margin:1.5rem 0;padding:1rem 1.25rem;border-left:4px solid #602890;background:#F5F0FB;font-style:italic;color:#3d185e;\">La VcM no es una actividad adicional a la universidad: es una de sus funciones esenciales, al mismo nivel que docencia e investigación.</blockquote>"
+        },
+        {
+          "title": "El enfoque de la CNA",
+          "type": "info",
+          "html": "<h2>El enfoque de la CNA</h2><p>La <strong>Comisión Nacional de Acreditación (CNA)</strong> define la Vinculación con el Medio como una relación que debe cumplir tres criterios clave:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.65rem;\"><strong>Bidireccional:</strong> fluye de la universidad al entorno y del entorno a la universidad.</li><li style=\"margin-bottom:0.65rem;\"><strong>Pertinente:</strong> responde a necesidades reales y coherentes con la misión institucional.</li><li style=\"margin-bottom:0.65rem;\"><strong>Con impacto:</strong> sus contribuciones son demostrables y evaluables.</li></ul><p>Según la CNA, la VcM debe ser <strong>planificada, evaluada y mejorada continuamente</strong>. No se trata de actividades aisladas, sino de procesos sistemáticos con aseguramiento de la calidad.</p><p style=\"margin-top:1rem;font-size:0.92rem;color:#64748b;\"><em>Modelo de Evaluación CNA 2021: «La VcM debe retroalimentar las funciones sustantivas y evidenciar su contribución al entorno».</em></p>"
+        },
+        {
+          "title": "El enfoque del CUECH",
+          "type": "info",
+          "html": "<h2>El enfoque del CUECH</h2><p>El <strong>Consorcio de Universidades del Estado de Chile (CUECH)</strong> promueve una VcM centrada en:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.65rem;\"><strong>Compromiso público:</strong> las universidades estatales deben estar al servicio de los desafíos del país.</li><li style=\"margin-bottom:0.65rem;\"><strong>Territorialidad:</strong> la acción universitaria debe estar arraigada en los contextos locales, sociales y culturales.</li><li style=\"margin-bottom:0.65rem;\"><strong>Democracia:</strong> participación, diálogo de saberes y justicia social son pilares de la VcM estatal.</li></ul><p>Para el CUECH, la VcM no es solo una estrategia académica: es una <strong>expresión del rol público</strong> de las universidades del Estado. Es un derecho y un deber institucional, orientado a construir un país más justo e inclusivo.</p>"
+        },
+        {
+          "title": "La perspectiva de la UMCE",
+          "type": "info",
+          "html": "<h2>La perspectiva de la UMCE: formación y transformación</h2><p>La <strong>Universidad Metropolitana de Ciencias de la Educación</strong> reconoce la VcM como una <strong>estrategia formativa</strong> que se articula con la docencia, la investigación y la extensión.</p><p>En su Política Institucional de VcM, la UMCE establece que:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.65rem;\">La VcM es <strong>parte integral del proceso formativo</strong> y se incorpora al currículo.</li><li style=\"margin-bottom:0.65rem;\">Se orienta a la <strong>generación de conocimiento situado</strong>, construido junto a los territorios.</li><li style=\"margin-bottom:0.65rem;\">Promueve una <strong>relación bidireccional y transformadora</strong> entre universidad y sociedad.</li></ul><p>Esto se expresa, por ejemplo, en asignaturas que articulan contenidos con necesidades reales del entorno, o en prácticas profesionales realizadas en centros comunitarios.</p><p>La VcM en la UMCE no es una actividad adicional: es una <strong>dimensión estructurante del quehacer académico</strong>, que contribuye a construir valor público y fortalecer el rol de la universidad estatal.</p>"
+        },
+        {
+          "title": "Lo que NO es Vinculación con el Medio",
+          "type": "info",
+          "html": "<h2>Lo que NO es Vinculación con el Medio</h2><p>A diferencia de la <strong>extensión tradicional</strong> o la <strong>difusión de conocimientos</strong>, la Vinculación con el Medio se basa en:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.65rem;\">El <strong>diálogo</strong> entre universidad y entorno.</li><li style=\"margin-bottom:0.65rem;\">El <strong>aprendizaje mutuo</strong>: la universidad aprende del territorio tanto como el territorio aprende de ella.</li><li style=\"margin-bottom:0.65rem;\">El <strong>reconocimiento de saberes diversos</strong>, incluidos los comunitarios y no académicos.</li></ul><p>Es una relación que <strong>transforma a la universidad… y también a su entorno</strong>.</p><p style=\"margin-top:1.25rem;padding:1rem 1.25rem;border-radius:0.5rem;background:#fef3c7;border:1px solid #fcd34d;color:#78350f;\">⚠️ Una salida a terreno, una visita institucional o una participación en eventos <strong>no es automáticamente VcM</strong>. Para serlo, debe ser bidireccional, pertinente, formativa y evaluable.</p>"
+        },
+        { "title": "Evaluación Sección 1", "type": "quiz" }
+      ]
     },
     {
-      "numero": 2,
-      "titulo": "Política institucional de VcM en la UMCE",
-      "objetivo": "Comprender los distintos enfoques institucionales sobre la VcM (CNA, CUECH, UMCE) y su articulación con el proyecto formativo de la UMCE.",
-      "recurso_principal": {
-        "tipo": "Presentación interactiva (5 diapositivas navegables)",
-        "estado": "en-desarrollo"
-      },
-      "actividad_cierre": "Actividad final de verificación de comprensión.",
-      "estado": "en-desarrollo"
+      "id": "m2",
+      "title": "Política institucional UMCE",
+      "fullTitle": "Sección 2: Política institucional de VcM en la UMCE",
+      "duration": "25 min",
+      "units": 5,
+      "slides": [
+        {
+          "title": "Introducción",
+          "type": "info",
+          "html": "<h2>Política institucional de VcM en la UMCE</h2><p>La Vinculación con el Medio es una función esencial de la educación superior. Pero, <em>¿cómo la entienden las instituciones que nos orientan?</em></p><p>En esta sección vas a explorar los enfoques de la <strong>CNA</strong>, el <strong>CUECH</strong> y la <strong>UMCE</strong> para comprender su sentido, principios y aplicación concreta en nuestra universidad.</p><p><strong>Objetivo:</strong> comprender los distintos enfoques institucionales sobre la VcM y su articulación con el proyecto formativo de la UMCE.</p>"
+        },
+        {
+          "title": "CNA · la calidad como eje",
+          "type": "info",
+          "html": "<h2>La Vinculación con el Medio en la CNA</h2><p>La <strong>Comisión Nacional de Acreditación (CNA)</strong> reconoce la VcM como una función esencial de la universidad, al mismo nivel que la docencia y la investigación.</p><p>Su enfoque se basa en <strong>tres principios clave</strong>:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.65rem;\"><strong>Bidireccionalidad:</strong> relación de mutuo beneficio entre universidad y entorno.</li><li style=\"margin-bottom:0.65rem;\"><strong>Pertinencia:</strong> las acciones responden a necesidades reales y a la misión institucional.</li><li style=\"margin-bottom:0.65rem;\"><strong>Impacto:</strong> contribuciones demostrables y evaluables en términos de calidad.</li></ul><p>La VcM, según la CNA, debe estar <strong>planificada, evaluada y sostenida en el tiempo</strong>, integrándose a la gestión universitaria y al aseguramiento de la calidad.</p>"
+        },
+        {
+          "title": "CUECH · el rol público",
+          "type": "info",
+          "html": "<h2>La Vinculación con el Medio en el CUECH</h2><p>El <strong>Consorcio de Universidades del Estado de Chile (CUECH)</strong> entiende la VcM como una expresión del rol público de las universidades estatales.</p><p>Sus tres pilares son:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.65rem;\"><strong>Compromiso público:</strong> las universidades estatales están al servicio del país.</li><li style=\"margin-bottom:0.65rem;\"><strong>Territorialidad:</strong> acción arraigada en contextos locales, sociales y culturales.</li><li style=\"margin-bottom:0.65rem;\"><strong>Democracia:</strong> participación, diálogo de saberes y justicia social.</li></ul><blockquote style=\"margin:1.5rem 0;padding:1rem 1.25rem;border-left:4px solid #602890;background:#F5F0FB;font-style:italic;color:#3d185e;\">«Las universidades estatales deben responder a las necesidades de los territorios y fortalecer los procesos democráticos mediante la VcM». (CUECH, 2019)</blockquote>"
+        },
+        {
+          "title": "UMCE · formación y transformación",
+          "type": "info",
+          "html": "<h2>La Vinculación con el Medio en la UMCE</h2><p>La UMCE reconoce la VcM como una <strong>estrategia formativa</strong> que se articula con la docencia, la investigación y la extensión, buscando formar profesionales <strong>críticos, éticos y comprometidos</strong> con su entorno.</p><p>En su Política Institucional de VcM, la UMCE establece que:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.65rem;\">La VcM es parte integral del <strong>proceso formativo</strong>.</li><li style=\"margin-bottom:0.65rem;\">Se orienta a la generación de <strong>conocimiento situado</strong>.</li><li style=\"margin-bottom:0.65rem;\">Promueve una <strong>relación bidireccional y transformadora</strong>.</li></ul><p>La VcM en la UMCE no es una actividad adicional: es una <strong>dimensión estructurante</strong> del quehacer académico, que contribuye a construir valor público y a fortalecer el rol de la universidad estatal en la sociedad chilena.</p>"
+        },
+        {
+          "title": "Comparación integradora",
+          "type": "info",
+          "html": "<h2>¿Qué tienen en común y en qué se diferencian?</h2><p>Los tres enfoques (CNA, CUECH, UMCE) son <strong>complementarios</strong>, no contradictorios. Cada uno aporta una dimensión al sentido integral de la VcM.</p><table style=\"width:100%;margin:1rem 0;border-collapse:collapse;font-size:0.92rem;\"><thead><tr style=\"background:#F5F0FB;border-bottom:2px solid #602890;\"><th style=\"text-align:left;padding:0.75rem;font-weight:700;color:#3d185e;\">Enfoque</th><th style=\"text-align:left;padding:0.75rem;font-weight:700;color:#3d185e;\">Principios destacados</th><th style=\"text-align:left;padding:0.75rem;font-weight:700;color:#3d185e;\">Rol de la universidad</th></tr></thead><tbody><tr style=\"border-bottom:1px solid #E8DDF3;\"><td style=\"padding:0.75rem;font-weight:600;\">CNA</td><td style=\"padding:0.75rem;\">Bidireccionalidad, pertinencia, impacto</td><td style=\"padding:0.75rem;\">Contribuir con calidad y evidencia al entorno</td></tr><tr style=\"border-bottom:1px solid #E8DDF3;\"><td style=\"padding:0.75rem;font-weight:600;\">CUECH</td><td style=\"padding:0.75rem;\">Compromiso público, democracia, territorialidad</td><td style=\"padding:0.75rem;\">Transformar la sociedad desde lo estatal</td></tr><tr><td style=\"padding:0.75rem;font-weight:600;\">UMCE</td><td style=\"padding:0.75rem;\">Integración curricular, formación situada, transformación</td><td style=\"padding:0.75rem;\">Formar profesionales críticos y comprometidos</td></tr></tbody></table><p>En la práctica de la UMCE, estos tres marcos se integran: <strong>hacer VcM es asegurar calidad (CNA), cumplir el rol público (CUECH) y formar desde la experiencia territorial (UMCE)</strong>.</p>"
+        },
+        { "title": "Evaluación Sección 2", "type": "quiz" }
+      ]
     },
     {
-      "numero": 3,
-      "titulo": "Principios orientadores",
-      "objetivo": "Comprender y aplicar los cuatro principios clave de la VcM — reciprocidad, bidireccionalidad, pertinencia e impacto — relacionándolos con acciones concretas.",
-      "recurso_principal": {
-        "tipo": "Infografía interactiva",
-        "estado": "en-desarrollo"
-      },
-      "actividad_cierre": "Juego de clasificación (arrastrar y soltar): identificar qué principio orienta cada acción real.",
-      "estado": "en-desarrollo"
+      "id": "m3",
+      "title": "Principios orientadores",
+      "fullTitle": "Sección 3: Principios orientadores de la VcM",
+      "duration": "25 min",
+      "units": 5,
+      "slides": [
+        {
+          "title": "Introducción",
+          "type": "info",
+          "html": "<h2>Principios orientadores de la VcM</h2><p>La Vinculación con el Medio se sostiene en principios que garantizan <strong>relaciones significativas</strong> entre universidad y entorno, con sentido ético, formativo y transformador.</p><p>En esta sección vas a conocer los <strong>cuatro principios fundamentales</strong> de la VcM:</p><ol style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.4rem;\">Reciprocidad</li><li style=\"margin-bottom:0.4rem;\">Bidireccionalidad</li><li style=\"margin-bottom:0.4rem;\">Pertinencia</li><li style=\"margin-bottom:0.4rem;\">Impacto</li></ol><p><strong>Objetivo:</strong> comprender y aplicar estos principios, relacionándolos con acciones concretas y con su contribución a la calidad formativa.</p>"
+        },
+        {
+          "title": "1. Reciprocidad",
+          "type": "info",
+          "html": "<h2>1. Reciprocidad</h2><p>La reciprocidad implica que <strong>ambas partes</strong> —universidad y actores del entorno— <strong>aportan, reciben y construyen valor</strong> de manera conjunta.</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\">Se <strong>reconoce el saber del otro</strong>.</li><li style=\"margin-bottom:0.5rem;\">Las decisiones son <strong>dialogadas</strong>.</li><li style=\"margin-bottom:0.5rem;\">Se busca <strong>aprendizaje y beneficio mutuo</strong>.</li></ul><div style=\"margin:1.25rem 0;padding:1rem 1.25rem;border-radius:0.5rem;background:#F5F0FB;border:1px solid #E8DDF3;\"><div style=\"font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#4e2078;margin-bottom:0.4rem;\">Ejemplo</div><p style=\"margin:0;color:#1e293b;\">Estudiantes y una comunidad educativa diseñan juntos un plan lector contextualizado.</p></div>"
+        },
+        {
+          "title": "2. Bidireccionalidad",
+          "type": "info",
+          "html": "<h2>2. Bidireccionalidad</h2><p>La bidireccionalidad establece que la relación <strong>no va en un solo sentido</strong> (como en la extensión tradicional), sino que <strong>fluye de ida y vuelta</strong>, generando conocimiento y mejora en ambos ámbitos.</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\">El <strong>entorno transforma a la universidad</strong>.</li><li style=\"margin-bottom:0.5rem;\">La <strong>universidad transforma al entorno</strong>.</li></ul><div style=\"margin:1.25rem 0;padding:1rem 1.25rem;border-radius:0.5rem;background:#F5F0FB;border:1px solid #E8DDF3;\"><div style=\"font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#4e2078;margin-bottom:0.4rem;\">Ejemplo</div><p style=\"margin:0;color:#1e293b;\">Una investigación en terreno modifica los contenidos de una asignatura, al mismo tiempo que aporta soluciones a una organización local.</p></div>"
+        },
+        {
+          "title": "3. Pertinencia",
+          "type": "info",
+          "html": "<h2>3. Pertinencia</h2><p>La pertinencia se refiere a que las acciones de VcM deben estar <strong>alineadas con las necesidades reales del entorno</strong> y con los <strong>propósitos institucionales</strong>.</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\">Las acciones <strong>no deben ser decorativas ni asistenciales</strong>.</li><li style=\"margin-bottom:0.5rem;\">Se requiere <strong>lectura contextual</strong> y <strong>ajuste curricular</strong>.</li></ul><div style=\"margin:1.25rem 0;padding:1rem 1.25rem;border-radius:0.5rem;background:#F5F0FB;border:1px solid #E8DDF3;\"><div style=\"font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#4e2078;margin-bottom:0.4rem;\">Ejemplo</div><p style=\"margin:0;color:#1e293b;\">Un taller de formación continua dirigido a docentes rurales sobre temas solicitados por ellos mismos.</p></div>"
+        },
+        {
+          "title": "4. Impacto",
+          "type": "info",
+          "html": "<h2>4. Impacto</h2><p>Todo proceso de VcM debe <strong>demostrar su efecto</strong> en las personas, comunidades o territorios involucrados, así como su <strong>influencia en la docencia, investigación y gestión institucional</strong>.</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\">El impacto puede ser <strong>formativo, social, educativo, cultural o institucional</strong>.</li><li style=\"margin-bottom:0.5rem;\">Debe ser <strong>evaluable y trazable</strong>.</li></ul><div style=\"margin:1.25rem 0;padding:1rem 1.25rem;border-radius:0.5rem;background:#F5F0FB;border:1px solid #E8DDF3;\"><div style=\"font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#4e2078;margin-bottom:0.4rem;\">Ejemplo</div><p style=\"margin:0;color:#1e293b;\">Un programa de mediación artística transforma el currículo de una carrera y fortalece redes comunitarias culturales.</p></div>"
+        },
+        { "title": "Evaluación Sección 3", "type": "quiz" }
+      ]
     },
     {
-      "numero": 4,
-      "titulo": "Sentido público de la VcM",
-      "objetivo": "Reflexionar sobre el valor público de la VcM en universidades estatales — justicia social, equidad territorial y desarrollo educativo — desde la formación inicial y continua.",
-      "recurso_principal": {
-        "tipo": "Presentación interactiva (5 diapositivas) + video de testimonio (2-3 min)",
-        "estado": "en-desarrollo"
-      },
-      "actividad_cierre": "Foro breve reflexivo: ¿cómo se expresa el sentido público de la VcM en tu unidad académica?",
-      "estado": "en-desarrollo"
+      "id": "m4",
+      "title": "Sentido público de la VcM",
+      "fullTitle": "Sección 4: Sentido público de la VcM",
+      "duration": "25 min",
+      "units": 4,
+      "slides": [
+        {
+          "title": "El compromiso público",
+          "type": "info",
+          "html": "<h2>El compromiso público de la Vinculación con el Medio</h2><p>En las universidades estatales, la VcM <strong>no es opcional ni decorativa</strong>: expresa el compromiso con la sociedad que las financia y sustenta.</p><p>Se trata de un <strong>compromiso ético, territorial y formativo</strong> con los desafíos del país, articulado en tres ejes:</p><ol style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Justicia social</strong></li><li style=\"margin-bottom:0.5rem;\"><strong>Equidad territorial</strong></li><li style=\"margin-bottom:0.5rem;\"><strong>Formación para la transformación</strong></li></ol>"
+        },
+        {
+          "title": "1. Justicia social",
+          "type": "info",
+          "html": "<h2>1. Justicia social</h2><p>La VcM contribuye a la <strong>reducción de desigualdades</strong>. Reconoce los <strong>saberes de comunidades históricamente excluidas</strong> y promueve procesos transformadores desde el diálogo horizontal.</p><div style=\"margin:1.25rem 0;padding:1rem 1.25rem;border-radius:0.5rem;background:#F5F0FB;border:1px solid #E8DDF3;\"><div style=\"font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#4e2078;margin-bottom:0.4rem;\">Ejemplo</div><p style=\"margin:0;color:#1e293b;\">Proyecto interdisciplinario en educación intercultural bilingüe en zona rural.</p></div><p style=\"margin-top:1.25rem;padding:0.75rem 1rem;border-radius:0.5rem;background:#fafaff;border:1px solid #E8DDF3;font-style:italic;color:#3d185e;\">💭 ¿Tu unidad académica promueve aprendizajes desde y con comunidades diversas?</p>"
+        },
+        {
+          "title": "2. Equidad territorial",
+          "type": "info",
+          "html": "<h2>2. Equidad territorial</h2><p>La VcM reconoce que los territorios son <strong>diversos</strong>. Se vincula de forma <strong>situada</strong> con las realidades socioculturales locales, promoviendo la <strong>participación activa</strong> de los actores del territorio.</p><div style=\"margin:1.25rem 0;padding:1rem 1.25rem;border-radius:0.5rem;background:#F5F0FB;border:1px solid #E8DDF3;\"><div style=\"font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#4e2078;margin-bottom:0.4rem;\">Ejemplo</div><p style=\"margin:0;color:#1e293b;\">Prácticas pedagógicas adaptadas a escuelas con alta vulnerabilidad.</p></div><p style=\"margin-top:1.25rem;padding:0.75rem 1rem;border-radius:0.5rem;background:#fafaff;border:1px solid #E8DDF3;font-style:italic;color:#3d185e;\">💭 ¿En qué territorios se insertan tus proyectos o actividades formativas?</p>"
+        },
+        {
+          "title": "3. Formación para la transformación",
+          "type": "info",
+          "html": "<h2>3. Formación para la transformación</h2><p>La VcM <strong>fortalece la formación profesional</strong> integrando la <strong>experiencia territorial al aprendizaje</strong>. Forma personas <strong>críticas, éticas y comprometidas</strong> con la transformación social.</p><div style=\"margin:1.25rem 0;padding:1rem 1.25rem;border-radius:0.5rem;background:#F5F0FB;border:1px solid #E8DDF3;\"><div style=\"font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#4e2078;margin-bottom:0.4rem;\">Ejemplo</div><p style=\"margin:0;color:#1e293b;\">Estudiantes de educación diferencial trabajando en intervención temprana con familias.</p></div><p style=\"margin-top:1.25rem;padding:0.75rem 1rem;border-radius:0.5rem;background:#fafaff;border:1px solid #E8DDF3;font-style:italic;color:#3d185e;\">💭 ¿Qué aprendizajes obtienen tus estudiantes cuando trabajan en contextos reales?</p><blockquote style=\"margin:1.5rem 0;padding:1rem 1.25rem;border-left:4px solid #602890;background:#F5F0FB;font-style:italic;color:#3d185e;\">Si queremos una universidad pública que transforme, debemos preguntarnos: ¿cómo estoy contribuyendo yo al compromiso social, territorial y educativo de mi carrera?</blockquote>"
+        },
+        { "title": "Evaluación Sección 4", "type": "quiz" }
+      ]
     },
     {
-      "numero": 5,
-      "titulo": "Mitos comunes sobre la Vinculación con el Medio",
-      "objetivo": "Identificar y desmontar los malentendidos frecuentes que dificultan una comprensión profunda y práctica de la VcM.",
-      "recurso_principal": {
-        "tipo": "Microlección interactiva",
-        "estado": "en-desarrollo"
-      },
-      "actividad_cierre": "Quiz interactivo: detectar mitos sobre la VcM.",
-      "estado": "en-desarrollo"
+      "id": "m5",
+      "title": "Mitos comunes sobre VcM",
+      "fullTitle": "Sección 5: Mitos comunes sobre la Vinculación con el Medio",
+      "duration": "20 min",
+      "units": 4,
+      "slides": [
+        {
+          "title": "¿Por qué hablar de mitos?",
+          "type": "info",
+          "html": "<h2>Desmontando mitos sobre la Vinculación con el Medio</h2><p>A pesar de los avances en institucionalización y formación, <strong>persisten mitos y confusiones</strong> sobre lo que realmente es la VcM.</p><p>Estos malentendidos pueden afectar su implementación, <strong>debilitando su sentido pedagógico y su impacto</strong>.</p><p>En esta sección vamos a identificar y desmontar los <strong>tres mitos más frecuentes</strong>.</p>"
+        },
+        {
+          "title": "Mito 1: «Toda actividad externa es VcM»",
+          "type": "info",
+          "html": "<h2>Mito 1: «Toda actividad externa es VcM»</h2><p style=\"padding:0.75rem 1rem;border-radius:0.5rem;background:#fee2e2;border:1px solid #fecaca;color:#991b1b;font-weight:600;\">❌ Falso.</p><p>No toda salida a terreno, visita institucional o participación en eventos representa Vinculación con el Medio.</p><p>Para que una acción <strong>sea</strong> VcM debe ser:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.4rem;\"><strong>Bidireccional</strong></li><li style=\"margin-bottom:0.4rem;\"><strong>Pertinente</strong></li><li style=\"margin-bottom:0.4rem;\"><strong>Formativa</strong></li><li style=\"margin-bottom:0.4rem;\"><strong>Evaluable</strong></li></ul>"
+        },
+        {
+          "title": "Mito 2: «La VcM es solo difusión»",
+          "type": "info",
+          "html": "<h2>Mito 2: «La VcM es solo difusión de lo que hacemos»</h2><p style=\"padding:0.75rem 1rem;border-radius:0.5rem;background:#fee2e2;border:1px solid #fecaca;color:#991b1b;font-weight:600;\">❌ Falso.</p><p>La difusión institucional o la extensión unilateral <strong>no equivale a Vinculación con el Medio</strong>.</p><p>La VcM implica:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\"><strong>Relaciones recíprocas</strong> entre universidad y entorno.</li><li style=\"margin-bottom:0.5rem;\"><strong>Construcción conjunta de conocimiento</strong>.</li></ul><p>Si la universidad solo comunica hacia afuera sin escuchar ni aprender del entorno, <em>no</em> está haciendo VcM.</p>"
+        },
+        {
+          "title": "Mito 3: «No es necesario evaluar la VcM»",
+          "type": "info",
+          "html": "<h2>Mito 3: «No es necesario evaluar la VcM»</h2><p style=\"padding:0.75rem 1rem;border-radius:0.5rem;background:#fee2e2;border:1px solid #fecaca;color:#991b1b;font-weight:600;\">❌ Falso.</p><p>Las acciones de VcM deben estar <strong>planificadas, ejecutadas y evaluadas</strong>.</p><p>El impacto de la VcM debe ser <strong>medible</strong>:</p><ul style=\"margin:1rem 0;padding-left:1.5rem;\"><li style=\"margin-bottom:0.5rem;\">En el <strong>entorno</strong> con el que se vincula.</li><li style=\"margin-bottom:0.5rem;\">En el <strong>aprendizaje de los estudiantes</strong>.</li></ul><p>Sin evaluación no hay retroalimentación, y sin retroalimentación la VcM pierde su sentido formativo e institucional.</p><blockquote style=\"margin:1.5rem 0;padding:1rem 1.25rem;border-left:4px solid #602890;background:#F5F0FB;font-style:italic;color:#3d185e;\">Ahora que conoces los principales mitos que limitan una comprensión real de la Vinculación con el Medio… ¿estás listo/a para poner a prueba lo aprendido?</blockquote>"
+        },
+        { "title": "Evaluación final", "type": "quiz" }
+      ]
     }
   ],
-  "certificacion": {
-    "tipo": "por-definir",
-    "nota": "Condiciones de aprobación y formato del certificado por definir con equipo VcM."
-  },
-  "autoria": {
-    "diseno_instruccional": "Equipo VcM UMCE",
-    "desarrollo_tecnico": "UDFV · Unidad de Desarrollo y Formación Virtual"
+  "faq": [
+    {
+      "q": "¿Este curso es obligatorio para la comunidad UMCE?",
+      "a": "No es obligatorio, pero es altamente recomendado. Es el punto de partida del Plan Formativo VcM y permite comprender los fundamentos del enfoque institucional."
+    },
+    {
+      "q": "¿Necesito ser parte de la UMCE para inscribirme?",
+      "a": "No. El curso está abierto a toda la comunidad universitaria y a cualquier persona interesada en la Vinculación con el Medio en universidades públicas."
+    },
+    {
+      "q": "¿Cuánto dura el curso?",
+      "a": "Aproximadamente 2 horas de autoformación asincrónica. Puedes avanzar a tu ritmo: cada sección tiene su propia evaluación y puedes volver cuando quieras."
+    },
+    {
+      "q": "¿Qué pasa después de completarlo?",
+      "a": "Al aprobar, obtienes una constancia de completitud. Podrás continuar con los siguientes cursos del Plan Formativo VcM cuando estén disponibles (Prácticas de Vinculación, Docencia con el medio, Investigación pertinente y situada)."
+    }
+  ],
+  "completion": {
+    "message": "Has completado exitosamente el curso Fundamentos para una Universidad Pública Transformadora. Ahora comprendes los fundamentos conceptuales, los principios orientadores y el sentido público de la Vinculación con el Medio. Estás listo/a para continuar con los siguientes cursos del Plan Formativo VcM.",
+    "nextStepUrl": "/vcm-panel",
+    "nextStepLabel": "Volver al Plan Formativo VcM"
   }
 }
