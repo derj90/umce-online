@@ -27,7 +27,13 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' https://plausible.io https://lrs.udfv.cloud; frame-ancestors 'none';");
+  // p5.js uses new Function() internally (accessibility/color_namer). Pages
+  // that embed p5 need 'unsafe-eval'. Keep strict CSP everywhere else.
+  const needsEval = req.path === '/vcm-panel' || req.path === '/vcm' || req.path.startsWith('/sustentabilidad2026');
+  const scriptSrc = needsEval
+    ? "'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://plausible.io"
+    : "'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://plausible.io";
+  res.setHeader('Content-Security-Policy', `default-src 'self'; script-src ${scriptSrc}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' https://plausible.io https://lrs.udfv.cloud; frame-ancestors 'none';`);
   next();
 });
 
