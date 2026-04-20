@@ -6597,6 +6597,11 @@ app.get('/formacion-docente/curso/:slug', (req, res) => {
 });
 
 app.get('/formacion', (req, res) => res.redirect(301, '/formacion-docente'));
+
+// === VCM === Plan Formativo Vinculación con el Medio
+app.get('/vcm', (req, res) => res.redirect(301, '/vcm-panel'));
+app.get('/vcm-panel', (req, res) => res.sendFile(path.join(__dirname, 'public', 'vcm-panel.html')));
+
 app.get('/demo', (req, res) => res.sendFile(path.join(__dirname, 'public', 'demo-curso.html')));
 app.get('/mis-cursos', (req, res) => res.sendFile(path.join(__dirname, 'public', 'mis-cursos.html')));
 app.get('/privacidad', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacidad.html')));
