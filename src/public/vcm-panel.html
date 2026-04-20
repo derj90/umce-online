@@ -107,16 +107,19 @@
       50% { transform: scale(1.08); opacity: 0.75; }
     }
 
-    /* Course card cover patterns — solo para variar las 4 portadas */
-    .cover-01 { background: linear-gradient(135deg, #602890 0%, #3d185e 100%); }
-    .cover-02 { background: linear-gradient(135deg, #4e2078 0%, #001D5C 100%); }
-    .cover-03 { background: linear-gradient(135deg, #3d185e 0%, #001144 100%); }
-    .cover-04 { background: linear-gradient(135deg, #2d1246 0%, #001D5C 100%); }
-    .cover-pattern::after {
+    /* Course card cover — imagen generativa + overlay sutil para contraste de badges */
+    .cover-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .cover-overlay::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: repeating-linear-gradient(115deg, transparent 0 44px, rgba(255,255,255,0.06) 44px 48px);
+      background: linear-gradient(to bottom, rgba(10,5,22,0.18) 0%, rgba(10,5,22,0) 50%, rgba(10,5,22,0.22) 100%);
       pointer-events: none;
     }
   </style>
@@ -276,9 +279,10 @@
 
         <!-- Curso 01 -->
         <article class="group relative flex flex-col rounded-2xl bg-white border border-slate-200 overflow-hidden opacity-80">
-          <div class="relative h-40 cover-01 cover-pattern">
-            <div class="absolute top-4 left-5 w-9 h-9 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center font-display font-extrabold text-white">01</div>
-            <div class="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-slate-900/40 backdrop-blur-sm border border-white/25 text-white text-[10px] font-semibold uppercase tracking-wider">Próximamente</div>
+          <div class="relative h-44 cover-overlay">
+            <img src="/assets/vcm/banner-01-fundamentos.webp" alt="" class="cover-img" loading="lazy">
+            <div class="absolute top-4 left-5 w-9 h-9 rounded-lg bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center font-display font-extrabold text-white z-10">01</div>
+            <div class="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-slate-900/50 backdrop-blur-md border border-white/25 text-white text-[10px] font-semibold uppercase tracking-wider z-10">Próximamente</div>
           </div>
           <div class="p-6 flex flex-col flex-1">
             <div class="text-[11px] font-display font-semibold uppercase tracking-wider text-brand-600 mb-2">Toda la comunidad UMCE</div>
@@ -304,9 +308,10 @@
 
         <!-- Curso 02 -->
         <article class="group relative flex flex-col rounded-2xl bg-white border border-slate-200 overflow-hidden opacity-80">
-          <div class="relative h-40 cover-02 cover-pattern">
-            <div class="absolute top-4 left-5 w-9 h-9 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center font-display font-extrabold text-white">02</div>
-            <div class="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-slate-900/40 backdrop-blur-sm border border-white/25 text-white text-[10px] font-semibold uppercase tracking-wider">Próximamente</div>
+          <div class="relative h-44 cover-overlay">
+            <img src="/assets/vcm/banner-02-practicas.webp" alt="" class="cover-img" loading="lazy">
+            <div class="absolute top-4 left-5 w-9 h-9 rounded-lg bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center font-display font-extrabold text-white z-10">02</div>
+            <div class="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-slate-900/50 backdrop-blur-md border border-white/25 text-white text-[10px] font-semibold uppercase tracking-wider z-10">Próximamente</div>
           </div>
           <div class="p-6 flex flex-col flex-1">
             <div class="text-[11px] font-display font-semibold uppercase tracking-wider text-brand-600 mb-2">Comunidad UMCE</div>
@@ -323,9 +328,10 @@
 
         <!-- Curso 03 -->
         <article class="group relative flex flex-col rounded-2xl bg-white border border-slate-200 overflow-hidden opacity-80">
-          <div class="relative h-40 cover-03 cover-pattern">
-            <div class="absolute top-4 left-5 w-9 h-9 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center font-display font-extrabold text-white">03</div>
-            <div class="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-slate-900/40 backdrop-blur-sm border border-white/25 text-white text-[10px] font-semibold uppercase tracking-wider">Próximamente</div>
+          <div class="relative h-44 cover-overlay">
+            <img src="/assets/vcm/banner-03-docencia.webp" alt="" class="cover-img" loading="lazy">
+            <div class="absolute top-4 left-5 w-9 h-9 rounded-lg bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center font-display font-extrabold text-white z-10">03</div>
+            <div class="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-slate-900/50 backdrop-blur-md border border-white/25 text-white text-[10px] font-semibold uppercase tracking-wider z-10">Próximamente</div>
           </div>
           <div class="p-6 flex flex-col flex-1">
             <div class="text-[11px] font-display font-semibold uppercase tracking-wider text-brand-600 mb-2">Académicas y académicos</div>
@@ -342,9 +348,10 @@
 
         <!-- Curso 04 -->
         <article class="group relative flex flex-col rounded-2xl bg-white border border-slate-200 overflow-hidden opacity-80">
-          <div class="relative h-40 cover-04 cover-pattern">
-            <div class="absolute top-4 left-5 w-9 h-9 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center font-display font-extrabold text-white">04</div>
-            <div class="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-slate-900/40 backdrop-blur-sm border border-white/25 text-white text-[10px] font-semibold uppercase tracking-wider">Próximamente</div>
+          <div class="relative h-44 cover-overlay">
+            <img src="/assets/vcm/banner-04-investigacion.webp" alt="" class="cover-img" loading="lazy">
+            <div class="absolute top-4 left-5 w-9 h-9 rounded-lg bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center font-display font-extrabold text-white z-10">04</div>
+            <div class="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-slate-900/50 backdrop-blur-md border border-white/25 text-white text-[10px] font-semibold uppercase tracking-wider z-10">Próximamente</div>
           </div>
           <div class="p-6 flex flex-col flex-1">
             <div class="text-[11px] font-display font-semibold uppercase tracking-wider text-brand-600 mb-2">Académicas y académicos</div>
