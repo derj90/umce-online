@@ -67,6 +67,17 @@ Este proyecto usa 3 capas de contexto. Respetar el orden:
 - Plantilla estandar: Fecha (date), Enlace YouTube (url), Archivo (file opcional)
 - NUNCA modificar cursos reales sin confirmacion explicita de David
 
+### Scopes por sub-proyecto dentro del repo (irrompible)
+Este repo soporta 7 pilares UDFV simultáneos — varios en producción con usuarios reales. Antes de tocar archivos, identificar en qué sub-proyecto estás y leer su scope:
+
+- **Plan Formativo VcM** (6to nodo pipeline, multi-curso, SCORM+xAPI+Moodle): leer `VCM-WORK-SCOPE.md` (lista blanca/negra de archivos, endpoints permitidos, reglas arquitectónicas). OBLIGATORIO antes de codear VcM.
+- **Sustentabilidad** (Pilar 4, OPERATIVO con ~700 inscripciones): NO TOCAR sin autorización explícita. Archivos: `autoformacion-sustentabilidad*`, `autoformacion/courses/sustentabilidad*`, quiz engine compartido.
+- **Virtualización / Mesa 1** (Pilar 1): `virtualizacion-*.html`, `sct-data.json`.
+- **Formación docente / SDPA / Open Badges** (Pilar 6): `formacion-docente*`, `sdpa-admin.html`, `verificar-credencial.html`.
+- **Curso virtual / PIAC / matching IA** (Pilares 2, 3, 5): `curso-virtual.html`, `piac.html`, `mis-cursos.html`.
+
+**Regla**: al entrar a una sesión, identificar el sub-proyecto del trabajo y respetar SU scope. Modificar archivos de otros pilares requiere confirmación explícita de David.
+
 ---
 
 ## Anti-patrones (errores reales cometidos, NO repetir)
