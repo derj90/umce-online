@@ -69,7 +69,10 @@ app.use('/auth', rateLimit(60000, 10));
 app.use('/api', rateLimit(60000, 60));
 
 const PORT = process.env.PORT || 3000;
-const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
+if (!process.env.SESSION_SECRET) {
+  throw new Error('SESSION_SECRET no configurado — el server invalidaría todas las sesiones en cada arranque. Setea la env var antes de iniciar.');
+}
+const SESSION_SECRET = process.env.SESSION_SECRET;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const BASE_URL = process.env.BASE_URL || 'https://umce.online';
@@ -469,6 +472,16 @@ app.get('/auth/callback', async (req, res) => {
     const tokenData = await tokenRes.json();
     if (tokenData.error) throw new Error(tokenData.error_description || tokenData.error);
 
+    // Validate hd claim from id_token (Google-signed, prevents domain spoof via alias emails)
+    let idTokenHd = null;
+    try {
+      const payloadB64 = (tokenData.id_token || '').split('.')[1];
+      if (payloadB64) {
+        const payload = JSON.parse(Buffer.from(payloadB64, 'base64').toString('utf8'));
+        idTokenHd = payload.hd || null;
+      }
+    } catch {}
+
     // Get user info
     const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
       headers: { Authorization: `Bearer ${tokenData.access_token}` }
@@ -476,8 +489,8 @@ app.get('/auth/callback', async (req, res) => {
     const userInfo = await userRes.json();
 
     const email = (userInfo.email || '').toLowerCase();
-    if (!email.endsWith('@umce.cl')) {
-      return res.redirect('/mis-cursos?error=domain');
+    if (idTokenHd !== 'umce.cl' || !email.endsWith('@umce.cl')) {
+      return res.redirect(`/mis-cursos?error=domain&attempted=${encodeURIComponent(email || 'desconocido')}`);
     }
 
     const name = userInfo.name || email.split('@')[0];
@@ -539,7 +552,10 @@ app.get('/auth/me', (req, res) => {
   if (!token) return res.status(401).json({ error: 'No autenticado' });
 
   const user = verifyToken(token);
-  if (!user) return res.status(401).json({ error: 'Sesión expirada' });
+  if (!user) {
+    clearSessionCookie(res);
+    return res.status(401).json({ error: 'Sesión expirada' });
+  }
 
   res.json({ email: user.email, name: user.username });
 });

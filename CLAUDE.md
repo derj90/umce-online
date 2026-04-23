@@ -68,11 +68,12 @@ Este proyecto usa 3 capas de contexto. Respetar el orden:
 - NUNCA modificar cursos reales sin confirmacion explicita de David
 
 ### Scopes por sub-proyecto dentro del repo (irrompible)
-Este repo soporta 7 pilares UDFV simultáneos — varios en producción con usuarios reales. Antes de tocar archivos, identificar en qué sub-proyecto estás y leer su scope:
+Este repo soporta 7 pilares UDFV simultáneos. Antes de tocar archivos, identificar en qué sub-proyecto estás y leer su scope. **Ninguno de los pilares está hoy operando con base masiva de usuarios reales** — Sustentabilidad es demo de landing (corregido 22-abr-2026 Sesión 87), el resto son productos en construcción o vitrina institucional. La regla "NO TOCAR" aplica por coherencia del repo, no por riesgo a usuarios.
 
-- **Plan Formativo VcM** (6to nodo pipeline, multi-curso, SCORM+xAPI+Moodle): leer `VCM-WORK-SCOPE.md` (lista blanca/negra de archivos, endpoints permitidos, reglas arquitectónicas). OBLIGATORIO antes de codear VcM.
-- **Sustentabilidad** (Pilar 4, OPERATIVO con ~700 inscripciones): NO TOCAR sin autorización explícita. Archivos: `autoformacion-sustentabilidad*`, `autoformacion/courses/sustentabilidad*`, quiz engine compartido.
-- **Virtualización / Mesa 1** (Pilar 1): `virtualizacion-*.html`, `sct-data.json`.
+- **Plan Formativo VcM** (6to nodo pipeline, multi-curso, SCORM+xAPI+Moodle): `VCM-WORK-SCOPE.md` es **contrato proyectado**, no describe código existente — el sub-proyecto está en ORGANIZACIÓN INICIAL (20-abr-2026), sin archivos `autoformacion/vcm-*` aún. Leer el scope antes de empezar a codear VcM; no tratarlo como restricción sobre código actual.
+- **Sustentabilidad** (Pilar 4): landing + demo de curso. Archivos: `autoformacion-sustentabilidad*`, `autoformacion/courses/sustentabilidad*`, quiz engine compartido. No tiene usuarios reales — rediseñar/integrar está permitido con autorización de David (no hay riesgo de producción, sólo riesgo de coherencia con otros pilares del repo).
+- **Virtualización / Mesa 1** (Pilar 1): `virtualizacion-*.html`, `sct-data.json`. Vitrina institucional activa.
+- **Ciclo QA Operativo / Mesa 1 Producto 5** (sub-módulo aislado, Sesión 87-88): whitelist en `QA-CICLO-SCOPE.md` — `src/qa-ciclo/**`, `src/public/virtualizacion/qa/**`, componentes shared `qa-radar.js` + `qa-result-card.js`, prefijo SQL `portal.qa_*`, prefijo endpoints `/api/qa/*`.
 - **Formación docente / SDPA / Open Badges** (Pilar 6): `formacion-docente*`, `sdpa-admin.html`, `verificar-credencial.html`.
 - **Curso virtual / PIAC / matching IA** (Pilares 2, 3, 5): `curso-virtual.html`, `piac.html`, `mis-cursos.html`.
 

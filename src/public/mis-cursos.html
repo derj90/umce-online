@@ -343,10 +343,13 @@
     // Check for error params from OAuth redirect
     const urlParams = new URLSearchParams(window.location.search);
     const authError = urlParams.get('error');
+    const attemptedEmail = urlParams.get('attempted');
     if (authError) {
       const messages = {
         auth_denied: 'Inicio de sesi&oacute;n cancelado.',
-        domain: 'Solo se permiten cuentas @umce.cl.',
+        domain: attemptedEmail
+          ? `La cuenta <strong>${attemptedEmail.replace(/[<>]/g, '')}</strong> no es institucional @umce.cl. Vuelve a intentar y selecciona tu cuenta @umce.cl.`
+          : 'Solo se permiten cuentas @umce.cl. Vuelve a intentar y selecciona tu cuenta institucional.',
         auth_failed: 'Error en la autenticaci&oacute;n. Int&eacute;ntalo de nuevo.'
       };
       loginError.innerHTML = messages[authError] || 'Error de autenticaci&oacute;n.';
